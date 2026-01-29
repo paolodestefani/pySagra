@@ -83,8 +83,8 @@ from App.Widget.Dialog import SelectImageDialog
 class GenericDelegate(QStyledItemDelegate):
     "Delegate for view"
 
-    def paint(self, painter, option, index):
-        value = index.model().data(index, Qt.DisplayRole)
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        value = index.model().data(index, Qt.ItemDataRole.DisplayRole)
         #print('GenericDelegate.paint:', value, type(value))
         styleOption = QStyleOptionViewItem(option)
         self.initStyleOption(styleOption, index)
@@ -122,7 +122,7 @@ class GenericDelegate(QStyledItemDelegate):
                                          painter)
         painter.restore()
 
-    def getCheckBoxRect(self, option):
+    def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
         check_box_style_option = QStyleOptionButton()
         check_box_rect = QApplication.style().subElementRect(QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
         check_box_point = QPoint(option.rect.x() +
@@ -133,7 +133,7 @@ class GenericDelegate(QStyledItemDelegate):
                                  check_box_rect.height() / 2)
         return QRect(check_box_point, check_box_rect.size())
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
         fieldType = index.model().columns[index.column()][3]
         if fieldType == 'bool':  # must be checked before int (bool is subclass of int)
             widget = QCheckBox(parent)
@@ -159,7 +159,7 @@ class GenericDelegate(QStyledItemDelegate):
             widget = QLineEdit(parent)
         return widget
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
         if not index.data():
             return
         if isinstance(editor, QCheckBox):
@@ -173,7 +173,7 @@ class GenericDelegate(QStyledItemDelegate):
         else:
             editor.setText(str(index.data()))
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex) -> None:
         if isinstance(editor, QCheckBox):
             model.setData(index, editor.isChecked())
         elif isinstance(editor, QSpinBox):
@@ -192,17 +192,17 @@ class GenericDelegate(QStyledItemDelegate):
 class ColorDelegate(QStyledItemDelegate):
     "Color delegate"
 
-    def createEditor(self, parent, option, index):
-        color = QColor(index.data(Qt.DisplayRole))
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
         if not color.isValid():
             color = Qt.green
         newcolor = QColorDialog.getColor(color, parent)
         if newcolor.isValid():
-            index.model().setData(index, newcolor.name(), Qt.EditRole)
+            index.model().setData(index, newcolor.name(), Qt.ItemDataRole.EditRole)
             # index.model().submit()
 
-    def paint(self, painter, option, index):
-        color = QColor(index.model().data(index, Qt.DisplayRole))
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
         painter.save()
         styleOption = QStyleOptionViewItem(option)
         styleOption.backgroundBrush = QBrush(color)
@@ -215,29 +215,29 @@ class ColorDelegate(QStyledItemDelegate):
 class ColorComboDelegate(QStyledItemDelegate):
     "Color delegate select from combobox"
 
-    def __init__(self, parent, colors):
+    def __init__(self, parent: QWidget, colors: list[str]) -> None:
         super().__init__(parent)
         self.colors = colors
 
-    def createEditor(self, parent, option, index):
-        color = QColor(index.model().data(index, Qt.DisplayRole))
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
+        color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
         if not color.isValid():
             color = Qt.white
         cb = ColorComboBox(parent)
         cb.setColorList(self.colors)
         return cb
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: ColorComboBox, index: QModelIndex) -> None:
         if not index.data():
             return
         cbi = editor.findData(index.data())
         editor.setCurrentIndex(cbi if cbi >= 0 else 0)  # can be -1 on New
 
-    def setModelData(self, editor, model, index):
-        model.setData(index, editor.currentData(Qt.UserRole), Qt.EditRole)
+    def setModelData(self, editor: ColorComboBox, model: QAbstractItemModel, index: QModelIndex) -> None:
+        model.setData(index, editor.currentData(Qt.ItemDataRole.UserRole), Qt.ItemDataRole.EditRole)
 
-    def paint(self, painter, option, index):
-        color = QColor(index.data(Qt.DisplayRole))
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
         painter.save()
         styleOption = QStyleOptionViewItem(option)
         styleOption.backgroundBrush = QBrush(color)
@@ -250,9 +250,9 @@ class ColorComboDelegate(QStyledItemDelegate):
 class ImageDelegate(QStyledItemDelegate):
     "Image delegate"
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         "Paint a scaled pixmap"
-        imageba = index.model().data(index, Qt.DisplayRole)
+        imageba = index.model().data(index, Qt.ItemDataRole.DisplayRole)
         painter.save()
         if option.state & QStyle.State_Selected:  # selected
             if option.state & QStyle.State_Active:  # selected active
@@ -280,9 +280,9 @@ class ImageDelegate(QStyledItemDelegate):
             painter.drawPixmap(option.rect, pix, pix.rect())
         painter.restore()
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
         dd = SelectImageDialog(parent)
-        ba = index.model().data(index, Qt.DisplayRole)
+        ba = index.model().data(index, Qt.ItemDataRole.DisplayRole)
         if ba:
             pix = QPixmap()
             pix.loadFromData(ba)
@@ -297,18 +297,18 @@ class ImageDelegate(QStyledItemDelegate):
             #index.model().submit()
             #self.commitData.emit(dd)
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: SelectImageDialog, index: QModelIndex) -> None:
         QStyledItemDelegate.setEditorData(self, editor, index)
 
 
 class HideTextDelegate(QStyledItemDelegate):
     "A delegate for (not) display text (password)"
 
-    def __init__(self, parent, text):
+    def __init__(self, parent: QWidget, text: str) -> None:
         super().__init__(parent)
         self.text = text
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         "Paint a text string instead of model data"
         painter.save()
         if option.state & QStyle.State_Selected:  # selected
@@ -346,13 +346,13 @@ class HideTextDelegate(QStyledItemDelegate):
 
 class BooleanDelegate(QStyledItemDelegate):
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
         "Important, otherwise an editor is created if the user clicks in this cell."
         return None
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         "Paint a checkbox without the label."
-        checked = bool(index.model().data(index, Qt.DisplayRole))
+        checked = bool(index.model().data(index, Qt.ItemDataRole.DisplayRole))
         check_box_style_option = QStyleOptionButton()
         painter.save()
         if option.state & QStyle.State_Selected:  # selected
@@ -401,14 +401,14 @@ class BooleanDelegate(QStyledItemDelegate):
         #opts.rect = self.getCheckBoxRect(option)
         #QApplication.style().drawControl(QStyle.CE_CheckBox, opts, painter)
 
-    def getCheckBoxRect(self, option):
+    def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
         check_box_style_option = QStyleOptionButton()
         check_box_rect = QApplication.style().subElementRect(QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
         check_box_point = QPoint(option.rect.x() + option.rect.width() // 2 - check_box_rect.width() // 2,
                                  option.rect.y() + option.rect.height() // 2 - check_box_rect.height() // 2)
         return QRect(check_box_point, check_box_rect.size())
 
-    def editorEvent(self, event, model, option, index):
+    def editorEvent(self, event: QEvent, model: QAbstractItemModel, option: QStyleOptionViewItem, index: QModelIndex) -> bool   :
         """Change the data in the model and the state of the checkbox
         if the user presses the left mousebutton or presses
         Key_Space or Key_Select and this cell is editable. Otherwise do nothing.
@@ -435,53 +435,52 @@ class BooleanDelegate(QStyledItemDelegate):
         self.setModelData(None, model, index)
         return True
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: None, model: QAbstractItemModel, index: QModelIndex) -> None:
         "The user wanted to change the old state in the opposite."
-        newValue = not bool(index.model().data(index, Qt.DisplayRole))
-        model.setData(index, newValue, Qt.EditRole)
-
+        newValue = not bool(index.model().data(index, Qt.ItemDataRole.DisplayRole))
+        model.setData(index, newValue, Qt.ItemDataRole.EditRole)
 
 class ItemsDelegate(QStyledItemDelegate):
     "A delegate (combo box) for choose a value from a list"
 
-    def __init__(self, parent, items):
+    def __init__(self, parent: QWidget, items) -> None:
         super().__init__(parent)
         self.data = items
 
-    def sizeHint(self, option, index):
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIIndex) -> QSize:
         # ignore flags, add a little more margin
         size = QApplication.fontMetrics().size(0, str(self.data[index.data()]))
         size.setWidth(size.width() + 10)
         return size
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         opt = QStyleOptionViewItem(option)
         opt.text = index.data()
         opt.displayAlignment = Qt.AlignLeft | Qt.AlignVCenter
         super().paint(painter, opt, index)
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QComboBox:
         cb = QComboBox(parent)
         cb.addItems(self.data)
         return cb
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QComboBox, index: QModelIndex) -> None:
         if not index.data():
             return
         editor.setCurrentText(index.data())
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QComboBox, model: QAbstractItemModel, index: QModelIndex) -> None:
         model.setData(index, editor.currentText())
 
 
 class PrintersDelegate(ItemsDelegate):
     "A delegate (combo box) for choose a printer of the current computer"
 
-    def __init__(self, parent, items, hostName):
+    def __init__(self, parent: QWidget, items: list, hostName: str) -> None:
         super().__init__(parent, items)
         self.hostName = hostName
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QComboBox:
         # avoid editing of printers of another computer
         # computer name must be in the preceeding column of the same row
         if index.model().index(index.row(), index.column() - 1).data() != self.hostName:
@@ -502,7 +501,7 @@ class PrintersDelegate(ItemsDelegate):
 class RelationDelegate(QStyledItemDelegate):
     "A delegate (combo box) for referenced table fields"
 
-    def __init__(self, parent, function):
+    def __init__(self, parent: QWidget, function) -> None:
         super().__init__(parent)
         # define a model used for paint and combobox editor
         # (field, relational field)
@@ -515,23 +514,23 @@ class RelationDelegate(QStyledItemDelegate):
         self.function = function
         self.updateItems()
 
-    def updateItems(self):
+    def updateItems(self) -> None:
         self.data = dict(self.function())
         #self.reverseData = {v:k for k, v in self.data.items()}
 
 
-    def sizeHint(self, option, index):
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
         # ignore flags, add a little more margin
         size = QApplication.fontMetrics().size(0, str(self.data.get(index.data())))
         size.setWidth(size.width() + 10)
         return size
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         "Paint the delegate"
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
         opt.text = self.data.get(index.data()) or '---'  # for item actually unavailable
-        opt.displayAlignment = Qt.AlignLeft | Qt.AlignVCenter
+        opt.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         painter.save()
         if option.state & QStyle.State_Selected:  # selected
             if option.state & QStyle.State_Active:  # selected active
@@ -557,36 +556,36 @@ class RelationDelegate(QStyledItemDelegate):
                                          painter)
         painter.restore()
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QComboBox:
         self.updateItems()
         cb = QComboBox(parent)
         for k, v in self.data.items():
             cb.addItem(v, k)
         return cb
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QComboBox, index: QModelIndex) -> None:
         if not index.data():
             return
         editor.setCurrentText(self.data.get(index.data()))
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QComboBox, model: QAbstractItemModel, index: QModelIndex) -> None:
         # if editor.currentText(): # can happend in insert row
         model.setData(index, editor.currentData())
 
-    def getRelationData(self, index):
+    def getRelationData(self, index: QModelIndex) -> any:
         return self.data.get(index.data())
 
 
 class IntegerDelegate(QStyledItemDelegate):
     "A delegate for integer values"
 
-    def __init__(self, parent, bold=False):
+    def __init__(self, parent: QWidget, bold=False):
         super().__init__(parent)
         self.bold = bold
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         option.text = str(index.data()) #str(int(index.data() or 0)  # can be null on insert row
-        option.displayAlignment = Qt.AlignRight | Qt.AlignVCenter
+        option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         if self.bold:
             option.font.setWeight(QFont.Bold)
         if index.data(Qt.FontRole):
@@ -618,36 +617,36 @@ class IntegerDelegate(QStyledItemDelegate):
         #QApplication.style().drawControl(QStyle.CE_ItemViewItem, option, painter)
         #painter.restore()
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QSpinBox:
         sb = QSpinBox(parent)
         sb.setMaximum(999999999)
         return sb
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QSpinBox, index: QModelIndex) -> None:
         if not index.data():
             return
         editor.setValue(index.data())
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QSpinBox, model: QAbstractItemModel, index: QModelIndex) -> None:
         model.setData(index, editor.value())
 
 
 class DecimalDelegate(QStyledItemDelegate):
     "A delegate for decimal values or currency values"
 
-    def __init__(self, parent, prec=0, maximum=999.9, currency=False, bold=False):
+    def __init__(self, parent: QWidget, prec=0, maximum=999.9, currency=False, bold=False):
         super().__init__(parent)
         self.prec = prec
         self.maximum = maximum
         self.currency = currency
         self.bold = bold
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         if self.currency:
             option.text = session['qlocale'].toCurrencyString(float(index.data() or 0.0), ' ')  # no currency symbol
         else:
             option.text = session['qlocale'].toString(float(index.data() or 0.0), 'f', self.prec)  # can be null on insert row
-        option.displayAlignment = Qt.AlignRight | Qt.AlignVCenter
+        option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         if self.bold:
             option.font.setWeight(QFont.Bold)
         if index.data(Qt.FontRole):
@@ -677,24 +676,24 @@ class DecimalDelegate(QStyledItemDelegate):
         QApplication.style().drawControl(QStyle.CE_ItemViewItem, option, painter)
         painter.restore()
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QDoubleSpinBox:
         sb = QDoubleSpinBox(parent)
         sb.setDecimals(self.prec)
         sb.setMaximum(self.maximum)
         return sb
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QDoubleSpinBox, index: QModelIndex) -> None:
         if not index.data():
             return
         editor.setValue(index.data())
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QDoubleSpinBox, model: QAbstractItemModel, index: QModelIndex) -> None:
         model.setData(index, editor.value())
 
 class QuantityDelegate(DecimalDelegate):
     "Delegate for quantity values"
 
-    def __init__(self, parent, bold=False):
+    def __init__(self, parent: QWidget, bold=False):
         setting = SettingClass()
         super().__init__(parent,
                          setting['quantity_decimal_places'],
@@ -706,7 +705,7 @@ class QuantityDelegate(DecimalDelegate):
 class AmountDelegate(DecimalDelegate):
     "Delegate for currency values"
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget):
         super().__init__(parent,
                          prec=2,
                          maximum=99999.9,
@@ -718,7 +717,7 @@ class NewStockDelegate(QuantityDelegate):
     """
     LOAD, UNLOAD, STOCK, ORDERED, AVAILABLE = range(3, 8)
     
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         option.text = ""
         super().paint(painter, option, index)
 
@@ -728,13 +727,13 @@ class NewStockDelegate(QuantityDelegate):
     #    dsb.setMaximum(999999)
     #    return dsb
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QDoubleSpinBox, index: QModelIndex) -> None:
         model = index.model()
         stockIndex = model.createIndex(index.row(), self.STOCK)
         newLoads = model.data(stockIndex) or 0.0
         editor.setValue(newLoads)
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QDoubleSpinBox, model: QAbstractItemModel, index: QModelIndex) -> None:
         # update loads
         loadsIndex = model.createIndex(index.row(), self.LOAD)
         unloadsIndex = model.createIndex(index.row(), self.UNLOAD)
@@ -753,7 +752,7 @@ class NewStockDelegate(QuantityDelegate):
 
 class StockLevelDelegate(QuantityDelegate):
 
-    def __init__(self, parent, warning=10, critical=5):
+    def __init__(self, parent: QWidget, warning=10, critical=5):
         super().__init__(parent)
         self.warning_level = warning
         self.critical_level = critical
@@ -762,10 +761,10 @@ class StockLevelDelegate(QuantityDelegate):
         self.criticalColor = QColor('Orange')
         self.outOfStockColor = QColor('Red')
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         option.text = session['qlocale'].toString(float(index.data() or 0.0), 'f', self.prec)  # can be null on insert row
         value = index.data() or 0  # could be None
-        option.displayAlignment = Qt.AlignRight | Qt.AlignVCenter
+        option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         option.font.setWeight(QFont.Bold)
         painter.save()
 
@@ -805,8 +804,8 @@ class StockLevelDelegate(QuantityDelegate):
 class BoldDelegate(QStyledItemDelegate):
     "A delegate for bold rendering of text"
 
-    def paint(self, painter, option, index):
-        option.displayAlignment = Qt.AlignRight | Qt.AlignVCenter
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         option.font.setWeight(QFont.Bold)
         super().paint(painter, option, index)
 
@@ -814,11 +813,11 @@ class BoldDelegate(QStyledItemDelegate):
 class ActionDelegate(QStyledItemDelegate):
     "A custom delegate for action code/description"
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget, actionDefinition: dict) -> None:
         super().__init__(parent)
         self.action = {k: actionDefinition[k][0] for k in actionDefinition}
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         opt = QStyleOptionViewItem(option)
         #model = index.model()
         #ni = model.index(index.row(), index.column())
@@ -846,19 +845,19 @@ class ActionDelegate(QStyledItemDelegate):
                                          painter)
         painter.restore()
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QComboBox:
         "Important, otherwise an editor is created if the user clicks in this cell."
         cb = QComboBox(parent)
         for k in self.action:
             cb.addItem(self.action[k], k)
         return cb
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QComboBox, index: QModelIndex) -> None:
         if not index.data():
             return
         editor.setCurrentText(self.action.get(index.data()))
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QComboBox, model: QAbstractItemModel, index: QModelIndex) -> None:
         #print(editor.currentData())
         model.setData(index, editor.currentData())
 
@@ -866,10 +865,10 @@ class ActionDelegate(QStyledItemDelegate):
 class PasswordDelegate(QStyledItemDelegate):
     "A delegate for read/write encrypted password"
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget):
         super().__init__(parent)
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         "Paint *** string instead of model data"
         painter.save()
         if option.state & QStyle.State_Selected:  # selected
@@ -891,28 +890,28 @@ class PasswordDelegate(QStyledItemDelegate):
                 painter.fillRect(option.rect, option.palette.base())
                 option.backgroundBrush = option.palette.base()
         painter.drawText(option.rect,
-                         Qt.AlignHCenter | Qt.AlignVCenter,
+                         Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter,
                          '\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF')
         painter.restore()
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QLineEdit:
         le = QLineEdit(parent)
         le.setEchoMode(QLineEdit.Password)
         return le
 
-    def setEditorData(self, editor, index):
+    def setEditorData(self, editor: QLineEdit, index: QModelIndex) -> None:
         if not index.data():
             return
         editor.setText(string_decode(index.data()))
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor: QLineEdit, model: QAbstractItemModel, index: QModelIndex) -> None:
         model.setData(index, string_encode(editor.text()))
 
 
 class GenericReadOnlyDelegate(QStyledItemDelegate):
     "Delegate for view with read only query model"
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         if index.isValid() is False:
             return
         value = index.model().data(index, Qt.DisplayRole)
@@ -921,19 +920,19 @@ class GenericReadOnlyDelegate(QStyledItemDelegate):
 
         if isinstance(value, bool):  # must be checked before int (bool is subclass of int)
             styleOption.text = '\u26ab' if value else '\u26aa' #'\u2714' '\u2611' '\u2610'
-            styleOption.displayAlignment = Qt.AlignHCenter | Qt.AlignVCenter
+            styleOption.displayAlignment = Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter
         elif isinstance(value, int):
             styleOption.text = str(value)
-            styleOption.displayAlignment = Qt.AlignRight | Qt.AlignVCenter
+            styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         elif isinstance(value, (QDate, QDateTime)):
             styleOption.text = session['qlocale'].toString(value, QLocale.ShortFormat)
-            styleOption.displayAlignment = Qt.AlignLeft | Qt.AlignVCenter
+            styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         elif isinstance(value, Decimal):
             styleOption.text = session['qlocale'].toString(float(value or 0.0), 'f', 2)
-            styleOption.displayAlignment = Qt.AlignRight | Qt.AlignVCenter
+            styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         else:
             styleOption.text = str(value or '')  # for null values
-            styleOption.displayAlignment = Qt.AlignLeft | Qt.AlignVCenter
+            styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
 
         font = index.model().data(index, Qt.FontRole)
         if font:
@@ -956,7 +955,7 @@ class GenericReadOnlyDelegate(QStyledItemDelegate):
 class ReadOnlyDelegate(QStyledItemDelegate):
     "Read only delegate"
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         "Important, otherwise an editor is created if the user clicks in this cell."
         return None
     
@@ -964,7 +963,7 @@ class ReadOnlyDelegate(QStyledItemDelegate):
 class TimeDelegate(QStyledItemDelegate):
     "A delegate for QTime rendering in text"
 
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         if isinstance(index.data(), QTime):
             option.text = index.data().toString('HH:mm:ss')
         else:
