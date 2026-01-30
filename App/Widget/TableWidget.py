@@ -83,31 +83,32 @@ FORM, GRID = range(2)
 
 
 class TableWidgetItem(QTableWidgetItem):
-    def __init__(self, value=None):
+    def __init__(self, value: object = None) -> None:
         super().__init__()
         if isinstance(value, (int, str, bool, QDate, QDateTime)):
             self._data = value
         else:
             self._data = None
 
-    def flags(self):
+    def flags(self) -> Qt.ItemFlags:
         return Qt.ItemIsEditable
 
-    def data(self, role=Qt.DisplayRole):
+    def data(self, role: Qt.ItemDataRole = Qt.DisplayRole) -> object:
         if role == Qt.DisplayRole:
             return self._data
         else:
             return None
 
-    def setData(self, role, value):
+    def setData(self, role: Qt.ItemDataRole, value) -> None:
         self._data = value
 
-    def copy(self):
+    def copy(self) -> TableWidgetItem:
         return TableWidgetItem(self._data)
 
 
 class TableWidgetDragRows(QTableWidget):
-    def __init__(self, *args, **kwargs):
+    
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.setDragEnabled(True)
@@ -120,7 +121,7 @@ class TableWidgetDragRows(QTableWidget):
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setDragDropMode(QAbstractItemView.InternalMove)
 
-    def dropEvent(self, event: QDropEvent):
+    def dropEvent(self, event: QDropEvent) -> None:
         if not event.isAccepted() and event.source() == self:
             drop_row = self.drop_on(event)
 
@@ -143,14 +144,14 @@ class TableWidgetDragRows(QTableWidget):
                 self.item(drop_row + row_index, 1).setSelected(True)
         super().dropEvent(event)
 
-    def drop_on(self, event):
+    def drop_on(self, event: QDropEvent) -> int:
         index = self.indexAt(event.pos())
         if not index.isValid():
             return self.rowCount()
 
         return index.row() + 1 if self.is_below(event.pos(), index) else index.row()
 
-    def is_below(self, pos, index):
+    def is_below(self, pos: QPoint, index: QModelIndex) -> bool:
         rect = self.visualRect(index)
         margin = 2
         if pos.y() - rect.top() < margin:

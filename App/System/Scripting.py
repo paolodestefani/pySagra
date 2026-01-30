@@ -132,7 +132,7 @@ SCRIPTABLE = {'PrintersForm': ['__init__',
 (ID, CLASS, METHOD, TRIGGER, COMPANY, ACTIVE, SCRIPT,
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(11)
 
-def runOptions():
+def runOptions() -> list[tuple[str, str]]:
     return [('B', _tr('script', 'Before')),
             ('I', _tr('script', 'Instead')),
             ('A', _tr('script', 'After'))]

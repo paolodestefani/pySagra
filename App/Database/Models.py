@@ -71,7 +71,7 @@ UPDATED, INSERTED, DELETED = range(3)
 
 class MenuItemTreeModel(TreeModel):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QObject|None = None):
         super().__init__(parent)
         self.table = "system.menu_item"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -102,7 +102,7 @@ class MenuItemTreeModel(TreeModel):
 
 class ToolbarItemTreeModel(TreeModel):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QObject|None = None):
         super().__init__(parent)
         self.table = "system.toolbar_item"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -133,7 +133,7 @@ class ToolbarItemTreeModel(TreeModel):
 
 class ConnectionModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 

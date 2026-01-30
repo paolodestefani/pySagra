@@ -4,7 +4,22 @@
 # Author: Paolo De Stefani
 # Contact: paolo <at> paolodestefani <dot> it
 # Copyright (C) 2026 Paolo De Stefani
-# License:
+# License: GPL v3
+
+# This file is part of pySagra.
+#
+# pySagra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# pySagra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
 """Views
 
@@ -39,6 +54,7 @@ from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QActionGroup
+from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QFileDialog
@@ -77,7 +93,7 @@ FORM, GRID = range(2)
 
 class TableViewSettingsDialog(QDialog, Ui_ViewSettingsDialog):
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.setupUi(self)
         self.tableWidget.setColumnCount(5)
@@ -106,7 +122,7 @@ class TableViewSettingsDialog(QDialog, Ui_ViewSettingsDialog):
                 if c in (0, 1, 2):
                     self.tableWidget.item(r, c).setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled)
 
-    def accept(self):
+    def accept(self) -> None:
         # reset layout first (first time store the state)
         if self.parent().horizontalHeaderState:
             self.parent().horizontalHeader().restoreState(self.parent().horizontalHeaderState)
@@ -132,7 +148,7 @@ class TableViewSettingsDialog(QDialog, Ui_ViewSettingsDialog):
 class EnhancedTableView(QTableView):
     "Generic (but enhanced :-) ) table View"
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget = None) -> None:
         super().__init__(parent)
         self.layoutName = None
         #fw = QApplication.fontMetrics().averageCharWidth()
@@ -245,7 +261,7 @@ class EnhancedTableView(QTableView):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.contextMenuEvent)
 
-    def fillCustomizationMenu(self):
+    def fillCustomizationMenu(self) -> None:
         # clear everything
         for i in self.ag.actions():
             self.ag.removeAction(i)
@@ -267,17 +283,17 @@ class EnhancedTableView(QTableView):
             self.ag.addAction(a)
             self.cmCustomizations.addAction(a)
 
-    def setModel(self, model):
+    def setModel(self, model: QAbstractItemModel) -> None:
         super().setModel(model)
         self.setSortingEnabled(False) # better not to sort when editing
 
-    def setLayoutName(self, name):
+    def setLayoutName(self, name: str) -> None:
         "As EnhancedTableView is declared in QtDesigner we must set the name of the layout after instantiation"
         self.layoutName = name
         self.fillCustomizationMenu()
         self.setStoredLayout(self.ag.checkedAction())
 
-    def setStoredLayout(self, action):
+    def setStoredLayout(self, action: QAction) -> None:
         if not action: # no customization available
             return
         viewId = int(action.data())
@@ -304,11 +320,11 @@ class EnhancedTableView(QTableView):
             # width
             self.setColumnWidth(c, s)
 
-    def contextMenuEvent(self, position):
+    def contextMenuEvent(self, position: QPoint) -> None:
         # self.cm.exec_(self.viewport().mapToGlobal(position))
         self.cm.exec_(QCursor.pos())
 
-    def activateSorting(self):
+    def activateSorting(self) -> None:
         "Activate/deactivate sorting by column"
         if self.isSortingEnabled():
             self.setSortingEnabled(False)
@@ -317,7 +333,7 @@ class EnhancedTableView(QTableView):
             self.setSortingEnabled(True)
             self.cmSorting.setChecked(True)
 
-    def activateMovableColumns(self):
+    def activateMovableColumns(self) -> None:
         "Activate/deactivate movable columns"
         if self.horizontalHeader().sectionsMovable():
             self.horizontalHeader().setSectionsMovable(False)
@@ -326,13 +342,13 @@ class EnhancedTableView(QTableView):
             self.horizontalHeader().setSectionsMovable(True)
             self.cmMovable.setChecked(True)
 
-    def showVerticalHeader(self):
+    def showVerticalHeader(self) -> None:
         if self.verticalHeader().isVisible():
             self.verticalHeader().hide()
         else:
             self.verticalHeader().show()
 
-    def add(self):
+    def add(self) -> int:
         "Insert a row in grid at the end"
         #session['mainwin'].updateEditStatus(ESINS)
         #self.setSortingEnabled(False)
@@ -346,7 +362,7 @@ class EnhancedTableView(QTableView):
         #print('Rows', self.model().rowCount())
         return row
 
-    def remove(self):
+    def remove(self) -> None:
         "Delete the current row"
         if QMessageBox.question(self,
                                 _tr("MessageDialog", "Question"),
@@ -375,7 +391,7 @@ class EnhancedTableView(QTableView):
         #dialog.paintRequested.connect(st.print_)
         #dialog.exec_()
 
-    def exportView(self):
+    def exportView(self) -> None:
         "Export to CSV file"
         # read previously used path
         st = QSettings()
@@ -451,18 +467,18 @@ class EnhancedTableView(QTableView):
                                 QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
             QDesktopServices.openUrl(QUrl("file:///{}".format(fname)))
 
-    def hideCurrentColumn(self):
+    def hideCurrentColumn(self) -> None:
         "Hide current column"
         self.hideColumn(self.currentIndex().column())
 
-    def showAllColumns(self):
+    def showAllColumns(self) -> None:
         "Show all columns"
         for i in range(self.horizontalHeader().count()):
             if self.isColumnHidden(i):
                 self.showColumn(i)
                 self.setColumnWidth(i, 120)
 
-    def resetViewState(self):
+    def resetViewState(self) -> None:
         "Reset the view state to initial state previously stored"
         # restore view state
         if self.horizontalHeaderState:
@@ -471,7 +487,7 @@ class EnhancedTableView(QTableView):
             if self.ag.checkedAction():
                 self.ag.checkedAction().setChecked(False)
 
-    def manageSettings(self):
+    def manageSettings(self) -> None:
         "Manage view settings on a dialog box"
         dialog = TableViewSettingsDialog(self)
         title = _tr('view', 'View settings')
@@ -479,7 +495,7 @@ class EnhancedTableView(QTableView):
         dialog.groupBoxViewSettings.setTitle(title)
         dialog.exec_()
 
-    def updateViewLayout(self, viewId=None):
+    def updateViewLayout(self, viewId: int = None) -> None:
         "Save current view layout to database"
         if not viewId:
             viewId = int(self.ag.checkedAction().data())
@@ -499,7 +515,7 @@ class EnhancedTableView(QTableView):
                                     _tr("MessageDialog", "Information"),
                                     _tr("View", "Layout customization saved"))
 
-    def saveViewLayoutAs(self):
+    def saveViewLayoutAs(self) -> None:
         "Create a new layout customization"
         viewDesc, ok = QInputDialog.getText(self,
                                             _tr("View", "New layout customization"),
@@ -519,7 +535,7 @@ class EnhancedTableView(QTableView):
             # recreate customization list
             self.fillCustomizationMenu()
 
-    def deleteViewLayout(self, action):
+    def deleteViewLayout(self, action: QAction = None) -> None:
         "Delete current view layout from database"
         viewId = int(self.ag.checkedAction().data())
         try:
@@ -535,7 +551,7 @@ class EnhancedTableView(QTableView):
                                     _tr("MessageDialog", "Information"),
                                     _tr("View", "Current layout deleted"))
 
-    def defaultViewLayout(self):
+    def defaultViewLayout(self) -> None:
         "Set curent layout as default for view class"
         if not self.ag.checkedAction():  # no layout setted
             QMessageBox.warning(self,

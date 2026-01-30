@@ -157,7 +157,7 @@ referenceList = {'eventList': event_cdl,
 class MessageBox(QDialog, Ui_MessageDialog):
     "Custom message dialog"
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget = None) -> None:
         super().__init__(parent)
         self.setupUi(self)
         sty = QCoreApplication.instance().style()
@@ -168,7 +168,7 @@ class MessageBox(QDialog, Ui_MessageDialog):
 class SelectImageDialog(QDialog, Ui_SelectImageDialog):
     "Select Image Dialog"
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None) -> None:
         super().__init__(parent)
         self.setupUi(self)
         self.image = None
@@ -176,7 +176,7 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         self.pushButtonUpload.clicked.connect(self.upload)
         self.pushButtonDownload.clicked.connect(self.download)
 
-    def upload(self):
+    def upload(self) -> None:
         "Upload an image file"
         #path = os.path.dirname(os.path.curdir)
         path = QDir.currentPath()
@@ -198,7 +198,7 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         self.lineEditImageFormat.setText(ft)
         self.setImage(pix)
 
-    def download(self):
+    def download(self) -> None:
         "Save an image to a file"
         path = os.path.dirname(os.path.curdir)
         f, fi = QFileDialog.getSaveFileName(self,
@@ -208,10 +208,10 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         if self.image:
             self.image.save(f)
 
-    def getImage(self):
+    def getImage(self) -> QPixmap:
         return self.image
 
-    def setImage(self, pix):
+    def setImage(self, pix: QPixmap) -> None:
         self.image = pix
         # preview
         if pix.width() > 200 or pix.height() > 200:
@@ -230,7 +230,7 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         self.spinBoxPixmapSize.setEnabled(True)
         self.spinBoxPixmapSize.setValue(ba.size()/1024)
 
-    def accept(self):
+    def accept(self) -> None:
         "Accept"
         QDialog.accept(self)
 
@@ -684,7 +684,7 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
 class SortFilterDialog(QDialog):
     "Sort and filter Dialog for Forms"
 
-    def __init__(self, sortfilterClass, model=None, parent=None):
+    def __init__(self, sortfilterClass: str, model: QAbstractItemModel = None, parent: QWidget = None) -> None:
         super().__init__(parent)
         self.ui = Ui_SortFilterDialog()
         self.ui.setupUi(self)
@@ -774,7 +774,7 @@ class SortFilterDialog(QDialog):
         self.ui.tabWidget.widget(2).setEnabled(session['can_edit_sortfilters'] or
                                                session['is_admin'])
 
-    def availableCustomizations(self):
+    def availableCustomizations(self) -> None:
         "Get available customization from DB and fill combobox"
         # disable signal first
         self.ui.comboBoxSetting.currentIndexChanged.disconnect()
@@ -813,7 +813,7 @@ class SortFilterDialog(QDialog):
         # initial settings
         self.fillCustomizations(0)
 
-    def fillCustomizations(self, index):
+    def fillCustomizations(self, index: int) -> None:
         "Sets filters and sorting based on current customization"
         sortFilterId = index
         # if self.ui.comboBoxSetting.count() != 0: # have any custonization...
@@ -934,7 +934,7 @@ class SortFilterDialog(QDialog):
         # sort filter class sorting
         self.ui.spinBoxClassSorting.setValue(sortfilter_adapt_sorting(sortFilterId))
 
-    def updateSettings(self):
+    def updateSettings(self) -> None:
         "Save modified settings to database"
         cid = int(self.ui.comboBoxSetting.currentData())
         # clear before updating
@@ -998,7 +998,7 @@ class SortFilterDialog(QDialog):
                                 _tr("MessageDialog", "Information"),
                                 _tr("Dialog", "Current customization was updated"))
 
-    def condIndexChanged(self, index):
+    def condIndexChanged(self, index: int) -> None:
         "Set combobox items (operator) and operand QWidget"
         if index <= 0:
             return
@@ -1021,7 +1021,7 @@ class SortFilterDialog(QDialog):
         #     if field in self.model.reference:
         #         self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem('From list', 'LIST')
 
-    def operIndexChanged(self, index):
+    def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
         if index < 0:
             return
@@ -1109,7 +1109,7 @@ class SortFilterDialog(QDialog):
         # new widget
         self.ui.layoutFilters.addWidget(widget, row, OPERAND)
 
-    def sortIndexChanged(self, index):
+    def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter qwidget"
         row = self.sender().row
         # clear first
@@ -1118,7 +1118,7 @@ class SortFilterDialog(QDialog):
             for i, j in self.ORDERING:
                 self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().addItem(j, i)
 
-    def newCustomization(self):
+    def newCustomization(self) -> None:
         "Create a new customization"
         name = self.ui.lineEditNewName.text()
         try:
@@ -1134,7 +1134,7 @@ class SortFilterDialog(QDialog):
             self.ui.lineEditNewName.clear()
             self.availableCustomizations()
 
-    def deleteCurrent(self):
+    def deleteCurrent(self) -> None:
         "Remove current customization from database"
         cid = int(self.ui.comboBoxSetting.currentData())
         try:
@@ -1149,7 +1149,7 @@ class SortFilterDialog(QDialog):
                                     _tr("MessageDialog", "Information"),
                                     _tr("Dialog", "Current customization deleted"))
 
-    def setCustomizationSorting(self):
+    def setCustomizationSorting(self) -> None:
         "Set current customization sort index"
         if self.ui.comboBoxSetting.count() == 0:
             return
@@ -1166,7 +1166,7 @@ class SortFilterDialog(QDialog):
                                     _tr("MessageDialog", "Information"),
                                     _tr("Dialog", "Current customization sorting updated"))
 
-    def clicked(self, button=None):
+    def clicked(self, button: QPushButton = None) -> None:
         "Intercept Reset button action"
         if button == self.ui.buttonBox.button(QDialogButtonBox.Reset):
             for r in range(self.ui.layoutFilters.rowCount()):
@@ -1180,7 +1180,7 @@ class SortFilterDialog(QDialog):
                 if self.ui.layoutSorting.itemAtPosition(r, FIELD):
                     self.ui.layoutSorting.itemAtPosition(r, FIELD).widget().setCurrentIndex(0)
 
-    def accept(self):
+    def accept(self) -> None:
         "Generate the where conditions and update model"
         # get filters
         self.model.whereCondition.clear()
@@ -1255,7 +1255,7 @@ class SortFilterDialog(QDialog):
         #self.parentWidget.ui.tableView.selectRow(0)
         super().accept()
 
-    def done(self, r):
+    def done(self, r: int) -> None:
         "Save local settings on exit, even in accetp/reject/finished"
         # save settings
         st = QSettings(self)
@@ -1266,7 +1266,7 @@ class SortFilterDialog(QDialog):
 
 class EventFilterDialog(QDialog, Ui_EventFilterDialog):
 
-    def __init__(self, parent, event=None, eventDate=None, dayPart=None):
+    def __init__(self, parent: QWidget, event: int = None, eventDate: QDate = None, dayPart: str = None) -> None:
         super().__init__(parent)
         self.setupUi(self)
         self.parent = parent
@@ -1289,7 +1289,7 @@ class EventFilterDialog(QDialog, Ui_EventFilterDialog):
         else:
             self.radioButtonDinner.setChecked(True)
 
-    def accept(self):
+    def accept(self) -> None:
         self.parent.updateFilterConditions(self.comboBoxEvent.currentData(),
                                            self.dateEditDate.date(),
                                            'L' if self.radioButtonLunch.isChecked() else 'D')
@@ -1300,7 +1300,7 @@ class EventFilterDialog(QDialog, Ui_EventFilterDialog):
 class PrintDialog(QDialog):
     "Print dialog"
     
-    def __init__(self, parent, reportClass=None, l10n=None, reportId=None, model=None):
+    def __init__(self, parent: QWidget, reportClass: str = None, l10n: str = None, reportId: int = None, model: QAbstractItemModel = None) -> None:
         super().__init__(parent)
         self.ui = Ui_PrintDialog()
         self.ui.setupUi(self)
@@ -1388,7 +1388,7 @@ class PrintDialog(QDialog):
             self.tabWidget.setTabVisible(TABFILTERS, False)
             self.tabWidget.setTabVisible(TABSORTING, False)
 
-    def reset(self):
+    def reset(self) -> None:
         "Clear all filters and sorting"
         for i in range(self.ui.layoutFilters.rowCount()):
             if self.ui.layoutFilters.itemAtPosition(i, 0):
@@ -1397,7 +1397,7 @@ class PrintDialog(QDialog):
             if self.ui.layoutSorting.itemAtPosition(i, 0):
                 self.ui.layoutSorting.itemAtPosition(i, 0).widget().setCurrentIndex(0)
         
-    def show(self):
+    def show(self) -> None:
         "Show modal dialog if a report is available"
         # no report available, exit
         if self.ui.comboBoxReportList.count() != 0:
@@ -1407,7 +1407,7 @@ class PrintDialog(QDialog):
                                  _tr('MessageDialog', 'Critical'),
                                  _tr('Dialog', 'No report available'))
 
-    def reportCustomizationList(self):
+    def reportCustomizationList(self) -> None:
         # disable signal first
         self.ui.comboBoxReportCustomizations.currentIndexChanged.disconnect(self.setReportCustomization)
         # report customization list for current class and l10n
@@ -1424,7 +1424,7 @@ class PrintDialog(QDialog):
         # reenable signal
         self.ui.comboBoxReportCustomizations.currentIndexChanged.connect(self.setReportCustomization)
 
-    def saveReportCustomization(self):
+    def saveReportCustomization(self) -> None:
         "Save current customization settings"
         customizationId = self.ui.comboBoxReportCustomizations.currentData()
         # clear before updating
@@ -1519,7 +1519,7 @@ class PrintDialog(QDialog):
                                 _tr("MessageDialog", "Information"),
                                 _tr("Dialog", "Customization saved"))
 
-    def deleteReportCustomization(self):
+    def deleteReportCustomization(self) -> None:
         "Delete current report customization"
         customizationId = self.ui.comboBoxReportCustomizations.currentData()
         try:
@@ -1536,7 +1536,7 @@ class PrintDialog(QDialog):
         # update report customization list
         self.reportCustomizationList()
 
-    def saveNewCustomizationAs(self):
+    def saveNewCustomizationAs(self) -> None:
         "Create a new customization"
         #report_class = self.lineEditReportClass.text()
         report_id = self.ui.comboBoxReportList.currentData()
@@ -1560,7 +1560,7 @@ class PrintDialog(QDialog):
         # update report customization list
         self.reportCustomizationList()
 
-    def setCustomizationSetting(self):
+    def setCustomizationSetting(self) -> None:
         "Restore saved customization settings"
         customizationId = self.ui.comboBoxReportCustomizations.currentData()
         try:
@@ -1619,7 +1619,7 @@ class PrintDialog(QDialog):
             self.ui.lineEditFileName.setText(self.report.options.get('documentName'))
             #self.ui.lineEditAttachment.setText(self.report.options.get('documentName'))
 
-    def setReportCustomization(self, index):
+    def setReportCustomization(self, index: int) -> None:
         "Set report definition from customization and create widgets"
         customizationId = self.ui.comboBoxReportCustomizations.currentData()
         if customizationId:
@@ -1724,7 +1724,7 @@ class PrintDialog(QDialog):
         # restore customizations
         self.setCustomizationSetting()
 
-    def setReportCustomizationSorting(self):
+    def setReportCustomizationSorting(self) -> None:
         "Set current report sorting for report class"
         if self.ui.comboBoxReportCustomizations.count() == 0:
             return
@@ -1744,7 +1744,7 @@ class PrintDialog(QDialog):
         self.reportCustomizationList()
         self.setReportCustomization(-1)  # initial settings
 
-    def condIndexChanged(self, index):
+    def condIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter QWidget"
         if index < 0:
             return
@@ -1812,7 +1812,7 @@ class PrintDialog(QDialog):
         # insert new widget
         self.ui.layoutFilters.addWidget(widget, row, 2)
 
-    def operIndexChanged(self, index):
+    def operIndexChanged(self, index: int) -> None:
         "Disable widget if operand is not required"
         row = self.sender().row
         if self.ui.layoutFilters.itemAtPosition(row, 1):
@@ -1822,7 +1822,7 @@ class PrintDialog(QDialog):
             else:
                 self.ui.layoutFilters.itemAtPosition(row, 2).widget().setVisible(True)
 
-    def sortIndexChanged(self, index):
+    def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter widget"
         row = self.sender().row
         # clear first
@@ -1831,7 +1831,7 @@ class PrintDialog(QDialog):
             for i, j in self.ORDERING:
                 self.ui.layoutSorting.itemAtPosition(row, 1).widget().addItem(j, i)
 
-    def generateReport(self):
+    def generateReport(self) -> bool:
         "Generate sql query, where condition, order by expression and report"
         # get parameters current value
         if self.ui.tabWidget.isTabEnabled(0):
@@ -1948,7 +1948,7 @@ class PrintDialog(QDialog):
         QApplication.restoreOverrideCursor()
         return True
 
-    def printPreview(self):
+    def printPreview(self) -> None:
         "Generated report and show a print preview"
         if not self.generateReport():
             return
@@ -1968,7 +1968,7 @@ class PrintDialog(QDialog):
                                  _tr("Dialog", "Critical"),
                                  er)
 
-    def printReport(self):
+    def printReport(self) -> None:
         "Generated report, choose a printer and print"
         if not self.generateReport():
             return
@@ -1985,7 +1985,7 @@ class PrintDialog(QDialog):
                                      _tr("Dialog", "Critical"),
                                      er)
 
-    def printDirect(self):
+    def printDirect(self) -> None:
         "Generated report and print"
         if not self.generateReport():
             return
@@ -1997,7 +1997,7 @@ class PrintDialog(QDialog):
                                  _tr("Dialog", "Critical"),
                                  er)
 
-    def printPDF(self):
+    def printPDF(self) -> None:
         "Generated report and a pdf file, optionally open it"
         if not self.generateReport():
             return
@@ -2036,7 +2036,7 @@ class PrintDialog(QDialog):
                                     _tr("MessageDialog", "Information"),
                                     _tr('Dialog', "PDF file created"))
 
-    def selectDirectoryClicked(self):
+    def selectDirectoryClicked(self) -> None:
         "Select export directory"
         dirname = QFileDialog.getExistingDirectory(self,
                                                    _tr('Dialog', "Select export directory"),
@@ -2044,7 +2044,7 @@ class PrintDialog(QDialog):
                                                    QFileDialog.ShowDirsOnly)
         self.ui.lineEditDirectory.setText(dirname)
 
-    def done(self, r):
+    def done(self, r: int) -> None:
         "Save local settings on exit, even in accetp/reject/finishe"
         # save settings
         st = QSettings(self)
@@ -2059,7 +2059,7 @@ class PrintDialog(QDialog):
 class PrintPDFDialog(QDialog):
     "Select export to PDF options dialog"
 
-    def __init__(self, parent, file_name, current_page, page_count):
+    def __init__(self, parent: QWidget, file_name: str, current_page: int, page_count: int) -> None:
         "Initialize"
         super().__init__(parent)
         self.ui = Ui_PrintPDFDialog()
@@ -2091,7 +2091,7 @@ class PrintPDFDialog(QDialog):
         # signal/slot
         self.ui.pushButtonSelectDirectory.clicked.connect(self.selectDirectoryClicked)
 
-    def selectDirectoryClicked(self):
+    def selectDirectoryClicked(self) -> None:
         "Select export directory"
         dirname = QFileDialog.getExistingDirectory(self,
                                                    _tr('Dialog', "Select export directory"),
@@ -2099,7 +2099,7 @@ class PrintPDFDialog(QDialog):
                                                    QFileDialog.ShowDirsOnly)
         self.ui.lineEditDirectory.setText(dirname)
 
-    def getParameters(self):
+    def getParameters(self) -> tuple:
         "Get parameters from dialog box"
         file_name = self.ui.lineEditDirectory.text() + "/" + self.ui.lineEditFileName.text() + ".pdf"
         if self.ui.checkBoxPrintCurrentPage.isChecked():
@@ -2177,7 +2177,7 @@ class PrintPDFDialog(QDialog):
 class PrintPreviewDialog(QPrintPreviewDialog):
     "Modified QPrintPreviewDialog for exporting to PDF"
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
         "Initialize"
         super().__init__(parent)
         # restore geometry
@@ -2197,7 +2197,7 @@ class PrintPreviewDialog(QPrintPreviewDialog):
         #action.setIcon(currentIcon['print_email'])
         #tb.addAction(action)
 
-    def printPDF(self):
+    def printPDF(self) -> None:
         "Export to PDF file"
         printer = self.printer()
         pw = self.findChild(QPrintPreviewWidget)
@@ -2337,7 +2337,7 @@ class PrintPreviewDialog(QPrintPreviewDialog):
         #                                 _tr('MessageDialog', 'Email sent correctly'))
 
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent) -> None:
         "Save geometry on exit"
         st = QSettings()
         st.setValue("PrintDialogGeometry", self.saveGeometry())
@@ -2541,7 +2541,7 @@ class PrintPreviewDialog(QPrintPreviewDialog):
 class _DateTimeInputDialog(QDialog):
     "Input dialog for one date value"
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None) -> None:
         "Initialize"
         super().__init__(parent)
         self.ui = Ui_DateTimeInputDialog()
@@ -2549,7 +2549,7 @@ class _DateTimeInputDialog(QDialog):
         self.ui.labelText.setText(_tr('Dialog', "Select a date:"))
         self.ui.dateTimeEdit.setDateTime(QDateTime.currentDateTime())
        
-def DateTimeInputDialog(text):
+def DateTimeInputDialog(text: str) -> tuple[QDateTime | None, bool] :
     "Get a date value from user"
     dialog = _DateTimeInputDialog()
     dialog.ui.labelText.setText(text)

@@ -53,10 +53,10 @@ MRV_PGSQL   = 130000  # postgres minimum compatible version
 ENCKEY = "WgqvuDSWuW909HX9Cb0tNpo0IaINHRdsRkqxfImxYGQ="
 
 # application session parameters
-session = dict()  # database and application user parameters
+session: dict[str, str|int|float|bool|object] = dict()  # database and application user parameters
 
 # dictionary for definition, current in use actions and icons
-actionDefinition = dict()
-currentAction = dict()
-currentProfile = dict() # authorizations for current profile
-currentIcon = defaultdict(QIcon)  # provide an invalid QIcon when an icon is not available
+actionDefinition: dict[str, tuple] = dict()
+currentAction: dict[str, object] = dict()
+currentProfile: dict[str, str] = dict() # authorizations for current profile
+currentIcon: defaultdict = defaultdict(QIcon)  # provide an invalid QIcon when an icon is not available
