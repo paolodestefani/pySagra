@@ -53,7 +53,7 @@ from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import PrintDialog
 from App.Widget.Dialog import EventFilterDialog
 from App.Ui.OrderedDeliveredWidget import Ui_OrderedDeliveredWidget
-from App.System import _tr
+from App.Core.L10n import _tr
 
 
 

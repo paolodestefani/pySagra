@@ -65,7 +65,7 @@ from App.Ui.AnalysisWidget import Ui_AnalysisWidget
 from App.Ui.StatisticsExportDialog import Ui_StatisticsExportDialog
 from App.Widget.Dialog import PrintDialog
 #from App.Widget.Delegate import PandasDelegate
-from App.System import _tr
+from App.Core.L10n import _tr
 
 
 def statisticsAnalysis() -> None:

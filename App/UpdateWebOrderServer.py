@@ -59,7 +59,7 @@ from App.Database.Item import item_web_list
 from App.Database.Item import get_variants
 from App.Database.WebOrderServer import get_web_order_server_params
 from App.Database.WebOrderServer import set_web_order_server_params 
-from App.System import _tr
+from App.Core.L10n import _tr
 
 from App.Ui.UpdateWebOrderServerDialog import Ui_UpdateWebOrderServerDialog
 

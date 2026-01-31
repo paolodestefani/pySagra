@@ -36,7 +36,7 @@ import psycopg
 from App import session
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
-#from App.System import _tr
+#from App.Core.L10n import _tr
 from App.Database.Report import get_report_list
 
 

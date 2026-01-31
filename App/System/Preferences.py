@@ -51,7 +51,7 @@ from App import session
 from App import currentAction
 from App import actionDefinition
 from App import currentIcon
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences

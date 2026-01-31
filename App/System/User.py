@@ -68,11 +68,11 @@ from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import BooleanDelegate
 from App.Ui.UserWidget import Ui_UserWidget
 from App.Ui.ChangePasswordDialog import Ui_ChangePasswordDialog
-from App.System import _tr
-from App.System import langCountryFlags
-from App.System import langCountry
-from App.System import scriptInit
-from App.System import scriptMethod
+from App.Core.L10n import _tr
+from App.Core.L10n import langCountry
+from App.Core.L10n import langCountryFlags
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 
 
 (V_CODE, V_DESCRIPTION, V_IMAGE, V_SYSTEM, V_ISADMIN,

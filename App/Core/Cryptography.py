@@ -21,3 +21,19 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
+# standard library
+from cryptography.fernet import Fernet
+
+# application modules
+from App import ENCKEY
+
+# encoding decoding password
+
+def string_encode(token: str) -> str:
+    "Cryptography Fernet"
+    return Fernet(ENCKEY).encrypt(token.encode('utf-8')).decode('utf-8')
+
+def string_decode(token: str) -> str:
+    "Cryptography Fernet"
+    return Fernet(ENCKEY).decrypt(token.encode('utf-8')).decode('utf-8')
+

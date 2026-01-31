@@ -60,7 +60,7 @@ from App.Database.Company import company_is_in_use
 #from App.Database.CodeDescriptionList import department_cdl
 #from App.Database.CodeDescriptionList import event_cdl
 #from App.Database.CodeDescriptionList import item_salable_cdl
-from App.System import _tr
+from App.Core.L10n import _tr
 
 
 UPDATED, INSERTED, DELETED = range(3)

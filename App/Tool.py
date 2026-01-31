@@ -68,7 +68,7 @@ from App.Database.Company import company_list
 from App.Ui.EventToolDialog import Ui_EventToolDialog
 from App.Ui.DeleteToolDialog import Ui_DeleteToolDialog
 from App.Ui.CopyToolDialog import Ui_CopyToolDialog
-from App.System import _tr
+from App.Core.L10n import _tr
 
 
 

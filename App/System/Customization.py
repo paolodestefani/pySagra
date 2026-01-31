@@ -47,7 +47,7 @@ from PySide6.QtWidgets import QMessageBox
 # application modules
 from App import session
 from App import currentAction
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Database.Customization import get_itemview_customization
 from App.Database.Customization import set_itemview_customize
 from App.Database.Customization import set_itemview_customize_setting

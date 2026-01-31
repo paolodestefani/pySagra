@@ -46,7 +46,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import APPNAME
 from App import session
 from App import currentIcon
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Ui.HelpDialog import Ui_HelpDialog
 from App.Widget.Dialog import PrintPreviewDialog
 

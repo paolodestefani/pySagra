@@ -42,7 +42,7 @@ from PySide6.QtWidgets import QAbstractItemView
 
 # application modules
 from App import session
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import TableModel

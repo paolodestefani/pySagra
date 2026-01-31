@@ -41,9 +41,9 @@ from PySide6.QtNetwork import QHostInfo
 # application modules
 from App import session
 from App import currentAction
-from App.System import _tr
-from App.System import scriptInit
-from App.System import scriptMethod
+from App.Core.L10n import _tr
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 #from App.Database.CodeDescriptionList import printer_class_list
 from App.Database.Models import OrderNumberingModel
 from App.Database.CodeDescriptionList import event_cdl

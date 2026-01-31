@@ -64,7 +64,7 @@ from PySide6.QtWidgets import QDialog
 # application modules
 from App import session
 from App import currentIcon
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Itemview import list_itemviews
 from App.Database.Itemview import create_itemview

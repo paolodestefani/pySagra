@@ -71,8 +71,8 @@ from PySide6.QtWidgets import QColorDialog
 # application modules
 from App import session
 from App import actionDefinition
-from App.System import string_encode
-from App.System import string_decode
+from App.Core.Cryptography import string_encode
+from App.Core.Cryptography import string_decode
 from App.Database.Setting import SettingClass
 from App.Widget.Control import ColorComboBox
 from App.Widget.Control import RelationalComboBox
@@ -813,7 +813,7 @@ class BoldDelegate(QStyledItemDelegate):
 class ActionDelegate(QStyledItemDelegate):
     "A custom delegate for action code/description"
 
-    def __init__(self, parent: QWidget, actionDefinition: dict) -> None:
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.action = {k: actionDefinition[k][0] for k in actionDefinition}
 

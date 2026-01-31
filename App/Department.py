@@ -41,9 +41,9 @@ from PySide6.QtWidgets import QStyledItemDelegate
 # application modules
 from App import session
 from App import currentAction
-from App.System import _tr
-from App.System import scriptInit
-from App.System import scriptMethod
+from App.Core.L10n import _tr
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 from App.Database.CodeDescriptionList import printer_class_cdl
 from App.Database.Models import DepartmentModel
 from App.Widget.Delegate import BooleanDelegate

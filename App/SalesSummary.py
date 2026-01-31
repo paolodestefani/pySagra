@@ -46,7 +46,7 @@ from App.Database.Models import SalesSummaryModel
 from App.Database.CodeDescriptionList import event_cdl
 from App.Ui.SalesSummaryWidget import Ui_SalesSummaryWidget
 #from App.Ui.IncomeSummaryFilterDialog import Ui_IncomeSummaryFilterDialog
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Widget.Delegate import AmountDelegate
 from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import PrintDialog

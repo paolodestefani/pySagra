@@ -44,7 +44,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App import currentAction
 from App import currentIcon
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Models import MenuIndexModel
 from App.Database.Models import MenuModel

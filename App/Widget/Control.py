@@ -99,9 +99,9 @@ from PySide6.QtWidgets import QWidget
 # application modules
 from App import session
 from App import currentIcon
-from App.System import _tr
-from App.System import string_encode
-from App.System import string_decode
+from App.Core.L10n import _tr
+from App.Core.Cryptography import string_encode
+from App.Core.Cryptography import string_decode
 
 
 

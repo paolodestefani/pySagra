@@ -62,9 +62,9 @@ from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import TimeDelegate
 from App.Widget.Form import FormIndexManager
 from App.Ui.OrderWidget import Ui_OrderWidget
-from App.System import _tr
-from App.System import scriptInit
-from App.System import scriptMethod
+from App.Core.L10n import _tr
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 from App.Report.ReportEngine import ReportException
 from App.Report.ReportEngine import ReportNoDataError
 from App.Report.Order import printOrderReport

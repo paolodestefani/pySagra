@@ -56,9 +56,9 @@ from App.Database.CodeDescriptionList import department_order_report_cdl
 from App.Database.CodeDescriptionList import cover_order_report_cdl
 from App.Database.CodeDescriptionList import stock_unload_report_cdl
 from App.Ui.SettingsDialog import Ui_SettingsDialog
-from App.System import _tr
-from App.System import scriptInit
-from App.System import scriptMethod
+from App.Core.L10n import _tr
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 from App.Item import COLORS
 
 

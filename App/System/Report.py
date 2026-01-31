@@ -67,8 +67,11 @@ from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Dialog import PrintDialog
 from App.Ui.ReportWidget import Ui_ReportWidget
-from App.System import _tr
-from App.System import langCountryFlags
+from App.Core.L10n import _tr
+from App.Core.L10n import langCountry
+from App.Core.L10n import langCountryFlags
+from App.Core.SyntaxHighlighter import XMLHighlighter
+
 
 V_ID, V_CODE, V_L10N, V_CLASS, V_DESCRIPTION, V_SYSTEM, V_USER_INS, V_DATE_INS, V_USER_UPD, V_DATE_UPD = range(10)
 
@@ -402,75 +405,4 @@ class ReportForm(FormIndexManager):
         lcn = self.model.data(self.model.index(self.mapper.currentIndex(), L10N))
         dialog = PrintDialog(self, reportId=rid)
         dialog.show()
-
-#
-# Syntax Highligter for XML source
-#
-
-class XMLHighlighter(QSyntaxHighlighter):
-
-    def __init__(self, parent: QObject) -> None:
-        super(XMLHighlighter, self).__init__(parent)
-        self._mappings = {}
-        # singleline/multiline comment
-        #self.commentStartExpression = QRegularExpression("<!--")
-        #self.commentEndExpression = QRegularExpression("-->")
-        #self.commentFormat = QTextCharFormat()
-        # colors
-        if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
-            # comment
-            xmlCommentFormat = QTextCharFormat()
-            xmlCommentFormat.setForeground(QColorConstants.Svg.lime)
-            self._mappings.update({r"<!--[\s\S\n]*?-->": xmlCommentFormat})
-            # element <Text> </Text>
-            xmlElementFormat = QTextCharFormat()
-            xmlElementFormat.setForeground(QColorConstants.Svg.deepskyblue)
-            # xmlElementFormat.setFontWeight(QFont.Bold)
-            self._mappings.update({"<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])": xmlElementFormat})
-            # attribute < Text= >
-            xmlAttributeFormat = QTextCharFormat()
-            xmlAttributeFormat.setForeground(QColorConstants.Svg.tomato)
-            self._mappings.update({"\\w+(?=\\=)": xmlAttributeFormat})
-            # attribute value < text=" " >
-            xmlValueAttributeFormat = QTextCharFormat()
-            xmlValueAttributeFormat.setForeground(QColorConstants.Svg.violet)
-            self._mappings.update({"\"[^\\n\"]+\"(?=[\\s/>])": xmlValueAttributeFormat})
-            # element value inline >text<
-            xmlValueElementFormat = QTextCharFormat()
-            xmlValueElementFormat.setForeground(QColorConstants.Svg.lightcyan)
-            xmlValueElementFormat.setFontWeight(QFont.Weight.Bold)
-            self._mappings.update({">[^\n]*<": xmlValueElementFormat})
-            # singleline/multiline comment
-            #self._mappings.update({QColorConstants.Svg.lime)
-        else:
-            # comment
-            xmlCommentFormat = QTextCharFormat()
-            xmlCommentFormat.setForeground(Qt.GlobalColor.darkGreen)
-            self._mappings.update({r"<!--[\s\S\n]*?-->": xmlCommentFormat})
-            # element <Text> </Text>
-            xmlElementFormat = QTextCharFormat()
-            xmlElementFormat.setForeground(Qt.GlobalColor.blue)
-            # xmlElementFormat.setFontWeight(QFont.Bold)
-            self._mappings.update({"<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])": xmlElementFormat})
-            # attribute < Text= >
-            xmlAttributeFormat = QTextCharFormat()
-            xmlAttributeFormat.setForeground(Qt.GlobalColor.red)
-            self._mappings.update({"\\w+(?=\\=)": xmlAttributeFormat})
-            # attribute value < text=" " >
-            xmlValueAttributeFormat = QTextCharFormat()
-            xmlValueAttributeFormat.setForeground(Qt.GlobalColor.darkMagenta)
-            self._mappings.update({"\"[^\\n\"]+\"(?=[\\s/>])": xmlValueAttributeFormat})
-            # element value inline >text<
-            xmlValueElementFormat = QTextCharFormat()
-            xmlValueElementFormat.setForeground(Qt.GlobalColor.black)
-            xmlValueElementFormat.setFontWeight(QFont.Weight.Bold)
-            self._mappings.update({">[^\n]*<": xmlValueElementFormat})
-            # singleline/multiline comment
-            #self.commentFormat.setForeground(Qt.darkGreen)
-
-    def highlightBlock(self, text: str) -> None:
-        for pattern, format in self._mappings.items():
-            for match in re.finditer(pattern, text):
-                start, end = match.span()
-                self.setFormat(start, end - start, format)       
 

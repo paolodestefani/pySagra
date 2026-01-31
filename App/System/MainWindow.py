@@ -64,7 +64,7 @@ from App import actionDefinition
 from App import currentAction
 from App import currentIcon
 from App import APPNAME
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.System.Login import ChangeCompanyDialog
 from App.System.Action import createActionDictionary
 from App.Database.Connect import appconn

@@ -64,8 +64,8 @@ from PySide6.QtWidgets import QSizePolicy
 from App import session
 from App import currentIcon
 from App import currentAction
-from App.System import fromCurrency
-from App.System import toCurrency
+from App.Core.L10n import fromCurrency
+from App.Core.L10n import toCurrency
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Setting import Setting
 from App.Database.Setting import SettingClass
@@ -91,7 +91,7 @@ from App.Report.Order import printOrderReport
 from App.Report.Order import printOrderCoverReport
 from App.Report.Order import printOrderDepartmentReport
 from App.Report.Order import printStockUnloadReport
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Widget.Dialog import DateTimeInputDialog
 from App.Ui.DepartmentNoteDialog import Ui_DepartmentNoteDialog
 from App.Ui.ChooseVariantsDialog import Ui_ChooseVariantsDialog

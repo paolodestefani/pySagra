@@ -52,7 +52,7 @@ from App.Database.Models import ConnectionModel
 from App.Database.Models import ConnectionHistoryModel
 from App.Ui.ConnectionWidget import Ui_ConnectionWidget
 from App.Ui.ConnectionHistoryWidget import Ui_ConnectionHistoryWidget
-from App.System import _tr
+from App.Core.L10n import _tr
 from App.Widget.Form import FormManager
 
 

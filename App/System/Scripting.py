@@ -42,7 +42,7 @@ from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QColor
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QFontMetricsF
-from PySide6.QtGui import QSyntaxHighlighter
+#from PySide6.QtGui import QSyntaxHighlighter
 from PySide6.QtGui import QTextCharFormat
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -62,9 +62,11 @@ from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import HideTextDelegate
 #from App.Widgets.Dialogs import PrintReportDialog
 from App.Ui.ScriptingWidget import Ui_ScriptingWidget
-from App.System import _tr
-from App.System import langCountry
-from App.System import langCountryFlags
+from App.Core.L10n import _tr
+from App.Core.L10n import langCountry
+from App.Core.L10n import langCountryFlags
+from App.Core.SyntaxHighlighter import PythonHighlighter
+
 
 SCRIPTABLE = {'PrintersForm': ['__init__',
                                'new',
@@ -434,119 +436,3 @@ class ScriptingForm(FormIndexManager):
                                     _tr('Scripting', "All files imported successfully"))
 
 
-#
-# Syntax Highligter for python script
-#
-
-def format(color, style=''):
-    """Return a QTextCharFormat with the given attributes.
-    """
-    #_color = QColor()
-    #_color.setNamedColor(color)
-
-    tcf = QTextCharFormat()
-    tcf.setForeground(color)
-    if 'bold' in style:
-        tcf.setFontWeight(QFont.Weight.Bold)
-    if 'italic' in style:
-        tcf.setFontItalic(True)
-    return tcf
-
-
-# Syntax styles that can be shared by all languages
-STYLES = {
-    'keyword': format(QColorConstants.Svg.blue),
-    'operator': format(QColorConstants.Svg.red),
-    'brace': format(QColorConstants.Svg.darkgray),
-    'defclass': format(QColorConstants.Svg.black, 'bold'),
-    'string': format(QColorConstants.Svg.magenta),
-    'string2': format(QColorConstants.Svg.darkmagenta),
-    'comment': format(QColorConstants.Svg.darkgreen, 'italic'),
-    'self': format(QColorConstants.Svg.black, 'italic'),
-    'numbers': format(QColorConstants.Svg.brown),
-}
-
-STYLESDM = {
-    'keyword': format(QColorConstants.Svg.deepskyblue),
-    'operator': format(QColorConstants.Svg.tomato),
-    'brace': format(QColorConstants.Svg.lightgray),
-    'defclass': format(QColorConstants.Svg.royalblue, 'bold'),
-    'string': format(QColorConstants.Svg.violet),
-    'string2': format(QColorConstants.Svg.violet),
-    'comment': format(QColorConstants.Svg.lime, 'italic'),
-    'self': format(QColorConstants.Svg.slateblue, 'italic'),
-    'numbers': format(QColorConstants.Svg.white),
-}
-
-class PythonHighlighter(QSyntaxHighlighter):
-    """Syntax highlighter for the Python language.
-    """
-    # Python keywords
-    keywords = [
-        'and', 'assert', 'break', 'case','class', 'continue', 'def',
-        'del', 'elif', 'else', 'except', 'exec', 'finally',
-        'for', 'from', 'global', 'if', 'import', 'in',
-        'is', 'lambda', 'match', 'not', 'or', 'pass', 'print',
-        'raise', 'return', 'try', 'while', 'yield',
-        'None', 'True', 'False',
-    ]
-
-    # Python operators
-    operators = [
-        r'=',
-        # Comparison
-        r'==', r'!=', r'<', r'<=', r'>', r'>=',
-        # Arithmetic
-        r'\+', r'-', r'\*', r'/', r'//', r'\%', r'\*\*',
-        # In-place
-        r'\+=', r'-=', r'\*=', r'/=', r'\%=',
-        # Bitwise
-        r'\^', r'\|', r'\&', r'\~', r'>>', r'<<',
-    ]
-
-    # Python braces
-    braces = [
-        r'\{', r'\}', r'\(', r'\)', r'\[', r'\]',
-    ]
-
-    def __init__(self, document):
-        super().__init__(document)
-        
-        self._mappings = {}
-
-        if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
-            styles = STYLESDM
-        else:
-            styles = STYLES
-
-        # Keyword, operator, and brace rules
-        self._mappings.update({r'\b%s\b' % w: styles['keyword']
-            for w in PythonHighlighter.keywords})
-        self._mappings.update({r'%s' % o: styles['operator']
-            for o in PythonHighlighter.operators})
-        self._mappings.update({r'%s' % b: styles['brace']
-            for b in PythonHighlighter.braces})
-
-        # All other rules
-        # 'self'
-        self._mappings.update({r'\bself\b': styles['self']})
-        # Double-quoted string, possibly containing escape sequences
-        self._mappings.update({r'"[^"\\]*(\\.[^"\\]*)*"': styles['string']})
-        # Single-quoted string, possibly containing escape sequences
-        self._mappings.update({r"'[^'\\]*(\\.[^'\\]*)*'": styles['string']})
-        # 'def' followed by an identifier
-        self._mappings.update({r'\bdef\b\s*(\w+)': styles['defclass']})
-        # 'class' followed by an identifier
-        self._mappings.update({r'\bclass\b\s*(\w+)': styles['defclass']})
-        # From '#' until a newline
-        self._mappings.update({r'#[^\n]*': styles['comment']})
-        # Numeric literals
-        self._mappings.update({r'\b[+-]?[0-9]+[lL]?\b': styles['numbers']})
-        self._mappings.update({r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b': styles['numbers']})
-        self._mappings.update({r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b': styles['numbers']})
-
-    def highlightBlock(self, text):
-        for pattern, format in self._mappings.items():
-            for match in re.finditer(pattern, text):
-                start, end = match.span()
-                self.setFormat(start, end - start, format)
