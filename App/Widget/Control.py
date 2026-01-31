@@ -375,7 +375,7 @@ class RelationalComboBox(QComboBox):
         index = self.findData(data)
         self.setCurrentIndex(index if index >= 0 else 0) # can be -1 on New
 
-    modelDataInt = Property(object, fget=_get_modelDataInt, fset=_set_modelDataInt, notify=itemChanged)
+    modelDataInt = Property(int, fget=_get_modelDataInt, fset=_set_modelDataInt, notify=itemChanged)
 
     def _get_modelDataStr(self) -> str|None:
         return self.currentData(Qt.ItemDataRole.UserRole)
@@ -384,7 +384,7 @@ class RelationalComboBox(QComboBox):
         index = self.findData(data, Qt.ItemDataRole.UserRole, Qt.MatchFlag.MatchExactly|Qt.MatchFlag.MatchCaseSensitive)
         self.setCurrentIndex(index if index >= 0 else 0) # can be -1 on New
 
-    modelDataStr = Property(object, fget=_get_modelDataStr, fset=_set_modelDataStr, notify=itemChanged)
+    modelDataStr = Property(str, fget=_get_modelDataStr, fset=_set_modelDataStr, notify=itemChanged)
         
 
 class DataWidgetMapper(QDataWidgetMapper):
@@ -433,7 +433,7 @@ class ColorComboBox(QComboBox):
         index = self.findData(data)
         self.setCurrentIndex(index if index >= 0 else 0)  # can be -1 on New
 
-    modelDataStr = Property(object, fget=_get_modelDataStr, fset=_set_modelDataStr, notify=itemChanged)
+    modelDataStr = Property(str, fget=_get_modelDataStr, fset=_set_modelDataStr, notify=itemChanged)
 
 
 class CheckableComboBox(QComboBox):
@@ -624,7 +624,7 @@ class PasswordLineEdit(QLineEdit):
         if data:
             self.setText(string_decode(data))
 
-    modelDataEncrypt = Property(object, fget=_get_modelDataEncrypt, fset=_set_modelDataEncrypt, notify=textChanged)
+    modelDataEncrypt = Property(str, fget=_get_modelDataEncrypt, fset=_set_modelDataEncrypt, notify=textChanged)
 
 
 class ColorSetComboBox(QComboBox):

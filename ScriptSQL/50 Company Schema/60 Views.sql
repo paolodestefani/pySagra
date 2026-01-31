@@ -174,6 +174,8 @@ SELECT
     oh.company_id           AS company_id,
     oh.event_id             AS event_id,
     ev.description          AS event_description,
+    ev.start_date           AS start_date,
+    ev.end_date             AS end_date,
     oh.stat_order_date      AS order_date,
     count(
         CASE
@@ -267,7 +269,7 @@ SELECT
         END)                AS cash_dinner
    FROM order_header oh
    JOIN event ev ON oh.event_id = ev.event_id
-   GROUP BY oh.company_id, oh.event_id, ev.description, oh.stat_order_date
+   GROUP BY oh.company_id, oh.event_id, ev.description, ev.start_date, ev.end_date, oh.stat_order_date
    ORDER BY oh.company_id, ev.description, oh.stat_order_date;
 
 COMMENT ON VIEW vw_sales_summary IS 

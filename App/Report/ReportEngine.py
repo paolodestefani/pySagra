@@ -370,7 +370,7 @@ class BaseRenderer():
         match self.value:
             case bool():
                 text = self.trueSymbol if self.value else self.falseSymbol
-            case int() | float() | decimal.Decimal():
+            case int()|float()|decimal.Decimal():
                 if self.fieldFormat:
                     if self.fieldFormat == 'currency':
                         text = session['qlocale'].toCurrencyString(float(self.value),
@@ -391,7 +391,7 @@ class BaseRenderer():
                         text = session['qlocale'].toString(float(self.value), 'f', 2)
                     else: # qlocale format for numbers
                         text = session['qlocale'].toString(self.value)
-            case QDate() | QDateTime() | QTime():
+            case QDate()|QDateTime()|QTime():
                 if self.fieldFormat: # qt string format f.e. 'dd.MM.yyyy'
                     text = self.value.toString(self.fieldFormat)
                 else:
