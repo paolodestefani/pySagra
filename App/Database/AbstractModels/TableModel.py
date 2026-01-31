@@ -88,8 +88,8 @@ class QueryModel(QAbstractTableModel):
         self.filterCondition: list[tuple[str, int|float|str|QDate|QDateTime|None]] = []  # reference key condition before where conditions
         self.repr = 'Generic query model' # printable representation of the object,
         # subclass must define this
-        self.selectQuery = None # subclass must define this
-        self.columns = () # subclass must define this
+        self.selectQuery = '' # subclass must define this
+        self.columns = tuple # subclass must define this
         self.isEditable = False # used in forms
         self.isCompanyTable = False # True if is a company table
         self.companyField = 'company_id' # company_id field name, subclass can modifie this if use table alias
@@ -264,7 +264,7 @@ class QueryModel(QAbstractTableModel):
         # notify about changes
         self.dataChanged.emit(self.createIndex(0, 0),
                               self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.DisplayRole, Qt.EditRole])
+                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
         self.layoutChanged.emit()
 
     def revertAll(self) -> None:
@@ -282,9 +282,9 @@ class QueryWithParamsModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "On init only set some empty objects"
         super().__init__(parent)
-        self.dataSet = dict()
+        self.dataSet: dict = ()
         self.rows = 0 # updated by select method
-        self.parameter = {} # dictionary of parameters
+        self.parameter: dict = {} # dictionary of parameters
         self.repr = 'Generic query with params model' # printable representation of the object,
         # subclass must define this
         self.selectQuery = None # subclass must define this
@@ -303,46 +303,46 @@ class QueryWithParamsModel(QAbstractTableModel):
             return Qt.ItemFlag.ItemIsEnabled
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
 
-    def data(self, index: QModelIndex = QModelIndex(), role: int = Qt.DisplayRole) -> str|int|float|QDate|QDateTime|None:
+    def data(self, index: QModelIndex|QPersistentModelIndex = QModelIndex(), role: int = Qt.ItemDataRole.DisplayRole) -> str|int|float|QDate|QDateTime|None:
         "Returns the required data from dataSet"
         if (not index.isValid() 
             or index.row() > self.rowCount()
             or index.column() > self.columnCount()):
             return None
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             if (index.row(), index.column()) in self.dataSet:
                 return self.dataSet[index.row(), index.column()]
-        elif role == Qt.TextAlignmentRole:
+        elif role == Qt.ItemDataRole.TextAlignmentRole:
             # numbers aligned right anything else aligned left
             if isinstance(index.data(), (int, decimal.Decimal, QDate, QDateTime)):
-                return Qt.AlignRight | Qt.AlignVCenter
+                return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
             else:
-                return Qt.AlignLeft | Qt.AlignVCenter
+                return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         else:
             return None
 
-    def headerData(self, section: int, orientation: int, role: int = Qt.DisplayRole) -> str|None:
+    def headerData(self, section: int, orientation: int, role: int = Qt.ItemDataRole.DisplayRole) -> str|None:
         "Returns header data for row (field header)/column (columns number) headers"
-        if orientation == Qt.Horizontal:
-            if role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Horizontal:
+            if role == Qt.ItemDataRole.DisplayRole:
                 return self.columns[section][DESCRIPTION]
             else:
                 return None
-        if orientation == Qt.Vertical:
-            if role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Vertical:
+            if role == Qt.ItemDataRole.DisplayRole:
                 return super().headerData(section, orientation, role)
             else:
                 return None
 
-    def rowCount(self, index: QModelIndex = QModelIndex()) -> int:
+    def rowCount(self, index: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
         "Returns the rows number of the dataSet"
         return self.rows
 
-    def columnCount(self, index: QModelIndex = QModelIndex()) -> int:
+    def columnCount(self, index: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
         "Returns the columns number of the dataSet"
         return len(self.columns)
 
-    def sort(self, column: int, order: int = Qt.AscendingOrder) -> None:
+    def sort(self, column: int, order: int = Qt.SortOrder.AscendingOrder) -> None:
         "One column inplace sorting of the model, manage null values base on declared data time"
         # convert data dict to a list of lists
         if not self.dataSet:
@@ -365,7 +365,7 @@ class QueryWithParamsModel(QAbstractTableModel):
               'time': QTime(),
               'datetime': QDateTime()}[dt]
         # inplace list sorting
-        if order == Qt.AscendingOrder:
+        if order == Qt.SortOrder.AscendingOrder:
             data.sort(key=lambda x: x[column] or nv)
         else:
             data.sort(key=lambda x: x[column] or nv, reverse=True)
@@ -376,7 +376,7 @@ class QueryWithParamsModel(QAbstractTableModel):
         # notify of changed
         self.dataChanged.emit(self.createIndex(0, 0), 
                               self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.DisplayRole, Qt.EditRole])
+                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
 
     def setParameter(self, parameter: str, value: int|str|QDate|QDateTime|None) -> None:
         "Set the value of a parameter in prams dictionaty"
@@ -400,7 +400,7 @@ class QueryWithParamsModel(QAbstractTableModel):
         # notify about changes
         self.dataChanged.emit(self.createIndex(0, 0),
                               self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.DisplayRole, Qt.EditRole])
+                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
         self.layoutChanged.emit()
 
     def revertAll(self) -> None:
@@ -422,26 +422,26 @@ class TableModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "Initialize some empty or default data structure"
         super().__init__(parent)
-        self.dataSet = [] # a list of dict (integer key = record column/field,
+        self.dataSet: list[dict] = [] # a list of dict (integer key = record column/field,
         #                                   'pkey' = primary key tuple,
         #                                   'object_version' = int)
         self.rows = 0 # automatic updated on select
         self.cols = 0 # updated on select
-        self.whereCondition = []  # list of (condition, argument)
-        self.orderByExpression = [] # list of string
-        self.filterMapping = {}
-        self.toInsert = []  # list of row number of any inserted row
-        self.toModify = dict()  # dict of dict row number / column number of any modified field
-        self.toDelete = []  # list of dict for any cancelled row (need to store pkey and object_version)
+        self.whereCondition: list[tuple] = []  # list of (condition, argument)
+        self.orderByExpression: list[str] = [] # list of string
+        self.filterMapping: dict = {}
+        self.toInsert: list[int] = []  # list of row number of any inserted row
+        self.toModify: dict = {}  # dict of dict row number / column number of any modified field
+        self.toDelete: list[dict] = []  # list of dict for any cancelled row (need to store pkey and object_version)
         # subclasses must define this properties
         self.table = None # table or view name - string, subclass must define this
         self.isCompanyTable = False # True if is a company table
-        self.columns = [] # model columns definition (field, description, readonly, type)
-        self.primaryKey = [] # primary key fields name - sequence, subclass must define this
+        self.columns: tuple = () # model columns definition (field, description, readonly, type)
+        self.primaryKey: list = [] # primary key fields name - sequence, subclass must define this
         self.automaticPKey = False  # set pkey filds at DEFAULT value on insert
         self.recordType = None  # list of field:value key for record type (a table with different record type)
-        self.newRecordDefault = {} # a record dictionary with default values for some field on insert
-        self.filterCondition = []  # reference key condition before where conditions, map master row to detail row
+        self.newRecordDefault: dict = {} # a record dictionary with default values for some field on insert
+        self.filterCondition: list[tuple] = []  # reference key condition before where conditions, map master row to detail row
         self.limitCondition = None
         self.isDirty = False # setted on data changed
         self.isEditable = True # used in forms
