@@ -21,6 +21,11 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Report Module
+
+This module contains all report classes and related functionality.
+
+"""
 
 REPORT_CLASSES = ["COMPANY",
                   "PROFILE",
@@ -36,5 +41,4 @@ REPORT_CLASSES = ["COMPANY",
                   "ORDER_LIST",
                   "ORDERED_DELIVERED",
                   "SALES_SUMMARY",
-                  "STATISTICS",
-                  "STATSVIEW"]
+                  "STATISTICS"]

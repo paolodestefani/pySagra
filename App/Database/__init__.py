@@ -23,7 +23,7 @@
 
 """Database parameters and constants
 
-
+This module contains database related parameters and constants
 
 """
 

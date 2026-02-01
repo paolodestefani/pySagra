@@ -23,6 +23,7 @@
 
 """Order report utilities
 
+This module contains functions to generate and print order-related reports.
 
 """
 
@@ -44,7 +45,7 @@ from App.Widget.Dialog import PrintPreviewDialog
 
 
 
-def printOrderReport(order_id, printer=None):
+def printOrderReport(order_id: int, printer: str|None = None) -> None:
     setting = Setting()
     report_id = get_report_id(setting['customer_report'], session['l10n'])
     if not report_id:
@@ -68,7 +69,7 @@ def printOrderReport(order_id, printer=None):
         dialog.paintRequested.connect(report.print)
         dialog.exec()
         
-def printOrderCoverReport(order_id, printer=None):
+def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
     setting = Setting()
     report_id = get_report_id(setting['cover_report'], session['l10n'])
     if not report_id:
@@ -92,7 +93,7 @@ def printOrderCoverReport(order_id, printer=None):
         dialog.paintRequested.connect(report.print)
         dialog.exec()
 
-def printOrderDepartmentReport(order_id,  department=None, printer=None):
+def printOrderDepartmentReport(order_id: int,  department: int|None = None, printer: str|None = None) -> None:
     setting = Setting()
     report_id = get_report_id(setting['department_report'], session['l10n'])
     if not report_id:
@@ -120,7 +121,7 @@ def printOrderDepartmentReport(order_id,  department=None, printer=None):
         dialog.paintRequested.connect(report.print)
         dialog.exec()
 
-def printStockUnloadReport(report_id, printer=None, copies=1, event=None, day=None, daypart=None):
+def printStockUnloadReport(report_id: int, printer: str|None = None, copies: int = 1, event: int|None = None, day: QDate|None = None, daypart: str|None = None) -> None:
     report = Report(report_xml(report_id))
     # create condition
     # report definition on condition fields must have a code for event, day, day_part and unload_control

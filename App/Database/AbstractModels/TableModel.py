@@ -21,7 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""SQL Table Models
+"""Table Models
+
+This module contains generic and reusable table models for database tables
 
 """
 

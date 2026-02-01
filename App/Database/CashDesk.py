@@ -21,10 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - cash desk management
+"""Cash desk management
 
 This module provide all the facilities to manage cash desks
-
 
 """
 
@@ -40,7 +39,7 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
-def get_cash_desk_description() -> str:
+def get_cash_desk_description() -> str|None:
     "Get desk description for current computer name"
     sql = """
 SELECT
