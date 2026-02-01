@@ -39,6 +39,7 @@ REPORT_CLASSES = ["COMPANY",
                   "ORDER_DEPARTMENT",
                   "ORDER_COVER",
                   "ORDER_LIST",
+                  "INVENTORY",
                   "ORDERED_DELIVERED",
                   "SALES_SUMMARY",
                   "STATISTICS"]
