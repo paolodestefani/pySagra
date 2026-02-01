@@ -21,6 +21,11 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Cryptography module
+This module manages cryptography functions
+
+"""
+
 # standard library
 from cryptography.fernet import Fernet
 

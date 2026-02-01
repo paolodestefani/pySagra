@@ -70,7 +70,6 @@ def menu() -> None:
     title = currentAction['sys_menu'].text()
     auth = currentAction['sys_menu'].data()
     mf = MenusForm(mw, title, auth)
-    #mf.addDetailRelation(treeModel)
     mf.reload()
     mw.addTab(title, mf)
     logging.info('Menus Form added to main window')

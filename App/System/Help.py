@@ -21,7 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-
 """Help
 
 This module define and launch Help and Faq dialogs
@@ -69,7 +68,7 @@ def faq() -> None:
 class HelpDialog(QDialog):
     "Dialog showing help content"
 
-    def __init__(self, title: str, source: str, parent: QWidget|None = None) -> None:
+    def __init__(self, title: str, source: str, parent: QWidget) -> None:
         "Initialize"
         super().__init__(parent)
         self.ui = Ui_HelpDialog()

@@ -176,9 +176,9 @@ class LoginDialog(QDialog):
             mbox.setText(f"<p><b>{msg}</b>")
             mbox.setDetailedText(str(er.message))
             mbox.exec()
-
             self.ui.lineEditPassword.clear()
             logging.error("Connection error %s\n%s", er.code, er.message)
+            
             return
         finally:
             QGuiApplication.restoreOverrideCursor()

@@ -91,7 +91,7 @@ from App.Tool import copyTool
 # 8 menu role
 
 
-def createActionDictionary(mw):
+def createActionDictionary(mw) -> None:
     "Create the action definition dictionary trough a function for translation requirement"
 
     # SYSTEM ACTIONS

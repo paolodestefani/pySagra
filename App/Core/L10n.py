@@ -21,6 +21,13 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Localization functions and utilities
+
+This module contains functions to manage localization, translations
+and currency formatting
+
+"""
+
 # standard library
 import decimal
 

@@ -76,7 +76,7 @@ def aboutQt() -> None:
 class AboutDialog(QDialog):
     "Dialog showing About informations"
 
-    def __init__(self, parent: QWidget|None) -> None:
+    def __init__(self, parent: QWidget) -> None:
         QDialog.__init__(self, parent)
         self.ui = Ui_AboutDialog()
         self.ui.setupUi(self)
@@ -138,7 +138,7 @@ class AboutDialog(QDialog):
 class SystemInfoDialog(QDialog):
     "Dialog showing system informations"
 
-    def __init__(self, parent: QWidget|None) -> None:
+    def __init__(self, parent: QWidget) -> None:
         QDialog.__init__(self, parent)
         self.ui = Ui_SystemInfoDialog()
         self.ui.setupUi(self)
