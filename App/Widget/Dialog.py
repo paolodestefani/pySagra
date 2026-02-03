@@ -53,6 +53,7 @@ from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTemporaryFile
+from PySide6.QtCore import QAbstractItemModel
 
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
@@ -157,21 +158,21 @@ referenceList = {'eventList': event_cdl,
 class MessageBox(QDialog, Ui_MessageDialog):
     "Custom message dialog"
 
-    def __init__(self, parent: QWidget = None) -> None:
+    def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
         self.setupUi(self)
         sty = QCoreApplication.instance().style()
-        icon = sty.standardIcon(QStyle.SP_MessageBoxCritical)
+        icon = sty.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
         self.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
 
 
 class SelectImageDialog(QDialog, Ui_SelectImageDialog):
     "Select Image Dialog"
 
-    def __init__(self, parent: QWidget = None) -> None:
+    def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
         self.setupUi(self)
-        self.image = None
+        self.image: QPixmap|None = None
         # actions
         self.pushButtonUpload.clicked.connect(self.upload)
         self.pushButtonDownload.clicked.connect(self.download)
@@ -215,7 +216,7 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         self.image = pix
         # preview
         if pix.width() > 200 or pix.height() > 200:
-            pix = pix.scaled(200, 200, Qt.KeepAspectRatio)
+            pix = pix.scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio)
         self.labelImage.setPixmap(pix)
         self.pushButtonDownload.setEnabled(True)
         # pixmap information
@@ -225,7 +226,7 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         self.lineEditHeight.setText(str(self.image.height()))
         ba = QByteArray()
         buf = QBuffer(ba)
-        buf.open(QIODevice.WriteOnly)
+        buf.open(QIODevice.OpenModeFlag.WriteOnly)
         self.image.save(buf, "PNG")
         self.spinBoxPixmapSize.setEnabled(True)
         self.spinBoxPixmapSize.setValue(ba.size()/1024)
@@ -235,461 +236,15 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         QDialog.accept(self)
 
 
-# class SortFilterDialog(QDialog, Ui_SortFilterDialog):
-#     "Sort and filter Dialog"
-
-#     def __init__(self, sortfilterClass, model, parent=None):
-#         super().__init__(parent)
-#         self.setupUi(self)
-#         # can't be class variables for translation requirements
-#         # type: (oparator, operator description, require operand [0=Y, 1=N, 2=like operator])
-#         self.FILTERING = {'N': [('', '', 0),  # first row means no data
-#                                 ('=', _tr('Operator', '='), 0),
-#                                 ('<', _tr('Operator', '<'), 0),
-#                                 ('<=', _tr('Operator', '<='), 0),
-#                                 ('>', _tr('Operator', '>'), 0),
-#                                 ('>=', _tr('Operator', '>='), 0),
-#                                 ('<>', _tr('Operator', '<>'), 0),
-#                                 ('Is Null', _tr('Operator', 'Is null'), 1),
-#                                 ('Is Not Null', _tr('Operator', 'Is not null'), 1)],
-#                           'B': [('', '', 0),  # first row means no data
-#                                 ('Is', _tr('Operator', 'Is'), 0),
-#                                 ('Is', _tr('Operator', 'Is null'), 1),
-#                                 ('Is Not', _tr('Operator', 'Is not null'), 1)],
-#                           'S': [('', '', 0),  # first row means no data
-#                                 ('=', _tr('Operator', '='), 0),
-#                                 ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 2),
-#                                 ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 2),
-#                                 ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 2),
-#                                 ('Is', _tr('Operator', 'Is null'), 1),
-#                                 ('Is Not', _tr('Operator', 'Is not null'), 1)]}
-
-#         self.ORDERING = (('ASC', _tr('Sort', 'Ascending')),
-#                          ('DESC', _tr('Sort', 'Descending')))
-
-#         self.sortfilterClass = sortfilterClass
-#         self.lineEditSortFilterClass.setText(sortfilterClass)
-#         self.model = model
-#         self.parentForm = parent  # used for apply sortings/filters
-#         # restore settings
-#         st = QSettings(self)
-#         if st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"):
-#             self.restoreGeometry(st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"))
-#         # create sort/filter options
-#         # filters comboboxes
-#         for row in range(FILTER_ROWS):
-#             cond = QComboBox(self)
-#             cond.addItem(None, None) # item 0
-#             for f, d, r, t in self.model.columns:
-#                 if t: # except None fields
-#                     cond.addItem(d, f)
-#             cond.row = row
-#             cond.currentIndexChanged.connect(self.condIndexChanged)
-#             oper = QComboBox(self)
-#             oper.row = row
-#             oper.currentIndexChanged.connect(self.operIndexChanged)
-#             self.layoutFilters.addWidget(cond, row, FIELD)
-#             self.layoutFilters.addWidget(oper, row, OPERATOR)
-#             self.layoutFilters.addWidget(QWidget(self), row, OPERAND)
-#         self.layoutFilters.setColumnStretch(0, 2)
-#         self.layoutFilters.setColumnStretch(1, 1)
-#         self.layoutFilters.setColumnStretch(2, 1)
-#         self.layoutFilters.setRowStretch(row + 1, 1)
-#         # sorting comboboxes
-#         for row in range(len(self.model.columns)):
-#             sort = QComboBox(self)
-#             sort.addItem(None, None) # item 0
-#             for f, d, r, t in self.model.columns:
-#                 sort.addItem(d, f)
-#             sort.row = row
-#             sort.currentIndexChanged.connect(self.sortIndexChanged)
-#             order = QComboBox(self)
-#             self.layoutSorting.addWidget(sort, row, FIELD)
-#             self.layoutSorting.addWidget(order, row, OPERATOR)
-#         self.layoutSorting.setColumnStretch(0, 2)
-#         self.layoutSorting.setColumnStretch(1, 1)
-#         self.layoutSorting.setRowStretch(row + 1, 1)
-#         # signal/slot connections
-#         self.comboBoxSetting.currentIndexChanged.connect(self.fillCustomizations)
-#         self.pushButtonNewCustomization.clicked.connect(self.newCustomization)
-#         self.pushButtonDelete.clicked.connect(self.deleteCurrent)
-#         self.pushButtonUpdate.clicked.connect(self.updateSettings)
-#         self.pushButtonSetSorting.clicked.connect(self.setCustomizationSorting)
-#         self.buttonBox.clicked.connect(self.clicked)
-#         # get available customizations
-#         self.availableCustomizations()
-#         # check authorization
-#         self.tabWidget.widget(2).setEnabled(session['can_edit_sortfilters'] or
-#                                             session['is_admin'])
-
-#     def availableCustomizations(self):
-#         "Get available customization from DB and fill combobox"
-#         # disable signal first
-#         self.comboBoxSetting.currentIndexChanged.disconnect()
-#         # clear items
-#         self.comboBoxSetting.clear()
-#         # get customizations list
-#         try:
-#             result = list_sortfilter(self.sortfilterClass)
-#         except PyAppDBError as er:
-#             QMessageBox.critical(self,
-#                                  _tr("MessageDialog", "Critical"),
-#                                  f"Database error: {er.code}\n{er.message}")
-#             return
-#         # fill the combobox
-#         for i, d in result:
-#             self.comboBoxSetting.addItem(d, i)
-#         # rienable signal
-#         self.comboBoxSetting.currentIndexChanged.connect(self.fillCustomizations)
-#         # disable unavailable options
-#         if self.comboBoxSetting.count() == 0:
-#             self.groupBoxCurrent.setDisabled(True)
-#         else:  # if previously was disabled
-#             self.groupBoxCurrent.setEnabled(True)
-#         # initial settings
-#         self.fillCustomizations(0)
-
-#     def fillCustomizations(self, index):
-#         "Sets filters and sorting based on current customization"
-#         if self.comboBoxSetting.count() == 0:
-#             return
-#         sortfilterId = int(self.comboBoxSetting.currentData())
-#         # initial reset
-#         for l, r in ((self.layoutFilters, FILTER_ROWS),
-#                      (self.layoutSorting, len(self.model.columns))):
-#             for row in range(r):
-#                 l.itemAtPosition(row, FIELD).widget().setCurrentIndex(0)
-#                 l.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(0)
-
-#         # set filters
-#         try:
-#             result = get_sortfilter_setting(sortfilterId, 'F')
-#         except PyAppDBError as er:
-#             QMessageBox.critical(self,
-#                                  _tr("MessageDialog", "Critical"),
-#                                  f"Database error: {er.code}\n{er.message}")
-#             return
-#         for row, cmb1, cmb2, wv in result:
-#             self.layoutFilters.itemAtPosition(row, FIELD).widget().setCurrentIndex(cmb1)
-#             self.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(cmb2)
-#             widget = self.layoutFilters.itemAtPosition(row, OPERAND).widget()
-#             if isinstance(widget, QComboBox):
-#                 widget.setCurrentIndex(int(wv))
-#             elif isinstance(widget, QLineEdit):
-#                 widget.setText(wv)
-#             elif isinstance(widget, QSpinBox):
-#                 widget.setValue(int(wv or 0))
-#             elif isinstance(widget, QDoubleSpinBox):
-#                 widget.setValue(float(wv or 0.0))
-#             elif isinstance(widget, QDateEdit):
-#                 widget.setDate(QDate.fromString(wv, Qt.ISODate))
-#             elif isinstance(widget, QDateTimeEdit):
-#                 widget.setDateTime(QDateTime.fromString(wv, Qt.ISODate))
-#             elif isinstance(widget, QCheckBox):
-#                 if wv == 'True':
-#                     widget.setChecked(True)
-#                 else:
-#                     widget.setChecked(False)
-
-#         # set sorting
-#         try:
-#             result = get_sortfilter_setting(sortfilterId, 'S')
-#         except PyAppDBError as er:
-#             QMessageBox.critical(self,
-#                                  _tr("MessageDialog", "Critical"),
-#                                  f"Database error: {er.code}\n{er.message}")
-#             return
-#         for row, cmb1, cmb2, wv in result:
-#             self.layoutSorting.itemAtPosition(row, FIELD).widget().setCurrentIndex(cmb1)
-#             self.layoutSorting.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(cmb2)
-#         # sort filter class sorting
-#         self.spinBoxClassSorting.setValue(sortfilter_customization_sorting(sortfilterId))
-
-#     def updateSettings(self):
-#         "Save modified settings to database"
-#         cid = int(self.comboBoxSetting.currentData())
-#         # clear before updating
-#         clear_sortfilter_setting(cid)
-#         # filters
-#         for row in range(FILTER_ROWS):
-#             if self.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex() != 0:
-#                 cmb1 = self.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex()
-#                 cmb2 = self.layoutFilters.itemAtPosition(row, OPERATOR).widget().currentIndex()
-#                 widget = self.layoutFilters.itemAtPosition(row, OPERAND).widget()
-#                 if isinstance(widget, QComboBox):
-#                     wv = str(widget.currentIndex())
-#                 elif isinstance(widget, QLineEdit):
-#                     wv = widget.text()
-#                 elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
-#                     wv = widget.value()
-#                 elif isinstance(widget, QDateEdit):
-#                     wv = widget.date().toString(Qt.ISODate)
-#                 elif isinstance(widget, QDateTimeEdit):
-#                     wv = widget.dateTime().toString(Qt.ISODate)
-#                 elif isinstance(widget, QCheckBox):
-#                     if widget.checkState() == Qt.Checked:
-#                         wv = True
-#                     else:
-#                         wv = False
-#                 else:
-#                     wv = None
-#                 try:
-#                     set_sortfilter_setting(cid, 'F', row, cmb1, cmb2, str(wv))
-#                 except PyAppDBError as er:
-#                     QMessageBox.critical(self,
-#                                          _tr("MessageDialog", "Critical"),
-#                                          f"Database error: {er.code}\n{er.message}")
-#                     return
-#         # sorting
-#         for row in range(len(self.model.columns)):
-#             if self.layoutSorting.itemAtPosition(row, FIELD).widget().currentIndex() != 0:
-#                 cmb1 = self.layoutSorting.itemAtPosition(row, FIELD).widget().currentIndex()
-#                 cmb2 = self.layoutSorting.itemAtPosition(row, OPERATOR).widget().currentIndex()
-#                 wv = None
-#                 try:
-#                     set_sortfilter_setting(cid, 'S', row, cmb1, cmb2, wv)
-#                 except PyAppDBError as er:
-#                     QMessageBox.critical(self,
-#                                          _tr("MessageDialog", "Critical"),
-#                                          f"Database error: {er.code}\n{er.message}")
-#                     return
-
-#         QMessageBox.information(self,
-#                                 _tr("MessageDialog", "Information"),
-#                                 _tr("Dialog", "Current customization was updated"))
-
-#     def condIndexChanged(self, index):
-#         "Set combobox items (operator) and operand QWidget"
-#         if index < 0:
-#             return
-#         # get current row number
-#         row = self.sender().row
-#         # clear if index is zero
-#         if index == 0:
-#             self.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
-#             self.layoutFilters.itemAtPosition(row, OPERAND).widget().deleteLater()
-#             # delete previous widget (MANDATORY)
-#             self.layoutFilters.removeWidget(self.layoutFilters.itemAtPosition(row, OPERAND).widget())
-#             self.layoutFilters.addWidget(QWidget(self), row, OPERAND)
-#             return
-#         # get field type
-#         ftype = self.model.columns[index - 1][3]
-#         if self.layoutFilters.itemAtPosition(row, OPERAND):
-#             self.layoutFilters.itemAtPosition(row, OPERAND).widget().deleteLater()
-#         self.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
-#         if ftype == 'fk':
-#             widget = QComboBox(self)
-#             for k, v in self.model.reference[self.model.columns[index - 1][0]]():
-#                 widget.addItem(v, k)
-#             for o, d, r in self.FILTERING['N']:
-#                 self.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-#         elif ftype == 'int':
-#             for o, d, r in self.FILTERING['N']:
-#                 self.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-#             widget = QSpinBox(self)
-#             widget.setRange(0, 2147483647)
-#             #widget.setSpecialValueText(_tr('dialog', 'Not set'))
-#             #widget.setValue(-1)
-#         elif ftype == 'bool':
-#             for o, d, r in self.FILTERING['B']:
-#                 self.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-#             widget = QCheckBox(self)
-#             #widget.setTristate(True)
-#             #widget.setCheckState(Qt.PartiallyChecked)
-#         elif ftype == 'decimal2':
-#             for o, d, r in self.FILTERING['N']:
-#                 self.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-#             widget = QDoubleSpinBox(self)
-#             widget.setDecimals(2)
-#             widget.setMaximum(99999999.99)
-#         elif ftype == 'str':
-#             for o, d, r in self.FILTERING['S']:
-#                 self.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-#             widget = QLineEdit(self)
-#         elif ftype == 'date':
-#             for o, d, r in self.FILTERING['N']:
-#                 self.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-#             widget = QDateEdit(QDate.currentDate(), self)
-#             widget.setCalendarPopup(True)
-#             widget.setMinimumDate(QDate(1800, 1, 1))
-#             widget.setMaximumDate(QDate(3000, 12, 31))
-#             #widget.setSpecialValueText(_tr('dialog', 'Not set'))
-#             widget.setDate(QDate.currentDate())
-#         elif ftype == 'datetime':
-#             for o, d, r in self.FILTERING['N']:
-#                 self.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-#             widget = QDateTimeEdit(self)
-#             widget.setCalendarPopup(True)
-#             widget.setMinimumDate(QDate(1800, 1, 1))
-#             widget.setMaximumDate(QDate(3000, 12, 31))
-#             #widget.setSpecialValueText(_tr('dialog', 'Not set'))
-#             widget.setDate(QDate.currentDate())
-#         else:
-#             # no widget
-#             widget = QWidget(self)
-#         widget.setVisible(True) # initial visibility
-#         # delete previous widget first (MANDATORY)
-#         self.layoutFilters.removeWidget(self.layoutFilters.itemAtPosition(row, OPERAND).widget())
-#         # insert new widget
-#         self.layoutFilters.addWidget(widget, row, OPERAND)
-
-#     def operIndexChanged(self, index):
-#         "Disable widget if operand is not required"
-#         row = self.sender().row
-#         if self.layoutFilters.itemAtPosition(row, OPERATOR):
-#             i = self.layoutFilters.itemAtPosition(row, OPERATOR).widget().count()
-#             if  self.layoutFilters.itemAtPosition(row, OPERATOR).widget().currentIndex() in (i - 1, i - 2):
-#                 self.layoutFilters.itemAtPosition(row, OPERAND).widget().setVisible(False)
-#             else:
-#                 self.layoutFilters.itemAtPosition(row, OPERAND).widget().setVisible(True)
-
-#     def sortIndexChanged(self, index):
-#         "Set combobox items and parameter qwidget"
-#         row = self.sender().row
-#         # clear first
-#         self.layoutSorting.itemAtPosition(row, OPERATOR).widget().clear()
-#         if index != 0:
-#             for i, j in self.ORDERING:
-#                 self.layoutSorting.itemAtPosition(row, OPERATOR).widget().addItem(j, i)
-
-#     def newCustomization(self):
-#         "Create a new customization"
-#         name = self.lineEditNewName.text()
-#         try:
-#             cid = create_sortfilter(self.sortfilterClass, name)
-#         except PyAppDBError as er:
-#             QMessageBox.critical(self,
-#                                  _tr("MessageDialog", "Critical"),
-#                                  f"Database error: {er.code}\n{er.message}")
-#         else:
-#             QMessageBox.information(self,
-#                                     _tr("MessageDialog", "Information"),
-#                                     _tr("Dialog", "New customization saved"))
-#             self.lineEditNewName.clear()
-#             self.availableCustomizations()
-
-#     def deleteCurrent(self):
-#         "Remove current customization from database"
-#         cid = int(self.comboBoxSetting.currentData())
-#         try:
-#             delete_sortfilter(cid)
-#         except PyAppDBError as er:
-#             QMessageBox.critical(self,
-#                                  _tr("MessageDialog", "Critical"),
-#                                  f"Database error: {er.code}\n{er.message}")
-#         else:
-#             self.availableCustomizations()
-#             QMessageBox.information(self,
-#                                     _tr("MessageDialog", "Information"),
-#                                     _tr("Dialog", "Current customization deleted"))
-
-#     def setCustomizationSorting(self):
-#         "Set current customization sort index"
-#         if self.comboBoxSetting.count() == 0:
-#             return
-#         sortfilterId = int(self.comboBoxSetting.currentData())
-#         try:
-#             set_sortfilter_customization_sorting(sortfilterId,
-#                                                  self.spinBoxClassSorting.value())
-#         except PyAppDBError as er:
-#             QMessageBox.critical(self,
-#                                  _tr("MessageDialog", "Critical"),
-#                                  f"Database error: {er.code}\n{er.message}")
-#         else:
-#             QMessageBox.information(self,
-#                                     _tr("MessageDialog", "Information"),
-#                                     _tr("Dialog", "Current customization sorting updated"))
-
-#     def clicked(self, button=None):
-#         "Intercept Reset button action"
-#         if button == self.buttonBox.button(QDialogButtonBox.Reset):
-#             for r in range(self.layoutFilters.rowCount()):
-#                 if self.layoutFilters.itemAtPosition(r, FIELD):
-#                     self.layoutFilters.itemAtPosition(r, FIELD).widget().setCurrentIndex(0)
-#             for r in range(self.layoutSorting.rowCount()):
-#                 if self.layoutSorting.itemAtPosition(r, FIELD):
-#                     self.layoutSorting.itemAtPosition(r, FIELD).widget().setCurrentIndex(0)
-
-#     def accept(self):
-#         "Generate the where conditions and update model"
-#         # get filters
-#         condition = []
-#         argument = []
-#         for r in range(FILTER_ROWS):
-#             if (self.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() != 0 and # field
-#                 self.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex() != 0): # operator
-#                 ty = self.model.columns[self.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() -1][3]
-#                 fl = self.layoutFilters.itemAtPosition(r, FIELD).widget().currentData()
-#                 op = self.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentData()
-#                 oi = self.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex()
-#                 wd = self.layoutFilters.itemAtPosition(r, OPERAND).widget()
-#                 if wd:
-#                     if isinstance(wd, QComboBox):
-#                         v = wd.currentData()
-#                     elif isinstance(wd, QLineEdit):
-#                         v = wd.text()
-#                     elif isinstance(wd, (QSpinBox, QDoubleSpinBox)):
-#                         v = wd.value()
-#                     elif isinstance(wd, QDateEdit):
-#                         v = wd.date()
-#                     elif isinstance(wd, QDateTimeEdit):
-#                         v = wd.dateTime()
-#                     elif isinstance(wd, QCheckBox):
-#                         if wd.checkState() == Qt.Checked:
-#                             v = True
-#                         else:
-#                             v = False
-#                 else:
-#                     v = None
-#                 if ty in ('int', 'float', 'date', 'datetime', 'fk', 'decimal2'):
-#                     i = 'N'
-#                 elif ty == 'bool':
-#                     i = 'B'
-#                 else:
-#                     i = 'S'
-#                 if self.FILTERING[i][oi][2] == 0:
-#                     condition.append(f"{fl} {op} %s")
-#                     argument.append(v)
-#                 elif self.FILTERING[i][oi][2] == 1:
-#                     condition.append(f"{fl} {op}")
-#                 else:
-#                     condition.append(f"{fl} {op}")
-#                     argument.append(v)
-#         self.model.whereCondition.clear()
-#         for i, j in zip(condition, argument):
-#             self.model.addWhere(i, j)
-#         # get orderby clause
-#         sorting = []
-#         for r in range(len(self.model.columns)):
-#             if self.layoutSorting.itemAtPosition(r, FIELD).widget().currentIndex() != 0:
-#                 f = self.layoutSorting.itemAtPosition(r, FIELD).widget().currentData()
-#                 s = self.layoutSorting.itemAtPosition(r, OPERATOR).widget().currentData()
-#                 sorting.append(f'{f} {s}')
-#         self.model.orderByExpression.clear()
-#         for i in sorting:
-#             self.model.addOrderBy(i)
-#         # update model and form
-#         # self.model.select()
-#         self.parentForm.reload()
-#         super().accept()
-
-#     def done(self, r):
-#         "Save local settings on exit, even in accetp/reject/finished"
-#         # save settings
-#         st = QSettings(self)
-#         st.setValue(f"SortFilterDialogGeometry/{self.sortfilterClass}", self.saveGeometry())
-#         super().done(r)
-
-
 class SortFilterDialog(QDialog):
     "Sort and filter Dialog for Forms"
 
-    def __init__(self, sortfilterClass: str, model: QAbstractItemModel = None, parent: QWidget = None) -> None:
+    def __init__(self, sortfilterClass: str, model: QAbstractItemModel|None = None, parent: QWidget|None = None) -> None:
         super().__init__(parent)
         self.ui = Ui_SortFilterDialog()
         self.ui.setupUi(self)
         # can't be class variables for translation requirements
-        # type: (oparator, operator description, format, widget)
+        # object type (operator, operator description, format, widget)
         # format:
         # 0=require operand argument (field operator %s - args)
         # 1=no require operand (field operator)
@@ -756,7 +311,7 @@ class SortFilterDialog(QDialog):
         self.modelId = None
         self.ui.lineEditSortFilterClass.setText(sortfilterClass)
         self.model = model # set also on sortfiltercustomization selection
-        self.parentWidget = parent  # used for apply sortings/filters
+        self.parentWidget: QWidget|None = parent  # used for apply sortings/filters
         # restore settings
         st = QSettings(self)
         if st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"):
@@ -906,9 +461,9 @@ class SortFilterDialog(QDialog):
             elif isinstance(widget, QDoubleSpinBox):
                 widget.setValue(float(wv or 0.0))
             elif isinstance(widget, QDateEdit):
-                widget.setDate(QDate.fromString(wv, Qt.ISODate))
+                widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
             elif isinstance(widget, QDateTimeEdit):
-                widget.setDateTime(QDateTime.fromString(wv, Qt.ISODate))
+                widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
             elif isinstance(widget, QCheckBox):
                 if wv == 'True':
                     widget.setChecked(True)
@@ -953,11 +508,11 @@ class SortFilterDialog(QDialog):
                 elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
                     wv = widget.value()
                 elif isinstance(widget, QDateEdit):
-                    wv = widget.date().toString(Qt.ISODate)
+                    wv = widget.date().toString(Qt.DateFormat.ISODate)
                 elif isinstance(widget, QDateTimeEdit):
-                    wv = widget.dateTime().toString(Qt.ISODate)
+                    wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
                 elif isinstance(widget, QCheckBox):
-                    if widget.checkState() == Qt.Checked:
+                    if widget.checkState() == Qt.CheckState.Checked:
                         wv = True
                     else:
                         wv = False
@@ -1166,9 +721,9 @@ class SortFilterDialog(QDialog):
                                     _tr("MessageDialog", "Information"),
                                     _tr("Dialog", "Current customization sorting updated"))
 
-    def clicked(self, button: QPushButton = None) -> None:
+    def clicked(self, button: QPushButton|None = None) -> None:
         "Intercept Reset button action"
-        if button == self.ui.buttonBox.button(QDialogButtonBox.Reset):
+        if button == self.ui.buttonBox.button(QDialogButtonBox.button.Reset):
             for r in range(self.ui.layoutFilters.rowCount()):
                 if self.ui.layoutFilters.itemAtPosition(r, FIELD):
                     self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().setCurrentIndex(0)
@@ -1266,7 +821,7 @@ class SortFilterDialog(QDialog):
 
 class EventFilterDialog(QDialog, Ui_EventFilterDialog):
 
-    def __init__(self, parent: QWidget, event: int = None, eventDate: QDate = None, dayPart: str = None) -> None:
+    def __init__(self, parent: QWidget, event: int|None = None, eventDate: QDate|None = None, dayPart: str|None = None) -> None:
         super().__init__(parent)
         self.setupUi(self)
         self.parent = parent
@@ -1300,12 +855,12 @@ class EventFilterDialog(QDialog, Ui_EventFilterDialog):
 class PrintDialog(QDialog):
     "Print dialog"
     
-    def __init__(self, parent: QWidget, reportClass: str = None, l10n: str = None, reportId: int = None, model: QAbstractItemModel = None) -> None:
+    def __init__(self, parent: QWidget, reportClass: str|None = None, l10n: str|None = None, reportId: int|None = None, model: QAbstractItemModel|None = None) -> None:
         super().__init__(parent)
         self.ui = Ui_PrintDialog()
         self.ui.setupUi(self)
         # can't be class variables for translation requirements
-        # type: (oparator, operator description, require operand [0=Y, 1=N, 2=like operator])
+        # object type (operator, operator description, require operand [0=Y, 1=N, 2=like operator])
         self.FILTERING = {'N': [('', '', 0),  # first row means no data
                                 ('=', _tr('Operator', '='), 0),
                                 ('<', _tr('Operator', '<'), 0),
@@ -1582,9 +1137,9 @@ class PrintDialog(QDialog):
             elif isinstance(widget, QDoubleSpinBox):
                 widget.setValue(float(wv or 0.0))
             elif isinstance(widget, QDateEdit):
-                widget.setDate(QDate.fromString(wv, Qt.ISODate))
+                widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
             elif isinstance(widget, QDateTimeEdit):
-                widget.setDateTime(QDateTime.fromString(wv, Qt.ISODate))
+                widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
             elif isinstance(widget, QCheckBox):
                 if wv == 'True':
                     widget.setChecked(True)
@@ -1602,9 +1157,9 @@ class PrintDialog(QDialog):
             elif isinstance(widget, QDoubleSpinBox):
                 widget.setValue(float(wv or 0.0))
             elif isinstance(widget, QDateEdit):
-                widget.setDate(QDate.fromString(wv, Qt.ISODate))
+                widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
             elif isinstance(widget, QDateTimeEdit):
-                widget.setDateTime(QDateTime.fromString(wv, Qt.ISODate))
+                widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
             elif isinstance(widget, QCheckBox):
                 if wv == 'True':
                     widget.setChecked(True)
@@ -1653,6 +1208,7 @@ class PrintDialog(QDialog):
             self.ui.tabWidget.setCurrentIndex(TABPARAMS)
         for row, par in enumerate(self.report.parameter):
             label = QLabel(self.report.parameter[par].description, self)
+            widget: QWidget
             match self.report.parameter[par].ptype:
                 case 'list':
                     widget = QComboBox(self)
@@ -1762,6 +1318,7 @@ class PrintDialog(QDialog):
         if self.ui.layoutFilters.itemAtPosition(row, 2):
             self.ui.layoutFilters.itemAtPosition(row, 2).widget().deleteLater()
         self.ui.layoutFilters.itemAtPosition(row, 1).widget().clear()
+        widget: QWidget
         match ftype:
             case 'int':
                 for o, d, r in self.FILTERING['N']:
@@ -1881,7 +1438,7 @@ class PrintDialog(QDialog):
                         case QDateTimeEdit():
                             v = wd.dateTime()
                         case QCheckBox():
-                            if wd.checkState() == Qt.Checked:
+                            if wd.checkState() == Qt.CheckState.Checked:
                                 v = True
                             else:
                                 v = False
@@ -1942,7 +1499,7 @@ class PrintDialog(QDialog):
                                     _tr('Dialog', "No data to render"))
             return False
         # cursor wait
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.report.generate()
         # cursor restore
         QApplication.restoreOverrideCursor()
@@ -1954,11 +1511,11 @@ class PrintDialog(QDialog):
             return
         # print preview
         dialog = PrintPreviewDialog(self)
-        dialog.setWindowFlags(Qt.Dialog|Qt.WindowMinMaxButtonsHint|Qt.WindowCloseButtonHint)
+        dialog.setWindowFlags(Qt.WindowType.Dialog|Qt.WindowMinMaxButtonsHint|Qt.WindowCloseButtonHint)
         dialog.setWindowTitle(_tr("Dialog", "Print preview"))
         # open in fit width
         pp = dialog.findChild(QPrintPreviewWidget)
-        pp.setZoomMode(QPrintPreviewWidget.FitToWidth)
+        pp.setZoomMode(QPrintPreviewWidget.ZoomMode.FitToWidth)
         # start
         dialog.paintRequested.connect(self.report.print)
         try:
@@ -1977,7 +1534,7 @@ class PrintDialog(QDialog):
         #printer.setPrinterName(self.comboBoxPrinters.currentText())
         #printer.setDocName("STAMPA CLASSIFICHE")
         dlg = QPrintDialog(printer, self)
-        if dlg.exec() == QDialog.Accepted:
+        if dlg.exec() == QDialog.DialogCode.Accepted:
             try:
                 self.report.print(printer)
             except ReportException as er:
@@ -2065,9 +1622,9 @@ class PrintPDFDialog(QDialog):
         self.ui = Ui_PrintPDFDialog()
         self.ui.setupUi(self)
         # here for transaltion requirements
-        self.PDFVERSION = [(QPagedPaintDevice.PdfVersion_1_4, _tr('Dialog', 'Pdf 1.4')),
-                           (QPagedPaintDevice.PdfVersion_A1b, _tr('Dialog', 'Pdf A-1b')),
-                           (QPagedPaintDevice.PdfVersion_1_6, _tr('Dialog', 'Pdf 1.6'))]
+        self.PDFVERSION = [(QPagedPaintDevice.PdfVersion.PdfVersion_1_4, _tr('Dialog', 'Pdf 1.4')),
+                           (QPagedPaintDevice.PdfVersion.PdfVersion_A1b, _tr('Dialog', 'Pdf A-1b')),
+                           (QPagedPaintDevice.PdfVersion.PdfVersion_1_6, _tr('Dialog', 'Pdf 1.6'))]
         # keep some parameters
         self.current_page = current_page
         self.page_count = page_count
@@ -2119,65 +1676,10 @@ class PrintPDFDialog(QDialog):
         return file_name, from_page, to_page, open_file, pdf_version, resolution
 
 
-# class PrintEmailDialog(Ui_PrintEmailDialog, QDialog):
-#     "Send email dialog"
-
-#     def __init__(self, parent, attachment_name, current_page, page_count):
-#         "Initialize"
-#         super().__init__(parent)
-#         self.setupUi(self)
-#         # here for transaltion requirements
-#         self.PDFVERSION = [(QPagedPaintDevice.PdfVersion_1_4, _tr('Dialog', 'Pdf 1.4')),
-#                            (QPagedPaintDevice.PdfVersion_A1b, _tr('Dialog', 'Pdf A-1b')),
-#                            (QPagedPaintDevice.PdfVersion_1_6, _tr('Dialog', 'Pdf 1.6'))]
-#         # keep some parameters
-#         self.lineEditAttachment.setText(attachment_name)
-#         self.current_page = current_page
-#         self.page_count = page_count
-#         # pdf format
-#         self.comboBoxPDFVersion.setItemList(self.PDFVERSION)
-#         # current page
-#         self.checkBoxPrintCurrentPage.setText(_tr('Dialog', "Print current page ({})").format(current_page))
-#         # total page number
-#         self.spinBoxToPage.setValue(page_count)
-#         # email editor
-#         self.emailEdit = TextEditor(self)
-#         self.verticalLayoutEmail.addWidget(self.emailEdit)
-#         # email accounts
-#         # for k, v in user_email_list(session['app_user_code']):
-#         #     self.comboBoxSenderAccount.addItem(v, k)
-#         # self.comboBoxSenderAccount.currentIndexChanged.connect(self.setSignature)
-#         # self.setSignature(0)
-
-#     # def setSignature(self, index):
-#     #     "Change email signature on combo box account index changed"
-#     #     signature, senderCopy = user_email_signature(self.comboBoxSenderAccount.currentData())
-#     #     self.emailEdit.textEdit.setHtml(signature)
-#     #     self.checkBoxSenderCopy.setChecked(senderCopy)
-
-#     def getParameters(self):
-#         "Get parameters from dialog box"
-#         sender = self.comboBoxSenderAccount.currentData()
-#         receiver = self.lineEditTo.text()
-#         cc = self.lineEditCc.text()
-#         bcc = self.lineEditBcc.text()
-#         subject = self.lineEditSubject.text()
-#         attachment = self.lineEditAttachment.text() + ".pdf"
-#         senderCopy = self.checkBoxSenderCopy.isChecked()
-#         if self.checkBoxPrintCurrentPage.isChecked():
-#             fromPage = toPage = self.current_page
-#         else:
-#             from_page = self.spinBoxFromPage.value()
-#             to_page = self.spinBoxToPage.value()
-#         pdfVersion = self.comboBoxPDFVersion.currentData()
-#         resolution = self.spinBoxResolution.value()
-#         return sender, receiver, cc, bcc, subject, attachment, fromPage, toPage, pdfVersion, resolution
-
-
 class PrintPreviewDialog(QPrintPreviewDialog):
     "Modified QPrintPreviewDialog for exporting to PDF"
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget|None = None):
         "Initialize"
         super().__init__(parent)
         # restore geometry
@@ -2185,7 +1687,7 @@ class PrintPreviewDialog(QPrintPreviewDialog):
         if st.value("PrintDialogGeometry"):
             self.restoreGeometry(st.value("PrintDialogGeometry"))
         else:
-            self.setGeometry(QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, QSize(800, 600), QGuiApplication.primaryScreen().geometry()))
+            self.setGeometry(QStyle.alignedRect(Qt.LayoutDirection.LeftToRight, Qt.AlignmentFlag.AlignCenter, QSize(800, 600), QGuiApplication.primaryScreen().geometry()))
         # add toolbutton for export pdf and email
         tb = self.findChild(QToolBar)
         action = QAction(_tr('Dialogs', 'Export PDF'), tb)
@@ -2202,139 +1704,28 @@ class PrintPreviewDialog(QPrintPreviewDialog):
         printer = self.printer()
         pw = self.findChild(QPrintPreviewWidget)
         op = PrintPDFDialog(self, printer.docName(), pw.currentPage(), pw.pageCount())
-        if op.exec() == QDialog.Rejected:
+        if op.exec() == QDialog.DialogCode.Rejected:
             return
         file_name, from_page, to_page, open_file, pdf_version, resolution = op.getParameters()
         if QFile(file_name).exists():
             if QMessageBox.question(self,
                                     _tr('MessageDialog', 'Question'),
                                     _tr('Dialog', "File {} exists, overwrite ?").format(file_name),
-                                    QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+                                    QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
                 return
-        printer.setOutputFormat(QPrinter.PdfFormat)
+        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setPdfVersion(pdf_version)
         printer.setResolution(resolution)
         printer.setOutputFileName(file_name)
         printer.setFromTo(from_page, to_page)
         self.paintRequested.emit(printer)
         # restore printer to normal operation
-        printer.setOutputFormat(QPrinter.NativeFormat)
-        printer.setOutputFileName(None)
+        printer.setOutputFormat(QPrinter.OutputFormat.NativeFormat)
+        printer.setOutputFileName('')
         printer.setFromTo(1, pw.pageCount())
         # open file if requested
         if open_file:
             QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))
-
-    # def sendEmail(self):
-    #     # exit if no email account available
-    #     if len(user_email_list(session['app_user_code'])) == 0:
-    #         QMessageBox.information(self,
-    #                                 _tr('MessageDialog', 'Information'),
-    #                                 _tr('MessageDialog', 'No email account available'))
-    #         return  # no email account
-    #     printer = self.printer()
-    #     pw = self.findChild(QPrintPreviewWidget)
-    #     op = PrintEmailDialog(self, printer.docName(), pw.currentPage(), pw.pageCount())
-    #     if op.exec() == QDialog.Rejected:
-    #         return
-    #     sender, receiver, cc, bcc, subject, attachment, fromPage, toPage, pdfVersion, resolution = op.getParameters()
-
-        # get all account details for selected account id
-        # (sender_email, reply_to, server, port, user, enc_password,
-        #  req_auth, req_ssl, req_tls, sender_copy) = user_email_details(sender)
-        # try:
-        #     password = string_decode(enc_password)
-        # except InvalidToken as er:
-        #     QMessageBox.critical(self,
-        #                              _tr("messageDialog", "Critical"),
-        #                              _tr("Cryptography", "Error in encryp/decrypt string"))
-        #     return
-
-        # generate a temp pdf file
-        # file_name = attachment
-        # file = QTemporaryFile()
-        # if not file.open():
-        #     QMessageBox.critical(self,
-        #                              _tr('MessageDialog', 'Critical'),
-        #                              _tr('MessageDialog', "Error opening temporary file"))
-        #     return
-        # paintDevice = QPdfWriter(file)
-        # paintDevice.setPdfVersion(pdfVersion)
-        # paintDevice.setResolution(resolution)
-        # paintDevice.setFromTo(fromPage, toPage)
-        # self.paintRequested.emit(paintDevice)
-
-        # # create an email message width the attached pdf file
-        # message = EmailMessage()
-        # message["Date"] = QDateTime.currentDateTime().toString(Qt.RFC2822Date)
-        # message["Subject"] = subject
-        # message["From"] = sender_email
-        # if reply_to:
-        #     message["Reply-To"] = reply_to
-        # message["To"] = ", ".join(self.lineEditTo.text().split(";"))
-        # if self.lineEditCc.text():
-        #     message["Cc"] = ", ".join(self.lineEditCc.text().split(";"))
-        # bcc = []
-        # if self.lineEditBcc.text():  # avoid empty string
-        #     bcc += self.lineEditBcc.text().split(";")
-        # if sender_copy:
-        #     bcc.append(sender_email)
-        # if bcc:
-        #     message["Bcc"] = ", ".join(bcc)
-        # message.set_content(self.emailEdit.textEdit.toPlainText())
-        # message.add_alternative(self.emailEdit.textEdit.toHtml(), subtype="html")
-        # if not file.open():
-        #     QMessageBox.critical(self,
-        #                              _tr('MessageDialog', 'Critical'),
-        #                              _tr('MessageDialog', "Error opening temporary file"))
-        #     return
-        # message.add_attachment(file.readAll().data(),
-        #                            maintype='application',
-        #                            subtype='octet-stream',
-        #                            filename=file_name)
-
-        # # send the email message
-        # # cursor wait
-        # QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        # # Create a secure SSL context
-        # context = ssl.create_default_context()
-        # try:
-        #     if req_ssl:
-        #         with smtplib.SMTP_SSL(server, port, context=context) as smtp:
-        #             if req_auth:
-        #                 smtp.login(user, password)
-        #             smtp.send_message(message)
-        #     else:
-        #         with smtplib.SMTP(server, port) as smtp:
-        #             if req_tls:
-        #                 smtp.starttls(context=context)
-        #             if req_auth:
-        #                 smtp.login(user, password)
-        #             smtp.send_message(message)
-        # except smtplib.SMTPException as er:
-        #     # cursor restore
-        #     QApplication.restoreOverrideCursor()
-        #     mbox = QMessageBox(self)
-        #     mbox.setIcon(QMessageBox.Critical)
-        #     mbox.setWindowTitle(_tr('MessageDialog', 'Critical'))
-        #     msg = _tr('PrintDialog', "Error on sending email: SMTP exception")
-        #     mbox.setText(f"<p><b>{msg}</b>")
-        #     mbox.setDetailedText(str(er))
-        #     mbox.exec()
-        #     logging.error("Error on sending email: SMTP exception - %s", er)
-
-        # except Exception as er:
-        #     # cursor restore
-        #     QApplication.restoreOverrideCursor()
-        #     QMessageBox.critical(self,
-        #                              _tr('MessageDialog', 'Critical'),
-        #                              f"Generic error:\n{er}")
-        # else:
-        #     # cursor restore
-        #     QApplication.restoreOverrideCursor()
-        #     QMessageBox.information(self,
-        #                                 _tr('MessageDialog', 'Information'),
-        #                                 _tr('MessageDialog', 'Email sent correctly'))
 
 
     def closeEvent(self, event: QCloseEvent) -> None:
@@ -2343,205 +1734,11 @@ class PrintPreviewDialog(QPrintPreviewDialog):
         st.setValue("PrintDialogGeometry", self.saveGeometry())
         event.accept()
 
-#class PrintReportDialog(PrintDialog):
-    #"A simplified print dialog used for report testing from report management"
-
-    #def __init__(self, parent, report_class, report_code, l10n=None):
-
-        #super().__init__(parent, None, l10n)
-        ## create a report instance for current report id and l10n
-        #self.report = Report(report_code_xml(report_code, l10n or session['l10n']))
-        #self.parameter = self.report.parameter
-        #self.query = self.report.query
-        #self.conditions = self.report.conditions
-        ## report list for customizations
-        #for i, j in report_list(report_class, session['l10n']):
-            #self.comboBoxReportList.addItem(j, i)
-        ## parameters
-        #if not self.parameter:
-            #self.tabWidget.setTabEnabled(0, False)
-        #else:
-            #self.tabWidget.setTabEnabled(0, True)
-            #self.tabWidget.setCurrentIndex(0)
-        #for row, par in enumerate(self.parameter):
-            #label = QLabel(self.parameter[par].description, self)
-            ## combobox
-            #if self.parameter[par].items:
-                #widget = QComboBox(self)
-                #if self.parameter[par].ptype == 'date':
-                    #widget.addItems([i.toString(Qt.DefaultLocaleShortDate) for i in self.parameter[par].items])
-                #else:
-                    #widget.addItems([str(i) for i in self.parameter[par].items])
-            ## or a different widget
-            #else:
-                #if self.parameter[par].ptype == 'bool':
-                    #widget = QCheckBox(self)
-                    #widget.setChecked(self.parameter[par].value)
-                #elif self.parameter[par].ptype == 'int':
-                    #widget = QSpinBox(self)
-                    #widget.setValue(self.parameter[par].value)
-                #elif self.parameter[par].ptype == 'float':
-                    #widget = QDoubleSpinBox(self)
-                    #widget.setDecimals(2)
-                    #widget.setRange(-9999999.99, 9999999.99)
-                    #widget.setValue(self.parameter[par].value)
-                #elif self.parameter[par].ptype == 'date':
-                    #widget = QDateEdit(self.parameter[par].value)
-                    #widget.setCalendarPopup(True)
-                #elif self.parameter[par].ptype == 'str':
-                    #widget = QLineEdit(self)
-                    #widget.setText(self.parameter[par].value)
-                #else:
-                    #raise ReportPrintError("Unable to identify parameter type")
-            #self.widgetParams[par] = widget
-            #self.layoutParameters.addWidget(label, row, 0)
-            #self.layoutParameters.addWidget(widget, row, 1)
-        #if self.parameter:
-            #self.layoutParameters.setColumnStretch(1, 1)
-            #self.layoutParameters.setRowStretch(row + 1, 1)
-        ## filters
-        #for row in range(FILTER_ROWS):
-            #cond = QComboBox(self)
-            #cond.addItem(None, None)
-            #for k, v in self.conditions.items():
-                #cond.addItem(v.description, k)
-            #cond.row = row
-            #cond.currentIndexChanged.connect(self.condIndexChanged)
-            #oper = QComboBox(self)
-            #oper.row = row
-            #oper.currentIndexChanged.connect(self.operIndexChanged)
-            #self.layoutFilters.addWidget(cond, row, 0)
-            #self.layoutFilters.addWidget(oper, row, 1)
-            #self.layoutFilters.addWidget(QWidget(self), row, 2)
-        #self.layoutFilters.setColumnStretch(0, 2)
-        #self.layoutFilters.setColumnStretch(1, 1)
-        #self.layoutFilters.setColumnStretch(2, 1)
-        #self.layoutFilters.setRowStretch(row + 1, 1)
-        ## sorting
-        #for row, f in enumerate(self.conditions):
-            #sort = QComboBox(self)
-            #sort.addItem(None, None)
-            #for i in self.conditions:
-                #sort.addItem(self.conditions[i].description, i)
-            #sort.row = row
-            #sort.currentIndexChanged.connect(self.sortIndexChanged)
-            #order = QComboBox(self)
-            #self.layoutSorting.addWidget(sort, row, 0)
-            #self.layoutSorting.addWidget(order, row, 1)
-        #self.layoutSorting.setColumnStretch(0, 2)
-        #self.layoutSorting.setColumnStretch(1, 1)
-        #self.layoutSorting.setRowStretch(row + 1, 1)
-        ## restore customizations
-        ## self.setCustomization()
-
-##class PrintReportDialog(PrintDialog):
-    ##def __init__(self, parent, report_code, l10n=None):
-        ##super().__init__(parent, None, l10n)
-
-#class PrintStatsViewerDialog(PrintDialog):
-    #"A simplified print dialog used for print statistics from viewer"
-
-    #def __init__(self, parent, model, report_code, l10n=None):
-        #super().__init__(parent, None, l10n)
-        ## create a report instance for current report id and l10n
-        #self.report = Report(report_code_xml(report_code, l10n or session['l10n']))
-        #self.parameter = self.report.parameter
-        ##self.query = self.report.query
-        ##self.conditions = self.report.conditions
-        ## report list for customizations
-        #self.comboBoxReportList.addItem('Report', report_code)
-        #self.tabWidget.removeTab(1) # filters
-        #self.tabWidget.removeTab(1)  # sorting
-        #data = []
-        #for i in range(model.rowCount() - model.hasTotalsRow):
-            #data.append([model.data(model.index(i, j)) for j in range(model.columnCount())])
-        #self.report.data = data
-        ## parameters
-        #if not self.parameter:
-            #self.tabWidget.setTabEnabled(0, False)
-        #else:
-            #self.tabWidget.setTabEnabled(0, True)
-            #self.tabWidget.setCurrentIndex(0)
-        #for row, par in enumerate(self.parameter):
-            #label = QLabel(self.parameter[par].description, self)
-            ## combobox
-            #if self.parameter[par].items:
-                #widget = QComboBox(self)
-                #if self.parameter[par].ptype == 'date':
-                    #widget.addItems([i.toString(Qt.DefaultLocaleShortDate) for i in self.parameter[par].items])
-                #else:
-                    #widget.addItems([str(i) for i in self.parameter[par].items])
-            ## or a different widget
-            #else:
-                #if self.parameter[par].ptype == 'bool':
-                    #widget = QCheckBox(self)
-                    #widget.setChecked(self.parameter[par].value)
-                #elif self.parameter[par].ptype == 'int':
-                    #widget = QSpinBox(self)
-                    #widget.setValue(self.parameter[par].value)
-                #elif self.parameter[par].ptype == 'float':
-                    #widget = QDoubleSpinBox(self)
-                    #widget.setDecimals(2)
-                    #widget.setRange(-9999999.99, 9999999.99)
-                    #widget.setValue(self.parameter[par].value)
-                #elif self.parameter[par].ptype == 'date':
-                    #widget = QDateEdit(self.parameter[par].value)
-                    #widget.setCalendarPopup(True)
-                #elif self.parameter[par].ptype == 'str':
-                    #widget = QLineEdit(self)
-                    #widget.setText(self.parameter[par].value)
-                #else:
-                    #raise ReportPrintError("Unable to identify parameter type")
-            #self.widgetParams[par] = widget
-            #self.layoutParameters.addWidget(label, row, 0)
-            #self.layoutParameters.addWidget(widget, row, 1)
-        #if self.parameter:
-            #self.layoutParameters.setColumnStretch(1, 1)
-            #self.layoutParameters.setRowStretch(row + 1, 1)
-        ### filters
-        ##for row in range(FILTER_ROWS):
-            ##cond = QComboBox(self)
-            ##cond.addItem(None, None)
-            ##for k, v in self.conditions.items():
-                ##cond.addItem(v.description, k)
-            ##cond.row = row
-            ##cond.currentIndexChanged.connect(self.condIndexChanged)
-            ##oper = QComboBox(self)
-            ##oper.row = row
-            ##oper.currentIndexChanged.connect(self.operIndexChanged)
-            ##self.layoutFilters.addWidget(cond, row, 0)
-            ##self.layoutFilters.addWidget(oper, row, 1)
-            ##self.layoutFilters.addWidget(QWidget(self), row, 2)
-        ##self.layoutFilters.setColumnStretch(0, 2)
-        ##self.layoutFilters.setColumnStretch(1, 1)
-        ##self.layoutFilters.setColumnStretch(2, 1)
-        ##self.layoutFilters.setRowStretch(row + 1, 1)
-        ### sorting
-        ##for row, f in enumerate(self.conditions):
-            ##sort = QComboBox(self)
-            ##sort.addItem(None, None)
-            ##for i in self.conditions:
-                ##sort.addItem(self.conditions[i].description, i)
-            ##sort.row = row
-            ##sort.currentIndexChanged.connect(self.sortIndexChanged)
-            ##order = QComboBox(self)
-            ##self.layoutSorting.addWidget(sort, row, 0)
-            ##self.layoutSorting.addWidget(order, row, 1)
-        ##self.layoutSorting.setColumnStretch(0, 2)
-        ##self.layoutSorting.setColumnStretch(1, 1)
-        ##self.layoutSorting.setRowStretch(row + 1, 1)
-        ## restore customizations
-        ## self.setCustomization()
-
-##class PrintReportDialog(PrintDialog):
-    ##def __init__(self, parent, report_code, l10n=None):
-        ##super().__init__(parent, None, l10n)
-
 
 class _DateTimeInputDialog(QDialog):
     "Input dialog for one date value"
 
-    def __init__(self, parent: QWidget = None) -> None:
+    def __init__(self, parent: QWidget|None = None) -> None:
         "Initialize"
         super().__init__(parent)
         self.ui = Ui_DateTimeInputDialog()
@@ -2553,7 +1750,7 @@ def DateTimeInputDialog(text: str) -> tuple[QDateTime | None, bool] :
     "Get a date value from user"
     dialog = _DateTimeInputDialog()
     dialog.ui.labelText.setText(text)
-    if dialog.exec() == QDialog.Accepted:
+    if dialog.exec() == QDialog.DialogCode.Accepted:
         return dialog.ui.dateTimeEdit.dateTime(), True
     else:
         return None, False
