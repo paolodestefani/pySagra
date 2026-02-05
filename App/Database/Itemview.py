@@ -39,7 +39,7 @@ def create_itemview(view_class, view_description):
     script = """
 INSERT INTO system.itemview_adapt (description, itemview_class)
 VALUES (%s, %s)
-RETURNING id;"""
+RETURNING itemview_adapt_id;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -93,7 +93,7 @@ INSERT INTO system.itemview_adapt_setting (
     is_visible,
     size)
 VALUES (%s, %s, %s, %s, %s)
-ON CONFLICT ON CONSTRAINT itemview_adapt_setting_pkey DO
+ON CONFLICT ON CONSTRAINT itemview_adapt_setting_pk DO
 UPDATE SET sorting = %s, is_visible = %s, size = %s;"""
     try:
         with appconn.cursor() as cur:

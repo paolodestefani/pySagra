@@ -41,11 +41,15 @@ from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QLocale
+from PySide6.QtCore import QPoint
+from PySide6.QtCore import QAbstractItemModel
 
 from PySide6.QtGui import QDropEvent
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtGui import QCursor
+from PySide6.QtGui import QContextMenuEvent
 
+from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QTableView
 from PySide6.QtWidgets import QTableWidget
@@ -108,11 +112,11 @@ class TableViewSettingsDialog(QDialog, Ui_ViewSettingsDialog):
         self.tableWidget.setRowCount(parent.model().columnCount())
         for i in range(parent.horizontalHeader().count()):
             self.tableWidget.setItem(i, 0, TableWidgetItem(i))
-            self.tableWidget.setItem(i, 1, TableWidgetItem(parent.model().headerData(i, Qt.Horizontal)))  # header
+            self.tableWidget.setItem(i, 1, TableWidgetItem(parent.model().headerData(i, Qt.Orientation.Horizontal)))  # header
             self.tableWidget.setItem(i, 2, TableWidgetItem(parent.horizontalHeader().visualIndex(i)))
             self.tableWidget.setItem(i, 3, TableWidgetItem(not parent.isColumnHidden(i)))
             self.tableWidget.setItem(i, 4, TableWidgetItem(parent.columnWidth(i)))
-        self.tableWidget.sortItems(2, Qt.AscendingOrder)
+        self.tableWidget.sortItems(2, Qt.SortOrder.AscendingOrder)
         self.tableWidget.horizontalHeader().hideSection(0)
         self.tableWidget.horizontalHeader().hideSection(2)
         self.tableWidget.resizeColumnToContents(1)
@@ -120,7 +124,7 @@ class TableViewSettingsDialog(QDialog, Ui_ViewSettingsDialog):
         for r in range(parent.horizontalHeader().count()):
             for c in range(5):
                 if c in (0, 1, 2):
-                    self.tableWidget.item(r, c).setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled)
+                    self.tableWidget.item(r, c).setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable|Qt.ItemFlag.ItemIsDragEnabled|Qt.ItemFlag.ItemIsDropEnabled)
 
     def accept(self) -> None:
         # reset layout first (first time store the state)
@@ -148,21 +152,21 @@ class TableViewSettingsDialog(QDialog, Ui_ViewSettingsDialog):
 class EnhancedTableView(QTableView):
     "Generic (but enhanced :-) ) table View"
 
-    def __init__(self, parent: QWidget = None) -> None:
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.layoutName = None
+        self.layoutName: str|None = None
         #fw = QApplication.fontMetrics().averageCharWidth()
         # good defaults
-        self.setEditTriggers(QAbstractItemView.DoubleClicked|QAbstractItemView.SelectedClicked)
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked|QAbstractItemView.EditTrigger.SelectedClicked)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.setAlternatingRowColors(True)
         self.setWordWrap(False)
         self.verticalHeader().hide()
         self.horizontalHeader().setSortIndicatorShown(True)
-        self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
+        self.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
         self.horizontalHeader().setSectionsMovable(False)
-        self.verticalHeader().setDefaultAlignment(Qt.AlignVCenter)
+        self.verticalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignVCenter)
         # default item delegate for all column
         self.setItemDelegate(GenericReadOnlyDelegate(self))
         # self.horizontalHeader().setStretchLastSection(True)
@@ -258,7 +262,7 @@ class EnhancedTableView(QTableView):
                                 self.cmSaveLayout])
             self.cm.addSeparator()
             self.cm.addActions([self.cmHide, self.cmShow, self.cmReset, self.cmManage])
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.contextMenuEvent)
 
     def fillCustomizationMenu(self) -> None:
@@ -283,11 +287,11 @@ class EnhancedTableView(QTableView):
             self.ag.addAction(a)
             self.cmCustomizations.addAction(a)
 
-    def setModel(self, model: QAbstractItemModel) -> None:
+    def setModel(self, model: QAbstractItemModel|None) -> None:
         super().setModel(model)
         self.setSortingEnabled(False) # better not to sort when editing
 
-    def setLayoutName(self, name: str) -> None:
+    def setLayoutName(self, name: str|None) -> None:
         "As EnhancedTableView is declared in QtDesigner we must set the name of the layout after instantiation"
         self.layoutName = name
         self.fillCustomizationMenu()
@@ -320,7 +324,7 @@ class EnhancedTableView(QTableView):
             # width
             self.setColumnWidth(c, s)
 
-    def contextMenuEvent(self, position: QPoint) -> None:
+    def contextMenuEvent(self, position: QContextMenuEvent) -> None:
         # self.cm.exec_(self.viewport().mapToGlobal(position))
         self.cm.exec_(QCursor.pos())
 
@@ -367,7 +371,7 @@ class EnhancedTableView(QTableView):
         if QMessageBox.question(self,
                                 _tr("MessageDialog", "Question"),
                                 _tr("View", "Are you sure to delete the selected row ?"),
-                                QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
             return
         index = self.currentIndex()
         if not index.isValid():

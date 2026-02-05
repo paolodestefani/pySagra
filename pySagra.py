@@ -112,7 +112,7 @@ if __name__ == "__main__":
         v1, v2, v3 = psycopg_version.split('.')
     else:
         v1, v2 = psycopg_version.split('.')
-        v3 = 0
+        v3 = '0'
     c1, c2, c3 = MRV_PSYCOPG.split('.')[:3]
     if f"{v1:0>4}{v2:0>4}{v3:0>4}" < f"{c1:0>4}{c2:0>4}{c3:0>4}":
         print(f"This program require psycopg rel. >= {MRV_PSYCOPG} but detected "
