@@ -271,11 +271,11 @@ defaultOptions = {'documentName':           'pyReportEngine document',
 # code39 barcode characters
 CODE39CHRS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%'
 
-def code39encode(text: str, checksum: bool =False) -> str|None:
+def code39encode(text: str, checksum: bool = False) -> str|None:
     "Calculate code39 barcode string with optional checksum"
     # sanity check
     if not text:
-        return
+        return None
     chkchar = ''
     # sanity checks
     for i in text:
@@ -309,7 +309,7 @@ def code128encode(s: str) -> str|None:
     '''
     # sanity check
     if not s:
-        return
+        return None
     s = s.encode('ascii').decode('ascii')
     if s.isdigit() and len(s) % 2 == 0:
         # use Code 128C, pairs of digits
@@ -362,7 +362,7 @@ class BaseRenderer():
         self.currencySymbol = paramdict.get("currencySymbol", options['currencySymbol'])
         self.trueSymbol = paramdict.get("trueSymbol", options['trueSymbol'])
         self.falseSymbol = paramdict.get("falseSymbol", options['falseSymbol'])
-        self.value = None  # default value
+        self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|None = None  # default value
 
     def textFormat(self) -> str|None:
         "Format text for check height and painting"
