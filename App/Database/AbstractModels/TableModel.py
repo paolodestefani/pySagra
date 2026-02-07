@@ -31,7 +31,8 @@ This module contains generic and reusable table models for database tables
 import operator
 import decimal
 import logging
-from pyexpat import model
+from typing import Any
+#from pyexpat import model
 
 # pandas
 import pandas as pd
@@ -91,7 +92,7 @@ class QueryModel(QAbstractTableModel):
         self.repr = 'Generic query model' # printable representation of the object,
         # subclass must define this
         self.selectQuery = '' # subclass must define this
-        self.columns = tuple # subclass must define this
+        self.columns: tuple[Any]|None = None # subclass must define this
         self.isEditable = False # used in forms
         self.isCompanyTable = False # True if is a company table
         self.companyField = 'company_id' # company_id field name, subclass can modifie this if use table alias
@@ -284,7 +285,7 @@ class QueryWithParamsModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "On init only set some empty objects"
         super().__init__(parent)
-        self.dataSet: dict = ()
+        self.dataSet: dict = {}  # a dict of (row, column) = value
         self.rows = 0 # updated by select method
         self.parameter: dict = {} # dictionary of parameters
         self.repr = 'Generic query with params model' # printable representation of the object,
