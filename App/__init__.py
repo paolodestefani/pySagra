@@ -45,10 +45,10 @@ ORGANIZATION    = 'PDS Software'
 WEBSITE         = 'www.paolodestefani.it'
 
 # minumum required version
-MRV_PYTHON  = "3.10.0"
-MRV_PYSIDE  = "6.9.0"
-MRV_QT      = "6.9.0"
-MRV_PSYCOPG = "3.0.0"
+MRV_PYTHON  = 3, 12, 0 
+MRV_PYSIDE  = 6, 9, 0
+MRV_QT      = 6, 9, 0
+MRV_PSYCOPG = 3, 3, 0
 MRV_PGSQL   = 130000  # postgres minimum compatible version
 
 # key for encoding/decoding stored database user and password

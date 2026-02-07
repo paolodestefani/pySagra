@@ -37,10 +37,11 @@ import logging
 import argparse
 
 # check component version modules
-from platform import python_version
+from sys import version_info
+from psycopg import version
 from psycopg import __version__ as psycopg_version
 from PySide6 import __version__ as pyside6_version
-from PySide6.QtCore import qVersion
+from PySide6.QtCore import qVersion 
 
 # PySide6
 from PySide6.QtCore import QOperatingSystemVersion
@@ -101,36 +102,28 @@ if __name__ == "__main__":
     "Start application"
     # check client component minimum required version
     # python version
-    v1, v2, v3 = python_version().split('.')[:3]
-    c1, c2, c3 = MRV_PYTHON.split('.')[:3]
-    if f"{v1:0>4}{v2:0>4}{v3:0>4}" < f"{c1:0>4}{c2:0>4}{c3:0>4}":
-        print("This program require Python rel. >= {} but detected "
-              "rel. {}".format(MRV_PYTHON, python_version()))
-        sys.exit(0)
-    # psycopg version
-    if len(psycopg_version.split('.')) == 3:
-        v1, v2, v3 = psycopg_version.split('.')
-    else:
-        v1, v2 = psycopg_version.split('.')
-        v3 = '0'
-    c1, c2, c3 = MRV_PSYCOPG.split('.')[:3]
-    if f"{v1:0>4}{v2:0>4}{v3:0>4}" < f"{c1:0>4}{c2:0>4}{c3:0>4}":
-        print(f"This program require psycopg rel. >= {MRV_PSYCOPG} but detected "
-              f"rel. {psycopg_version}")
+    pyv = (version_info.major, version_info.minor, version_info.micro)
+    if pyv < MRV_PYTHON:
+        print(f"This program require Python rel. >= {MRV_PYTHON} but detected "
+              f"rel. {pyv}")
         sys.exit(0)
     # PySide version
-    v1, v2, v3 = pyside6_version.split('.')[:3]
-    c1, c2, c3 = MRV_PYSIDE.split('.')[:3]
-    if f"{v1:0>4}{v2:0>4}{v3:0>4}" < f"{c1:0>4}{c2:0>4}{c3:0>4}":
+    psv = tuple(map(int, pyside6_version.split('.')[:3]))
+    if psv < MRV_PYSIDE:
         print(f"This program require PySide6 rel. >= {MRV_PYSIDE} but detected "
-              f"rel. {pyside6_version}")
+              f"rel. {psv}")
         sys.exit(0)
     # Qt version
-    v1, v2, v3 = qVersion().split('.')[:3]
-    c1, c2, c3 = MRV_QT.split('.')[:3]
-    if f"{v1:0>4}{v2:0>4}{v3:0>4}" < f"{c1:0>4}{c2:0>4}{c3:0>4}":
+    qtv = tuple(map(int, qVersion().split('.')[:3]))
+    if qtv < MRV_QT:
         print(f"This program require Qt rel. >= {MRV_QT} but detected "
-              f"rel. {qVersion()}")
+              f"rel. {qtv}")
+        sys.exit(0)
+    # psycopg version
+    ppv = tuple(map(int, psycopg_version.split('.')[:3]))
+    if ppv < MRV_PSYCOPG:
+        print(f"This program require psycopg rel. >= {MRV_PSYCOPG} but detected "
+              f"rel. {ppv}")
         sys.exit(0)
         
     # parse command line arguments for logging
