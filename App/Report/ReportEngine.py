@@ -54,11 +54,13 @@ All sections are optional but a report need at least one detail band.
 # standard library
 import sys
 import os
+from typing import Any
 import collections
 import decimal
 import itertools
 import xml.etree.ElementTree as ET
 import operator
+import logging
 
 # PySide6
 from PySide6.QtCore import QOperatingSystemVersion
@@ -362,7 +364,7 @@ class BaseRenderer():
         self.currencySymbol = paramdict.get("currencySymbol", options['currencySymbol'])
         self.trueSymbol = paramdict.get("trueSymbol", options['trueSymbol'])
         self.falseSymbol = paramdict.get("falseSymbol", options['falseSymbol'])
-        self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|None = None  # default value
+        self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # default value
 
     def textFormat(self) -> str|None:
         "Format text for check height and painting"
@@ -521,7 +523,10 @@ class Field(BaseRenderer):
             image.loadFromData(value)
             # scale image if necessary
             if image.width != int(self.width) or image.height() != int(self.height):
-                self.value = image.scaled(int(self.width), int(self.height), self.aspectRatio, Qt.SmoothTransformation)
+                self.value = image.scaled(int(self.width),
+                                          int(self.height),
+                                          self.aspectRatio,
+                                          Qt.TransformationMode.SmoothTransformation)
             else:
                 self.value = image
         else:
@@ -619,7 +624,7 @@ class Special(BaseRenderer):
                 self.value = session['company_description']
             case 'companyImage':
                 self.value = QImage()
-                self.value.loadFromData = session['company_image']
+                self.value.loadFromData(session['company_image'])
             case 'eventDescription':
                 self.value = session['event_description']
             case 'eventImage':
@@ -816,8 +821,8 @@ class Band(list):
         self.canGrow = 'True' == paramdict.get("canGrow", "False")
         self.newPageAfter = 'True' == paramdict.get("newPageAfter", "False")
         self.restartPageNumber = 'True' == paramdict.get("restartPageNumber", "False") # only on new page
-        self.executeBefore = None
-        self.executeAfter = None
+        self.executeBefore: str|None = None
+        self.executeAfter: str|None = None
 
     def render(self, record: dict, prev_record: dict|None = None) -> None:
         "Render the contained objects after setting record value"
@@ -880,9 +885,9 @@ class Band(list):
 class Sort(str):
     "Class that adds a reverse boolean value to a string, used for grouping/ordering"
 
-    def __new__(self, text: str, reverse: bool) -> str:
+    def __new__(self, text: str, reverse: bool) -> str: # type: ignore
         sg = str.__new__(self, text)
-        sg.reverse = True if reverse == 'True' else False
+        sg.reverse = True if reverse == 'True' else False # type: ignore
         return sg
 
 
@@ -911,32 +916,32 @@ class Report():
 
     def __init__(self, xml_string: str|None = None) -> None:
         # report elements
-        self.page_background = [] # printed on every page, absolute coordinates, no data
-        self.page_header = [] # printed on every page
-        self.page_footer = [] # printed on every page
-        self.report_header = [] # printed on first page before any group/detail
-        self.report_footer = [] # printed on last page after any group/detail
-        self.sortings = [] # ordered sorting fields
-        self.groups = []  # ordered grouping conditions
-        self.group_headers = {} # grouping field: [list of bands]
-        self.group_footers = {} # grouping field: [list of bands]
+        self.page_background: list = [] # printed on every page, absolute coordinates, no data
+        self.page_header: list = [] # printed on every page
+        self.page_footer: list = [] # printed on every page
+        self.report_header: list = [] # printed on first page before any group/detail
+        self.report_footer: list = [] # printed on last page after any group/detail
+        self.sortings: list = [] # ordered sorting fields
+        self.groups: list = []  # ordered grouping conditions
+        self.group_headers: dict = {} # grouping field: [list of bands]
+        self.group_footers: dict = {} # grouping field: [list of bands]
         # self.group_summaries = {}  # grouping field: [list of summary function]
-        self.details = [] # must be defined
-        self.execute = None # report scripting before starting
+        self.details: list = [] # must be defined
+        self.execute: str|None = None # report scripting before starting
         # sql query and field used for generate dataset from sql database
-        self.query = None
-        self.query_where = None
-        self.query_group_by = None
-        self.query_order_by = None
-        self.conditions = collections.OrderedDict()
+        self.query: str|None = None
+        self.query_where: str|None = None
+        self.query_group_by: str|None = None
+        self.query_order_by: str|None = None
+        self.conditions: collections.OrderedDict = collections.OrderedDict()
         # dataset column definition
-        self.column = {} # column aliases
+        self.column: dict = {} # column aliases
         # data container, overwritten if self.select is not None
-        self.data = []
-        self.prev_record = None  # pointer to previous rendered record
+        self.data: list|tuple = []
+        self.prev_record: dict|None = None  # pointer to previous rendered record
         # report parameters as a param: value dictionary
-        self.parameter = collections.OrderedDict()
-        self.summaries = []  # each summary init update this list, must be set before calling setReportDefinition
+        self.parameter: collections.OrderedDict = collections.OrderedDict()
+        self.summaries: list = []  # each summary init update this list, must be set before calling setReportDefinition
         #print('Modules:', sys.modules.keys())
         if 'App.Database.Setting' in sys.modules:
             setting = Setting()
@@ -947,11 +952,11 @@ class Report():
 
         # report rendering variables
         self.painter = QPainter()
-        self.pages = [] # list of pages (QPicture)
+        self.pages: list = [] # list of pages (QPicture)
         self.offset = 0.0
         self.page_num = 0
 
-    def appendBands(self, childElement: str) -> list:
+    def appendBands(self, childElement: ET.Element) -> list:
         outList = []
         for band in childElement.findall('band'):
             b = Band(self.options, band.attrib)
@@ -988,7 +993,7 @@ class Report():
             raise ReportXMLParseError("The mandatory element 'options' was not found.")
         for child in opt:
             attr = child.attrib.get('type')
-            val = child.text
+            val = child.text or '0' # for numeric and boolean options text must be not empty, for string options can be empty but not None
             if attr == 'bool':
                 self.options[child.tag] = True if val == 'True' else False
             elif attr == 'str':
@@ -1009,7 +1014,7 @@ class Report():
                     param = child.attrib.get('id')
                     ptype = child.attrib.get('type')
                     value = None
-                    items = []
+                    items: dict = {}
                     referenceList = child.attrib.get('reference')
                     if ptype == 'bool':
                         value = True if child.attrib.get('default') == 'True' else False
@@ -1023,6 +1028,7 @@ class Report():
                         value = QDate.fromString(child.attrib.get('default'), 'yyyyMMdd')
                     elif ptype == 'list':
                         value = child.attrib.get('default') or ''
+                        
                     if child.attrib.get('items'):
                         items = {}
                         for i in child.attrib.get('items').split('|'):
@@ -1124,7 +1130,7 @@ class Report():
                                                 self.options['bottomMargin']),
                                       Unit[self.options["unit"]])
 
-    def setData(self, dataSet: list|None = None) -> None:
+    def setData(self, dataSet: list[Any]|tuple[Any]|None = None) -> None:
         self.data = dataSet
 
     def newPage(self, record: dict) -> None:
@@ -1139,7 +1145,7 @@ class Report():
         self.painter.begin(page)
         self.page_num += 1
         # set page and footer offset
-        self.offset = float(self.options['topMargin'])
+        self.offset = float(self.options['topMargin']) # type: ignore
         # print page background
         if self.page_background:
             for i in self.page_background:
@@ -1159,7 +1165,7 @@ class Report():
         # restore page offset
         self.offset = page_offset
 
-    def groupGenerate(self, data: list, group_index: int = 0) -> None:
+    def groupGenerate(self, data: list[Any]|tuple[Any], group_index: int = 0) -> None:
         "Resolve groups recursively"
         grp = self.groups[group_index] if self.groups else None
         for key, group in itertools.groupby(data, lambda x: x[self.column[grp]] if grp else None):  # if no group returns all the dataset
@@ -1222,10 +1228,10 @@ class Report():
         for s in self.summaries:
             s.reset()
         # Calc space available for details bands and all the other bands
-        self.page_height = self.pageLayout.fullRect(Unit[self.options["unit"]]).height()
-        self.offset = float(self.options['topMargin'])
+        self.page_height = self.pageLayout.fullRect(Unit[self.options["unit"]]).height() #type: ignore
+        self.offset = float(self.options['topMargin']) #type: ignore
         # calc footer height
-        self.footer_height = float(self.options['bottomMargin'])
+        self.footer_height = float(self.options['bottomMargin']) #type: ignore
         if self.page_footer:
             for b in self.page_footer:
                 self.footer_height += b.height
@@ -1233,26 +1239,26 @@ class Report():
         # sort for required sorting
         for col, rev in [(self.column[i], i.reverse) for i in reversed(self.sortings)]:
             try:
-                self.data.sort(key=operator.itemgetter(col), reverse=rev)
+                self.data.sort(key=operator.itemgetter(col), reverse=rev) #type: ignore
             except TypeError: # if a value is None
                 try:
                     # sort with None values and strings
-                    self.data.sort(key= lambda i: '' if not i[col] else i[col], reverse=rev)
+                    self.data.sort(key= lambda i: '' if not i[col] else i[col], reverse=rev) #type: ignore
                 except TypeError:
                     # sort with None values and numbers
-                    self.data.sort(key= lambda i: 0 if not i[col] else i[col], reverse=rev)
+                    self.data.sort(key= lambda i: 0 if not i[col] else i[col], reverse=rev) #type: ignore
                     
         # sort for grouping
         for col, rev in [(self.column[i], i.reverse) for i in reversed(self.groups)]:
             try:
-                self.data.sort(key=operator.itemgetter(col), reverse=rev)
+                self.data.sort(key=operator.itemgetter(col), reverse=rev) #type: ignore
             except TypeError: # if a value is None
                 try:
                     # sort with None values and strings
-                    self.data.sort(key= lambda i: '' if not i[col] else i[col], reverse=rev)
+                    self.data.sort(key= lambda i: '' if not i[col] else i[col], reverse=rev) #type: ignore
                 except TypeError:
                     # sort with None values and numbers
-                    self.data.sort(key= lambda i: 0 if not i[col] else i[col], reverse=rev)
+                    self.data.sort(key= lambda i: 0 if not i[col] else i[col], reverse=rev) #type: ignore
 
         first_record_num = 1
         last_record_num = len(self.data)
@@ -1289,20 +1295,20 @@ class Report():
         self.painter.end() # newPage() do a painter.begin
 
     def reportName(self) -> str:
-        return self.options['documentName']
+        return self.options['documentName']  #type: ignore
 
     def print(self, paintDevice: QPaintDevice) -> None:
         "Print document from generated report"
         if isinstance(paintDevice, QPrinter):
-            paintDevice.setDocName(self.options['documentName'])
+            paintDevice.setDocName(self.options['documentName']) #type: ignore
         elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
-            paintDevice.setTitle(self.options['documentName'])
+            paintDevice.setTitle(self.options['documentName']) #type: ignore
         # forse printer resolution to platform specific DPI avoiding scaling problems
         if isinstance(paintDevice, QPrinter):
-            if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.MacOS:
+            if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
                 paintDevice.setResolution(96)  # Windows and Linux use 96 DPI          
         # force the printer page layout to the report settings
-        if not paintDevice.setPageLayout(self.pageLayout):
+        if not paintDevice.setPageLayout(self.pageLayout): #type: ignore
             w = self.pageLayout.fullRect().size().width()
             h = self.pageLayout.fullRect().size().height()
             u = list(Unit.keys())[list(Unit.values()).index(self.pageLayout.units())]
@@ -1326,7 +1332,7 @@ class Report():
             if fromPage <= pn <= toPage:
                 page.play(painter)
                 if pn != toPage: # newPage not on last page
-                    paintDevice.newPage()
+                    paintDevice.newPage() #type: ignore
         painter.end()
 
 
