@@ -88,6 +88,7 @@ from PySide6.QtWidgets import QDateTimeEdit
 from PySide6.QtWidgets import QComboBox
 from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QPushButton
 
 # application modules
 from App import session
@@ -723,7 +724,7 @@ class SortFilterDialog(QDialog):
 
     def clicked(self, button: QPushButton|None = None) -> None:
         "Intercept Reset button action"
-        if button == self.ui.buttonBox.button(QDialogButtonBox.button.Reset):
+        if button == self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Reset):
             for r in range(self.ui.layoutFilters.rowCount()):
                 if self.ui.layoutFilters.itemAtPosition(r, FIELD):
                     self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().setCurrentIndex(0)

@@ -282,38 +282,85 @@ class DateEdit(QLineEdit):
 class DateTimeEdit(QDateTimeEdit):
     "A QDateTimeEdit class that accepts Null values"
 
-    dateTimeChanged=Signal()
+    valueChanged = Signal() 
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.setSpecialValueText(" ")
         self.setMinimumDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
-        self.setDateTime(QDateTime.currentDateTime())
+        self.dateTimeChanged.connect(self.valueChanged.emit)
 
     # def fixup(self, text: str) -> None:
     #     # if input is invalid set specialValueText = Null
     #     self.setDateTime(self.minimumDateTime())
 
-    def _get_modelDataDateTime(self) -> QDateTime|None:
-        if self.dateTime() == self.minimumDateTime():
-            return None
-        else:
-            return self.dateTime()
+    def _get_modelDataDateTime(self) -> QDateTime:
+        if self.dateTime() <= self.minimumDateTime():
+            return QDateTime() 
+        return self.dateTime()
 
     def _set_modelDataDateTime(self, value: QDateTime|None) -> None:
-        if value is None:
-            self.setDateTime(QDateTime(1800, 1, 1, 0, 0, 0)) # minimum date
+        self.blockSignals(True)
+        if value is None or (isinstance(value, QDateTime) and not value.isValid()):
+            self.setDateTime(self.minimumDateTime())
         else:
             self.setDateTime(value)
+        self.blockSignals(False)
+        self.valueChanged.emit()
 
-    modelDataDateTime = Property(object, fget=_get_modelDataDateTime, fset=_set_modelDataDateTime, notify=dateTimeChanged)
+    modelDataDateTime = Property(QDateTime, fget=_get_modelDataDateTime, 
+                                 fset=_set_modelDataDateTime, 
+                                 notify=valueChanged, 
+                                 user=True)
 
+# class DateTimeEdit(QDateTimeEdit):
+#     # Rinominiamo il segnale per evitare conflitti con quello nativo di Qt
+#     customDataChanged = Signal()
+
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#         self.setSpecialValueText(" ")
+#         self.setMinimumDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
+        
+#         # Colleghiamo il cambiamento del widget al NOSTRO segnale
+#         self.dateTimeChanged.connect(self.customDataChanged.emit)
+
+#     def _get_val(self):
+#         if self.dateTime() == self.minimumDateTime():
+#             return None
+#         return self.dateTime()
+
+#     def _set_val(self, value):
+#         # QUESTO PRINT DEVE APPARIRE IN CONSOLE
+#         print(f"DEBUG: DateTimeEdit ricevuto valore: {value} (Tipo: {type(value)})")
+        
+#         self.blockSignals(True)
+#         if value is None or not value:
+#             self.setDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
+#         elif isinstance(value, QDateTime):
+#             self.setDateTime(value)
+#         else:
+#             # Gestione se il modello passa una stringa (es. da SQLite)
+#             dt = QDateTime.fromString(str(value), Qt.ISODate)
+#             if dt.isValid():
+#                 self.setDateTime(dt)
+#             else:
+#                 self.setDateTime(self.minimumDateTime())
+#         self.blockSignals(False)
+        
+#         # Notifichiamo il cambiamento
+#         self.customDataChanged.emit()
+
+#     # Definiamo la Property in modo che PySide6 la esponga correttamente
+#     modelDataDateTime = Property(QDateTime, fget=_get_val, fset=_set_val, 
+#                                  notify=customDataChanged, user=True)
+    
 
 class RelationalComboBox(QComboBox):
     """QComboBox that uses userData + itemText for key-value foreign key
     or set/get items from a (k, v) list. Can be Null. If available can use icon too"""
 
-    itemChanged=Signal()
+    itemChanged=Signal(int)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)

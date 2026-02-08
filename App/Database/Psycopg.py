@@ -71,7 +71,7 @@ DEFAULT = Default()
 #
 
 class TimestamptzQDateTimeLoader(Loader):
-    def load(self, value):
+    def load(self, value: bytes) -> QDateTime:
         ds = bytes(value).decode()
         dt = QDateTime.fromString(ds[:23], "yyyy-MM-dd HH:mm:ss.zzz")
         if not dt.isValid(): # no milliseconds
@@ -81,9 +81,9 @@ class TimestamptzQDateTimeLoader(Loader):
 psycopg.adapters.register_loader('timestamptz', TimestamptzQDateTimeLoader)
 
 class QDateTimeTimestamptzDumper(Dumper):
-    def dump(self, value):
-        if not value.isValid():
-            value = QDateTime.currentDateTime()
+    def dump(self, value: QDateTime|None) -> bytes|None:
+        if value is None or not value.isValid():
+            return None 
         return bytes(value.toString("yyyy-MM-dd HH:mm:ss.zzz"), 'utf-8')
 
 psycopg.adapters.register_dumper(QDateTime, QDateTimeTimestamptzDumper)
@@ -94,13 +94,13 @@ psycopg.adapters.register_dumper(QDateTime, QDateTimeTimestamptzDumper)
 #
 
 class DateQDateLoader(Loader):
-    def load(self, value):
+    def load(self, value: bytes) -> QDate:
         return QDate.fromString(bytes(value).decode(), "yyyy-MM-dd")
 
 psycopg.adapters.register_loader('date', DateQDateLoader)
 
 class QDateDateDumper(Dumper):
-    def dump(self, value):
+    def dump(self, value: QDate) -> bytes:
         if not value.isValid():
             value = QDate.currentDate()
         return bytes(value.toString("yyyy-MM-dd"), 'utf-8')
@@ -113,7 +113,7 @@ psycopg.adapters.register_dumper(QDate, QDateDateDumper)
 #
 
 class TimeQTimeLoader(Loader):
-    def load(self, value):
+    def load(self, value: bytes) -> QTime:
         ts = bytes(value).decode()
         if len(ts) > 8:
             ts = ts[:8]  # avoid milliseconds precision
@@ -122,7 +122,7 @@ class TimeQTimeLoader(Loader):
 psycopg.adapters.register_loader('time', TimeQTimeLoader)
 
 class QTimeTimeDumper(Dumper):
-    def dump(self, value):
+    def dump(self, value: QTime) -> bytes:
         if not value.isValid():
             value = QTime.currentTime()
         return bytes(value.toString("hh:mm:ss"), 'utf-8')
@@ -135,13 +135,13 @@ psycopg.adapters.register_dumper(QTime, QTimeTimeDumper)
 #
 
 class ByteaQByteArrayLoader(Loader):
-    def load(self, value):
+    def load(self, value: bytes) -> QByteArray:
         return QByteArray.fromHex(bytes(value))
 
 psycopg.adapters.register_loader('bytea', ByteaQByteArrayLoader)
 
 class QByteArrayByteaDumper(Dumper):
-    def dump(self, value):
+    def dump(self, value: QByteArray) -> bytes:
         return bytes(f"\\x{value.toHex().data().decode('utf-8')}", 'utf-8')
 
 psycopg.adapters.register_dumper(QByteArray, QByteArrayByteaDumper)
@@ -152,7 +152,7 @@ psycopg.adapters.register_dumper(QByteArray, QByteArrayByteaDumper)
 #
 
 class InetStrLoader(Loader):
-    def load(self, value):
+    def load(self, value: bytes) -> str:
         return bytes(value).decode()
 
 psycopg.adapters.register_loader('inet', InetStrLoader)
