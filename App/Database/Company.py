@@ -37,7 +37,7 @@ from App.Database.Connect import appconn
 
 
 
-def max_company_code():
+def max_company_code() -> int:
     "Return current used max company code"
     script = """
 SELECT 
@@ -50,7 +50,7 @@ FROM system.company;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def company_is_in_use(company):
+def company_is_in_use(company: int) -> bool:
     "Return True if the company is currently in use"
     script = """
 SELECT company_id 
@@ -63,7 +63,7 @@ WHERE company_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def create_company(company_id, company_desc, company_image):
+def create_company(company_id: int, company_desc: str, company_image: bytes|None) -> None:
     "Create a new company with the given parameters"
     try:
         with appconn.cursor() as cur:
@@ -76,7 +76,7 @@ def create_company(company_id, company_desc, company_image):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def drop_company(company_id):
+def drop_company(company_id: int) -> None:
     "Drop company"
     try:
         with appconn.cursor() as cur:
@@ -85,7 +85,7 @@ def drop_company(company_id):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_company_access(company_id, user_code, profile_code, menu_code, toolbar_code):
+def set_company_access(company_id: int, user_code: str, profile_code: str, menu_code: str, toolbar_code: str)-> None:
     "Set access company for one user to the given company"
     script = """
 INSERT INTO system.app_user_company (
@@ -102,7 +102,7 @@ VALUES (%s, %s, %s, %s, %s);"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def company_list():
+def company_list() -> list[tuple]:
     "Return available companies in current database"
     script = """
 SELECT 

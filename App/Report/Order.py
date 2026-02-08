@@ -69,6 +69,7 @@ def printOrderReport(order_id: int, printer: str|None = None) -> None:
         dialog.paintRequested.connect(report.print)
         dialog.exec()
         
+        
 def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
     setting = Setting()
     report_id = get_report_id(setting['cover_report'], session['l10n'])
@@ -92,6 +93,7 @@ def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
         # start
         dialog.paintRequested.connect(report.print)
         dialog.exec()
+
 
 def printOrderDepartmentReport(order_id: int,  department: int|None = None, printer: str|None = None) -> None:
     setting = Setting()
@@ -120,6 +122,7 @@ def printOrderDepartmentReport(order_id: int,  department: int|None = None, prin
         # start
         dialog.paintRequested.connect(report.print)
         dialog.exec()
+
 
 def printStockUnloadReport(report_id: int, printer: str|None = None, copies: int = 1, event: int|None = None, day: QDate|None = None, daypart: str|None = None) -> None:
     report = Report(report_xml(report_id))

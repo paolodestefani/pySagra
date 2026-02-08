@@ -27,6 +27,9 @@ This module contains database related parameters and constants
 
 """
 
+# minimum required version
+MRV_PGSQL   = 130000  # postgres minimum compatible version
+
 # database application error codes
 
 EWDBS = 'PA001'  # wrong database server version (connect sp)

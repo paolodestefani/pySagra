@@ -40,7 +40,7 @@ from App.Database.Connect import appconn
 from App.Database.Report import get_report_list
 
 
-def generic_cdl(code, description, table, condition=[], order_by=[], null=False):
+def generic_cdl(code: str, description: str, table: str, condition=[], order_by=[], null=False) -> list[tuple]:
     "Get a list of code, description values from a table"
     script = f"SELECT {code}, {description} FROM {table}"
     if condition:
@@ -60,7 +60,7 @@ def generic_cdl(code, description, table, condition=[], order_by=[], null=False)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def generic_with_code_cdl(code, description, table, condition=[], order_by=[], null=False):
+def generic_with_code_cdl(code: str, description: str, table: str, condition=[], order_by=[], null=False) -> list[tuple]:
     "Get a list of code, code + description values from table"
     script = f"SELECT {code}, format('%5s %s', {code}, {description}) FROM {table}"
     if condition:
@@ -78,45 +78,45 @@ def generic_with_code_cdl(code, description, table, condition=[], order_by=[], n
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
-def profile_cdl():
+def profile_cdl() -> list[tuple]:
     "Get profile list"
     return generic_cdl('profile_code', 'description', 'system.profile')
 
-def menu_cdl():
+def menu_cdl() -> list[tuple]:
     "Get menu list"
     return generic_cdl('menu_code', 'description', 'system.menu')
 
-def toolbar_cdl():
+def toolbar_cdl() -> list[tuple]:
     "Get toolbars list"
     return generic_cdl('toolbar_code', 'description', 'system.toolbar')
 
-def user_cdl():
+def user_cdl() -> list[tuple]:
     "Get users list"
     return generic_cdl('user_code', 'description', 'system.app_user')
 
-def company_cdl():
+def company_cdl() -> list[tuple]:
     "Get companies list"
     return generic_with_code_cdl('company_id', 'description', 'system.company')
 
-def printer_class_cdl():
+def printer_class_cdl() -> list[tuple]:
     "Get printer classes list with null"
     return generic_cdl('printer_class_id', 'description', 'printer_class',
                         condition=['company_id = system.pa_current_company()'], 
                         null=True)
     
-def customer_order_report_cdl():
+def customer_order_report_cdl() -> list[tuple]:
     "Get a list of all report (code, description) of customer order class"
     return [(c, d) for i, c, d in get_report_list('ORDER_CUSTOMER', session['l10n'])]
 
-def department_order_report_cdl():
+def department_order_report_cdl() -> list[tuple]:
     "Get a list of all reports of department order class"
     return [(c, d) for i, c, d in get_report_list('ORDER_DEPARTMENT', session['l10n'])]
 
-def cover_order_report_cdl():
+def cover_order_report_cdl() -> list[tuple]:
     "Get a list of all reports of cover order class"
     return [(c, d) for i, c, d in get_report_list('ORDER_COVER', session['l10n'])]
 
-def stock_unload_report_cdl():
+def stock_unload_report_cdl() -> list[tuple]:
     "Get a list of all reports of stock unload class"
     return [(c, d) for i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
 
@@ -124,42 +124,42 @@ def stock_unload_report_cdl():
 #     "Get a list of all reports available for statistics viewer"
 #     return get_report_list('STATSVIEW', session['l10n'], null=True)
 
-def event_cdl():
+def event_cdl() -> list[tuple]:
     "Get event list"
     return generic_cdl('event_id', 'description', 'event', 
                         ['company_id = system.pa_current_company()'], 
                         ['end_date DESC'])
 
-def department_cdl():
+def department_cdl() -> list[tuple]:
     "Get departments list"
     return generic_cdl('department_id', 'description', 'department',
                         ['company_id = system.pa_current_company()'])
 
-def current_item_cdl():
+def current_item_cdl() -> list[tuple]:
     "Items"
     return generic_cdl('item_id', 'description', 'item',  
                         ["is_obsolete IS false",
                          'company_id = system.pa_current_company()'])
 
-def item_all_cdl():
+def item_all_cdl() -> list[tuple]:
     "Items"
     return generic_cdl('item_id', 'description', 'item', 
                         ['company_id = system.pa_current_company()'])
 
-def item_cdl():
+def item_cdl() -> list[tuple]:
     "Items"
     return generic_cdl('item_id', 'description', 'item', 
                         ["item_type = 'I'",
                          'company_id = system.pa_current_company()'])
 
-def item_salable_cdl():
+def item_salable_cdl() -> list[tuple]:
     "Items salable"
     return generic_cdl('item_id', 'description', 'item',
                         ["is_obsolete IS false",
                          "is_salable IS true",
                          'company_id = system.pa_current_company()'])
 
-def item_with_stock_control_cdl():
+def item_with_stock_control_cdl() -> list[tuple]:
     "Items with stock control"
     return generic_cdl('item_id', 'description', 'item', 
                         ["item_type = 'I'", 
@@ -167,27 +167,27 @@ def item_with_stock_control_cdl():
                          "is_obsolete is false",
                          'company_id = system.pa_current_company()'])
 
-def item_with_variant_cdl():
+def item_with_variant_cdl() -> list[tuple]:
     "Items with variants"
     return generic_cdl('item_id', 'description', 'item', 
                         ["has_variants IS true",
                          'company_id = system.pa_current_company()'])
 
-def kit_part_cdl():
+def kit_part_cdl() -> list[tuple]:
     "Kit Parts"
     return generic_cdl('item_id', 'description', 'item', 
                         ["item_type = 'I'",
                          "is_kit_part IS true",
                          'company_id = system.pa_current_company()'])
 
-def menu_part_cdl():
+def menu_part_cdl() -> list[tuple]:
     "Menu Parts"
     return generic_cdl('item_id', 'description', 'item', 
                         ["item_type IN ('I', 'K')",
                          "is_menu_part IS true",
                          'company_id = system.pa_current_company()'])
 
-def price_list_cdl():
+def price_list_cdl() -> list[tuple]:
     "Get price list list"
     return generic_cdl('price_list_id', 'description', 'price_list',
                         ['company_id = system.pa_current_company()'])

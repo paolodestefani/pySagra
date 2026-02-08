@@ -35,7 +35,7 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
-def current_logins():
+def current_logins() -> int:
     "Returns the number of logged users"
     sql = """
 SELECT count(*) 
@@ -43,11 +43,11 @@ FROM system.connection;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(sql)
-            return cur.fetchone()[0]
+            return next(cur)[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def delete_connection_history(days):
+def delete_connection_history(days: int) -> None:
     "Delete connection log table - all records or older then provided days"
     script = """
 DELETE FROM system.connection_history
@@ -58,13 +58,13 @@ WHERE logout_datetime < current_date - %s;"""
             with appconn.transaction():
                 cur.execute(script, (days,))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def kill_client(cid):
+def kill_client(cid: int) -> None:
     "Kills the client of cid process id"
     try:
-        with appconn.conn.cursor() as cur:
+        with appconn.cursor() as cur:
             with appconn.transaction():
                 cur.execute('SELECT system.pa_kill_client(%s);', (cid,))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))

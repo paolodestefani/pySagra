@@ -885,9 +885,9 @@ class Band(list):
 class Sort(str):
     "Class that adds a reverse boolean value to a string, used for grouping/ordering"
 
-    def __new__(self, text: str, reverse: bool) -> str: # type: ignore
+    def __new__(self, text: str|None, reverse: bool) -> str: # type: ignore
         sg = str.__new__(self, text)
-        sg.reverse = True if reverse == 'True' else False # type: ignore
+        sg.reverse = reverse # type: ignore
         return sg
 
 
@@ -903,7 +903,7 @@ class Parameter():
 
 
 class SqlField():
-    def __init__(self, code: str, description: str, ftype: str) -> None:
+    def __init__(self, code: str|None, description: str|None, ftype: str|None) -> None:
         self.code = code
         self.description = description
         self.ftype = ftype
@@ -937,7 +937,7 @@ class Report():
         # dataset column definition
         self.column: dict = {} # column aliases
         # data container, overwritten if self.select is not None
-        self.data: list|tuple = []
+        self.data: list[Any]|tuple[Any]|None = []
         self.prev_record: dict|None = None  # pointer to previous rendered record
         # report parameters as a param: value dictionary
         self.parameter: collections.OrderedDict = collections.OrderedDict()
@@ -1016,26 +1016,33 @@ class Report():
                     value = None
                     items: dict = {}
                     referenceList = child.attrib.get('reference')
-                    if ptype == 'bool':
-                        value = True if child.attrib.get('default') == 'True' else False
-                    elif ptype == 'int':
-                        value = int(child.attrib.get('default'))
-                    elif ptype == 'float':
-                        value = float(child.attrib.get('default'))
-                    elif ptype == 'str':
-                        value = child.attrib.get('default') or ''
-                    elif ptype == 'date':
-                        value = QDate.fromString(child.attrib.get('default'), 'yyyyMMdd')
-                    elif ptype == 'list':
-                        value = child.attrib.get('default') or ''
-                        
+                    df = child.attrib.get('default')
+                    if not df:
+                        raise ReportXMLParseError(f"Parameter with empty default value: <parameter id='{param}'>")
+                    match ptype:
+                        case 'bool':
+                            value = True if df == 'True' else False
+                        case 'int':
+                            value = int(df) # type: ignore
+                        case 'float':
+                            value = float(df) # type: ignore
+                        case 'str':
+                            value = df or '' # type: ignore
+                        case 'date':
+                            value = QDate.fromString(df, 'yyyyMMdd') # type: ignore
+                        case 'list':
+                            value = df # type: ignore
+                        case _:
+                            raise ReportXMLParseError(f"Parameter with wrong/without type "
+                                                    f"attribute: <parameter id='{param}'> with type '{ptype}'")
+                            
                     if child.attrib.get('items'):
                         items = {}
-                        for i in child.attrib.get('items').split('|'):
+                        for i in child.attrib.get('items').split('|'): # type: ignore
                             k, v = i.split(":")
                             items[k] = v
                             
-                    self.parameter[param] = Parameter(child.text, ptype, value, items, referenceList)
+                    self.parameter[param] = Parameter(child.text, ptype, value, items, referenceList) # type: ignore
 
         # report scripting
         execute = root.find('execute')
@@ -1073,7 +1080,7 @@ class Report():
         if sorting is not None:
             for sort in sorting.findall("sort"):
                 field = sort.attrib.get('field')
-                reverse = sort.attrib.get('reverse')
+                reverse = bool(sort.attrib.get('reverse'))
                 self.sortings.append(Sort(field, reverse))
 
         # groups headers/footers
@@ -1081,7 +1088,7 @@ class Report():
         if groups is not None:
             for group in groups.findall('group'):
                 field = group.attrib.get('field')
-                reverse = group.attrib.get('reverse')
+                reverse = bool(group.attrib.get('reverse'))
                 self.groups.append(Sort(field, reverse))
                 for child in group:
                     if child.tag == "groupHeader":
@@ -1117,18 +1124,18 @@ class Report():
 
         # set report page layout
         if self.options['pageSize'] == 'Custom':
-            pageSize = QPageSize(QSizeF(self.options['pageWidth'],
+            pageSize = QPageSize(QSizeF(self.options['pageWidth'], # type: ignore
                                         self.options['pageHeight']),
-                                 PSUnit[self.options["unit"]])
+                                 PSUnit[self.options["unit"]]) # type: ignore
         else:
-            pageSize = QPageSize(PageSize[self.options['pageSize']])
+            pageSize = QPageSize(PageSize[self.options['pageSize']]) # type: ignore
         self.pageLayout = QPageLayout(pageSize,
-                                      Orientation[self.options['orientation']],
-                                      QMarginsF(self.options['leftMargin'],
+                                      Orientation[self.options['orientation']], # type: ignore
+                                      QMarginsF(self.options['leftMargin'], # type: ignore
                                                 self.options['topMargin'],
                                                 self.options['rightMargin'],
                                                 self.options['bottomMargin']),
-                                      Unit[self.options["unit"]])
+                                      Unit[self.options["unit"]]) # type: ignore
 
     def setData(self, dataSet: list[Any]|tuple[Any]|None = None) -> None:
         self.data = dataSet
@@ -1195,7 +1202,7 @@ class Report():
                 if self.groups:
                     for i in self.groups:
                         if self.group_footers.get(i):
-                            for b in self.group_footers.get(i):
+                            for b in self.group_footers.get(i): # type: ignore
                                 for a in b:
                                     if isinstance(a, Summary):
                                         a.update(record)

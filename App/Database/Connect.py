@@ -29,6 +29,7 @@ This module provide all the facilities to connect/dsconnect to the db server
 
 # standard library
 import logging
+from typing import Iterator, Any, Optional
 
 # psycopg
 import psycopg
@@ -43,7 +44,7 @@ from App import APPNAME
 from App import APPVERSIONMAJOR
 from App import APPVERSIONMINOR
 from App import session
-from App import MRV_PGSQL
+from App.Database import MRV_PGSQL
 
 from App.Database import EWADB
 
@@ -71,11 +72,11 @@ import App.Database.Psycopg
 class AppConnection():
     "Database and application connection class"
 
-    def __init__(self):
-        self._conn = None # psycopg connection instance
-        self._par = dict() # store connection parameter for reconnection after restore db
+    def __init__(self) -> None:
+        self._conn: psycopg.Connection # psycopg connection instance
+        self._par: dict = dict() # store connection parameter for reconnection after restore db
 
-    def connect(self, par):
+    def connect(self, par: dict) -> None:
         "Open a db connection and then an application connection trought an sql function"
         self._logging = False
         # FIRST: DATABASE CONNECTION
@@ -97,7 +98,7 @@ class AppConnection():
         except psycopg.OperationalError as er:
             raise PyAppDBConnectionError(er)
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+            raise PyAppDBError(er.diag.sqlstate, str(er))
         else:
             logging.info("Database connection established")
 
@@ -113,12 +114,12 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
                 if self._logging:
                     logging.info(sql)
                 cur.execute(sql)
-                if not cur.fetchone()[0]:
+                if not cur.fetchone():
                     logging.critical("Database '%s' is not an application database", par['database'])
                     raise PyAppDBError(EWADB, f"Database '{par['database']}' is not an application database")
                 logging.info("DB is verified as an application database")
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+            raise PyAppDBError(er.diag.sqlstate, str(er))
         # connect to the applicationdb
         logging.info("Calling application connection function with parameters:")
         logging.info("pgminver = %s", MRV_PGSQL)
@@ -140,20 +141,20 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
                 # postgres search path is set to system, common, company by pa_connect
                 # update session parameters
                 session.update(par)
-                session.update(cur.fetchone())
+                session.update(next(cur))
                 logging.info("DB Application connection established")
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+            raise PyAppDBError(er.diag.sqlstate, str(er))
         self._par.update(par)
 
-    def change_company(self, company):
+    def change_company(self, company: int) -> None:
         "Set or change the working company"
         try:
             with self._conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
                 cur.execute("SELECT * FROM system.pa_company_change(%s);", (company,))
-                session.update(cur.fetchone())
+                session.update(next(cur))
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+            raise PyAppDBError(er.diag.sqlstate, str(er))
         
     # def chek_connection_status(self):
     #     "check connection status"
@@ -163,23 +164,23 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
     #         logging.error("Connection lost")
     #         session['mainwin'].disconnected(er)
 
-    def cursor(self, row_factory=None):
+    def cursor(self, row_factory: Optional[psycopg.RowFactory] = None) -> psycopg.Cursor[Any]|psycopg.ServerCursor[Any]:
         "Returns a new cursor"
         return self._conn.cursor(row_factory=row_factory)
 
-    def transaction(self, savepoint=None, force_rollback=False):
+    def transaction(self, savepoint: str|None = None, force_rollback: bool = False) -> Iterator[psycopg.Transaction]:
         "Returns a new transaction object"
         return self._conn.transaction(savepoint, force_rollback)
 
-    def commit(self):
+    def commit(self) -> None:
         "Commit transaction"
         self._conn.commit()
 
-    def rollback(self):
+    def rollback(self) -> None:
         "Rollback transaction"
         self._conn.rollback()
 
-    def close(self):
+    def close(self) -> None:
         "Close application and db connection"
         # log out
         try:
@@ -190,14 +191,14 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
         # close db connection
         self._conn.close()
 
-    def restart(self):
+    def restart(self) -> None:
         self.connect(self._par)
 
 
 appconn = AppConnection() # connection wrapper instance
 
 
-def can_use_company(user, company):
+def can_use_company(user: str, company: int) -> bool:
     "Return True if user has access rights to company"
     if user == session['app_system_user']:
         return True
@@ -210,9 +211,9 @@ WHERE uc.app_user_code = %s AND uc.company_id = %s;"""
             cur.execute(sql, (user, company))
             return bool(cur.rowcount)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def has_companies_available(user):
+def has_companies_available(user: str) -> bool:
     """Returns True if user have available working company(ies)"""
     if user == session['app_system_user']:
         return True
@@ -224,11 +225,11 @@ SELECT exists(
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (user,))
-            return cur.fetchone()[0]
+            return next(cur)[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_companies_list(user=None):
+def get_companies_list(user: str|None = None) -> list[tuple[int, str]]:
     """Get the available company list for user or all companies"""
     # get companies list for user
     if user and user != session['app_system_user']:
@@ -253,7 +254,7 @@ WHERE session_id = pg_backend_pid();"""
                 cur.execute(script, (user,))
                 return cur.fetchall()
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+            raise PyAppDBError(er.diag.sqlstate, str(er))
     else: # all companies list
         script = """
 SELECT 
@@ -265,9 +266,9 @@ FROM system.company c;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_company_desc(company):
+def get_company_desc(company: int) -> str:
     "Get company description"
     script = """
 SELECT 
@@ -277,11 +278,11 @@ WHERE c.company_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (company,))
-            return cur.fetchone()[0]
+            return next(cur)[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def get_current_event():
+def get_current_event() -> None:
     "Check if an event is available for current date, if true update session dictionary"
     session['event_id'] = None
     session['event_description'] = None
@@ -304,10 +305,10 @@ WHERE
                 session['event_description'] = event[1] # description
                 session['event_image'] = event[2] # image
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
-def database_information():
+def database_information() -> list[tuple[str, str]]:
     "Returns connection informations"
     sql = """
 SELECT
@@ -332,7 +333,7 @@ LIMIT 1;"""
         with appconn.cursor() as cur:
             cur.execute(sql)
             return [i for i in zip([a[0] for a in cur.description],
-                                   [b for b in cur.fetchone()])]
+                                   [b for b in next(cur)])]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
