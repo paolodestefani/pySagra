@@ -29,7 +29,8 @@ This module provide all the facilities to connect/dsconnect to the db server
 
 # standard library
 import logging
-from typing import Iterator, Any, Optional
+#from collections.abc import Generator, Iterator
+from typing import Iterator, Any, Optional, ContextManager
 
 # psycopg
 import psycopg
@@ -164,11 +165,15 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
     #         logging.error("Connection lost")
     #         session['mainwin'].disconnected(er)
 
-    def cursor(self, row_factory: Optional[psycopg.RowFactory] = None) -> psycopg.Cursor[Any]|psycopg.ServerCursor[Any]:
+    def cursor(self, row_factory: Optional[psycopg.rows.RowFactory[Any]] = None) -> psycopg.Cursor[Any]|psycopg.ServerCursor[Any]:
         "Returns a new cursor"
-        return self._conn.cursor(row_factory=row_factory)
+        if row_factory is None:
+            return self._conn.cursor()
+        else:
+            return self._conn.cursor(row_factory=row_factory)
 
-    def transaction(self, savepoint: str|None = None, force_rollback: bool = False) -> Iterator[psycopg.Transaction]:
+    def transaction(self, savepoint: str|None = None, force_rollback: bool = False
+                    ) -> ContextManager[psycopg.Transaction]:
         "Returns a new transaction object"
         return self._conn.transaction(savepoint, force_rollback)
 
@@ -211,7 +216,8 @@ WHERE uc.app_user_code = %s AND uc.company_id = %s;"""
             cur.execute(sql, (user, company))
             return bool(cur.rowcount)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))#
 
 def has_companies_available(user: str) -> bool:
     """Returns True if user have available working company(ies)"""
@@ -227,7 +233,8 @@ SELECT exists(
             cur.execute(script, (user,))
             return next(cur)[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))
 
 def get_companies_list(user: str|None = None) -> list[tuple[int, str]]:
     """Get the available company list for user or all companies"""
@@ -254,7 +261,8 @@ WHERE session_id = pg_backend_pid();"""
                 cur.execute(script, (user,))
                 return cur.fetchall()
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+            raise PyAppDBError(sqlstate, str(er))
     else: # all companies list
         script = """
 SELECT 
@@ -266,7 +274,8 @@ FROM system.company c;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))
 
 def get_company_desc(company: int) -> str:
     "Get company description"
@@ -280,7 +289,8 @@ WHERE c.company_id = %s;"""
             cur.execute(script, (company,))
             return next(cur)[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))
     
 def get_current_event() -> None:
     "Check if an event is available for current date, if true update session dictionary"
@@ -305,7 +315,8 @@ WHERE
                 session['event_description'] = event[1] # description
                 session['event_image'] = event[2] # image
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))
 
 
 def database_information() -> list[tuple[str, str]]:
@@ -332,8 +343,15 @@ LIMIT 1;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(sql)
-            return [i for i in zip([a[0] for a in cur.description],
-                                   [b for b in next(cur)])]
+            # Mypy security check
+            if cur.description is None:
+                return [] 
+            colnames = [desc[0] for desc in cur.description]
+            row = next(cur)
+            if row is None:
+                return [] 
+            return list(zip(colnames, row))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))
 
