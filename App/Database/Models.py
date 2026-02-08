@@ -1007,7 +1007,7 @@ FROM company.item;"""
 
 class ItemModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.item"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1049,7 +1049,7 @@ class ItemModel(TableModel):
 
 class ItemVariantModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.item_variant"
         # model columns: (field, description, readonly, type), tuple of tuples

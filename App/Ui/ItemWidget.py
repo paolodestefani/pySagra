@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ItemWidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.10.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -92,11 +92,11 @@ class Ui_ItemWidget(object):
 
         self.gridLayout.addWidget(self.checkBoxKitPart, 1, 0, 1, 1)
 
-        self.checkBoxStockControl = QCheckBox(self.page)
-        self.checkBoxStockControl.setObjectName(u"checkBoxStockControl")
-        self.checkBoxStockControl.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.checkBoxInventoryControl = QCheckBox(self.page)
+        self.checkBoxInventoryControl.setObjectName(u"checkBoxInventoryControl")
+        self.checkBoxInventoryControl.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.gridLayout.addWidget(self.checkBoxStockControl, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.checkBoxInventoryControl, 0, 0, 1, 1)
 
         self.checkBoxMenuPart = QCheckBox(self.page)
         self.checkBoxMenuPart.setObjectName(u"checkBoxMenuPart")
@@ -104,11 +104,11 @@ class Ui_ItemWidget(object):
 
         self.gridLayout.addWidget(self.checkBoxMenuPart, 1, 1, 1, 1)
 
-        self.checkBoxUnloadControl = QCheckBox(self.page)
-        self.checkBoxUnloadControl.setObjectName(u"checkBoxUnloadControl")
-        self.checkBoxUnloadControl.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.checkBoxDeliveredControl = QCheckBox(self.page)
+        self.checkBoxDeliveredControl.setObjectName(u"checkBoxDeliveredControl")
+        self.checkBoxDeliveredControl.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.gridLayout.addWidget(self.checkBoxUnloadControl, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.checkBoxDeliveredControl, 0, 1, 1, 1)
 
         self.checkBoxObsolete = QCheckBox(self.page)
         self.checkBoxObsolete.setObjectName(u"checkBoxObsolete")
@@ -248,7 +248,7 @@ class Ui_ItemWidget(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.tableViewVariants = EnhancedTableView(self.tabVariants)
         self.tableViewVariants.setObjectName(u"tableViewVariants")
-        self.tableViewVariants.setEnabled(False)
+        self.tableViewVariants.setEnabled(True)
 
         self.verticalLayout_3.addWidget(self.tableViewVariants)
 
@@ -397,8 +397,8 @@ class Ui_ItemWidget(object):
         QWidget.setTabOrder(self.comboBoxType, self.lineEditDescription)
         QWidget.setTabOrder(self.lineEditDescription, self.lineEditCustomerDescription)
         QWidget.setTabOrder(self.lineEditCustomerDescription, self.comboBoxDepartment)
-        QWidget.setTabOrder(self.comboBoxDepartment, self.checkBoxStockControl)
-        QWidget.setTabOrder(self.checkBoxStockControl, self.checkBoxKitPart)
+        QWidget.setTabOrder(self.comboBoxDepartment, self.checkBoxInventoryControl)
+        QWidget.setTabOrder(self.checkBoxInventoryControl, self.checkBoxKitPart)
         QWidget.setTabOrder(self.checkBoxKitPart, self.checkBoxMenuPart)
         QWidget.setTabOrder(self.checkBoxMenuPart, self.checkBoxSalable)
         QWidget.setTabOrder(self.checkBoxSalable, self.spinBoxRow)
@@ -420,7 +420,7 @@ class Ui_ItemWidget(object):
         self.retranslateUi(ItemWidget)
 
         self.stackedWidget.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(ItemWidget)
@@ -432,9 +432,9 @@ class Ui_ItemWidget(object):
         self.groupBox_2.setTitle(QCoreApplication.translate("ItemWidget", u"Item description / customer description", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ItemWidget", u"Department", None))
         self.checkBoxKitPart.setText(QCoreApplication.translate("ItemWidget", u"Kit part", None))
-        self.checkBoxStockControl.setText(QCoreApplication.translate("ItemWidget", u"Stock control", None))
+        self.checkBoxInventoryControl.setText(QCoreApplication.translate("ItemWidget", u"Inventory control", None))
         self.checkBoxMenuPart.setText(QCoreApplication.translate("ItemWidget", u"Menu part", None))
-        self.checkBoxUnloadControl.setText(QCoreApplication.translate("ItemWidget", u"Unload control", None))
+        self.checkBoxDeliveredControl.setText(QCoreApplication.translate("ItemWidget", u"Delivered control", None))
         self.checkBoxObsolete.setText(QCoreApplication.translate("ItemWidget", u"Obsolete", None))
         self.checkBoxSalable.setText(QCoreApplication.translate("ItemWidget", u"Salable", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("ItemWidget", u"Row", None))

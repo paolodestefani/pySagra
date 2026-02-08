@@ -51,6 +51,7 @@ from App.Widget.Delegate import ColorComboDelegate
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import QuantityDelegate
 from App.Widget.Delegate import AmountDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Database.Models import ItemIndexModel  
@@ -197,18 +198,20 @@ class ItemForm(FormIndexManager):
         self.mapper.addMapping(self.ui.comboBoxNormalTextColor, NORMALTXTCOLOR, b"modelDataStr")
         self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, NORMALBCKCOLOR, b"modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxVariants, VARIANTS)
-        self.mapper.addMapping(self.ui.checkBoxUnloadControl, UNLOAD)
+        self.mapper.addMapping(self.ui.checkBoxInventoryControl, UNLOAD)
         self.mapper.addMapping(self.ui.checkBoxKitPart, KITPART)
         self.mapper.addMapping(self.ui.checkBoxMenuPart, MENUPART)
         self.mapper.addMapping(self.ui.checkBoxSalable, SALABLE)
         self.mapper.addMapping(self.ui.checkBoxWebAvailable, WEBAVAILABLE)
         self.mapper.addMapping(self.ui.spinBoxWebSorting, WEBSORTING)
-        self.mapper.addMapping(self.ui.checkBoxStockControl, STOCK)
+        self.mapper.addMapping(self.ui.checkBoxDeliveredControl, STOCK)
         self.mapper.addMapping(self.ui.checkBoxObsolete, OBSOLETE)
         # tabwidget tabs and tableview
         self.ui.tableViewVariants.setModel(modelv)
         self.ui.tableViewVariants.setLayoutName('itemVariant')
         self.ui.tableViewVariants.setItemDelegateForColumn(VPRICE, AmountDelegate(self))
+        self.ui.tableViewVariants.setItemDelegateForColumn(VDESC, GenericDelegate(self))
+        self.ui.tableViewVariants.setItemDelegateForColumn(VSORT, GenericDelegate(self))
         self.ui.tableViewComponents.setModel(modelk)
         self.ui.tableViewComponents.setLayoutName('itemComponent')
         self.ui.tableViewComponents.setItemDelegateForColumn(KPART, RelationDelegate(self, kit_part_cdl))
@@ -248,7 +251,7 @@ class ItemForm(FormIndexManager):
             self.ui.lineEditCustomerDescription.setText(self.ui.lineEditDescription.text())
 
     def hasVariantsStateChanged(self, state):
-        if state == Qt.Checked:
+        if Qt.CheckState(state) == Qt.CheckState.Checked:
             self.ui.tableViewVariants.setEnabled(True)
             self.ui.pushButtonCopyVariants.setEnabled(True)
         else:
@@ -276,7 +279,7 @@ class ItemForm(FormIndexManager):
     def copyVariants(self, checked: bool = False) -> None:
         # ask for item to use for variantsa source
         dlg = ChooseItemDialog(self)
-        if dlg.exec_() == QDialog.Rejected:
+        if dlg.exec_() == QDialog.DialogCode.Rejected:
             return
         # activate variants
         self.ui.checkBoxVariants.setChecked(True)
@@ -294,8 +297,8 @@ class ItemForm(FormIndexManager):
             self.ui.tableViewComponents.setEnabled(True)
             self.ui.tableViewMenuItems.setDisabled(True)
             self.ui.tabWidget.setCurrentIndex(1)
-            self.ui.checkBoxUnloadControl.setChecked(False)
-            self.ui.checkBoxUnloadControl.setDisabled(False)
+            self.ui.checkBoxDeliveredControl.setChecked(False)
+            self.ui.checkBoxDeliveredControl.setDisabled(False)
             self.ui.checkBoxKitPart.setChecked(False)
             self.ui.checkBoxKitPart.setDisabled(True)
             self.ui.checkBoxMenuPart.setEnabled(True)
@@ -303,8 +306,8 @@ class ItemForm(FormIndexManager):
             self.ui.tableViewComponents.setDisabled(True)
             self.ui.tableViewMenuItems.setEnabled(True)
             self.ui.tabWidget.setCurrentIndex(2)
-            self.ui.checkBoxUnloadControl.setChecked(False)
-            self.ui.checkBoxUnloadControl.setDisabled(True)
+            self.ui.checkBoxDeliveredControl.setChecked(False)
+            self.ui.checkBoxDeliveredControl.setDisabled(True)
             self.ui.checkBoxKitPart.setChecked(False)
             self.ui.checkBoxKitPart.setDisabled(True)
             self.ui.checkBoxMenuPart.setChecked(False)
@@ -313,8 +316,8 @@ class ItemForm(FormIndexManager):
             self.ui.tableViewComponents.setDisabled(True)
             self.ui.tableViewMenuItems.setDisabled(True)
             self.ui.tabWidget.setCurrentIndex(0)
-            self.ui.checkBoxStockControl.setEnabled(True)
-            self.ui.checkBoxUnloadControl.setEnabled(True)
+            self.ui.checkBoxInventoryControl.setEnabled(True)
+            self.ui.checkBoxDeliveredControl.setEnabled(True)
             self.ui.checkBoxKitPart.setEnabled(True)
             self.ui.checkBoxMenuPart.setEnabled(True)
 

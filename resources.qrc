@@ -85,6 +85,7 @@
     <file alias="view_note">icon/oxygen/view_note.png</file>
     <file alias="view_star">icon/oxygen/view_star.png</file>
     <file alias="view_flash">icon/oxygen/view_flash.png</file>
+    <file alias="view_new_stuff">icon/oxygen/view_new_stuff.png</file>
     <file alias="view_go_previous">icon/oxygen/view_go_previous.png</file>
 	<file alias="view_go_next">icon/oxygen/view_go_next.png</file>
 	<file alias="view_layout">icon/oxygen/view_layout.png</file>

@@ -79,12 +79,12 @@
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QCheckBox" name="checkBoxStockControl">
+            <widget class="QCheckBox" name="checkBoxInventoryControl">
              <property name="focusPolicy">
               <enum>Qt::FocusPolicy::StrongFocus</enum>
              </property>
              <property name="text">
-              <string>Stock control</string>
+              <string>Inventory control</string>
              </property>
             </widget>
            </item>
@@ -99,12 +99,12 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QCheckBox" name="checkBoxUnloadControl">
+            <widget class="QCheckBox" name="checkBoxDeliveredControl">
              <property name="focusPolicy">
               <enum>Qt::FocusPolicy::StrongFocus</enum>
              </property>
              <property name="text">
-              <string>Unload control</string>
+              <string>Delivered control</string>
              </property>
             </widget>
            </item>
@@ -295,7 +295,7 @@
           <bool>true</bool>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tabVariants">
           <attribute name="title">
@@ -305,7 +305,7 @@
            <item>
             <widget class="EnhancedTableView" name="tableViewVariants">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -541,7 +541,7 @@
   <tabstop>lineEditDescription</tabstop>
   <tabstop>lineEditCustomerDescription</tabstop>
   <tabstop>comboBoxDepartment</tabstop>
-  <tabstop>checkBoxStockControl</tabstop>
+  <tabstop>checkBoxInventoryControl</tabstop>
   <tabstop>checkBoxKitPart</tabstop>
   <tabstop>checkBoxMenuPart</tabstop>
   <tabstop>checkBoxSalable</tabstop>

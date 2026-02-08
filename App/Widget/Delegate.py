@@ -43,12 +43,15 @@ from PySide6.QtCore import QLocale
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
+from PySide6.QtCore import QModelIndex
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QColor
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QPalette
+from PySide6.QtGui import QPainter
 #from PySide6.QtGui import QKeySequence
+from PySide6.QtWidgets import QWidget   
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QAbstractItemDelegate
 from PySide6.QtWidgets import QStyledItemDelegate
@@ -222,7 +225,7 @@ class ColorComboDelegate(QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
         color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
         if not color.isValid():
-            color = Qt.white
+            color = QColor(Qt.GlobalColor.white)
         cb = ColorComboBox(parent)
         cb.setColorList(self.colors)
         return cb
@@ -563,13 +566,14 @@ class RelationDelegate(QStyledItemDelegate):
             cb.addItem(v, k)
         return cb
 
-    def setEditorData(self, editor: QComboBox, index: QModelIndex) -> None:
+    def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
         if not index.data():
             return
         editor.setCurrentText(self.data.get(index.data()))
 
-    def setModelData(self, editor: QComboBox, model: QAbstractItemModel, index: QModelIndex) -> None:
+    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex) -> None:
         # if editor.currentText(): # can happend in insert row
+        print("Editor data", editor.currentData())
         model.setData(index, editor.currentData())
 
     def getRelationData(self, index: QModelIndex) -> any:

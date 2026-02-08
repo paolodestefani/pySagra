@@ -288,8 +288,9 @@ class DateTimeEdit(QDateTimeEdit):
         super().__init__(parent)
         self.setSpecialValueText(" ")
         self.setMinimumDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
+        self.setDateTime(QDateTime.currentDateTime())
 
-    # def fixup(self, text):
+    # def fixup(self, text: str) -> None:
     #     # if input is invalid set specialValueText = Null
     #     self.setDateTime(self.minimumDateTime())
 
@@ -318,6 +319,7 @@ class RelationalComboBox(QComboBox):
         super().__init__(parent)
         self.sqlFunc: Callable|None = None
         self.nullable = False
+        self.currentIndexChanged.connect(self.itemChanged.emit)
 
     def setNullable(self, nullable: bool) -> None:
         self.nullable = nullable
@@ -366,10 +368,8 @@ class RelationalComboBox(QComboBox):
         super().showPopup()
 
     def _get_modelDataInt(self) -> int|None:
-        if not self.currentData(Qt.ItemDataRole.UserRole):
-            return None
-        else:
-            return int(self.currentData(Qt.ItemDataRole.UserRole))
+        val = self.currentData(Qt.ItemDataRole.UserRole)
+        return int(val) if val is not None else -1 # must return a number even if null
 
     def _set_modelDataInt(self, data: int|None) -> None:
         index = self.findData(data)
@@ -378,7 +378,8 @@ class RelationalComboBox(QComboBox):
     modelDataInt = Property(int, fget=_get_modelDataInt, fset=_set_modelDataInt, notify=itemChanged)
 
     def _get_modelDataStr(self) -> str|None:
-        return self.currentData(Qt.ItemDataRole.UserRole)
+        val = self.currentData(Qt.ItemDataRole.UserRole)
+        return str(val) if val is not None else "" # must return a string even if null
 
     def _set_modelDataStr(self, data: str|None) -> None:
         index = self.findData(data, Qt.ItemDataRole.UserRole, Qt.MatchFlag.MatchExactly|Qt.MatchFlag.MatchCaseSensitive)

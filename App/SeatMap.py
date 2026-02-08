@@ -59,6 +59,7 @@ from App.Core.Scripting import scriptMethod
 from App.Ui.SeatMapWidget import Ui_SeatMapWidget
 from App.Ui.GenerateTableNumbersDialog import Ui_GenerateTableNumbers
 from App.Widget.Form import  FormManager
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ColorDelegate
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Dialog import PrintDialog
@@ -217,6 +218,9 @@ class SeatMapForm(FormManager):
         self.ui.tableView.setSortingEnabled(True)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
         # custom delegates
+        self.ui.tableView.setItemDelegateForColumn(TABLE_CODE, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ROW, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(COLUMN, GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TEXT_COLOR, ColorDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(BACKGROUND_COLOR, ColorDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(IS_OBSOLETE, BooleanDelegate(self))
