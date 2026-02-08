@@ -77,7 +77,7 @@ from App.Ui.ChooseItemDialog import Ui_ChooseItemDialog
  I_USER_INS, I_DATE_INS, I_USER_UPD, I_DATE_UPD) = range(22)
 
 (ID, TYPE, DESCRIPTION, CUSTOMER_DESCRIPTION, DEPARTMENT, SORTING, ROW, COLUMN,
- NORMALTXTCOLOR, NORMALBCKCOLOR, STOCK, UNLOAD, VARIANTS, KITPART, MENUPART,
+ NORMALTXTCOLOR, NORMALBCKCOLOR, STOCK, DELIVERED, VARIANTS, KITPART, MENUPART,
  SALABLE, WEBAVAILABLE, WEBSORTING, OBSOLETE) = range(19)
 
 (VID, VITEM, VDESC, VSORT, VPRICE, VUINS, VDINS, VUUPG, VDUPG) = range(9)
@@ -198,13 +198,13 @@ class ItemForm(FormIndexManager):
         self.mapper.addMapping(self.ui.comboBoxNormalTextColor, NORMALTXTCOLOR, b"modelDataStr")
         self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, NORMALBCKCOLOR, b"modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxVariants, VARIANTS)
-        self.mapper.addMapping(self.ui.checkBoxInventoryControl, UNLOAD)
+        self.mapper.addMapping(self.ui.checkBoxInventoryControl, STOCK)
+        self.mapper.addMapping(self.ui.checkBoxDeliveredControl, DELIVERED)
         self.mapper.addMapping(self.ui.checkBoxKitPart, KITPART)
         self.mapper.addMapping(self.ui.checkBoxMenuPart, MENUPART)
         self.mapper.addMapping(self.ui.checkBoxSalable, SALABLE)
         self.mapper.addMapping(self.ui.checkBoxWebAvailable, WEBAVAILABLE)
         self.mapper.addMapping(self.ui.spinBoxWebSorting, WEBSORTING)
-        self.mapper.addMapping(self.ui.checkBoxDeliveredControl, STOCK)
         self.mapper.addMapping(self.ui.checkBoxObsolete, OBSOLETE)
         # tabwidget tabs and tableview
         self.ui.tableViewVariants.setModel(modelv)
