@@ -276,7 +276,7 @@ class DateEdit(QLineEdit):
     def _set_modelDataDate(self, value: QDate|None) -> None:
         self.setDate(value)
 
-    modelDataDate = Property(object, fget=_get_modelDataDate, fset=_set_modelDataDate, notify=dateChanged)
+    modelDataDate = Property(QDate, fget=_get_modelDataDate, fset=_set_modelDataDate, notify=dateChanged, user=True)
 
 
 class DateTimeEdit(QDateTimeEdit):

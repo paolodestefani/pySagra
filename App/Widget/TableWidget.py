@@ -40,6 +40,8 @@ from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QPoint
+from PySide6.QtCore import QMimeData
 from PySide6.QtGui import QDropEvent
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QHBoxLayout
@@ -102,7 +104,7 @@ class TableWidgetItem(QTableWidgetItem):
     def setData(self, role: Qt.ItemDataRole, value) -> None:
         self._data = value
 
-    def copy(self) -> TableWidgetItem:
+    def copy(self) -> QTableWidgetItem:
         return TableWidgetItem(self._data)
 
 

@@ -43,6 +43,8 @@ from PySide6.QtCore import QLocale
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
+from PySide6.QtCore import QAbstractItemModel
+from PySide6.QtCore import QSize
 from PySide6.QtCore import QModelIndex
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
@@ -450,7 +452,7 @@ class ItemsDelegate(QStyledItemDelegate):
         super().__init__(parent)
         self.data = items
 
-    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIIndex) -> QSize:
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
         # ignore flags, add a little more margin
         size = QApplication.fontMetrics().size(0, str(self.data[index.data()]))
         size.setWidth(size.width() + 10)

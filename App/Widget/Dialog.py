@@ -69,6 +69,7 @@ from PySide6.QtGui import QFont
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtGui import QPdfWriter
 from PySide6.QtGui import QPagedPaintDevice
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QStyle
 #from PySide6.QtWidgets import qApp
 from PySide6.QtWidgets import QWidget

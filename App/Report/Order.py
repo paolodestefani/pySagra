@@ -30,6 +30,8 @@ This module contains functions to generate and print order-related reports.
 # standard library
 
 # PySide6
+from PySide6.QtCore import QDate
+from PySide6.QtCore import Qt
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrinterInfo
