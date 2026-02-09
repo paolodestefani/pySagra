@@ -27,6 +27,9 @@ This module manages scripting functions
 
 """
 
+# standard library
+from typing import Callable
+
 # PySide6
 from PySide6.QtWidgets import QMessageBox
 
@@ -36,7 +39,7 @@ from App.Database.Scripting import get_script
 
 
 # scripting management
-def scriptInit(instanceReference):
+def scriptInit(instanceReference: object) -> dict:
     "Returns a dictionary of string command for scripting purpose"
     script = get_script(instanceReference.__class__.__name__)
     # execute init script after if any
@@ -51,10 +54,10 @@ def scriptInit(instanceReference):
     return script
 
 
-def scriptMethod(method):
+def scriptMethod(method: Callable) -> Callable:
     "Execute before/after script if any"
 
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> None:
         globalsParameters = {'session': session,
                              'self': args[0]}  # first argument of a method is instance reference
         # execute script before

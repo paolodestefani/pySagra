@@ -36,6 +36,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QSyntaxHighlighter
 from PySide6.QtGui import QTextCharFormat
 from PySide6.QtGui import QColorConstants
+from PySide6.QtGui import QBrush
+from PySide6.QtGui import QColor
+from PySide6.QtGui import QTextDocument
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QGuiApplication
 
@@ -116,7 +119,7 @@ class XMLHighlighter(QSyntaxHighlighter):
 # Syntax Highligter for python script
 #
 
-def format(color, style=''):
+def format(color: QBrush|QColor, style: str = '') -> QTextCharFormat:
     """Return a QTextCharFormat with the given attributes.
     """
     #_color = QColor()
@@ -187,7 +190,7 @@ class PythonHighlighter(QSyntaxHighlighter):
         r'\{', r'\}', r'\(', r'\)', r'\[', r'\]',
     ]
 
-    def __init__(self, document):
+    def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
         
         self._mappings = {}
@@ -223,7 +226,7 @@ class PythonHighlighter(QSyntaxHighlighter):
         self._mappings.update({r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b': styles['numbers']})
         self._mappings.update({r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b': styles['numbers']})
 
-    def highlightBlock(self, text):
+    def highlightBlock(self, text: str) -> None:
         for pattern, format in self._mappings.items():
             for match in re.finditer(pattern, text):
                 start, end = match.span()
