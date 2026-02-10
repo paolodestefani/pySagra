@@ -30,13 +30,14 @@ This module contains generic and reusable tree models for database tables
 # standard library
 import operator
 import decimal
-#from typing import Type
+from typing import Any
 
 # psycopg
 import psycopg
 
 # PySide6
 from PySide6.QtCore import Qt
+from PySide6.QtCore import QObject
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QDateTime
@@ -81,39 +82,42 @@ FROM system.menu_item m
 WHERE parent = %s
 ORDER BY sorting;"""
     try:
-        with appconn.conn.cursor() as cur:
+        with appconn.cursor() as cur:
             cur.execute(sql, (parent,))
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
 class TreeItem():
     "A row in the tree model"
     ovField = 'object_version'
 
-    def __init__(self, data: dict, parent: QModelIndex = QModelIndex()) -> None:
+    def __init__(self, data: dict[int, Any], parent: TreeItem|None = None) -> None:
         self.parentItem = parent
-        self.itemData = data  # dict of column:value values
-        self.childItems = []
+        self.itemData: dict[int, Any] = data  # dict of column:value values
+        self.childItems: list[TreeItem] = []
         self.state = None  # Updated, Inserted (removed items managed in treeModel)
         self.pkey = None
-        self.toModify = {}  # column of the modified cell
+        self.toModify: dict[int, Any] = {}  # column of the modified cell
 
-    def child(self, row: int) -> object:
+    def child(self, row: int) -> TreeItem|None:
         if 0 <= row < len(self.childItems):
             return self.childItems[row]
+        else:
+            return None
 
-    def appendChild(self, item: object) -> None:
+    def appendChild(self, item: TreeItem) -> None:
         self.childItems.append(item)
 
     def childCount(self) -> int:
         return len(self.childItems)
 
     def childNumber(self) -> int:
-        if self.parentItem != None:
+        if self.parentItem:
             return self.parentItem.childItems.index(self)
-        return 0
+        else:
+            return 0
 
     def columnCount(self) -> int:
         return len(self.itemData)
@@ -151,7 +155,7 @@ class TreeItem():
             #child.insertColumns(position, columns)
         #return True
 
-    def parent(self) -> object:
+    def parent(self) -> TreeItem|None:
         return self.parentItem
 
     #def removeChildren(self, position, count):
@@ -173,7 +177,7 @@ class TreeItem():
     #def parentFieldValue(self):
         #return self.itemData[0]
 
-    def childFieldValue(self, fieldColumn) -> str:
+    def childFieldValue(self, fieldColumn: int) -> Any:
         return self.itemData[fieldColumn]
     
     
@@ -181,13 +185,13 @@ class TreeItem():
 class TreeQueryModel(QAbstractItemModel):
     "A tree model from a fixed number on nestet query"
     
-    def __init__(self, parent: QModelIndex = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.isEditable = False
         self.rootItem = None
-        self.orderByExpressions = []
-        self.repr = 'Generic tree query model' # printable representation of the object
-        self.script = [] # in subclasses the definition and number of sql script
+        self.orderByExpressions: list[str] = []
+        self.repr: str = 'Generic tree query model' # printable representation of the object
+        self.script: list[str] = [] # in subclasses the definition and number of sql script
         self.currentLevel = 0
         
     def __repr__(self) -> str:
@@ -198,7 +202,7 @@ class TreeQueryModel(QAbstractItemModel):
         "Change the object representation text"
         self.repr = text
 
-    def filter(self, column: int, value) -> None:
+    def filter(self, column: int, value: Any) -> None:
         self.clear()
         self.rootItem = TreeItem({i: None for i, c in enumerate(self.columns)})
         self.rootItem.itemData[self.childFieldColumn] = value 
@@ -362,7 +366,7 @@ class TreeModel(QAbstractItemModel):
                 x = parentItem.childFieldValue(self.childFieldColumn)
                 cur.execute(self._script, (x,))
                 for record in cur:
-                    print("Rec", record)
+                    #print("Rec", record)
                     itemData = dict()
                     # selected fields
                     for i in range(len(self.columns)):
@@ -529,8 +533,8 @@ class TreeModel(QAbstractItemModel):
                     # args.update(self.toDelete[row]['pkey'])
                     #args.update(dd.pkey)
                     #print("SQL delete", cur.mogrify(script, args))
-                    print("** DELETE **")
-                    print(cur.mogrify(script, dd.pkey))
+                    #print("** DELETE **")
+                    #print(cur.mogrify(script, dd.pkey))
                     cur.execute(script, dd.pkey)
                 # clear deleted record list
                 self.toDelete.clear()
@@ -568,9 +572,9 @@ class TreeModel(QAbstractItemModel):
                             args = {self.columns[i][0]: child.itemData[i] for i in child.toModify}
                             #args = {c[0]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[0] not in self.sqlPrimaryKey and not c[2]}
                             args.update(child.pkey.copy())
-                            print("** UPDATE **")
-                            print(script)
-                            print(args)
+                            #print("** UPDATE **")
+                            #print(script)
+                            #print(args)
                             cur.execute(script, args)
                             # repopulate the modified row
                             for record in cur:
@@ -606,9 +610,9 @@ class TreeModel(QAbstractItemModel):
                             #for i in self.sqlPrimaryKey:
                                 #args[i] = DEFAULT
                         # print(cur.mogrify(script, args))
-                        print("** INSERT **")
-                        print(script)
-                        print(args)
+                        #print("** INSERT **")
+                        #print(script)
+                        #print(args)
                         cur.execute(script, args)
                         # repopulate the inserted row
                         for record in cur:

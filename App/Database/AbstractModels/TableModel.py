@@ -31,8 +31,7 @@ This module contains generic and reusable table models for database tables
 import operator
 import decimal
 import logging
-from typing import Any
-#from pyexpat import model
+from typing import Final, Literal, TypeAlias, Optional, Any, cast, Union
 
 # pandas
 import pandas as pd
@@ -71,6 +70,7 @@ UPDATED, INSERTED, DELETED = range(3)
 FIELD, DESCRIPTION, RO, TYPE = range(4) # field columns attributes
 
 
+
 class QueryModel(QAbstractTableModel):
     """A read-only model class that execute select sql statement and returns
     the results to view classes.
@@ -92,7 +92,7 @@ class QueryModel(QAbstractTableModel):
         self.repr = 'Generic query model' # printable representation of the object,
         # subclass must define this
         self.selectQuery = '' # subclass must define this
-        self.columns: tuple[Any]|None = None # subclass must define this
+        self.columns: tuple[Any, ...] = () # subclass must define this
         self.isEditable = False # used in forms
         self.isCompanyTable = False # True if is a company table
         self.companyField = 'company_id' # company_id field name, subclass can modifie this if use table alias
@@ -103,13 +103,16 @@ class QueryModel(QAbstractTableModel):
         "Model representation"
         return self.repr
         
-    def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
+    def flags(self, index: QModelIndex|QPersistentModelIndex) -> Qt.ItemFlag:
         "Always return readonly flag"
         if not index.isValid():
             return Qt.ItemFlag.ItemIsEnabled
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
 
-    def data(self, index: QModelIndex|QPersistentModelIndex = QModelIndex(), role: int = Qt.ItemDataRole.DisplayRole) -> str|int|float|QDate|QDateTime|None:
+    def data(self,
+             index: QModelIndex|QPersistentModelIndex = QModelIndex(),
+             role: int = Qt.ItemDataRole.DisplayRole
+             ) -> str|int|float|QDate|QDateTime|None:
         "Returns the required data from dataSet"
         if (not index.isValid() 
             or index.row() > self.rowCount()
@@ -148,39 +151,41 @@ class QueryModel(QAbstractTableModel):
         "Returns the columns number of the dataSet"
         return len(self.columns or [])  # sometimes columns are not yet set
 
-    def sort(self, column: int, order: int = Qt.SortOrder.AscendingOrder) -> None:
-        "One column inplace sorting of the model, manage null values base on declared data time"
-        # convert data dict to a list of lists
-        data = []
-        for r in range(self.rowCount() - self.hasTotalsRow): # True = 1 line False = 0 line
-            row = []
-            for c in range(self.columnCount()):
-                row.append(self.dataSet[r, c])
+    def sort(self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder) -> None:
+        """One column inplace sorting of the model, manage null values based on declared data type"""
+        if not self.dataSet:
+            return
+        data: list[list[Any]] = []
+        for r in range(self.rowCount() - int(self.hasTotalsRow)):
+            row = [self.dataSet[r, c] for c in range(self.columnCount())]
             data.append(row)
-        # manage Null values
         dt = self.columns[column][TYPE]
-        nv = {'int': 0,
-              'str': "",
-              'float': 0.0,
-              'decimal2': 0,
-              'decimal': 0,
-              'bool': False,
-              'date': QDate(),
-              'time': QTime(),
-              'datetime': QDateTime()}[dt]
-        # inplace list sorting
-        if order == Qt.SortOrder.AscendingOrder:
-            data.sort(key=lambda x: x[column] or nv)
-        else:
-            data.sort(key=lambda x: x[column] or nv, reverse=True)
-        # convert ordered list to dict
+        null_map: dict[str, Any] = {
+            'int': 0,
+            'str': "",
+            'float': 0.0,
+            'decimal2': 0,
+            'decimal': 0,
+            'bool': False,
+            'date': QDate(),
+            'time': QTime(),
+            'datetime': QDateTime()
+        }
+        nv = null_map.get(dt, "")
+        is_reverse = (order == Qt.SortOrder.DescendingOrder)
+        data.sort(
+            key=lambda x: cast(Any, x[column] if x[column] is not None else nv),
+            reverse=is_reverse
+        )
+        self.dataSet.clear()
         for i, record in enumerate(data):
             for j, field in enumerate(record):
                 self.dataSet[i, j] = field
-        # notify of changed
-        self.dataChanged.emit(self.createIndex(0, 0),
-                              self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
+        self.dataChanged.emit(
+            self.createIndex(0, 0),
+            self.createIndex(self.rowCount() - 1, self.columnCount() - 1),
+            [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]
+        )
 
     def addWhere(self, condition: str, value: int|float|str) -> None:
         "Add where conditions before select"
@@ -285,13 +290,13 @@ class QueryWithParamsModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "On init only set some empty objects"
         super().__init__(parent)
-        self.dataSet: dict = {}  # a dict of (row, column) = value
+        self.dataSet: dict[tuple[int, int], str|int|float|QDate|QDateTime|None] = dict()  # a dict of (row, column) = value
         self.rows = 0 # updated by select method
         self.parameter: dict = {} # dictionary of parameters
         self.repr = 'Generic query with params model' # printable representation of the object,
         # subclass must define this
-        self.selectQuery = None # subclass must define this
-        self.columns = None # subclass must define this
+        self.selectQuery: str = "" # subclass must define this
+        self.columns: tuple[Any, ...] = () # subclass must define this
         self.isEditable = False # used in forms
         self.hasTotalsRow = False  # used for sorting
         self.limitCondition = None
@@ -306,7 +311,10 @@ class QueryWithParamsModel(QAbstractTableModel):
             return Qt.ItemFlag.ItemIsEnabled
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
 
-    def data(self, index: QModelIndex|QPersistentModelIndex = QModelIndex(), role: int = Qt.ItemDataRole.DisplayRole) -> str|int|float|QDate|QDateTime|None:
+    def data(self,
+             index: QModelIndex|QPersistentModelIndex = QModelIndex(),
+             role: int = Qt.ItemDataRole.DisplayRole
+             ) -> str|int|float|QDate|QDateTime|None:
         "Returns the required data from dataSet"
         if (not index.isValid() 
             or index.row() > self.rowCount()
@@ -321,10 +329,9 @@ class QueryWithParamsModel(QAbstractTableModel):
                 return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
             else:
                 return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        else:
-            return None
+        return None
 
-    def headerData(self, section: int, orientation: int, role: int = Qt.ItemDataRole.DisplayRole) -> str|None:
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> str|None:
         "Returns header data for row (field header)/column (columns number) headers"
         if orientation == Qt.Orientation.Horizontal:
             if role == Qt.ItemDataRole.DisplayRole:
@@ -336,6 +343,7 @@ class QueryWithParamsModel(QAbstractTableModel):
                 return super().headerData(section, orientation, role)
             else:
                 return None
+        return None
 
     def rowCount(self, index: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
         "Returns the rows number of the dataSet"
@@ -345,41 +353,41 @@ class QueryWithParamsModel(QAbstractTableModel):
         "Returns the columns number of the dataSet"
         return len(self.columns)
 
-    def sort(self, column: int, order: int = Qt.SortOrder.AscendingOrder) -> None:
+    def sort(self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder) -> None:
         "One column inplace sorting of the model, manage null values base on declared data time"
-        # convert data dict to a list of lists
         if not self.dataSet:
             return
-        data = []
-        for r in range(self.rowCount() - self.hasTotalsRow): # True = 1 line False = 0 line
-            row = []
-            for c in range(self.columnCount()):
-                row.append(self.dataSet[r, c])
+        data: list[list[Any]] = []
+        for r in range(self.rowCount() - int(self.hasTotalsRow)):
+            row = [self.dataSet[r, c] for c in range(self.columnCount())]
             data.append(row)
-        # manage Null values
         dt = self.columns[column][TYPE]
-        nv = {'int': 0,
-              'str': "",
-              'float': 0.0,
-              'decimal2': 0,
-              'decimal': 0,
-              'bool': False,
-              'date': QDate(),
-              'time': QTime(),
-              'datetime': QDateTime()}[dt]
-        # inplace list sorting
-        if order == Qt.SortOrder.AscendingOrder:
-            data.sort(key=lambda x: x[column] or nv)
-        else:
-            data.sort(key=lambda x: x[column] or nv, reverse=True)
-        # convert ordered list to dict
+        null_map: dict[str, Any] = {
+            'int': 0,
+            'str': "",
+            'float': 0.0,
+            'decimal2': 0,
+            'decimal': 0,
+            'bool': False,
+            'date': QDate(),
+            'time': QTime(),
+            'datetime': QDateTime()
+        }
+        nv = null_map.get(dt, "")
+        is_reverse = (order == Qt.SortOrder.DescendingOrder)
+        data.sort(
+            key=lambda x: cast(Any, x[column] if x[column] is not None else nv),
+            reverse=is_reverse
+        )
+        self.dataSet.clear()
         for i, record in enumerate(data):
             for j, field in enumerate(record):
                 self.dataSet[i, j] = field
-        # notify of changed
-        self.dataChanged.emit(self.createIndex(0, 0), 
-                              self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
+        self.dataChanged.emit(
+            self.createIndex(0, 0),
+            self.createIndex(self.rowCount() - 1, self.columnCount() - 1),
+            [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]
+        )
 
     def setParameter(self, parameter: str, value: int|str|QDate|QDateTime|None) -> None:
         "Set the value of a parameter in prams dictionaty"
@@ -425,7 +433,7 @@ class TableModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "Initialize some empty or default data structure"
         super().__init__(parent)
-        self.dataSet: list[dict] = [] # a list of dict (integer key = record column/field,
+        self.dataSet: Any = [] # a list of dict (integer key = record column/field,
         #                                   'pkey' = primary key tuple,
         #                                   'object_version' = int)
         self.rows = 0 # automatic updated on select
@@ -434,18 +442,18 @@ class TableModel(QAbstractTableModel):
         self.orderByExpression: list[str] = [] # list of string
         self.filterMapping: dict = {}
         self.toInsert: list[int] = []  # list of row number of any inserted row
-        self.toModify: dict = {}  # dict of dict row number / column number of any modified field
+        self.toModify: dict[int, Any] = {}  # dict of dict row number / column number of any modified field
         self.toDelete: list[dict] = []  # list of dict for any cancelled row (need to store pkey and object_version)
         # subclasses must define this properties
         self.table = None # table or view name - string, subclass must define this
         self.isCompanyTable = False # True if is a company table
-        self.columns: tuple = () # model columns definition (field, description, readonly, type)
-        self.primaryKey: list = [] # primary key fields name - sequence, subclass must define this
+        self.columns: tuple[Any, ...] = () # model columns definition (field, description, readonly, type)
+        self.primaryKey: tuple[str, ...] = () # primary key fields name - sequence, subclass must define this
         self.automaticPKey = False  # set pkey filds at DEFAULT value on insert
-        self.recordType = None  # list of field:value key for record type (a table with different record type)
+        self.recordType: dict = {}  # list of field:value key for record type (a table with different record type)
         self.newRecordDefault: dict = {} # a record dictionary with default values for some field on insert
         self.filterCondition: list[tuple] = []  # reference key condition before where conditions, map master row to detail row
-        self.limitCondition = None
+        self.limitCondition: int | None = None
         self.isDirty = False # setted on data changed
         self.isEditable = True # used in forms
         self.repr = 'Generic editable table model' # printable representation of the object
@@ -463,7 +471,10 @@ class TableModel(QAbstractTableModel):
             flags = flags ^ Qt.ItemFlag.ItemIsEditable
         return flags
 
-    def data(self, index: QModelIndex|QPersistentModelIndex = QModelIndex(), role: int = Qt.ItemDataRole.DisplayRole) -> str|int|float|QDate|QDateTime|None:
+    def data(self,
+             index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+             role: int = Qt.ItemDataRole.DisplayRole
+             ) -> str|int|float|QDate|QDateTime|None:
         # sometimes dataSet could be empty
         if (not index.isValid() 
             or index.row() > self.rowCount()
@@ -487,7 +498,11 @@ class TableModel(QAbstractTableModel):
         else:
             return None
 
-    def setData(self, index: QModelIndex|QPersistentModelIndex = QModelIndex(), value: str|int|float|QDate|QDateTime|None = None, role: int = Qt.ItemDataRole.EditRole) -> bool:
+    def setData(self, 
+                index: QModelIndex|QPersistentModelIndex = QModelIndex(),
+                value: str|int|float|QDate|QDateTime|None = None,
+                role: int = Qt.ItemDataRole.EditRole
+                ) -> bool:
         "Set data in dataSet and mark row as modified"
         # sanity checks
         if (not index.isValid() 
@@ -582,7 +597,7 @@ class TableModel(QAbstractTableModel):
                         self.dataSet[row][ovfield] = record[-1] # ovfield is always the last onefield
                     self.dataChanged.emit(self.createIndex(row, 0),
                                           self.createIndex(row, cols),
-                                          [Qt.DisplayRole, Qt.EditRole]) # if any trigger modify de record
+                                          [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify de record
                 # clear modified record list
                 self.toModify.clear()
 
@@ -646,7 +661,7 @@ class TableModel(QAbstractTableModel):
                     try:
                         cur.execute(script, args)
                     except psycopg.Warning as er:
-                        raise PyAppDBError(0, str(er))
+                        raise PyAppDBError('', str(er))
                     # repopulate the inserted row
                     #for record in cur: # must be one record
                     #    pkey = record
@@ -670,12 +685,12 @@ class TableModel(QAbstractTableModel):
                         self.dataSet[row][ovfield] = record[ovcol]
                     self.dataChanged.emit(self.createIndex(row, 0),
                                           self.createIndex(row, cols),
-                                          [Qt.DisplayRole, Qt.EditRole]) # if any trigger modify record
+                                          [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify record
                 # clear insert record list
                 self.toInsert.clear()
                 
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+            raise PyAppDBError(er.diag.sqlstate, str(er))
         self.isDirty = False
         return True
 
@@ -825,9 +840,9 @@ class TableModel(QAbstractTableModel):
         else:
             raise TypeError("Order by expression must be string or list/tuple of strings")
 
-    def primaryKey(self, row: int) -> str|None:
+    def getPrimaryKey(self, row: int) -> str|None:
         if row < 0:
-            return
+            return None
         return self.dataSet[row].get('pkey')
 
     def fieldName(self, column: int) -> str:
@@ -881,7 +896,7 @@ class TableModel(QAbstractTableModel):
                 self.dataSet.clear()
                 for record in cur:
                     # selected fields
-                    item = {i:record[i] for i in range(cols)}    
+                    item: dict[int|str, Any] = {i:record[i] for i in range(cols)}    
                     # primary key fields
                     item['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
                     # discard item with Null primary key
