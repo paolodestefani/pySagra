@@ -62,6 +62,9 @@ from App.Database.Customization import update_identity
 
 from App.Ui.CustomizationsDialog import Ui_CustomizationsDialog
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 # file name (including extension)
 ITEMVIEW = 'itemview.csv'
@@ -73,14 +76,14 @@ REPORTSETTING = 'reportsetting.csv'
 
 
 def customization() -> None:
-    logging.info('Starting customization dialog')
+    logger.info('Starting customization dialog')
     mw = session['mainwin']
     auth = currentAction['sys_customization'].data()
     title = currentAction['sys_customization'].text()
     icon = currentAction['sys_customization'].icon()
     dialog = CustomizationsDialog(mw, title, icon, auth)
     dialog.show()
-    logging.info('Customization dialog shown')
+    logger.info('Customization dialog shown')
 
 
 class CustomizationsDialog(QDialog):

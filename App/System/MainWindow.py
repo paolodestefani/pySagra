@@ -76,6 +76,9 @@ from App.System.Preferences import tab_position
 
 from App.Ui.GoToDialog import Ui_GoToDialog
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 # default navigation status, when no tab is open nothing is available
 NSEMPTY = (False,) * 15
@@ -604,11 +607,11 @@ class MainWindow(QMainWindow):
             st.setValue("MainWindowGeometry", self.saveGeometry())
             st.setValue("MainWindowState", self.saveState(1))
             # disconnect
-            logging.info("DB disconnection")
+            logger.info("DB disconnection")
             appconn.close()
             event.accept()
-            logging.info('Closing the application')
-            logging.info('****************************************')
+            logger.info('Closing the application')
+            logger.info('****************************************')
         else:
             event.ignore()
 

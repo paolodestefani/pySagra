@@ -35,11 +35,13 @@ from App import ENCKEY
 
 # encoding decoding password
 
-def string_encode(token: str) -> str:
+def string_encode(token: str|object) -> str:
     "Cryptography Fernet"
+    token = str(token)
     return Fernet(ENCKEY).encrypt(token.encode('utf-8')).decode('utf-8')
 
-def string_decode(token: str) -> str:
+def string_decode(token: str|object) -> str:
     "Cryptography Fernet"
+    token = str(token)
     return Fernet(ENCKEY).decrypt(token.encode('utf-8')).decode('utf-8')
 

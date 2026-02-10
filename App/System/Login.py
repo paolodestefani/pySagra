@@ -89,6 +89,10 @@ from App.Ui.LoginDialog import Ui_LoginDialog
 from App.Ui.ChangeCompanyDialog import Ui_ChangeCompanyDialog
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 class LoginDialog(QDialog):
     "Login dialog, ask for parameters and launch th connection to server"
 
@@ -152,7 +156,7 @@ class LoginDialog(QDialog):
                                  _tr("MessageDialog", "Critical"),
                                  f"<p><b>{msg}</b></p><pre><tt>{er}</tt></pre>")
             self.ui.lineEditPassword.clear()
-            logging.error("Database connection error %s", er)
+            logger.error("Database connection error %s", er)
             return
         except PyAppDBError as er:
             # for normal cursor on error message box
@@ -177,12 +181,12 @@ class LoginDialog(QDialog):
             mbox.setDetailedText(str(er.message))
             mbox.exec()
             self.ui.lineEditPassword.clear()
-            logging.error("Connection error %s\n%s", er.code, er.message)
+            logger.error("Connection error %s\n%s", er.code, er.message)
             
             return
         finally:
             QGuiApplication.restoreOverrideCursor()
-        logging.info("Database connection established")
+        logger.info("Database connection established")
 
         # store login settinggs
         st = QSettings()
@@ -193,57 +197,57 @@ class LoginDialog(QDialog):
         st.setValue("LogInDbPassword", string_encode(par['db_password']))
 
         # user style theme
-        logging.info("Setting user style to %s", session['style_theme'])
+        logger.info("Setting user style to %s", session['style_theme'])
         setTheme(session['style_theme'])
         # user style colore scheme
-        logging.info("Setting user color palette to %s", session['color_scheme'] or "Unknown")
+        logger.info("Setting user color palette to %s", session['color_scheme'] or "Unknown")
         setColorScheme(session['color_scheme'])
         # user icon theme
-        logging.info("Setting user icon theme to %s", session['icon_theme'])
+        logger.info("Setting user icon theme to %s", session['icon_theme'])
         setIconTheme(session['icon_theme'])
         # set default font and font size
-        logging.info("Setting user font to %s size %s", session['font_family'], session['font_size'])
+        logger.info("Setting user font to %s size %s", session['font_family'], session['font_size'])
         setFont(session['font_family'], session['font_size'])
         # user l10n
         # set locale
         if session['l10n']:
-            logging.info("Setting user l10n to %s", session['l10n'])
+            logger.info("Setting user l10n to %s", session['l10n'])
             session['qlocale'] = QLocale(session['l10n'])
             #print(session['qlocale'])    
             QLocale.setDefault(session['qlocale'])
         else:
-            logging.info("Localization set to system default %s", QLocale.system().name())
+            logger.info("Localization set to system default %s", QLocale.system().name())
         # remove login translator if any
-        logging.info("Removing login translations")
+        logger.info("Removing login translations")
         for i in ('qt', APPNAME):
             QCoreApplication.removeTranslator(session.get(i + '_translator')) # type: ignore
         # install user's translators if lang != 'en'
         if session['l10n']:
             lang = session['l10n'][:2]
             if lang != 'en':
-                logging.info("Setting user translations to %s", lang)
+                logger.info("Setting user translations to %s", lang)
                 for i in ('qt', APPNAME):
                     t = QTranslator()
                     if t.load(f"{i}_{lang}", ":/"):
                         if QCoreApplication.installTranslator(t):
                             session[i + '_translator'] = t
                         else:
-                            logging.error("Error installing application translator for %s", i)
+                            logger.error("Error installing application translator for %s", i)
                     else:
-                        logging.error("Error loading application translator for %s", i)
+                        logger.error("Error loading application translator for %s", i)
         else:
-            logging.info("No translation required for user %s", session['app_user_code'])
+            logger.info("No translation required for user %s", session['app_user_code'])
         
         # set working company
         if session['current_company'] and can_use_company(session['app_user_code'], session['current_company']):
-            logging.info("Setting working company to %s", session['current_company'])
+            logger.info("Setting working company to %s", session['current_company'])
             try:
                 appconn.change_company(session['current_company'])
             except PyAppDBError as er:
                 QMessageBox.critical(None,
                                      _tr("MessageDialog", "Critical"),
                                      f"Database error: {er.code}\n{er.message}")
-                logging.error("Database error %s", er.message)
+                logger.error("Database error %s", er.message)
                 return
         else:
             if has_companies_available(session['app_user_code']):
@@ -259,16 +263,16 @@ class LoginDialog(QDialog):
                 return
             
         # get current event
-        logging.info("Setting current event if any")
+        logger.info("Setting current event if any")
         try:
             get_current_event()
         except PyAppDBError as er:
             QMessageBox.critical(None,
                                  _tr("MessageDialog", "Critical"),
                                  f"Database error: {er.code}\n{er.message}")
-            logging.error("Database error %s %s", er.code, er.message)
+            logger.error("Database error %s %s", er.code, er.message)
             return
-        logging.info("Current event setted to %s %s",
+        logger.info("Current event setted to %s %s",
                      session['event_id'],
                      session['event_description'])
 
@@ -301,7 +305,7 @@ class ChangeCompanyDialog(QDialog):
             QMessageBox.critical(parent,
                                  _tr('MessageDialog', "Critical"),
                                  f"Database error: {er.code}\n{er.message}")
-            logging.error("Database error %s %s", er.code, er.message)
+            logger.error("Database error %s %s", er.code, er.message)
             return
         if not companies:
             self.ui.labelMessage.setText(_tr('MessageDialog', "There aro no other companies you can login"))
@@ -322,7 +326,7 @@ class ChangeCompanyDialog(QDialog):
             return
         newco = int(value)
         newde = get_company_desc(newco)
-        logging.info("On change company starting of setting working company")
+        logger.info("On change company starting of setting working company")
         try:
             appconn.change_company(newco)
         except PyAppDBError as er:
@@ -340,22 +344,22 @@ class ChangeCompanyDialog(QDialog):
             mbox.setDetailedText(er.message)
             mbox.exec_()
 
-            logging.error("Database error %s %s", er.code, er.message)
+            logger.error("Database error %s %s", er.code, er.message)
             return
         session['company'] = newco
         session['company_description'] = newde
-        logging.info("On change company setting working company to %s", session['company'])
+        logger.info("On change company setting working company to %s", session['company'])
         # setting current event
-        logging.info("On change company setting current event if any")
+        logger.info("On change company setting current event if any")
         try:
             get_current_event()
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr('MessageDialog', "Critical"),
                                  f"Database error: {er.code}\n{er.message}")
-            logging.error("On change company database error %s %s", er.code, er.message)
+            logger.error("On change company database error %s %s", er.code, er.message)
         else:
-            logging.info("On change company current event setted to %s %s",
+            logger.info("On change company current event setted to %s %s",
                          session['event_id'],
                          session['event_description'])
         super().accept()

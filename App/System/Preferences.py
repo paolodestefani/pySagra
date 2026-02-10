@@ -57,6 +57,9 @@ from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences
 from App.Ui.PreferencesDialog import Ui_PreferencesDialog
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 # color scheme
 color_scheme = {
@@ -79,14 +82,14 @@ tab_position = {'N': QTabWidget.North, # type: ignore[attr-defined]
 
 
 def preferences() -> None:
-    logging.info('Starting preferences dialog')
+    logger.info('Starting preferences dialog')
     mw = session['mainwin']
     auth = currentAction['sys_preferences'].data()
     title = currentAction['sys_preferences'].text()
     icon = currentIcon['sys_preferences']
     dialog = PreferencesDialog(mw, title, icon, auth)
     dialog.show()
-    logging.info('Preferences dialog shown')
+    logger.info('Preferences dialog shown')
 
 
 class PreferencesDialog(QDialog):

@@ -57,6 +57,9 @@ from App.Widget.Dialog import PrintDialog
 from App.Ui.MenuWidget import Ui_MenuWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 CODE, DESCRIPTION, SYSTEM = range(3)
 
@@ -65,14 +68,14 @@ PARENT, CHILD, ITEMDESCRIPTION, SORTING, ITEMTYPE, ACTION = range(6)
 
 def menu() -> None:
     "Show/Edit menus"
-    logging.info('Starting menus Form')
+    logger.info('Starting menus Form')
     mw = session['mainwin']
     title = currentAction['sys_menu'].text()
     auth = currentAction['sys_menu'].data()
     mf = MenusForm(mw, title, auth)
     mf.reload()
     mw.addTab(title, mf)
-    logging.info('Menus Form added to main window')
+    logger.info('Menus Form added to main window')
 
 
 class MenusForm(FormIndexManager):

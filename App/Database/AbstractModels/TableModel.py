@@ -64,6 +64,10 @@ from App.Database.Company import company_is_in_use
 #from App.Database.CodeDescriptionList import item_salable_cdl
 from App.Core.L10n import _tr
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 
 UPDATED, INSERTED, DELETED = range(3)
 
@@ -78,10 +82,10 @@ class QueryModel(QAbstractTableModel):
     The sql script dynamicaly created from table name adding where/order by/group by/having/limit clauses
     """
 
-    def __init__(self, parent: QObject|None = None) -> None:
+    def __init__(self, parent: QObject | None = None) -> None:
         "On init only set some empty objects"
         super().__init__(parent)
-        self.dataSet: dict[tuple[int, int], str|int|float|QDate|QDateTime|None] = dict()  # a dict of (row, column) = value
+        self.dataSet: Any = dict()  # a dict of (row, column) = value
         self.rows = 0 # number of record fetched updated by select method
         self.whereCondition: list[tuple[str, int|float|str]] = []  # list of (condition, argument) for where clause
         self.orderByExpression: list[str] = [] # list of strings
@@ -112,7 +116,7 @@ class QueryModel(QAbstractTableModel):
     def data(self,
              index: QModelIndex|QPersistentModelIndex = QModelIndex(),
              role: int = Qt.ItemDataRole.DisplayRole
-             ) -> str|int|float|QDate|QDateTime|None:
+             ) -> Any:
         "Returns the required data from dataSet"
         if (not index.isValid() 
             or index.row() > self.rowCount()
@@ -217,7 +221,7 @@ class QueryModel(QAbstractTableModel):
         "Add limit clause before select"
         self.limitCondition = limit
         
-    def filter(self, column: int|None = None, value: str|int|float|QDate|QDateTime|None = None) -> None:
+    def filter(self, column: int|None = None, value: Any = None) -> None:
         "Filter records on a master/detail logic, this model is for detail"
         self.filterCondition.clear()
         if column is None: # empty master table or new record
@@ -256,8 +260,8 @@ class QueryModel(QAbstractTableModel):
         if self.limitCondition:
             script += f"\nLIMIT {self.limitCondition}"
         script += ";"
-        logging.info(f"**** {self.repr} SELECT script ****\n{script}")
-        logging.info(f"**** {self.repr} SELECT args ****\n{args}")
+        logger.info(f"**** {self.repr} SELECT script ****\n{script}")
+        logger.info(f"**** {self.repr} SELECT args ****\n{args}")
         self.layoutAboutToBeChanged.emit()
         self.dataSet.clear()
         try:
@@ -290,7 +294,7 @@ class QueryWithParamsModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "On init only set some empty objects"
         super().__init__(parent)
-        self.dataSet: dict[tuple[int, int], str|int|float|QDate|QDateTime|None] = dict()  # a dict of (row, column) = value
+        self.dataSet: Any = dict()  # a dict of (row, column) = value
         self.rows = 0 # updated by select method
         self.parameter: dict = {} # dictionary of parameters
         self.repr = 'Generic query with params model' # printable representation of the object,
@@ -314,7 +318,7 @@ class QueryWithParamsModel(QAbstractTableModel):
     def data(self,
              index: QModelIndex|QPersistentModelIndex = QModelIndex(),
              role: int = Qt.ItemDataRole.DisplayRole
-             ) -> str|int|float|QDate|QDateTime|None:
+             ) -> Any:
         "Returns the required data from dataSet"
         if (not index.isValid() 
             or index.row() > self.rowCount()
@@ -397,8 +401,8 @@ class QueryWithParamsModel(QAbstractTableModel):
         "Fetch rows from database and fill the dataSet"
         self.layoutAboutToBeChanged.emit()
         script = self.selectQuery.strip()
-        logging.info(f"**** {self.repr} SELECT script ****\n{script}")
-        logging.info(f"**** {self.repr} SELECT params ****\n{self.parameter}")
+        logger.info(f"**** {self.repr} SELECT script ****\n{script}")
+        logger.info(f"**** {self.repr} SELECT params ****\n{self.parameter}")
         try:
             with appconn.cursor() as cur:
                 cur.execute(script, self.parameter)
@@ -474,7 +478,7 @@ class TableModel(QAbstractTableModel):
     def data(self,
              index: QModelIndex | QPersistentModelIndex = QModelIndex(),
              role: int = Qt.ItemDataRole.DisplayRole
-             ) -> str|int|float|QDate|QDateTime|None:
+             ) -> Any:
         # sometimes dataSet could be empty
         if (not index.isValid() 
             or index.row() > self.rowCount()
@@ -500,7 +504,7 @@ class TableModel(QAbstractTableModel):
 
     def setData(self, 
                 index: QModelIndex|QPersistentModelIndex = QModelIndex(),
-                value: str|int|float|QDate|QDateTime|None = None,
+                value: Any = None,
                 role: int = Qt.ItemDataRole.EditRole
                 ) -> bool:
         "Set data in dataSet and mark row as modified"
@@ -530,7 +534,7 @@ class TableModel(QAbstractTableModel):
             return True
         return False
 
-    def blindSetData(self, row: int, column: int, value: str|int|float|QDate|QDateTime|None) -> None:
+    def blindSetData(self, row: int, column: int, value: Any) -> None:
         "Set data without emitting dataChanged signal"
         row = self.filterMapping[row]
         self.dataSet[row][column] = value
@@ -540,7 +544,7 @@ class TableModel(QAbstractTableModel):
         # BUT is needed for proper DataWidgetMapper use
         return True
 
-    def submitAll(self, column: int|None = None, value: str|int|float|QDate|QDateTime|None = None) -> bool:
+    def submitAll(self, column: int|None = None, value: Any = None) -> bool:
         "Update database: insert/delete/update rows"
         # if a referenceKey is provided fill all the rows with reference value
         if not column is None :
@@ -567,11 +571,11 @@ class TableModel(QAbstractTableModel):
                     #if self.isCompanyTable:
                     #    args['company_id'] = session['current_company']
                     args[ovfield] = self.dataSet[row][ovfield]
-                    logging.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
-                    logging.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
+                    logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
+                    logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
                     cur.execute(self.sqlCheck, args)
                     if cur.rowcount == 0:
-                        logging.error(f"**** {self.repr}: row modified before update ****")
+                        logger.error(f"**** {self.repr}: row modified before update ****")
                         raise PyAppDBConcurrencyError()
                     # update record
                     fields = ", ".join([f"{self.columns[i][FIELD]} = %({self.columns[i][FIELD]})s" for i in self.toModify[row]])
@@ -585,8 +589,8 @@ class TableModel(QAbstractTableModel):
                               f"RETURNING {fieldsback};")
                     args = {self.columns[i][FIELD]: self.dataSet[row][i] for i in self.toModify[row] if self.columns[i][FIELD]}
                     args.update({k: pkey[k] for k in pkey})
-                    logging.info(f"**** {self.repr} UPDATE script ****\n{script}")
-                    logging.info(f"**** {self.repr} UPDATE args   ****\n{args}")
+                    logger.info(f"**** {self.repr} UPDATE script ****\n{script}")
+                    logger.info(f"**** {self.repr} UPDATE args   ****\n{args}")
                     cur.execute(script, args)
                     # repopulate the modified row
                     for record in cur:
@@ -609,19 +613,19 @@ class TableModel(QAbstractTableModel):
                     if self.isCompanyTable:
                         args['company_id'] = session['current_company']
                     args[ovfield] = dd[ovfield]
-                    logging.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
-                    logging.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
+                    logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
+                    logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
                     cur.execute(self.sqlCheck, args)
                     if cur.rowcount == 0:
-                        logging.error(f"**** {self.repr} row modified before update ****")
+                        logger.error(f"**** {self.repr} row modified before update ****")
                         raise PyAppDBConcurrencyError()
                     # delete record
                     where = " AND ".join([f"{i} = %({i})s" for i in pkey])
                     script = (f"DELETE FROM {self.table}\n"
                               f"WHERE {where};")
                     args.update({k: pkey[k] for k in pkey})
-                    logging.info(f"**** {self.repr} DELETE script ****\n{script}")
-                    logging.info(f"**** {self.repr} DELETE args   ****\n{args}")
+                    logger.info(f"**** {self.repr} DELETE script ****\n{script}")
+                    logger.info(f"**** {self.repr} DELETE args   ****\n{args}")
                     cur.execute(script, args)
                 # clear deleted record list
                 self.toDelete.clear()
@@ -656,8 +660,8 @@ class TableModel(QAbstractTableModel):
                               f"({fields})\n"
                               f"VALUES ({values})\n"
                               f"RETURNING {fieldsback};")
-                    logging.info(f"**** {self.repr} INSERT script ****\n{script}")
-                    logging.info(f"**** {self.repr} INSERT args   ****\n{args}")
+                    logger.info(f"**** {self.repr} INSERT script ****\n{script}")
+                    logger.info(f"**** {self.repr} INSERT args   ****\n{args}")
                     try:
                         cur.execute(script, args)
                     except psycopg.Warning as er:
@@ -672,8 +676,8 @@ class TableModel(QAbstractTableModel):
                     #       [ovfield])
                     #script = f"SELECT {fields}\nFROM {self.table}"
                     #script += f"\nWHERE {where};"
-                    #logging.info(f"**** {self.repr} SELECT INSERT repopulate script ****\n{script}")
-                    #logging.info(f"**** {self.repr} SELECT INSERT repopulate args   ****\n{args}")
+                    #logger.info(f"**** {self.repr} SELECT INSERT repopulate script ****\n{script}")
+                    #logger.info(f"**** {self.repr} SELECT INSERT repopulate args   ****\n{args}")
                     #cur.execute(script, args)
                     for record in cur:
                         # selected fields
@@ -801,7 +805,7 @@ class TableModel(QAbstractTableModel):
                               self.createIndex(self.rowCount(), self.columnCount()),
                               [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
 
-    def filter(self, column: int|None = None, value: str|int|float|QDate|QDateTime|None = None) -> None:
+    def filter(self, column: int|None = None, value: Any = None) -> None:
         "Filter records on a master/detail logic, this model is for detail"
         self.filterCondition.clear()
         if column is None: # empty master table or new record
@@ -951,8 +955,11 @@ class PandasModel(QAbstractTableModel):
         try:
             with appconn.cursor() as cur:
                 cur.execute(script)
-                df = pd.DataFrame(cur.fetchall(),
-                                  columns=[self.columns[i[0]][0] for i in cur.description])
+                if cur.description:
+                    columns = [self.columns[i[0]][0] for i in cur.description]
+                else:                    
+                    columns = []
+                df = pd.DataFrame(cur.fetchall(), columns=columns)
                 #print(df.head())
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))   
@@ -1002,7 +1009,7 @@ class PandasModel(QAbstractTableModel):
                                     fill_value=0.0,
                                     margins=totals,
                                     margins_name=_tr('Statistics','Totale Generale'))
-        logging.info(f"Pivot table created with {len(self._pivot)} rows and {len(self._pivot.columns)} columns")
+        logger.info(f"Pivot table created with {len(self._pivot)} rows and {len(self._pivot.columns)} columns")
         print(self._pivot.head())
         print(self._pivot.columns)
         print(self._pivot.index.names)
@@ -1020,11 +1027,15 @@ class PandasModel(QAbstractTableModel):
     def columnCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
         return self._pivot.shape[1] + self.row_levels
 
-    def data(self, index: QModelIndex|QPersistentModelIndex = QModelIndex(), role: int = Qt.ItemDataRole.DisplayRole) -> str|int|float|QDate|QDateTime|None:
+    def data(self,
+             index: QModelIndex|QPersistentModelIndex = QModelIndex(),
+             role: int = Qt.ItemDataRole.DisplayRole
+             ) -> Any:
         if not index.isValid():
             return None
         header = self.headerData(index.column(), Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
-        header = header.split('\n')[0]  # in case of multi-line header
+        if header:
+            header = header.split('\n')[0]  # in case of multi-line header
         fm = self.columns[self.trcolumns[header]][4]  # (name, format)
         if role == Qt.ItemDataRole.TextAlignmentRole:
             if fm in ('int', 'float', 'decimal2'):   

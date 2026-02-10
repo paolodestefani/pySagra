@@ -57,13 +57,16 @@ from App.Widget.Dialog import PrintDialog
 from App.Ui.ProfileWidget import Ui_ProfileWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 CODE, DESCRIPTION, SYSTEM = range(3)
 
 PROFILE, ACTION, AUTHORIZATION = range(3)
 
 
-def authorizations() -> tuple[tuple[str, str]]:
+def authorizations() -> tuple[tuple[str, str], ...]:
     return (('R', _tr('Profile', 'Read')),
             ('W', _tr('Profile', 'Write')),
             ('X', _tr('Profile', 'Execute')))
@@ -71,14 +74,14 @@ def authorizations() -> tuple[tuple[str, str]]:
 
 def profile() -> None:
     "Show/Edit profiles"
-    logging.info('Starting profiles Form')
+    logger.info('Starting profiles Form')
     mw = session['mainwin']
     title = currentAction['sys_profile'].text()
     auth = currentAction['sys_profile'].data()
     pw = ProfileForm(mw, title, auth)
     pw.reload()
     mw.addTab(title, pw)
-    logging.info('Profiles Form added to main window')
+    logger.info('Profiles Form added to main window')
 
 
 class DuplicateProfileDialog(QDialog):

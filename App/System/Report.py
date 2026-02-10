@@ -72,6 +72,9 @@ from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
 from App.Core.SyntaxHighlighter import XMLHighlighter
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 V_ID, V_CODE, V_L10N, V_CLASS, V_DESCRIPTION, V_SYSTEM, V_USER_INS, V_DATE_INS, V_USER_UPD, V_DATE_UPD = range(10)
 
@@ -84,14 +87,14 @@ FORM, GRID = range(2)
 
 def report() -> None:
     "Show/Edit reports"
-    logging.info('Starting report Form')
+    logger.info('Starting report Form')
     mw = session['mainwin']
     title = currentAction['sys_report'].text()
     auth = currentAction['sys_report'].data()
     cf = ReportForm(mw, title, auth)
     cf.reload()
     mw.addTab(title, cf)
-    logging.info('Report Form added to main window')
+    logger.info('Report Form added to main window')
 
 
 class ReportForm(FormIndexManager):
@@ -126,7 +129,7 @@ class ReportForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # set font
         st = QSettings()
-        self.font = st.value("XMLEditorFont", QFont('Courier', 8))
+        self.font: QFont = st.value("XMLEditorFont", QFont('Courier', 8))
         self.ui.textEditXML.setFont(self.font)
         self.ui.fontComboBox.setCurrentFont(self.font)
         self.ui.spinBoxFontSize.setValue(self.font.pointSize())
@@ -320,7 +323,7 @@ class ReportForm(FormIndexManager):
     def upload(self) -> None:
         "Upload one report file from directory"
         st = QSettings()
-        path = st.value("PathReports", QDir.current().path())
+        path = str(st.value("PathReports", QDir.currentPath()))
         fileName, t = QFileDialog.getOpenFileName(self,
                                                   _tr('Report', "Select the file to import"),
                                                   path,
@@ -341,9 +344,9 @@ class ReportForm(FormIndexManager):
                                  _tr('Report', "Upload current report"),
                                  f"{msg}\n{er}")
         else:
-            sys = sys == 'True'
+            sysb: bool = sys == 'True'
             try:
-                load_report(cod, lcn, cls, sys, dsc, xml)
+                load_report(cod, lcn, cls, sysb, dsc, xml)
             except PyAppDBError as er:
                 QMessageBox.critical(self,
                                      _tr("MessageDialog", "Critical"),
@@ -357,7 +360,7 @@ class ReportForm(FormIndexManager):
     def uploadAll(self) -> None:
         "Upload all reports from directory"
         st = QSettings()
-        path = st.value("PathReports", QDir.current().path())
+        path = str(st.value("PathReports", QDir.currentPath()))
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Report', "Select the directory"),
                                                      path)
@@ -382,9 +385,9 @@ class ReportForm(FormIndexManager):
                                          f"{msg}\n{fileName}\n{er}")
                     error = True
                 else:
-                    sys = sys == 'True'
+                    sysb: bool = sys == 'True'
                     try:
-                        load_report(cod, lcn, cls, sys, dsc, xml)
+                        load_report(cod, lcn, cls, sysb, dsc, xml)
                     except PyAppDBError as er:
                         error = True
                         QMessageBox.critical(self,
@@ -401,8 +404,8 @@ class ReportForm(FormIndexManager):
                                     _tr('Report', "All reports imported to database"))
 
     def print(self) -> None:
-        rid = self.model.data(self.model.index(self.mapper.currentIndex(), ID))
-        lcn = self.model.data(self.model.index(self.mapper.currentIndex(), L10N))
-        dialog = PrintDialog(self, reportId=rid)
+        rid: int = self.model.data(self.model.index(self.mapper.currentIndex(), ID))
+        lcn: str = self.model.data(self.model.index(self.mapper.currentIndex(), L10N))
+        dialog = PrintDialog(self, reportId=rid, l10n=lcn)
         dialog.show()
 

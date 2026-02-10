@@ -95,12 +95,12 @@ class TreeItem():
 
     def __init__(self, data: dict[int, Any], parent: TreeItem|None = None) -> None:
         self.parentItem = parent
-        self.itemData: dict[int, Any] = data  # dict of column:value values
+        self.itemData = data  # dict of column:value values
         self.childItems: list[TreeItem] = []
         self.state = None  # Updated, Inserted (removed items managed in treeModel)
         self.pkey = None
         self.toModify: dict[int, Any] = {}  # column of the modified cell
-
+        
     def child(self, row: int) -> TreeItem|None:
         if 0 <= row < len(self.childItems):
             return self.childItems[row]
@@ -188,11 +188,13 @@ class TreeQueryModel(QAbstractItemModel):
     def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.isEditable = False
-        self.rootItem = None
+        self.rootItem: TreeItem|None = None
         self.orderByExpressions: list[str] = []
         self.repr: str = 'Generic tree query model' # printable representation of the object
         self.script: list[str] = [] # in subclasses the definition and number of sql script
         self.currentLevel = 0
+        self.columns: list[tuple[str, str, bool, type]] = []  # list of tuples (field name, field description, read only flag, field type)
+        self.childFieldColumn: int = 0 # column of the child field in the query result, set by the subclass
         
     def __repr__(self) -> str:
         "Model representation"
@@ -312,12 +314,19 @@ class TreeModel(QAbstractItemModel):
 
     userDataChanged = Signal()  # can not use dataChanged because is emitted even on select
 
-    def __init__(self, parent: QModelIndex = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
+        self.table: str|None = None
+        self.columns: list[tuple[str, str, bool, type]] = []  # list of tuples (field name, field description, read only flag, field type)
+        self.primaryKey: list[str] = []
+        self.parentField: str|None = None
+        self.parentFieldColumn: int|None = None
+        self.childField: str|None = None
+        self.childFieldColumn: int|None = None
         self.isEditable = True
-        self.rootItem = None
-        self.toDelete = []
-        self.orderByExpressions = []
+        self.rootItem: TreeItem|None = None
+        self.toDelete: list[TreeItem] = []
+        self.orderByExpressions: list[str] = []
         self.repr = 'Generic tree model' # printable representation of the object
         
     def __repr__(self) -> str:

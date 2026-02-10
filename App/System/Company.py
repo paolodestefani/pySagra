@@ -73,6 +73,9 @@ from App.Ui.CompanyWidget import Ui_CompanyWidget
 from App.Ui.NewCompanyDialog import Ui_NewCompanyDialog
 from App.Core.L10n import _tr
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 COMP_ID, COMP_DESC, COMP_SYSTEM, COMP_IMAGE = range(4)
 
@@ -82,14 +85,14 @@ COMP_ID, COMP_DESC, COMP_SYSTEM, COMP_IMAGE = range(4)
 
 def company() -> None:
     "Show/Edit company table"
-    logging.info('Starting company management Form')
+    logger.info('Starting company management Form')
     mw = session['mainwin']
     title = currentAction['sys_company'].text()
     auth = currentAction['sys_company'].data()
     cf = CompanyForm(mw, title, auth)
     cf.reload()
     mw.addTab(title, cf)
-    logging.info('Company management Form added to main window')
+    logger.info('Company management Form added to main window')
     
 
 class CompanyForm(FormIndexManager):
@@ -237,7 +240,7 @@ class CompanyForm(FormIndexManager):
             QMessageBox.critical(self,
                                  _tr('MessageDialog', "Critical"),
                                  f"Database error: {er.code}\n{er.message}")
-            logging.error('Database error on drop company: %s', er.message)
+            logger.error('Database error on drop company: %s', er.message)
         else:
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
@@ -339,12 +342,12 @@ class NewCompanyDialog(QDialog):
             mbox.setText(msg)
             mbox.setDetailedText(er.message)
             mbox.exec_()
-            logging.error('Database error on create new company: %s', er.message)
-            logging.error('Error code: %s', er.code)
-            logging.error('Error message: %s', er.message)
+            logger.error('Database error on create new company: %s', er.message)
+            logger.error('Error code: %s', er.code)
+            logger.error('Error message: %s', er.message)
         else:
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
                                     _tr('Company', "Company created succesfully"))
-            logging.info('New company %s/%s created', companyCode, companyDescription)
+            logger.info('New company %s/%s created', companyCode, companyDescription)
             super().accept()

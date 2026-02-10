@@ -55,29 +55,31 @@ from App.Ui.ConnectionHistoryWidget import Ui_ConnectionHistoryWidget
 from App.Core.L10n import _tr
 from App.Widget.Form import FormManager
 
+# logger
+logger = logging.getLogger(__name__)
 
 
 def connection() -> None:
     "Show/Edit curent connections"
-    logging.info('Starting connections Form')
+    logger.info('Starting connections Form')
     mw = session['mainwin']
     auth = currentAction['sys_connection'].data()
     title = currentAction['sys_connection'].text()
     cw = ConnectionForm(mw, title, auth)
     cw.reload()
     mw.addTab(title, cw)
-    logging.info('Connections Form added to main window')
+    logger.info('Connections Form added to main window')
 
 
 def connectionHistory() -> None:
     "Show connections history, clear history"
-    logging.info('Starting connections history Form')
+    logger.info('Starting connections history Form')
     mw = session['mainwin']
     auth = currentAction['sys_connection_history'].data()
     title = currentAction['sys_connection_history'].text()
     cw = ConnectionHistoryForm(mw, title, auth)
     mw.addTab(title, cw)
-    logging.info('Connections history Form added to main window')
+    logger.info('Connections history Form added to main window')
 
 
 class ConnectionForm(FormManager):
@@ -147,7 +149,7 @@ class ConnectionForm(FormManager):
                                      _tr('MessageDialog', "Critical"),
                                      f"Database error: {er.code}\n{er.message}",
                                      QMessageBox.StandardButton.Ok)
-                logging.error('Database error on kill client: %s', er.message)
+                logger.error('Database error on kill client: %s', er.message)
 
     def export(self) -> None:
         self.ui.tableView.exportView()
@@ -204,7 +206,7 @@ class ConnectionHistoryForm(FormManager):
                                  _tr('MessageDialog', 'Critical'),
                                  f"Database error: {er.code}\n{er.message}",
                                  QMessageBox.StandardButton.Ok)
-            logging.error('Database error on select connection history: %s', er.message)
+            logger.error('Database error on select connection history: %s', er.message)
             return
         self.ui.tableView.selectRow(0)
         self.ui.tableView.setFocus()
@@ -227,7 +229,7 @@ class ConnectionHistoryForm(FormManager):
                                  _tr('MessageDialog', 'Critical'),
                                  f"Database error: {er.code}\n{er.message}",
                                  QMessageBox.StandardButton.Ok)
-            logging.error('Database error on delete connection: %s', er.message)
+            logger.error('Database error on delete connection: %s', er.message)
         else:
             self.reload()
             QMessageBox.information(self,
@@ -250,7 +252,7 @@ class ConnectionHistoryForm(FormManager):
                                  _tr('MessageDialog', 'Critical'),
                                  f"Database error: {er.code}\n{er.message}",
                                  QMessageBox.StandardButton.Ok)
-            logging.error('Database error on delete connection history: %s', er.message)
+            logger.error('Database error on delete connection history: %s', er.message)
         else:
             self.reload()
             QMessageBox.information(self,
@@ -269,7 +271,7 @@ class ConnectionHistoryForm(FormManager):
                                  _tr('MessageDialog', 'Critical'),
                                  f"Database error: {er.code}\n{er.message}",
                                  QMessageBox.StandardButton.Ok)
-            logging.error('Database error on setting automatic delete options: %s', er.message)
+            logger.error('Database error on setting automatic delete options: %s', er.message)
         else:
             self.reload()
             QMessageBox.information(self,

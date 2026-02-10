@@ -49,20 +49,22 @@ from App.Core.L10n import _tr
 from App.Ui.HelpDialog import Ui_HelpDialog
 from App.Widget.Dialog import PrintPreviewDialog
 
+# logger
+logger = logging.getLogger(__name__)
 
 
 def help() -> None:
-    logging.info('Starting help dialog')
+    logger.info('Starting help dialog')
     dialog = HelpDialog(APPNAME, session['mainwin'].helpLink(), session['mainwin'])
     dialog.show()
-    logging.info('Help dialog shown')
+    logger.info('Help dialog shown')
 
 
 def faq() -> None:
-    logging.info('Starting faq dialog')
+    logger.info('Starting faq dialog')
     dialog = HelpDialog(APPNAME, "help\faq.html", session['mainwin'])
     dialog.show()
-    logging.info('Faq dialog shown')
+    logger.info('Faq dialog shown')
 
 
 class HelpDialog(QDialog):

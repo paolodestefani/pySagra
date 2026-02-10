@@ -73,12 +73,15 @@ from App import session
 from App.System.Login import LoginDialog
 from App.System.MainWindow import MainWindow
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def logUnhandledException(ex_cls: str, ex:str, tb: types.TracebackType) -> None:
     "Function to get and log unhadked exceptions"
-    logging.critical(''.join(traceback.format_tb(tb)))
-    logging.critical('%s', ex_cls)
-    logging.critical('%s', ex)
+    logger.critical(''.join(traceback.format_tb(tb)))
+    logger.critical('%s', ex_cls)
+    logger.critical('%s', ex)
     # normal cursor
     QApplication.restoreOverrideCursor()
     # message is html (qt ritch text)
@@ -176,42 +179,42 @@ if __name__ == "__main__":
     #sys.excepthook = logUnhandledException
     ##########################################
     # logging information
-    logging.info('')
-    logging.info('****************************************')
-    logging.info('Starting %s version %s.%s.%s %s', APPNAME, APPVERSIONMAJOR, APPVERSIONMINOR, APPVERSIONPATCH, APPVERSIONTAG)
-    logging.info('Log level set to %s', logging.getLevelName(logging.getLogger().level))
-    logging.info('****************************************')
-    logging.info('')
+    logger.info('')
+    logger.info('****************************************')
+    logger.info('Starting %s version %s.%s.%s %s', APPNAME, APPVERSIONMAJOR, APPVERSIONMINOR, APPVERSIONPATCH, APPVERSIONTAG)
+    logger.info('Log level set to %s', logging.getLevelName(logging.getLogger().level))
+    logger.info('****************************************')
+    logger.info('')
     # start PySide6 Application
-    logging.info('Setting up QApplication')
+    logger.info('Setting up QApplication')
     app = QApplication(sys.argv)
     # l10n
-    logging.info('Setting up QLocale to system locale')
+    logger.info('Setting up QLocale to system locale')
     lang = QLocale.system().name()[:2]  # = system language
     # on macos system locale is not correct
     if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
         lang = QLocale().uiLanguages(QLocale.TagSeparator.Underscore)[-1]
     # install translators for qt and main application
-    logging.info('Installing translators')
+    logger.info('Installing translators')
     for i in ('login', APPNAME):
         t = QTranslator()
         if t.load(i + '_' + lang, ":/"):
             if app.installTranslator(t):
                 session[i + '_translator'] = t
     # set basic parameters
-    logging.info('Setting QApplication name, version, domain and icon')
+    logger.info('Setting QApplication name, version, domain and icon')
     app.setApplicationName(APPNAME)
     app.setApplicationVersion(f'{APPVERSIONMAJOR:02}.{APPVERSIONMINOR:02}.{APPVERSIONPATCH:04}')
     app.setOrganizationName(ORGANIZATION)
     app.setOrganizationDomain(WEBSITE)
     app.setWindowIcon(QIcon(f":/{APPNAME}"))
     # create a db and application connection
-    logging.info('Starting the login dialog')
+    logger.info('Starting the login dialog')
     login = LoginDialog()
     if login.exec() == QDialog.DialogCode.Rejected:
         sys.exit(0)
     # create a main window
-    logging.info('Starting MainWindow')
+    logger.info('Starting MainWindow')
     session['mainwin'] = MainWindow()
     session['mainwin'].show()
     sys.exit(app.exec())

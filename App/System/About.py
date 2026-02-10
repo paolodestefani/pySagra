@@ -49,27 +49,31 @@ from App.Ui.AboutDialog import Ui_AboutDialog
 from App.Ui.SystemInfoDialog import Ui_SystemInfoDialog
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 def about() -> None:
     "About information dialog"
-    logging.info('Starting about dialog')
+    logger.info('Starting about dialog')
     a = AboutDialog(session['mainwin'])
     a.show()
-    logging.info('About dialog shown')
+    logger.info('About dialog shown')
 
 
 def systemInfo() -> None:
     "System Information action"
-    logging.info('Starting system info dialog')
+    logger.info('Starting system info dialog')
     h = SystemInfoDialog(session['mainwin'])
     h.show()
-    logging.info('System info shown')
+    logger.info('System info shown')
 
 
 def aboutQt() -> None:
     "About Qt"
-    logging.info('Starting about qt dialog')
+    logger.info('Starting about qt dialog')
     QMessageBox.aboutQt(session['mainwin'])
-    logging.info('About qt dialog shown')
+    logger.info('About qt dialog shown')
 
 
 
