@@ -34,7 +34,9 @@ from App.Database.Connect import appconn
 
 
 
-def department_list(only_active=True, include_menu=False):
+def department_list(only_active: bool = True,
+                    include_menu: bool = False
+                    ) -> list[tuple]:
     "Get a list of active departments or all departments"
     where = []
     where.append('company_id = system.pa_current_company()')
@@ -61,7 +63,7 @@ ORDER BY sorting;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_department(desc):
+def get_department(desc: str) -> int:
     "Returns department id of given department description"
     script = """
 SELECT department_id 
@@ -76,7 +78,7 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_department_desc(dep):
+def get_department_desc(dep: int) -> str | None:
     "Returns department description of given department id"
     script = """
 SELECT description 
@@ -85,11 +87,15 @@ WHERE department_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (dep,))
-            return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
+            else:
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def get_department_barcode(dep):
+def get_department_barcode(dep: int) -> str | None:
     "Returns department barcode of given department id"
     script = """
 SELECT chr(cast(count(*) + 64 as integer)) AS n 
@@ -99,11 +105,15 @@ WHERE department_id <= %s
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (dep,))
-            return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
+            else:
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_department_printer_class(dep):
+def get_department_printer_class(dep: int) -> int | None:
     "Returns the printer class for dep department"
     script = """
 SELECT printer_class_id
@@ -115,12 +125,15 @@ WHERE
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (dep,))
-            if cur.rowcount:
-                return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
+            else:                
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def department_takeaway_list():
+def department_takeaway_list()-> list[str]:
     "Returns a list of departments enabled for take away"
     script = """
 SELECT description 
@@ -136,4 +149,4 @@ WHERE
             else:
                 return []
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))

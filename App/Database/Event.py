@@ -27,6 +27,8 @@ This module provide all the facilities to manage events
 
 
 """
+# standard library
+from typing import Any
 
 # psycopg
 import psycopg
@@ -39,7 +41,7 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
-def get_event_data(event: int) -> tuple[str|None, QDate|None, QDate|None, int|None]:
+def get_event_data(event: int) -> Any:
     "Get event data"
     sql = """
 SELECT
@@ -52,14 +54,11 @@ WHERE event_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(sql, (event,))
-            if cur.rowcount:
-                return cur.fetchone()
-            else:
-                return (None, None, None, None)
+            return next(cur, None)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))   
 
-def is_used(event):
+def is_used(event: int) -> bool:
     "Returns True if have orders for the given event"
     sql = """
 SELECT EXISTS(
@@ -70,11 +69,15 @@ SELECT EXISTS(
     try:
         with appconn.cursor() as cur:
             cur.execute(sql, (event,))
-            return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
+            else:
+                return False
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def get_event_from_date(date: QDate) -> tuple[int, str]:
+def get_event_from_date(date: QDate) -> tuple[int, str] | None:
     "Get event id from QDate or QDateTime"
     sql = """
 SELECT 
@@ -87,10 +90,11 @@ WHERE
     try:
         with appconn.cursor() as cur:
             cur.execute(sql, (date, date))
-            if cur.rowcount:
-                return cur.fetchone()
+            result = next(cur, None)
+            if result:
+                return result
             else:
-                return (None, None)
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 

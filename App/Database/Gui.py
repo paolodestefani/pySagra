@@ -33,50 +33,36 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
-def get_actions():
+def get_actions() -> list[tuple]:
     "Returns all actions definition for current user/profile"
     try:
         with appconn.cursor() as cur:
             cur.execute("SELECT * FROM system.pa_get_actions()")
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
-# def get_shortcut(action):
-#     "Returns the action's shortcut for current user"
-#     script = """SELECT sc.shortcut
-# FROM system.shortcut_keysequence sc
-# JOIN system.app_user u ON sc.scheme_code = u.keyboard_shortcut
-# WHERE u.code = system.pa_current_user() AND sc.action = %s;"""
-#     try:
-#         with appconn.cursor() as cur:
-#             cur.execute(script, (action,))
-#             if cur.rowcount:
-#                 return cur.fetchone()[0]
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, er)
-
-def get_menu(item):
+def get_menu(item: str) -> list[tuple]:
     "Returns menu definition from system.menu_item"
     try:
         with appconn.cursor() as cur:
             cur.execute("SELECT * FROM system.pa_get_menu(%s)", (item,))
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
     
 
-def get_toolbar(item):
+def get_toolbar(item: str) -> list[tuple]:
     "Returns toolbar definition from system.menu_item"
     try:
         with appconn.cursor() as cur:
             cur.execute("SELECT * FROM system.pa_get_toolbar(%s)", (item,))
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_menu_tree(menu):
+def get_menu_tree(menu: str) -> list[tuple]:
     "Returns actions for given menu"
     sql = """
 SELECT 
@@ -94,9 +80,9 @@ ORDER BY sorting;"""
             cur.execute(sql, (menu,))
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_user_theme(theme):
+def set_user_theme(theme: str) -> None:
     "Update last used theme for user"
     sql = """
 UPDATE system.app_user 
@@ -107,4 +93,4 @@ WHERE id = system.pa_current_user();"""
             with appconn.transaction():
                 cur.execute(sql, (theme,))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
