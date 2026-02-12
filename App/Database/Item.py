@@ -35,7 +35,7 @@ from App.Database.Exceptions import PyAppDBError
 
 
 
-def get_variants(item_id):
+def get_variants(item_id: int) -> list[tuple]:
     "Get a list of variants from item_id"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
@@ -43,8 +43,8 @@ SELECT
     variant_description,
     price_delta
 FROM item_variant
-WHERE company_id = system.pa_current_company() 
-    AND item_id = %s
+WHERE   company_id  = system.pa_current_company() 
+    AND item_id     = %s
 ORDER BY sorting;"""
     try:
         with appconn.cursor() as cur:
@@ -53,7 +53,7 @@ ORDER BY sorting;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def item_list(event_id, department_id):
+def item_list(event_id: int, department_id: int) -> list[tuple]:
     "Get item list for supplied event and department"
     # actually we don't need to filter company_id as event_id and department_id are unique across companies
     script = """
@@ -71,10 +71,10 @@ SELECT
     available
 FROM vw_item_availability
 WHERE 
-    company_id = system.pa_current_company() 
-    AND is_salable IS true 
-    AND event_id = %(event_id)s 
-    AND department_id = %(department_id)s;"""
+        company_id      = system.pa_current_company() 
+    AND is_salable      IS true 
+    AND event_id        = %(event_id)s 
+    AND department_id   = %(department_id)s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, {'event_id': event_id, 'department_id': department_id})
@@ -82,7 +82,7 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def item_web_list(event_id, department_id):
+def item_web_list(event_id: int, department_id: int) -> list[tuple]:
     # actually we don't need to filter company_id as event_id and department_id are unique across companies
     "Get item list for supplied event for web order"
     script = """
@@ -94,11 +94,11 @@ SELECT
     has_variants
 FROM vw_item_availability
 WHERE 
-    company_id = system.pa_current_company() 
-    AND is_salable IS true 
+        company_id      = system.pa_current_company() 
+    AND is_salable      IS true 
     AND is_web_available IS true 
-    AND event_id = %(event_id)s 
-    AND department_id = %(department_id)s
+    AND event_id        = %(event_id)s 
+    AND department_id   = %(department_id)s
 ORDER BY web_sorting;"""
     try:
         with appconn.cursor() as cur:
@@ -107,16 +107,16 @@ ORDER BY web_sorting;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def is_menu(item_id):
+def is_menu(item_id: int) -> bool:
     "Return True if item is a menu type item"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
 SELECT item_id 
 FROM item 
 WHERE 
-    company_id = system.pa_current_company() 
-    AND item_id = %s 
-    AND item_type = 'M';"""
+        company_id  = system.pa_current_company() 
+    AND item_id     = %s 
+    AND item_type   = 'M';"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (item_id,))
@@ -124,16 +124,16 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def is_kit(item_id):
+def is_kit(item_id: int) -> bool:
     "Return True if item is a kit type item"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
 SELECT item_id 
 FROM item 
 WHERE
-    company_id = system.pa_current_company()
-    AND item_id = %s 
-    AND item_type = 'K';"""
+        company_id  = system.pa_current_company()
+    AND item_id     = %s 
+    AND item_type   = 'K';"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (item_id,))
@@ -141,7 +141,7 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def is_for_takeaway(item_id):
+def is_for_takeaway(item_id: int) -> bool:
     "Return True if item is available for takeaway, based on department's flag"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
@@ -149,8 +149,8 @@ SELECT i.item_id
 FROM item i
 JOIN department d on i.department_id = d.department_id
 WHERE 
-    i.company_id = system.pa_current_company()
-    AND i.item_id = %s 
+        i.company_id    = system.pa_current_company()
+    AND i.item_id       = %s 
     AND d.is_for_takeaway IS True;"""
     try:
         with appconn.cursor() as cur:
@@ -159,7 +159,7 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def has_stock_management(item_id):
+def has_stock_management(item_id: int) -> bool:
     "Return True if item's require stock management"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
@@ -167,16 +167,16 @@ SELECT
     has_inventory_control 
 FROM item 
 WHERE
-    company_id = system.pa_current_company()
-    AND item_id = %s;"""
+        company_id  = system.pa_current_company()
+    AND item_id     = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (item_id,))
-            return bool(cur.rowcount) #cur.fetchone()[0]
+            return bool(cur.rowcount)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_menu_items(item_id):
+def get_menu_items(item_id: int) -> list[tuple]:
     "Return menu components"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
@@ -185,17 +185,16 @@ SELECT
     quantity
 FROM item_part
 WHERE
-    company_id = system.pa_current_company()
-    AND item_id = %s;"""
+        company_id  = system.pa_current_company()
+    AND item_id     = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (item_id,))
-            if cur.rowcount:
-                return cur.fetchall()
+            return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_item_dep(item_id):
+def get_item_dep(item_id: int) -> int|None:
     "Return department id for item"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
@@ -203,17 +202,20 @@ SELECT
     department_id
 FROM item
 WHERE 
-    company_id = system.pa_current_company()
-    AND item_id = %s;"""
+        company_id  = system.pa_current_company()
+    AND item_id     = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (item_id,))
-            if cur.rowcount:
-                return cur.fetchone()[0]
+            result = cur.fetchone()
+            if result:
+                return result[0]
+            else:
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_item_desc(item_id):
+def get_item_desc(item_id: int) -> str|None:
     "Return description of item item"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = """
@@ -221,17 +223,20 @@ SELECT
     description 
 FROM item 
 WHERE 
-    company_id = system.pa_current_company()
-    AND item_id = %s;"""
+        company_id  = system.pa_current_company()
+    AND item_id     = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (item_id,))
-            if cur.rowcount:
-                return cur.fetchone()[0]
+            result = cur.fetchone()
+            if result:
+                return result[0]
+            else:                
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_item_stock_level(event_id, item_id):
+def get_item_stock_level(event_id: int, item_id: int) -> int:
     "Return item stock level for given event of type 'A'"
     # actually we don't need to filter company_id as event_id and item_id are unique across companies
     script = """
@@ -239,19 +244,21 @@ SELECT
     available 
 FROM vw_item_availability 
 WHERE
-    company_id = system.pa_current_company()
-    AND event_id = %s 
-    AND item_id = %s;"""
+        company_id  = system.pa_current_company()
+    AND event_id    = %s 
+    AND item_id     = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (event_id, item_id))
-            if cur.rowcount:
-                return cur.fetchone()[0] or 0 # if stock not set balance is null
-            return 0
+            result = cur.fetchone()
+            if result:
+                return result[0] or 0 # if stock not set balance is null
+            else:
+                return 0
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def kit_availability(event_id):
+def kit_availability(event_id: int) -> list[tuple]:
     # actually we don't need to filter company_id as event_id is unique across companies
     script = """
 SELECT 
@@ -260,9 +267,9 @@ SELECT
     available
 FROM vw_item_availability
 WHERE
-    company_id = system.pa_current_company()
-    AND item_type = 'K' 
-    AND event_id = %(event_id)s;"""
+        company_id  = system.pa_current_company()
+    AND item_type   = 'K' 
+    AND event_id    = %(event_id)s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, {'event_id': event_id})
@@ -270,16 +277,16 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def menu_availability(event_id):
+def menu_availability(event_id: int) -> list[tuple]:
     script = """
 SELECT 
     item_id,
     available
 FROM vw_item_availability
 WHERE
-    company_id = system.pa_current_company()
-    AND item_type = 'M' 
-    AND event_id = %(event_id)s;"""
+        company_id  = system.pa_current_company()
+    AND item_type   = 'M' 
+    AND event_id    = %(event_id)s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, {'event_id': event_id})

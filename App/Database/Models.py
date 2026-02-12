@@ -28,6 +28,7 @@
 # standard library
 import operator
 import decimal
+from typing import Any
 
 # psycopg
 import psycopg
@@ -168,7 +169,7 @@ LEFT JOIN system.company b ON a.company_id = b.company_id;"""
 
 
 class ConnectionHistoryModel(QueryModel):
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -203,7 +204,7 @@ FROM system.connection_history;"""
 
 class CompanyIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -234,7 +235,7 @@ FROM system.company;"""
 
 class CompanyModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.company"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -255,20 +256,22 @@ class CompanyModel(TableModel):
         self.addOrderBy('company_id')
         self.repr = 'Company table model'
         
-    def submitAll(self) -> None:
+    def submitAll(self, column: int|None = None, value: Any|None = None) -> bool:
         # check if delete request of a in use company
         for row in self.toDelete:
             company = self.toDelete[row]['pkey']['company_id']
             if company_is_in_use(company):
                 msg = _tr('Company', "Cannot delete company {} because currently in use").format(company)
-                raise PyAppDBError(0, msg)
-        # otherwise copntinue
-        super().submitAll()
+                raise PyAppDBError('0000', msg)
+        # otherwise continue
+        super().submitAll(column, value)
+        return True
+        
 
 
 class UserIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -313,7 +316,7 @@ FROM system.app_user;"""
 
 class UserModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.app_user"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -348,7 +351,7 @@ class UserModel(TableModel):
 
 class UserCompanyModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.app_user_company"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -374,7 +377,7 @@ class UserCompanyModel(TableModel):
 
 class UserCompanyModelReferenceCompany(UserCompanyModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         # master/detail relation {table column: reference field}
         self.foreignKey = {'company_id': 'company_id'}
@@ -383,7 +386,7 @@ class UserCompanyModelReferenceCompany(UserCompanyModel):
 
 class UserCompanyModelReferenceUser(UserCompanyModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         # master/detail relation {table column: reference field}
         self.foreignKey = {'app_user_code': 'app_user_code'}
@@ -392,7 +395,7 @@ class UserCompanyModelReferenceUser(UserCompanyModel):
 
 class ProfileIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -421,7 +424,7 @@ FROM system.profile;"""
 
 class ProfileModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.profile"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -451,7 +454,7 @@ class ProfileModel(TableModel):
 
 class ProfileActionModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.profile_action"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -476,7 +479,7 @@ class ProfileActionModel(TableModel):
 
 class MenuIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -505,7 +508,7 @@ FROM system.menu;"""
 
 class MenuModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.menu"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -530,7 +533,7 @@ class MenuModel(TableModel):
 
 class ToolbarIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -559,7 +562,7 @@ FROM system.toolbar;"""
 
 class ToolbarModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.toolbar"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -584,7 +587,7 @@ class ToolbarModel(TableModel):
 
 class ReportIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT
@@ -621,7 +624,7 @@ FROM system.report;"""
 
 class ReportModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.report"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -649,7 +652,7 @@ class ReportModel(TableModel):
 
 class ScriptingIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -690,7 +693,7 @@ FROM system.python_scripting;"""
                 
 class ScriptingModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "system.python_scripting"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -720,7 +723,7 @@ class ScriptingModel(TableModel):
 
 class EventIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -756,7 +759,7 @@ FROM company.event;"""
 
 class EventModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.event"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -783,7 +786,7 @@ class EventModel(TableModel):
 
 class CashDeskModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.cash_desk"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -813,7 +816,7 @@ class CashDeskModel(TableModel):
 
 class PrinterIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -840,7 +843,7 @@ FROM company.printer_class;"""
 
 class PrinterModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.printer_class"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -862,7 +865,7 @@ class PrinterModel(TableModel):
 
 class PrinterDetailModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.printer_class_printer"
         self.columns = (("printer_class_printer_id", _tr('Models', 'ID'), True, 'int'),
@@ -887,7 +890,7 @@ class PrinterDetailModel(TableModel):
 
 class DepartmentModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.department"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -920,7 +923,7 @@ class DepartmentModel(TableModel):
 
 class SeatMapModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.seat_map"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -948,7 +951,7 @@ class SeatMapModel(TableModel):
 
 class ItemIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -1078,7 +1081,7 @@ class ItemVariantModel(TableModel):
 
 class KitPartModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.item_part"
         self.recordType = {'item_type': 'K'}
@@ -1106,7 +1109,7 @@ class KitPartModel(TableModel):
 
 class MenuPartModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.item_part"
         self.recordType = {'item_type': 'M'}
@@ -1160,7 +1163,7 @@ class MenuPartModel(TableModel):
 
 class PriceListIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -1187,7 +1190,7 @@ FROM company.price_list;"""
 
 class PriceListModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.price_list"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1210,7 +1213,7 @@ class PriceListModel(TableModel):
 
 class PriceListItemModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.price_list_item"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1254,7 +1257,7 @@ class PriceListItemModel(TableModel):
         
 class OrderNumberingModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.numbering"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1285,7 +1288,7 @@ class OrderNumberingModel(TableModel):
 
 class InventoryModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.inventory"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1319,7 +1322,7 @@ class InventoryModel(TableModel):
 
 class KitAvailabilityModel(QueryWithParamsModel):
     
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -1341,7 +1344,7 @@ ORDER BY item_description;"""
 
 class MenuAvailabilityModel(QueryWithParamsModel):
     
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -1363,7 +1366,7 @@ ORDER BY item_description;"""
 
 class ItemsOrderedDeliveredModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -1394,7 +1397,7 @@ JOIN item i ON s.item_id = i.item_id;"""
 
 class OrderStatusModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT
@@ -1474,7 +1477,7 @@ FROM company.vw_order_status;"""
 
 class SalesSummaryModel(QueryWithParamsModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
         SELECT 
@@ -1569,7 +1572,7 @@ class SalesSummaryModel(QueryWithParamsModel):
 
 class OrderHeaderIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
@@ -1642,7 +1645,7 @@ FROM company.order_header;"""
 
 class OrderHeaderModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.order_header"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1688,7 +1691,7 @@ class OrderHeaderModel(TableModel):
 
 class OrderHeaderDepartmentModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.order_header_department"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1719,7 +1722,7 @@ class OrderHeaderDepartmentModel(TableModel):
 
 class OrderLineModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.order_line"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1750,7 +1753,7 @@ class OrderLineModel(TableModel):
 
 class OrderLineDepartmentModel(TableModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table = "company.order_line_department"
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1782,7 +1785,7 @@ class OrderLineDepartmentModel(TableModel):
         
 class OrderDepartmentTreeModel(TreeQueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.script = [
     """
@@ -1829,7 +1832,7 @@ class OrderDepartmentTreeModel(TreeQueryModel):
 
 class WebOrderHeaderModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
         SELECT 
@@ -1863,7 +1866,7 @@ class WebOrderHeaderModel(QueryModel):
 
 class WebOrderLineModel(QueryModel):
 
-    def __init__(self, parent: QObject = None) -> None:
+    def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.selectQuery = """
         SELECT 
@@ -1894,7 +1897,7 @@ class WebOrderLineModel(QueryModel):
 
 class OrderHeaderPandasModel(PandasModel):
     
-    def __init__(self, parent: QObject = None) -> None: 
+    def __init__(self, parent: QObject|None = None) -> None: 
         super().__init__(parent)
         self.table = "company.bi_order_header"
         # model columns: {field: (description, pivot value, pivot axis, type, format)}, dict
@@ -1931,7 +1934,7 @@ class OrderHeaderPandasModel(PandasModel):
 
 class OrderLinePandasModel(PandasModel):
     
-    def __init__(self, parent: QObject = None) -> None: 
+    def __init__(self, parent: QObject|None = None) -> None: 
         super().__init__(parent)
         self.table = "company.bi_order_line"
         # model columns: {field: (description, pivot value, type)}, dict

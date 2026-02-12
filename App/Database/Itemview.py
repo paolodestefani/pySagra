@@ -34,7 +34,7 @@ from App.Database.Connect import appconn
 
 
 
-def create_itemview(view_class, view_description):
+def create_itemview(view_class: str, view_description: str) -> int:
     "Create a new itemview customization"
     script = """
 INSERT INTO system.itemview_adapt (description, itemview_class)
@@ -44,11 +44,15 @@ RETURNING itemview_adapt_id;"""
         with appconn.cursor() as cur:
             with appconn.transaction():
                 cur.execute(script, (view_description, view_class))
-                return cur.fetchone()[0]
+                result = cur.fetchone()
+                if result:
+                    return result[0]
+                else:
+                    raise PyAppDBError("02000", "No itemview_adapt_id returned from database")
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def list_itemviews(view_class):
+def list_itemviews(view_class: str) -> list[tuple]:
     "Get available view customizations for class"
     script = """
 SELECT 
@@ -65,7 +69,7 @@ ORDER BY itemview_adapt_id;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_view_columns(view_id):
+def get_view_columns(view_id: int) -> list[tuple]:
     "Returns the view definition"
     script = """""
 SELECT 	
@@ -83,7 +87,7 @@ ORDER BY sorting;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_view_columns(view_id, columns):
+def set_view_columns(view_id: int, columns: list[tuple]) -> None:
     "Set the view definition"
     script = """
 INSERT INTO system.itemview_adapt_setting (
@@ -110,7 +114,7 @@ UPDATE SET sorting = %s, is_visible = %s, size = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def delete_view_layout(view_id):
+def delete_view_layout(view_id: int) -> None:
     "Delete a view customization"
     script = """
 DELETE FROM system.itemview_adapt 
@@ -122,7 +126,7 @@ WHERE itemview_adapt_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_default_view_layout(view_class, view_id):
+def set_default_view_layout(view_class: str, view_id: int) -> None:
     "Set default layout for view class"
     script = """
 UPDATE system.itemview_adapt

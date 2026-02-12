@@ -195,7 +195,7 @@ class QueryModel(QAbstractTableModel):
         "Add where conditions before select"
         self.whereCondition.append((condition, value))
 
-    def addOrderBy(self, expression: list | tuple) -> None:
+    def addOrderBy(self, expression: list | tuple | str) -> None:
         "Add order by expression before select"
         if isinstance(expression, (list, tuple)):
             self.orderByExpression += list(expression)
@@ -447,9 +447,9 @@ class TableModel(QAbstractTableModel):
         self.filterMapping: dict = {}
         self.toInsert: list[int] = []  # list of row number of any inserted row
         self.toModify: dict[int, Any] = {}  # dict of dict row number / column number of any modified field
-        self.toDelete: list[dict] = []  # list of dict for any cancelled row (need to store pkey and object_version)
+        self.toDelete: list[dict[str, Any]] = []  # list of dict for any cancelled row (need to store pkey and object_version)
         # subclasses must define this properties
-        self.table = None # table or view name - string, subclass must define this
+        self.table: str | None = None # table or view name - string, subclass must define this
         self.isCompanyTable = False # True if is a company table
         self.columns: tuple[Any, ...] = () # model columns definition (field, description, readonly, type)
         self.primaryKey: tuple[str, ...] = () # primary key fields name - sequence, subclass must define this
@@ -544,7 +544,7 @@ class TableModel(QAbstractTableModel):
         # BUT is needed for proper DataWidgetMapper use
         return True
 
-    def submitAll(self, column: int|None = None, value: Any = None) -> bool:
+    def submitAll(self, column: int|None = None, value: Any|None = None) -> bool:
         "Update database: insert/delete/update rows"
         # if a referenceKey is provided fill all the rows with reference value
         if not column is None :

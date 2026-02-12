@@ -36,16 +36,27 @@ from App.Database.Connect import appconn
 
 
 
-def get_itemview_customization(setting=False):
+def get_itemview_adapt(setting: bool = False) -> list:
     "Returns all the item views customizations"
     if not setting:
-        script = """SELECT id, description, itemview_class, is_default_for_class
-FROM system.itemview_customize
-ORDER BY id"""
+        script = """
+SELECT 
+    itemview_adapt_id,
+    description,
+    itemview_class,
+    is_default_for_class
+FROM system.itemview_adapt
+ORDER BY itemview_adapt_id;"""
     else:
-        script = """SELECT view_id, column_number, sorting, is_visible, size
-FROM system.itemview_customize_setting
-ORDER BY view_id, column_number;"""
+        script = """
+SELECT 
+    itemview_adapt_id,
+    column_number,
+    sorting,
+    is_visible,
+    size
+FROM system.itemview_adapt_setting
+ORDER BY itemview_adapt_id, column_number;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
@@ -65,12 +76,16 @@ ORDER BY view_id, column_number;"""
     #except psycopg2.Error as er:
         #raise PyAppDBError(er.pgcode, er.pgerror)
 
-def set_itemview_customize(vid, vdes, vclass, vdef):
+def set_itemview_adapt(vid: int,
+                       vdes: str,
+                       vclass: str,
+                       vdef: bool
+                       ) -> None:
     "Set all the item views customizations"
     script = """
-DELETE FROM system.itemview_customize WHERE id = %s;
-INSERT INTO system.itemview_customize (
-        id,
+DELETE FROM system.itemview_adapt WHERE itemview_adapt_id = %s;
+INSERT INTO system.itemview_adapt (
+        itemview_adapt_id,
         description,
         itemview_class,
         is_default_for_class)
@@ -82,11 +97,16 @@ VALUES (%s, %s, %s, %s);"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_itemview_customize_setting(vid, vcol, vsort, vvis, vsize):
+def set_itemview_adapt_setting(vid: int,
+                               vcol: int,
+                               vsort: str,
+                               vvis: bool,
+                               vsize: int
+                               ) -> None:
     "Set all the item views customizations settings"
     script = """
-INSERT INTO system.itemview_customize_setting (
-    view_id,
+INSERT INTO system.itemview_adapt_setting (
+    itemview_adapt_id,
     column_number,
     sorting,
     is_visible,
@@ -99,18 +119,29 @@ VALUES (%s, %s, %s, %s, %s);"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_sortfilter_customization(setting=False):
+def get_sortfilter_adapt(setting: bool = False) -> list:
     "Returns all the sort filter customizations"
     if not setting:
         script = """
-SELECT id, description, sortfilter_class, class_sorting
-FROM system.sortfilter_customize
-ORDER BY id;"""
+SELECT 
+    sortfilter_adapt_id,
+    description,
+    sortfilter_class,
+    class_sorting
+FROM system.sortfilter_adapt
+ORDER BY sortfilter_adapt_id;"""
     else:
         script = """
-SELECT sortfilter_id, element_type, layout_row, combo1_index, combo2_index, widget_value
-FROM system.sortfilter_customize_setting
-ORDER BY sortfilter_id, element_type, layout_row;"""
+SELECT 
+    sortfilter_adapt_id,
+    element_type,
+    layout_row,
+    combo1_index,
+    negate_state,
+    combo2_index,
+    widget_value
+FROM system.sortfilter_adapt_setting
+ORDER BY sortfilter_adapt_id, element_type, layout_row;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
@@ -130,12 +161,16 @@ ORDER BY sortfilter_id, element_type, layout_row;"""
     #except psycopg2.Error as er:
         #raise PyAppDBError(er.pgcode, er.pgerror)
 
-def set_sortfilter_customize(sid, sdes, sclass, sdef):
+def set_sortfilter_adapt(sid: int,
+                         sdes: str,
+                         sclass: str,
+                         sdef: bool
+                         ) -> None:
     "Set all the item views customizations"
     script = """
-DELETE FROM system.sortfilter_customize WHERE id = %s;
-INSERT INTO system.sortfilter_customize (
-    id,
+DELETE FROM system.sortfilter_adapt WHERE sortfilter_adapt_id = %s;
+INSERT INTO system.sortfilter_adapt (
+    sortfilter_adapt_id,
     description,
     sortfilter_class,
     class_sorting)
@@ -147,17 +182,25 @@ VALUES (%s, %s, %s, %s);"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_sortfilter_customize_setting(sid, selem, slrow, scmb1, scmb2, svv):
+def set_sortfilter_adapt_setting(sid: int,
+                                 selem: str,
+                                 slrow: int,
+                                 scmb1: int,
+                                 sneg: bool,
+                                 scmb2: int,
+                                 svv: str
+                                 ) -> None:
     "Set all the item views customizations settings"
     script = """
-INSERT INTO system.sortfilter_customize_setting (
-    sortfilter_id,
+INSERT INTO system.sortfilter_adapt_setting (
+    sortfilter_adapt_id,
     element_type,
     layout_row,
     combo1_index,
+    negate_state,
     combo2_index,
     widget_value)
-VALUES (%s, %s, %s, %s, %s, %s);"""
+VALUES (%s, %s, %s, %s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -165,18 +208,28 @@ VALUES (%s, %s, %s, %s, %s, %s);"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_report_customization(setting=False):
+def get_report_adapt(setting: bool = False) -> list:
     "Returns all the report customizations"
     if not setting:
         script = """
-SELECT id, report_code, description, class_sorting
-FROM system.report_customize
-ORDER BY id;"""
+SELECT 
+    report_adapt_id,
+    report_id,
+    description,
+    class_sorting
+FROM system.report_adapt    
+ORDER BY report_adapt_id;"""
     else:
         script = """
-SELECT customize_id, customize_type, layout_row, combo1_index, combo2_index, widget_value
-FROM system.report_customize_setting
-ORDER BY customize_id, customize_type, layout_row;"""
+SELECT 
+    report_adapt_id,
+    adapt_type,
+    layout_row,
+    combo1_index,
+    combo2_index,
+    widget_value
+FROM system.report_adapt_setting
+ORDER BY report_adapt_id, adapt_type, layout_row;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
@@ -196,29 +249,39 @@ ORDER BY customize_id, customize_type, layout_row;"""
     #except psycopg2.Error as er:
         #raise PyAppDBError(er.pgcode, er.pgerror)
 
-def set_report_customize(rid, rrc, rdes, rclass):
+def set_report_adapt(rid: int,
+                     rri: int,
+                     rdes: str,
+                     rcls: bool
+                     ) -> None:
     "Set all the report customizations"
     script = """
-DELETE FROM system.report_customize WHERE id = %s;
-INSERT INTO system.report_customize (
-    id,
-    report_code,
+DELETE FROM system.report_adapt WHERE report_adapt_id = %s;
+INSERT INTO system.report_adapt (
+    report_adapt_id,
+    report_id,
     description,
     class_sorting)
 VALUES (%s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (rid, rid, rrc, rdes, rclass))
+                cur.execute(script, (rid, rri, rdes, rcls))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_report_customize_setting(rcid, rctyp, rlrow, rcmb1, rcmb2, rvv):
+def set_report_adapt_setting(raid: int,
+                             ratyp: str,
+                             rlrow: int,
+                             rcmb1: int,
+                             rcmb2: int,
+                             rvv: str
+                             ) -> None:
     "Set all the item views customizations settings"
     script = """
-INSERT INTO system.report_customize_setting (
-    customize_id,
-    customize_type,
+INSERT INTO system.report_adapt_setting (
+    report_adapt_id,
+    adapt_type,
     layout_row,
     combo1_index,
     combo2_index,
@@ -227,48 +290,52 @@ VALUES (%s, %s, %s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (rcid, rctyp, rlrow, rcmb1, rcmb2, rvv))
+                cur.execute(script, (raid, ratyp, rlrow, rcmb1, rcmb2, rvv))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def clear_customization(custtype):
+def clear_adapt(adapttype: str) -> None:
     "Clear customizations"
     scriptS = """
-DELETE FROM system.sortfilter_customize;
-ALTER TABLE system.sortfilter_customize ALTER COLUMN id RESTART WITH 1;"""
+DELETE FROM system.sortfilter_adapt;
+ALTER TABLE system.sortfilter_adapt ALTER COLUMN id RESTART WITH 1;"""
     scriptI = """
-DELETE FROM system.itemview_customize;
-ALTER TABLE system.itemview_customize ALTER COLUMN id RESTART WITH 1;"""
+DELETE FROM system.itemview_adapt;
+ALTER TABLE system.itemview_adapt ALTER COLUMN id RESTART WITH 1;"""
     scriptR = """
-DELETE FROM system.report_customize;
-ALTER TABLE system.report_customize ALTER COLUMN id RESTART WITH 1;"""
+DELETE FROM system.report_adapt;
+ALTER TABLE system.report_adapt ALTER COLUMN id RESTART WITH 1;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                if custtype == 'S':
-                    cur.execute(scriptS)
-                if custtype == 'I':
-                    cur.execute(scriptI)
-                if custtype == 'R':
-                    cur.execute(scriptR)
+                match adapttype:
+                    case 'S':
+                        cur.execute(scriptS)
+                    case 'I':
+                        cur.execute(scriptI)
+                    case 'R':
+                        cur.execute(scriptR)    
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def update_identity():
+def update_identity() -> None:
     "Update identity value to last present in all customization tables"
-    script = """DO $$
-DECLARE
-i int;
-t text;
-BEGIN
-FOREACH t IN ARRAY ARRAY['system.itemview_customize',
-                         'system.sortfilter_customize',
-                         'system.report_customize']
-    LOOP
-	    EXECUTE format('SELECT coalesce(max(id), 0) + 1 FROM %s', t) INTO i;
-	    EXECUTE format('ALTER TABLE %s ALTER COLUMN id RESTART WITH %s', t, i) ;
-    END LOOP;
-END;
+    script = """
+DO $$
+    DECLARE
+    i integer;
+    tt text[];
+    BEGIN
+        FOREACH tt SLICE 1 IN ARRAY ARRAY[
+            ['system.itemview_adapt', 'itemview_adapt_id'],
+            ['system.sortfilter_adapt', 'sortfilter_adapt_id'],
+            ['system.report_adapt', 'report_adapt_id']
+            ] 
+        LOOP
+            EXECUTE format('SELECT coalesce(max(%s), 0) + 1 FROM %s', tt[2], tt[1]) INTO i;
+            EXECUTE format('ALTER TABLE %s ALTER COLUMN %s RESTART WITH %s', tt[1], tt[2], i) ;
+        END LOOP;
+    END;
 $$
 language plpgsql;"""
     try:

@@ -193,7 +193,7 @@ class TreeQueryModel(QAbstractItemModel):
         self.repr: str = 'Generic tree query model' # printable representation of the object
         self.script: list[str] = [] # in subclasses the definition and number of sql script
         self.currentLevel = 0
-        self.columns: list[tuple[str, str, bool, type]] = []  # list of tuples (field name, field description, read only flag, field type)
+        self.columns: Any = []  # list of tuples (field name, field description, read only flag, field type)
         self.childFieldColumn: int = 0 # column of the child field in the query result, set by the subclass
         
     def __repr__(self) -> str:
@@ -317,8 +317,8 @@ class TreeModel(QAbstractItemModel):
     def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
         self.table: str|None = None
-        self.columns: list[tuple[str, str, bool, type]] = []  # list of tuples (field name, field description, read only flag, field type)
-        self.primaryKey: list[str] = []
+        self.columns: Any = []  # list of tuples (field name, field description, read only flag, field type)
+        self.primaryKey: tuple[str, str] = ('', '')  # list of primary key field names
         self.parentField: str|None = None
         self.parentFieldColumn: int|None = None
         self.childField: str|None = None

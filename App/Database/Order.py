@@ -26,12 +26,15 @@
 
 
 """
+# standard library
+from typing import Any
 
 # psycopg
 import psycopg
 
 # PySide6
 from PySide6.QtCore import QTime
+from PySide6.QtCore import QDate
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
@@ -50,9 +53,11 @@ from App.Database.Event import get_event_from_date
 
 
 
-def get_order_number(event_id, event_date=None, day_part=None):
+def get_order_number(event_id: int,
+                     event_date: QDate|None = None,
+                     day_part: str|None = None
+                     ) -> int:
     "Returns the next available order number"
-    # actually we don't need to filter company_id as event_id is unique across companies
     script = """
 SELECT
     order_number_based_on
@@ -61,59 +66,60 @@ WHERE company_id = system.pa_current_company();"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
-            mode = cur.fetchone()[0]
+            mode = next(cur)[0]
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-    # event based numbering
-    if mode == 'E':
-        script = """
+    number = 1
+    match mode:
+        case 'E':
+            # event based numbering
+            script = """
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 
-WHERE company_id = system.pa_current_company()
-    AND event_id = %s;"""
-        try:
-            with appconn.cursor() as cur:
-                cur.execute(script, (event_id,))
-                number = cur.fetchone()[0] or 1
-                return number
-        except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
-
-    # day based numbering
-    if mode == 'D':
-        script = """
+WHERE   company_id  = system.pa_current_company()
+    AND event_id    = %s;"""
+            try:
+                with appconn.cursor() as cur:
+                    cur.execute(script, (event_id,))
+                    number = next(cur)[0] or 1
+            except psycopg.Error as er:
+                raise PyAppDBError(er.diag.sqlstate, str(er))
+            
+        case 'D':
+            # day based numbering
+            script = """
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 
 WHERE company_id = system.pa_current_company()
     AND event_id = %s
     AND event_date = %s"""
-        try:
-            with appconn.cursor() as cur:
-                cur.execute(script, (event_id, event_date))
-                number = cur.fetchone()[0] or 1
-                return number
-        except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
-    
-    if mode == 'P':
-        script = """
+            try:
+                with appconn.cursor() as cur:
+                    cur.execute(script, (event_id, event_date))
+                    number = next(cur)[0] or 1
+            except psycopg.Error as er:
+                raise PyAppDBError(er.diag.sqlstate, str(er))
+        
+        case 'P':
+            # day part based numbering
+            script = """
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 
 WHERE company_id = system.pa_current_company()
     AND event_id = %s
     AND event_date = %s
     AND day_part = %s;"""
-        try:
-            with appconn.cursor() as cur:
-                cur.execute(script, (event_id, event_date, day_part))
-                number = cur.fetchone()[0] or 1
-                return number
-        except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            try:
+                with appconn.cursor() as cur:
+                    cur.execute(script, (event_id, event_date, day_part))
+                    number = next(cur)[0] or 1
+            except psycopg.Error as er:
+                raise PyAppDBError(er.diag.sqlstate, str(er))
+    return number
 
 
-def get_orders_issued(event_id, date, day_part):
+def get_orders_issued(event_id: int, date: QDate, day_part: str) -> int:
     "Returns the issued number of orders for event, day and day part"
      # actually we don't need to filter company_id as event_id is unique across companies
     script = """
@@ -127,16 +133,12 @@ WHERE
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (event_id, date, day_part))
-            if cur.rowcount:
-                number = cur.fetchone()[0]
-            else:
-                number = 0
-            return number
+            return next(cur)[0] or 0
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
-def get_order_header_department_details(barcode):
+def get_order_header_department_details(barcode: str) -> tuple|None:
     "Returns params of the given order header department barcode"
     # actually we don't need to filter company_id as event_id is unique across companies
     script = """
@@ -166,7 +168,7 @@ WHERE
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
-def update_order_header_department_status(order_id, mark=True):
+def update_order_header_department_status(order_id: int, mark: bool=True) -> None:
     "Set to processed the given order header department id"
     # actually we don't need to filter company_id as order_id is unique across companies
     if mark:  # set datetime or null to unmark
@@ -194,14 +196,17 @@ WHERE
 class Order():
     "A order header and lines"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.header = Record('order_header', ('order_header_id',))
         self.lines = RecordSet('order_line', ('order_line_id',))
-        self.depnote = {} # dict(dep: note)
+        self.depnote: dict = {} # dict(dep: note)
         
-    def out_of_stock(self):
+    def out_of_stock(self) -> list[str|None]:
         "Returns a list of out of stock items"
-        event_id = get_event_from_date(self.header['date_time'])[0]
+        result = get_event_from_date(self.header['date_time'])
+        if not result:
+            raise PyAppDBError("02000", "No event found for order date")
+        event_id = result[0]
         out_of_stock = []
         for i in self.lines:
             if has_stock_management(i['item_id']):
@@ -209,12 +214,15 @@ class Order():
                     out_of_stock.append(get_item_desc(i['item_id']))
         return out_of_stock
 
-    def insert(self):
+    def insert(self) -> tuple[Any, set[int | None]]:
         "Insert everything after completed the order"
         headersdep = RecordSet('order_header_department', ('order_header_department_id',))
         linesdep = RecordSet('order_line_department', ('order_line_department_id',))
         # set event
-        self.header['event_id'] = get_event_from_date(self.header['date_time'])[0]
+        result = get_event_from_date(self.header['date_time'])
+        if not result:
+            raise PyAppDBError("02000", "No event found for order date")
+        self.header['event_id'] = result[0]
         # order date and time set in insert for management of event date changes
         self.header['order_date'] = self.header['date_time'].date()
         self.header['order_time'] = self.header['date_time'].time()
@@ -255,7 +263,7 @@ class Order():
                 r['quantity'] = i['quantity']
                 intermediate.append(r)
         # sum qty of same item that can come out from previous elaboration
-        detail = []
+        detail: list = []
         for i in intermediate:
             if (i['item_id'], i['variants']) in [(r['item_id'], r['variants']) for r in detail]:
                 for n, j in enumerate([(r['item_id'], r['variants']) for r in detail]):
@@ -266,7 +274,7 @@ class Order():
         # generate headersdep and linesdep
         # compute used departments set and create headersdep
         used_dep = {get_item_dep(i['item_id']) for i in detail}
-        used_dep_desc = [get_department_desc(i) for i in used_dep]
+        used_dep_desc = [get_department_desc(i) for i in used_dep if i is not None]
         for i in used_dep:
             # dep header
             r = dict()
@@ -323,7 +331,7 @@ class Order():
             linesdep.insert_records()
         except PyAppDBError as er:
             appconn.rollback()
-            raise PyAppDBError(er)
+            raise PyAppDBError(str(er))
         else:
             appconn.commit()
             return t, used_dep

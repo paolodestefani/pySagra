@@ -78,7 +78,7 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_department_desc(dep: int) -> str | None:
+def get_department_desc(dep: int) -> str|None:
     "Returns department description of given department id"
     script = """
 SELECT description 
