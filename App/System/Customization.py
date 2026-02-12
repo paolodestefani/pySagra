@@ -48,16 +48,16 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App import currentAction
 from App.Core.L10n import _tr
-from App.Database.Customization import get_itemview_customization
-from App.Database.Customization import set_itemview_customize
-from App.Database.Customization import set_itemview_customize_setting
-from App.Database.Customization import get_sortfilter_customization
-from App.Database.Customization import set_sortfilter_customize
-from App.Database.Customization import set_sortfilter_customize_setting
-from App.Database.Customization import get_report_customization
-from App.Database.Customization import set_report_customize
-from App.Database.Customization import set_report_customize_setting
-from App.Database.Customization import clear_customization
+from App.Database.Customization import get_itemview_adapt
+from App.Database.Customization import set_itemview_adapt
+from App.Database.Customization import set_itemview_adapt_setting
+from App.Database.Customization import get_sortfilter_adapt
+from App.Database.Customization import set_sortfilter_adapt
+from App.Database.Customization import set_sortfilter_adapt_setting
+from App.Database.Customization import get_report_adapt
+from App.Database.Customization import set_report_adapt
+from App.Database.Customization import set_report_adapt_setting
+from App.Database.Customization import clear_adapt
 from App.Database.Customization import update_identity
 
 from App.Ui.CustomizationsDialog import Ui_CustomizationsDialog
