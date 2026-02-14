@@ -35,7 +35,7 @@ from App.Database.Connect import appconn
 
 
 
-def create_sortfilter(sortfilter_class, sortfilter_description):
+def create_sortfilter(sortfilter_class: str, sortfilter_description: str) -> int:
     "Create a new sortfilter customization"
     script = """
 INSERT INTO system.sortfilter_adapt (description, sortfilter_class)
@@ -45,11 +45,15 @@ RETURNING sortfilter_adapt_id;"""
         with appconn.cursor() as cur:
             with appconn.transaction():
                 cur.execute(script, (sortfilter_description, sortfilter_class))
-                return cur.fetchone()[0]
+                result = next(cur, None)
+                if result:
+                    return result[0]
+                else:                    
+                    raise PyAppDBError('00000', 'Failed to create sortfilter customization')
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def delete_sortfilter(sortfilter_id):
+def delete_sortfilter(sortfilter_id: int) -> None:
     "Delete sortfilter customization of sortfilter_id"
     script = """
 DELETE FROM system.sortfilter_adapt
@@ -61,7 +65,7 @@ WHERE sortfilter_adapt_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def list_sortfilter(sortfilter_class):
+def list_sortfilter(sortfilter_class: str) -> list:
     "Get available sortfilter customizations for class"
     script = """ 
 SELECT
@@ -109,7 +113,7 @@ ORDER BY class_sorting;"""
 #     except psycopg.Error as er:
 #         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_sortfilter_limit(sf_id):
+def get_sortfilter_limit(sf_id: int) -> int|None:
     "Get row count limit for sortfilter_adapt_id"
     script = """
 SELECT 
@@ -119,15 +123,16 @@ WHERE sortfilter_adapt_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (sf_id,))
-            if cur.rowcount == 1:
-                return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
             else:
                 return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_sortfilter_limit(sf_id, limit):
-    "Get row count limit for sortfilter_adapt_id"
+def set_sortfilter_limit(sf_id: int, limit: int|None) -> None:
+    "Set row count limit for sortfilter_adapt_id"
     script = """
 UPDATE system.sortfilter_adapt
 SET row_count_limit = %s
@@ -139,7 +144,7 @@ WHERE sortfilter_adapt_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def clear_sortfilter_setting(sf_id):
+def clear_sortfilter_setting(sf_id: int) -> None:
     "Claer sortfilter customizations, required before updating"
     script = """
 DELETE FROM system.sortfilter_adapt_setting
@@ -151,7 +156,7 @@ WHERE sortfilter_adapt_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_sortfilter_setting(sf_id):
+def get_sortfilter_setting(sf_id: int) -> tuple[list, list]:
     "Get available sortfilter customizations settings for id and element"
     script = """
 SELECT 
@@ -178,7 +183,14 @@ ORDER BY layout_row;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_sortfilter_setting(sf_id, sf_element, row, cmb1, neg, cmb2, widget):
+def set_sortfilter_setting(sf_id: int, 
+                           sf_element: str, 
+                           row: int, 
+                           cmb1: int,
+                           neg: bool, 
+                           cmb2: int, 
+                           widget: str
+                           ) -> None:
     "Set available sortfilter customizations settings for id and element"
     script = """
 -- insert/update setting
@@ -214,7 +226,7 @@ UPDATE SET
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def sortfilter_adapt_sorting(sortfilter_id):
+def sortfilter_adapt_sorting(sortfilter_id: int) -> int:
     "Returns sortfilter sorting index"
     script = """
 SELECT class_sorting
@@ -224,14 +236,15 @@ WHERE sortfilter_adapt_id = %s;"""
         with appconn.cursor() as cur:
             with appconn.transaction():
                 cur.execute(script, (sortfilter_id,))
-                if cur.rowcount == 1:
-                    return cur.fetchone()[0]
+                result = next(cur, None)
+                if result:
+                    return result[0]
                 else:
                     return 0
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_sortfilter_adapt_sorting(sortfilter_id, sorting):
+def set_sortfilter_adapt_sorting(sortfilter_id: int, sorting: int) -> None:
     "Set sortfilter sorting index"
     script = """
 UPDATE system.sortfilter_adapt

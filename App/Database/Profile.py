@@ -36,7 +36,7 @@ from App.Database.Connect import appconn
 
 
 
-def duplicate_profile(from_code, new_code, new_description):
+def duplicate_profile(from_code: str, new_code: str, new_description: str) -> None:
     "Create a new profile copying commands from another"
     # create a new profile
     sql = "INSERT INTO system.profile (code, description) VALUES (%s, %s);"

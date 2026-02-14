@@ -33,8 +33,8 @@
 import psycopg
 from psycopg.adapt import Loader, Dumper
 
-
 # PySide6
+from PySide6.QtCore import Qt
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QDateTime
@@ -70,81 +70,87 @@ DEFAULT = Default()
 # timestamptz <--> QDateTime
 #
 
-class TimestamptzQDateTimeLoader(Loader):
+
+class TimestampTzQDateTimeLoader(Loader): # timestamptz -> QDateTime
+    
     def load(self, value: bytes) -> QDateTime:
         ds = bytes(value).decode()
-        dt = QDateTime.fromString(ds[:23], "yyyy-MM-dd HH:mm:ss.zzz")
-        if not dt.isValid(): # no milliseconds
-            dt = QDateTime.fromString(ds[:19], "yyyy-MM-dd HH:mm:ss")
-        return dt
+        return QDateTime.fromString(ds, Qt.DateFormat.ISODateWithMs)
 
-psycopg.adapters.register_loader('timestamptz', TimestamptzQDateTimeLoader)
+psycopg.adapters.register_loader('timestamptz', TimestampTzQDateTimeLoader)
 
-class QDateTimeTimestamptzDumper(Dumper):
+
+class QDateTimeTimestampTzDumper(Dumper): # QDateTime -> timestamptz
+    
     def dump(self, value: QDateTime|None) -> bytes|None:
         if value is None or not value.isValid():
-            return None 
-        return bytes(value.toString("yyyy-MM-dd HH:mm:ss.zzz"), 'utf-8')
+           return None 
+        return bytes(value.toString(Qt.DateFormat.ISODateWithMs), 'utf-8')
+    
+psycopg.adapters.register_dumper(QDateTime, QDateTimeTimestampTzDumper)
 
-psycopg.adapters.register_dumper(QDateTime, QDateTimeTimestamptzDumper)
 
 
-#
-# date <--> QDate
-#
+# #
+# # date <--> QDate
+# #
 
-class DateQDateLoader(Loader):
+class DateQDateLoader(Loader): # date -> QDate
+    
     def load(self, value: bytes) -> QDate:
-        return QDate.fromString(bytes(value).decode(), "yyyy-MM-dd")
+        return QDate.fromString(bytes(value).decode(), Qt.DateFormat.ISODate)
 
 psycopg.adapters.register_loader('date', DateQDateLoader)
 
-class QDateDateDumper(Dumper):
+
+class QDateDateDumper(Dumper): # QDate -> date
+    
     def dump(self, value: QDate) -> bytes:
-        if not value.isValid():
-            value = QDate.currentDate()
-        return bytes(value.toString("yyyy-MM-dd"), 'utf-8')
+        return bytes(value.toString(Qt.DateFormat.ISODate), 'utf-8')
 
 psycopg.adapters.register_dumper(QDate, QDateDateDumper)
+
 
 
 #
 # time  (without time zone) <--> QTime
 #
 
-class TimeQTimeLoader(Loader):
+class TimeQTimeLoader(Loader): # time -> QTime
+    
     def load(self, value: bytes) -> QTime:
         ts = bytes(value).decode()
-        if len(ts) > 8:
-            ts = ts[:8]  # avoid milliseconds precision
-        return QTime.fromString(ts, "hh:mm:ss")
+        return QTime.fromString(ts, Qt.DateFormat.ISODate)
 
 psycopg.adapters.register_loader('time', TimeQTimeLoader)
 
-class QTimeTimeDumper(Dumper):
+
+class QTimeTimeDumper(Dumper): # QTime -> time
     def dump(self, value: QTime) -> bytes:
-        if not value.isValid():
-            value = QTime.currentTime()
-        return bytes(value.toString("hh:mm:ss"), 'utf-8')
+        return bytes(value.toString(Qt.DateFormat.ISODate), 'utf-8')
 
 psycopg.adapters.register_dumper(QTime, QTimeTimeDumper)
+
 
 
 #
 # bytea <--> QBytearray
 #
 
+
 class ByteaQByteArrayLoader(Loader):
     def load(self, value: bytes) -> QByteArray:
         return QByteArray.fromHex(bytes(value))
 
-psycopg.adapters.register_loader('bytea', ByteaQByteArrayLoader)
+psycopg.adapters.register_loader('bytea', ByteaQByteArrayLoader) 
+
 
 class QByteArrayByteaDumper(Dumper):
     def dump(self, value: QByteArray) -> bytes:
-        return bytes(f"\\x{value.toHex().data().decode('utf-8')}", 'utf-8')
+        return b"\\x" + value.toHex().data()
 
 psycopg.adapters.register_dumper(QByteArray, QByteArrayByteaDumper)
+
 
 
 #
@@ -152,6 +158,7 @@ psycopg.adapters.register_dumper(QByteArray, QByteArrayByteaDumper)
 #
 
 class InetStrLoader(Loader):
+    
     def load(self, value: bytes) -> str:
         return bytes(value).decode()
 

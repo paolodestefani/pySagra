@@ -36,7 +36,7 @@ from App.Database.Connect import appconn
 
 
 
-def load_preferences(user_code):
+def load_preferences(user_code: str) -> tuple:
     "Load all preferences parameters for the given user"
     script = """
 SELECT 
@@ -57,7 +57,15 @@ WHERE user_code = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def save_preferences(user_code, style, color, icon, ffamily, fsize, tbstyle, tabposition, ):
+def save_preferences(user_code: str,
+                     style: str,
+                     color: str,
+                     icon: str,
+                     ffamily: str,
+                     fsize: int,
+                     tbstyle: str,
+                     tabposition: str
+                     ) -> None:
     "Save all preferences for the given user"
     script = """
 UPDATE system.app_user

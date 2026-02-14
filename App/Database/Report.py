@@ -26,6 +26,8 @@
 
 
 """
+# standard library
+from typing import Callable
 
 # psycopg
 import psycopg
@@ -33,9 +35,10 @@ import psycopg
 # application modules
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
+from App.Report.ReportEngine import Report
 
 
-def delete_all_reports():
+def delete_all_reports() -> None:
     "Delete all reports, update identity"
     script = """
 DELETE FROM system.report;
@@ -47,7 +50,13 @@ ALTER TABLE system.report ALTER COLUMN report_id RESTART WITH 1;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def load_report(report_code, l10n, report_class, system, description, xml_data):
+def load_report(report_code: str,
+                l10n: str,
+                report_class: str, 
+                system: bool, 
+                description: str,
+                xml_data: str
+                ) -> None:
     "Load a report filling system.report"
     script = """
 INSERT INTO system.report (
@@ -77,7 +86,7 @@ VALUES (%s, %s, %s, %s, %s, %s)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def list_all_reports():
+def list_all_reports() -> list:
     "List all reports from system.report for exporting purposes"
     script = """
 SELECT
@@ -118,7 +127,7 @@ ORDER BY v.i, report_code, l10n;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def clear_report_adapt(adapt_id):
+def clear_report_adapt(adapt_id: int) -> None:
     "Clear the report customizations setting"
     script = """
 DELETE FROM system.report_adapt_setting
@@ -130,7 +139,7 @@ WHERE report_adapt_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_report_adapt_setting(adapt_id):
+def get_report_adapt_setting(adapt_id: int) -> tuple:
     "Returns the report customizations"
     script = """
 SELECT 
@@ -156,7 +165,13 @@ ORDER BY adapt_type, layout_row;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_report_adapt(adapt_id, adapt_type, layout_row, combo1_index, combo2_index, widget_value):
+def set_report_adapt(adapt_id: int, 
+                     adapt_type: str, 
+                     layout_row: int,
+                     combo1_index: int, 
+                     combo2_index: int, 
+                     widget_value: str
+                     ) -> None:
     "Set the report adaptation definition"
     script = """
 INSERT INTO system.report_adapt_setting (
@@ -187,7 +202,7 @@ SET combo1_index = %s,
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def delete_report_adapt(adapt_id):
+def delete_report_adapt(adapt_id: int) -> None:
     "Delete report adapt"
     script = """
 DELETE FROM system.report_adapt
@@ -199,7 +214,7 @@ WHERE report_adapt_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def create_new_adapt(report_id, adapt_desc):
+def create_new_adapt(report_id: int, adapt_desc: str) -> None:
     "Create a new customization"
     script = """
 INSERT INTO system.report_adapt (report_id, description)
@@ -211,7 +226,7 @@ VALUES (%s, %s);"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def report_class_adapt_list(class_code, l10n='en_US'):
+def report_class_adapt_list(class_code: str, l10n: str='en_US') -> list:
     "Return id and description of all the report customizations of the input class"
     script1 = """
 SELECT 
@@ -228,7 +243,7 @@ ORDER BY ra.class_sorting;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def report_adapt_sorting(adapt_id):
+def report_adapt_sorting(adapt_id: int) -> int:
     "Returns the report customization sorting index"
     script = """
 SELECT 
@@ -238,14 +253,15 @@ WHERE report_adapt_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (adapt_id,))
-            if cur.rowcount == 1:
-                return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
             else:
                 return 0
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_report_adapt_sorting(adapt_id, sorting):
+def set_report_adapt_sorting(adapt_id: int, sorting: int) -> None:
     "Set customization sorting index"
     script = """
 UPDATE system.report_adapt
@@ -259,7 +275,10 @@ WHERE report_adapt_id = %s;"""
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
-def get_report_list(report_class, l10n, null=False):
+def get_report_list(report_class: str,
+                    l10n: str, 
+                    null: bool=False
+                    ) -> list:
     "Return code and description of all reports of l10n localization or en_US"
     script = """
 SELECT 
@@ -278,7 +297,7 @@ WHERE
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def report_description(report_id):
+def report_description(report_id: int) -> str|None:
     "Return the report description of report code of l10n localization or en_US"
     script = """
 SELECT 
@@ -288,12 +307,15 @@ WHERE report_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (report_id,))
-            if cur.rowcount:
-                return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
+            else:
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def get_report_id(report_code, l10n):
+def get_report_id(report_code: str, l10n: str) -> int:
     "Return the report ID of report code and l10n localization or en_US"
     script = """
 SELECT coalesce(a.report_id, b.report_id)
@@ -303,12 +325,15 @@ WHERE a.report_code = %s AND a.l10n = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (report_code, l10n))
-            if cur.rowcount:
-                return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:                
+                return result[0]
+            else:                
+                return 0
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def report_xml(report_id):
+def report_xml(report_id: int) -> str|None:
     "Report XML definition of the report for required report customization"
     script = """
 SELECT 
@@ -318,14 +343,15 @@ WHERE report_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (report_id,))
-            if cur.rowcount == 1:
-                return cur.fetchone()[0]
+            result = next(cur, None)
+            if result:
+                return result[0]
             else:
-                return (None,)
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_report_from_adapt(adapt_id):
+def get_report_from_adapt(adapt_id: int) -> tuple|None:
     script = """
 SELECT 
     r.report_id,
@@ -339,18 +365,15 @@ WHERE ra.report_adapt_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (adapt_id,))
-            if cur.rowcount == 1:
-                return cur.fetchone()
-            else:
-                return None
+            return next(cur, None)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def report_query(report, condition=None, sorting=None):
+def report_query(report: Report, condition: list|None = None, sorting: list|None = None) -> list|None:
     "Returns dataset from report query/where/order by and dynamic where/orderby clauses"
     # remove trailing ; if any
     if not report.query:
-        return
+        return None
     query = report.query.strip()
     script = query if query[-1] != ';' else query[:-1]
     # parameters

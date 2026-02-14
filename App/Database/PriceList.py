@@ -37,7 +37,7 @@ from App.Database.Connect import appconn
 
 
 
-def duplicate_price_list(from_id, new_description):
+def duplicate_price_list(from_id: int, new_description: str) -> None:
     "Create a new price list copying prices from another"
     # create a new price list
     sql1 = """
@@ -53,9 +53,11 @@ WHERE price_list_id = %(from_id)s;"""
         with appconn.transaction():
             with appconn.cursor() as cur:
                 cur.execute(sql1, {'description': new_description})
-                new_id = cur.fetchone()[0]
-                print(f'New price list id: {new_id}, from id: {from_id}')
-            #with appconn.cursor() as cur:
+                new_id = next(cur)
+                if new_id is None:
+                    raise PyAppDBError("02000", "No id returned from database when creating new price list")
+                else:
+                    new_id = new_id[0]
                 cur.execute(sql2, {'new_id': new_id, 'from_id': from_id})
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er)) 

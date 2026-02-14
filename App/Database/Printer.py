@@ -58,7 +58,7 @@ from App.Database.Connect import appconn
     #except psycopg2.Error as er:
         #raise PyAppDBError(er.pgcode, er.pgerror)
 
-def get_printer_name(class_id, computer):
+def get_printer_name(class_id: int, computer: str) -> str|None:
     "Return the printer name of class_id"
     script = """SELECT printer
 FROM printer_class_printer
@@ -66,7 +66,10 @@ WHERE printer_class_id = %s AND computer = %s;"""
     try:
             with appconn.cursor() as cur:
                 cur.execute(script, (class_id, computer))
-                if cur.rowcount:
-                    return cur.fetchone()[0]
+                pn = next(cur, None)
+                if pn is not None:
+                    return pn[0]
+                else:
+                    return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))

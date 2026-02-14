@@ -165,7 +165,8 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
     #         logging.error("Connection lost")
     #         session['mainwin'].disconnected(er)
 
-    def cursor(self, row_factory: Optional[psycopg.rows.RowFactory[Any]] = None) -> psycopg.Cursor[Any]|psycopg.ServerCursor[Any]:
+    def cursor(self, row_factory: Optional[psycopg.rows.RowFactory[Any]] = None
+               ) -> psycopg.Cursor[Any]|psycopg.ServerCursor[Any]:
         "Returns a new cursor"
         if row_factory is None:
             return self._conn.cursor()

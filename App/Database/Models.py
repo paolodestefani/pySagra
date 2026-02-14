@@ -57,9 +57,9 @@ from App.Database.AbstractModels.TableModel import PandasModel
 from App.Database.AbstractModels.TreeModel import TreeQueryModel
 from App.Database.AbstractModels.TreeModel import TreeModel
 from App.Database.Company import company_is_in_use
-from App.Database.Statistics import statistics_configuration
-from App.Database.Statistics import statistics_configuration_columns
-from App.Database.Statistics import statistics_configuration_totals_columns
+#from App.Database.Statistics import statistics_configuration
+#from App.Database.Statistics import statistics_configuration_columns
+#from App.Database.Statistics import statistics_configuration_totals_columns
 from App.Database.CodeDescriptionList import department_cdl
 from App.Database.CodeDescriptionList import event_cdl
 from App.Database.CodeDescriptionList import item_salable_cdl

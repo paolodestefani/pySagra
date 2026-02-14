@@ -41,7 +41,7 @@ from App.Database.Utility import Record
 class SettingClass():
     "A dict subclass for get/set a single setting parmeter"
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> str|None:
         "Get value for key from setting table"
         # use fstring because field names are not used for cursor parameters
         try:
@@ -50,11 +50,14 @@ class SettingClass():
                 SELECT {key}
                 FROM company.setting 
                 WHERE company_id = system.pa_current_company();""")
-                return cur.fetchone()[0]
+                result = next(cur, None)
+                if result is None:
+                    raise PyAppDBError("No data found", "No setting value found for key: " + key)
+                return result[0]
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: str) -> None:
         "Set value for key in setting table"
         try:
             with appconn.transaction():
@@ -66,7 +69,7 @@ class SettingClass():
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "Company setting get/set utility class"
 
 #Setting = SettingClass()
@@ -75,15 +78,15 @@ class SettingClass():
 class Setting(Record):
     "A Record (dict) subclass for load/seve settings from database"
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('company.setting', ('company_id',))
         self['company_id'] = session['current_company']
         self.load()
 
-    def load(self):
+    def load(self) -> None:
         self.select_record()
 
-    def save(self):
+    def save(self) -> None:
         self.update_record()
         self.commit()
 
