@@ -83,13 +83,41 @@ def seatMap() -> None:
     logging.info('Tables Form added to main window')
 
 
-class GenerateTables(QDialog):
-    "Tables dialog"
-    def __init__(self, parent: QWidget, model: QAbstractItemModel) -> None:
-        super().__init__(parent)
-        self.ui = Ui_GenerateTableNumbers()
+class SeatMapForm(FormManager):
+
+    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+        super().__init__(parent, auth)
+        model = SeatMapModel(self)
+        self.setModel(model)
+        self.tabName = title
+        self.helpLink = None
+        self.reloadConfirmation = False
+        # available edit status
+        # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
+        # FILTER, CHANGE, REPORT, EXPORT
+        self.availableStatus = (True, True, True, True, True, True, True, True,
+                                True, False, True, True)
+        self.ui = Ui_SeatMapWidget()
         self.ui.setupUi(self)
-        self.model = model
+        self.view = self.ui.tableView  # required for formviewmanager
+        self.ui.tableView.setModel(model)
+        self.ui.tableView.setLayoutName('table')
+        # self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.tableView.activateWindow()
+        self.ui.tableView.setSortingEnabled(True)
+        self.ui.tableView.horizontalHeader().setSectionsMovable(True)
+        # custom delegates
+        self.ui.tableView.setItemDelegateForColumn(TABLE_CODE, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ROW, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(COLUMN, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(TEXT_COLOR, ColorDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(BACKGROUND_COLOR, ColorDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(IS_OBSOLETE, BooleanDelegate(self))
+        # map view to mapper and mapper to view
+        self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
+        self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
+        self.setting = SettingClass()
+        # generate tables
         self.bgcolor = '#007f00'
         self.txcolor = '#FFFFFF'
         # bg colors buttons
@@ -107,30 +135,144 @@ class GenerateTables(QDialog):
             i.bgColor = c
             i.setStyleSheet(f"background-color: {c};")
             self.bgbc.addButton(i)
-        # signal/slot
+        self.ui.spinBoxRows.setValue(self.setting['table_list_rows'])
+        self.ui.spinBoxColumns.setValue(self.setting['table_list_columns'])
+        self.ui.spinBoxSpacing.setValue(self.setting['table_list_spacing'])
         self.bgbc.buttonClicked.connect(self.backgroundColorButtonClicked)
         self.ui.pushButtonChooseBackground.clicked.connect(self.chooseBackground)
         self.ui.pushButtonChooseText.clicked.connect(self.chooseText)
-        self.ui.pushButtonAddTables.clicked.connect(self.addTables)
-        #
+        self.ui.pushButtonGenerateTables.clicked.connect(self.generateTableNumbers)
+        
+        # signal/slot
+        self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
+        #self.ui.pushButtonGenerateTables.clicked.connect(self.generateTables)
+        self.ui.pushButtonPreview.clicked.connect(self.showPreview)
+        # initial value
+        self.ui.pushButtonPreview.setText(_tr("StandTableSeatMap", "Swith to Preview"))
+        self.ui.groupBoxBaseGeometry.setVisible(False)
+        self.ui.groupBoxMinimunSize.setVisible(False)
+        # scripting init
+        self.script = scriptInit(self)
         self.updateExample()
 
+    @scriptMethod
+    def new(self) -> None:
+        super().new()
+
+    @scriptMethod
+    def save(self) -> None:
+        super().save()
+
+    @scriptMethod
+    def delete(self) -> None:
+        "Delete and update current table"
+        table = self.model.data(self.model.index(self.mapper.currentIndex(), TABLE_CODE))
+        if QMessageBox.question(self,
+                                _tr('MessageDialog', "Question"),
+                                _tr('Table', "Are you sure you want to delete table {} ?".format(table)),
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
+            return
+        super().delete()
+
+    @scriptMethod
+    def deleteAll(self, checked: bool = False) -> None:
+        "Delete all tables"
+        if QMessageBox.question(self,
+                                _tr("MessageDialog", "Question"),
+                                _tr("Table", "Are you sure you want to delete ALL tables ?"),
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                QMessageBox.StandardButton.No
+                                ) == QMessageBox.StandardButton.Yes:
+            try:
+                table_delete()
+            except PyAppDBError as er:
+                QMessageBox.critical(self,
+                                     _tr("MessageDialog", "Critical"),
+                                     f"Database error: {er.code}\n{er.message}")
+            else:
+                self.ui.tableView.model().select()
+                self.mapper.toFirst()
+
+    @scriptMethod
+    def reload(self) -> None:
+        super().reload()
+    
+    def showPreview(self, clicked: bool) -> None:
+        "Show/Hide preview of th tables/Buttons available in the model"
+        if clicked:
+            self.ui.stackedWidget.setCurrentIndex(PREVIEW)
+            self.ui.pushButtonPreview.setText(_tr("StandTable", "Back to Edit"))
+            self.ui.groupBoxBaseGeometry.setVisible(True)
+            self.ui.groupBoxMinimunSize.setVisible(True)
+        else:
+            self.ui.stackedWidget.setCurrentIndex(EDIT)
+            self.ui.pushButtonPreview.setText(_tr("StandTable", "Swith to Preview"))
+            self.ui.groupBoxBaseGeometry.setVisible(False)
+            self.ui.groupBoxMinimunSize.setVisible(False)
+            return
+        # save geometry
+        self.setting['table_list_rows'] = self.ui.spinBoxRows.value()
+        self.setting['table_list_columns'] = self.ui.spinBoxColumns.value()
+        self.setting['table_list_spacing'] = self.ui.spinBoxSpacing.value()
+        #self.setting.save()
+        # create a preview
+        # buttons for tables
+        # clean first
+        while self.ui.gridLayoutPreview.count():
+            w = self.ui.gridLayoutPreview.takeAt(0).widget()
+            if w is not None:
+                w.setParent(None)
+                w.deleteLater()
+        # new widets from model, don't need to save before preview
+        for r in range(self.model.rowCount() + 1):
+            cod = self.model.index(r, TABLE_CODE).data()
+            row = self.model.index(r, ROW).data()
+            col = self.model.index(r, COLUMN).data()
+            tc = self.model.index(r, TEXT_COLOR).data()
+            bc = self.model.index(r, BACKGROUND_COLOR).data()
+            b = QPushButton(cod, self) # item description
+            b.setFont(QFont(self.setting['table_list_font_family'], self.setting['table_list_font_size'] + 5, QFont.Weight.Bold))
+            b.setStyleSheet(f"color: {tc}; background-color: {bc};")
+            b.setMinimumWidth(self.ui.spinBoxMinWidth.value())
+            b.setMinimumHeight(self.ui.spinBoxMinHeight.value())
+            b.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            if row is None or col is None:
+                continue
+            self.ui.gridLayoutPreview.addWidget(b, row, col)
+        # fill the remaining cells of gl with an empty widget
+        for r in range(1, int(self.setting['table_list_rows']) + 1):
+            for c in range(1, int(self.setting['table_list_columns']) + 1):
+                if self.ui.gridLayoutPreview.itemAtPosition(r, c) is None:
+                    w = QWidget(self)
+                    w.setMinimumWidth(self.ui.spinBoxMinWidth.value())
+                    w.setMinimumHeight(self.ui.spinBoxMinHeight.value())
+                    w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+                    self.ui.gridLayoutPreview.addWidget(w, r, c)
+                    
+    @scriptMethod
+    def print(self) -> None:
+        "Tables report"
+        dialog = PrintDialog(self, 'TABLE')
+        dialog.show()
+        
     def backgroundColorButtonClicked(self, button: QPushButton) -> None:
-        color = QColorDialog.getColor(Qt.white, self)
+        color = QColorDialog.getColor(Qt.GlobalColor.white, self)
         if not color.isValid():
             return
         button.setStyleSheet(f"background-color: {color.name()};")
         button.bgColor = color.name()
 
     def chooseBackground(self) -> None:
-        color = QColorDialog.getColor(Qt.white, self)
+        color = QColorDialog.getColor(Qt.GlobalColor.white, self)
         if not color.isValid():
             return
         self.bgcolor = color.name()
         self.updateExample()
 
     def chooseText(self) -> None:
-        color = QColorDialog.getColor(Qt.black, self)
+        color = QColorDialog.getColor(Qt.GlobalColor.black, self)
         if not color.isValid():
             return
         self.txcolor = color.name()
@@ -140,11 +282,12 @@ class GenerateTables(QDialog):
         ss = f"background-color: {self.bgcolor}; color: {self.txcolor};"
         self.ui.pushButtonExample.setStyleSheet(ss)
 
-    def addTables(self) -> None:
+    @scriptMethod
+    def generateTableNumbers(self) -> None:
         "Generate tables code and position and add to table list"
         startRow = self.ui.spinBoxStartRow.value()
-        rows = self.ui.spinBoxRows.value()
-        columns = self.ui.spinBoxColumns.value()
+        rows = self.ui.spinBoxNumRows.value()
+        columns = self.ui.spinBoxNumColumns.value()
         prefix = self.ui.lineEditPrefix.text()
         suffix = self.ui.lineEditSuffix.text()
         rowPadding = self.ui.spinBoxRowPadding.value()
@@ -192,156 +335,3 @@ class GenerateTables(QDialog):
                     self.model.setData(self.model.createIndex(modelRow, TEXT_COLOR), textColor)
                     self.model.setData(self.model.createIndex(modelRow, BACKGROUND_COLOR), backgroundColor)
                     self.model.setData(self.model.createIndex(modelRow, IS_OBSOLETE), False)
-
-
-class SeatMapForm(FormManager):
-
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
-        super().__init__(parent, auth)
-        model = SeatMapModel(self)
-        self.setModel(model)
-        self.tabName = title
-        self.helpLink = None
-        self.reloadConfirmation = False
-        # available edit status
-        # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
-        # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (True, True, True, True, True, True, True, True,
-                                True, False, True, True)
-        self.ui = Ui_SeatMapWidget()
-        self.ui.setupUi(self)
-        self.view = self.ui.tableView  # required for formviewmanager
-        self.ui.tableView.setModel(model)
-        self.ui.tableView.setLayoutName('table')
-        # self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.ui.tableView.activateWindow()
-        self.ui.tableView.setSortingEnabled(True)
-        self.ui.tableView.horizontalHeader().setSectionsMovable(True)
-        # custom delegates
-        self.ui.tableView.setItemDelegateForColumn(TABLE_CODE, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ROW, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(COLUMN, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TEXT_COLOR, ColorDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(BACKGROUND_COLOR, ColorDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(IS_OBSOLETE, BooleanDelegate(self))
-        # map view to mapper and mapper to view
-        self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
-        self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
-        # generate dialog
-        self.generateDialog = GenerateTables(self, self.model)
-        self.setting = SettingClass()
-        #self.gl = QGridLayout() # as a layout is difficult to remove use only one and remove/insert widgets
-        #self.gl.setColumnMinimumWidth(self.setting['table_list_spacing'])
-        #self.gl.setRowMinimumHeight(self.setting['table_list_spacing'])
-        #self.ui.stackedWidget.widget(PREVIEW).
-        #self.ui.framePreview.setLayout(self.gl)
-        self.ui.spinBoxRows.setValue(self.setting['table_list_rows'])
-        self.ui.spinBoxColumns.setValue(self.setting['table_list_columns'])
-        self.ui.spinBoxSpacing.setValue(self.setting['table_list_spacing'])
-        # signal/slot
-        self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
-        self.ui.pushButtonGenerate.clicked.connect(self.generateTables)
-        self.ui.pushButtonPreview.clicked.connect(self.showPreview)
-        # initial value
-        self.ui.pushButtonPreview.setText(_tr("StandTable", "Swith to Preview"))
-        # scripting init
-        self.script = scriptInit(self)
-
-    @scriptMethod
-    def new(self) -> None:
-        super().new()
-
-    @scriptMethod
-    def save(self) -> None:
-        super().save()
-
-    @scriptMethod
-    def delete(self) -> None:
-        "Delete and update current table"
-        table = self.model.data(self.model.index(self.mapper.currentIndex(), TABLE_CODE))
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                _tr('Table', "Are you sure you want to delete table {} ?".format(table)),
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
-            return
-        super().delete()
-
-    @scriptMethod
-    def deleteAll(self, checked: bool = False) -> None:
-        "Delete all tables"
-        if QMessageBox.question(self,
-                                _tr("MessageDialog", "Question"),
-                                _tr("Table", "Are you sure you want to delete ALL tables ?"),
-                                QMessageBox.Yes | QMessageBox.No,
-                                QMessageBox.No) == QMessageBox.Yes:
-            try:
-                table_delete()
-            except PyAppDBError as er:
-                QMessageBox.critical(self,
-                                     _tr("MessageDialog", "Critical"),
-                                     f"Database error: {er.code}\n{er.message}")
-            else:
-                self.ui.tableView.model().select()
-                self.mapper.toFirst()
-
-    @scriptMethod
-    def reload(self) -> None:
-        super().reload()
-
-    @scriptMethod
-    def generateTables(self, checked: bool = False) -> None:
-        self.generateDialog.show()
-
-    def showPreview(self, clicked: bool) -> None:
-        "Show/Hide preview of th tables/Buttons available in the model"
-        if clicked:
-            self.ui.stackedWidget.setCurrentIndex(PREVIEW)
-            self.ui.pushButtonPreview.setText(_tr("StandTable", "Back to Edit"))
-        else:
-            self.ui.stackedWidget.setCurrentIndex(EDIT)
-            self.ui.pushButtonPreview.setText(_tr("StandTable", "Swith to Preview"))
-            return
-        # save geometry
-        self.setting['table_list_rows'] = self.ui.spinBoxRows.value()
-        self.setting['table_list_columns'] = self.ui.spinBoxColumns.value()
-        self.setting['table_list_spacing'] = self.ui.spinBoxSpacing.value()
-        #self.setting.save()
-        # create a preview
-        # buttons for tables
-        # clean first
-        while self.ui.gridLayoutPreview.count():
-            w = self.ui.gridLayoutPreview.takeAt(0).widget()
-            if w is not None:
-                w.setParent(None)
-                w.deleteLater()
-        # new widets from model, don't need to save before previe
-        for r in range(self.model.rowCount() + 1):
-            cod = self.model.index(r, TABLE_CODE).data()
-            row = self.model.index(r, ROW).data()
-            col = self.model.index(r, COLUMN).data()
-            tc = self.model.index(r, TEXT_COLOR).data()
-            bc = self.model.index(r, BACKGROUND_COLOR).data()
-            b = QPushButton(cod, self) # item description
-            b.setFont(QFont(self.setting['table_list_font_family'], self.setting['table_list_font_size'], QFont.Bold))
-            b.setStyleSheet(f"color: {tc}; background-color: {bc};")
-            b.setMinimumWidth(50)
-            b.setMinimumHeight(40)
-            b.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            if row is None or col is None:
-                continue
-            self.ui.gridLayoutPreview.addWidget(b, row, col)
-        # fill the remaining cells of gl with an empty widget
-        for r in range(1, self.setting['table_list_rows'] + 1):
-            for c in range(1, self.setting['table_list_columns'] + 1):
-                if self.ui.gridLayoutPreview.itemAtPosition(r, c) is None:
-                    w = QWidget(self)
-                    #w.setMinimumWidth(5)
-                    w.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                    self.ui.gridLayoutPreview.addWidget(w, r, c)
-    @scriptMethod
-    def print(self) -> None:
-        "Tables report"
-        dialog = PrintDialog(self, 'TABLE')
-        dialog.show()

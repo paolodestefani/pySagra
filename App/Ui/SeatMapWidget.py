@@ -15,10 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QGroupBox,
-    QHBoxLayout, QHeaderView, QLabel, QLayout,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QSpinBox, QStackedWidget, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLayout, QLineEdit, QPushButton, QRadioButton,
+    QScrollArea, QSizePolicy, QSpacerItem, QSpinBox,
+    QStackedWidget, QVBoxLayout, QWidget)
 
 from App.Widget.View import EnhancedTableView
 
@@ -26,23 +27,313 @@ class Ui_SeatMapWidget(object):
     def setupUi(self, SeatMapWidget):
         if not SeatMapWidget.objectName():
             SeatMapWidget.setObjectName(u"SeatMapWidget")
-        SeatMapWidget.resize(890, 442)
+        SeatMapWidget.resize(833, 662)
         font = QFont()
         font.setKerning(True)
         SeatMapWidget.setFont(font)
-        self.verticalLayout_5 = QVBoxLayout(SeatMapWidget)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_8 = QVBoxLayout(SeatMapWidget)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.stackedWidget = QStackedWidget(SeatMapWidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.pageList = QWidget()
         self.pageList.setObjectName(u"pageList")
-        self.verticalLayout = QVBoxLayout(self.pageList)
-        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.horizontalLayout_8 = QHBoxLayout(self.pageList)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.tableView = EnhancedTableView(self.pageList)
         self.tableView.setObjectName(u"tableView")
 
-        self.verticalLayout.addWidget(self.tableView)
+        self.horizontalLayout_8.addWidget(self.tableView)
 
+        self.verticalLayout_11 = QVBoxLayout()
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.verticalLayout_11.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.groupBoxGenerate = QGroupBox(self.pageList)
+        self.groupBoxGenerate.setObjectName(u"groupBoxGenerate")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBoxGenerate.sizePolicy().hasHeightForWidth())
+        self.groupBoxGenerate.setSizePolicy(sizePolicy)
+        self.groupBoxGenerate.setMinimumSize(QSize(631, 0))
+        self.verticalLayout_10 = QVBoxLayout(self.groupBoxGenerate)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.verticalLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.groupBoxTablePosition = QGroupBox(self.groupBoxGenerate)
+        self.groupBoxTablePosition.setObjectName(u"groupBoxTablePosition")
+        sizePolicy.setHeightForWidth(self.groupBoxTablePosition.sizePolicy().hasHeightForWidth())
+        self.groupBoxTablePosition.setSizePolicy(sizePolicy)
+        self.horizontalLayout_6 = QHBoxLayout(self.groupBoxTablePosition)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.label_6 = QLabel(self.groupBoxTablePosition)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_7.addWidget(self.label_6)
+
+        self.spinBoxStartRow = QSpinBox(self.groupBoxTablePosition)
+        self.spinBoxStartRow.setObjectName(u"spinBoxStartRow")
+        self.spinBoxStartRow.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.spinBoxStartRow.setMinimum(1)
+        self.spinBoxStartRow.setMaximum(999)
+        self.spinBoxStartRow.setValue(1)
+
+        self.horizontalLayout_7.addWidget(self.spinBoxStartRow)
+
+        self.label_7 = QLabel(self.groupBoxTablePosition)
+        self.label_7.setObjectName(u"label_7")
+
+        self.horizontalLayout_7.addWidget(self.label_7)
+
+        self.spinBoxNumRows = QSpinBox(self.groupBoxTablePosition)
+        self.spinBoxNumRows.setObjectName(u"spinBoxNumRows")
+        self.spinBoxNumRows.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.spinBoxNumRows.setMinimum(1)
+        self.spinBoxNumRows.setMaximum(999)
+        self.spinBoxNumRows.setValue(1)
+
+        self.horizontalLayout_7.addWidget(self.spinBoxNumRows)
+
+        self.label_8 = QLabel(self.groupBoxTablePosition)
+        self.label_8.setObjectName(u"label_8")
+
+        self.horizontalLayout_7.addWidget(self.label_8)
+
+        self.spinBoxNumColumns = QSpinBox(self.groupBoxTablePosition)
+        self.spinBoxNumColumns.setObjectName(u"spinBoxNumColumns")
+        self.spinBoxNumColumns.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.spinBoxNumColumns.setMinimum(1)
+        self.spinBoxNumColumns.setMaximum(999)
+        self.spinBoxNumColumns.setValue(1)
+
+        self.horizontalLayout_7.addWidget(self.spinBoxNumColumns)
+
+
+        self.horizontalLayout_6.addLayout(self.horizontalLayout_7)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer)
+
+
+        self.verticalLayout_10.addWidget(self.groupBoxTablePosition)
+
+        self.groupBoxTableCode = QGroupBox(self.groupBoxGenerate)
+        self.groupBoxTableCode.setObjectName(u"groupBoxTableCode")
+        sizePolicy.setHeightForWidth(self.groupBoxTableCode.sizePolicy().hasHeightForWidth())
+        self.groupBoxTableCode.setSizePolicy(sizePolicy)
+        self.verticalLayout_9 = QVBoxLayout(self.groupBoxTableCode)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.radioButtonRowColumn = QRadioButton(self.groupBoxTableCode)
+        self.radioButtonRowColumn.setObjectName(u"radioButtonRowColumn")
+        self.radioButtonRowColumn.setChecked(True)
+
+        self.verticalLayout_2.addWidget(self.radioButtonRowColumn)
+
+        self.radioButtonColumnRow = QRadioButton(self.groupBoxTableCode)
+        self.radioButtonColumnRow.setObjectName(u"radioButtonColumnRow")
+
+        self.verticalLayout_2.addWidget(self.radioButtonColumnRow)
+
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout_2)
+
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.label_9 = QLabel(self.groupBoxTableCode)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout.addWidget(self.label_9, 0, 0, 1, 1)
+
+        self.label_10 = QLabel(self.groupBoxTableCode)
+        self.label_10.setObjectName(u"label_10")
+
+        self.gridLayout.addWidget(self.label_10, 0, 1, 1, 1)
+
+        self.label_11 = QLabel(self.groupBoxTableCode)
+        self.label_11.setObjectName(u"label_11")
+
+        self.gridLayout.addWidget(self.label_11, 0, 2, 1, 1)
+
+        self.label_12 = QLabel(self.groupBoxTableCode)
+        self.label_12.setObjectName(u"label_12")
+
+        self.gridLayout.addWidget(self.label_12, 0, 3, 1, 1)
+
+        self.lineEditPrefix = QLineEdit(self.groupBoxTableCode)
+        self.lineEditPrefix.setObjectName(u"lineEditPrefix")
+        self.lineEditPrefix.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout.addWidget(self.lineEditPrefix, 1, 0, 1, 1)
+
+        self.spinBoxRowPadding = QSpinBox(self.groupBoxTableCode)
+        self.spinBoxRowPadding.setObjectName(u"spinBoxRowPadding")
+        self.spinBoxRowPadding.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.spinBoxRowPadding.setMaximum(15)
+
+        self.gridLayout.addWidget(self.spinBoxRowPadding, 1, 1, 1, 1)
+
+        self.spinBoxColumnPadding = QSpinBox(self.groupBoxTableCode)
+        self.spinBoxColumnPadding.setObjectName(u"spinBoxColumnPadding")
+        self.spinBoxColumnPadding.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.spinBoxColumnPadding.setMaximum(99999)
+
+        self.gridLayout.addWidget(self.spinBoxColumnPadding, 1, 2, 1, 1)
+
+        self.lineEditSuffix = QLineEdit(self.groupBoxTableCode)
+        self.lineEditSuffix.setObjectName(u"lineEditSuffix")
+
+        self.gridLayout.addWidget(self.lineEditSuffix, 1, 3, 1, 1)
+
+
+        self.horizontalLayout_2.addLayout(self.gridLayout)
+
+
+        self.verticalLayout_9.addLayout(self.horizontalLayout_2)
+
+
+        self.verticalLayout_10.addWidget(self.groupBoxTableCode)
+
+        self.groupBoxButtonColor = QGroupBox(self.groupBoxGenerate)
+        self.groupBoxButtonColor.setObjectName(u"groupBoxButtonColor")
+        sizePolicy.setHeightForWidth(self.groupBoxButtonColor.sizePolicy().hasHeightForWidth())
+        self.groupBoxButtonColor.setSizePolicy(sizePolicy)
+        self.verticalLayout = QVBoxLayout(self.groupBoxButtonColor)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.pushButtonChooseBackground = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonChooseBackground.setObjectName(u"pushButtonChooseBackground")
+
+        self.horizontalLayout_5.addWidget(self.pushButtonChooseBackground)
+
+        self.pushButtonExample = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonExample.setObjectName(u"pushButtonExample")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.pushButtonExample.sizePolicy().hasHeightForWidth())
+        self.pushButtonExample.setSizePolicy(sizePolicy1)
+        self.pushButtonExample.setMinimumSize(QSize(0, 40))
+        self.pushButtonExample.setBaseSize(QSize(0, 0))
+
+        self.horizontalLayout_5.addWidget(self.pushButtonExample)
+
+        self.pushButtonChooseText = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonChooseText.setObjectName(u"pushButtonChooseText")
+
+        self.horizontalLayout_5.addWidget(self.pushButtonChooseText)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
+
+        self.checkBoxChangeBackgroundColor = QCheckBox(self.groupBoxButtonColor)
+        self.checkBoxChangeBackgroundColor.setObjectName(u"checkBoxChangeBackgroundColor")
+
+        self.verticalLayout.addWidget(self.checkBoxChangeBackgroundColor)
+
+        self.gridLayout_2 = QGridLayout()
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.pushButtonBGC4 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC4.setObjectName(u"pushButtonBGC4")
+        self.pushButtonBGC4.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC4, 0, 3, 1, 1)
+
+        self.pushButtonBGC5 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC5.setObjectName(u"pushButtonBGC5")
+        self.pushButtonBGC5.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC5, 0, 4, 1, 1)
+
+        self.pushButtonBGC2 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC2.setObjectName(u"pushButtonBGC2")
+        self.pushButtonBGC2.setCheckable(False)
+        self.pushButtonBGC2.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC2, 0, 1, 1, 1)
+
+        self.pushButtonBGC3 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC3.setObjectName(u"pushButtonBGC3")
+        self.pushButtonBGC3.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC3, 0, 2, 1, 1)
+
+        self.pushButtonBGC1 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC1.setObjectName(u"pushButtonBGC1")
+        self.pushButtonBGC1.setEnabled(True)
+        self.pushButtonBGC1.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC1, 0, 0, 1, 1)
+
+        self.pushButtonBGC6 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC6.setObjectName(u"pushButtonBGC6")
+        self.pushButtonBGC6.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC6, 1, 0, 1, 1)
+
+        self.pushButtonBGC8 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC8.setObjectName(u"pushButtonBGC8")
+        self.pushButtonBGC8.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC8, 1, 2, 1, 1)
+
+        self.pushButtonBGC7 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC7.setObjectName(u"pushButtonBGC7")
+        self.pushButtonBGC7.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC7, 1, 1, 1, 1)
+
+        self.pushButtonBGC9 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC9.setObjectName(u"pushButtonBGC9")
+        self.pushButtonBGC9.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC9, 1, 3, 1, 1)
+
+        self.pushButtonBGC10 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC10.setObjectName(u"pushButtonBGC10")
+        self.pushButtonBGC10.setFlat(False)
+
+        self.gridLayout_2.addWidget(self.pushButtonBGC10, 1, 4, 1, 1)
+
+
+        self.verticalLayout.addLayout(self.gridLayout_2)
+
+
+        self.verticalLayout_10.addWidget(self.groupBoxButtonColor)
+
+        self.pushButtonGenerateTables = QPushButton(self.groupBoxGenerate)
+        self.pushButtonGenerateTables.setObjectName(u"pushButtonGenerateTables")
+
+        self.verticalLayout_10.addWidget(self.pushButtonGenerateTables)
+
+
+        self.verticalLayout_11.addWidget(self.groupBoxGenerate)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_11.addItem(self.verticalSpacer)
+
+        self.pushButtonDeleteAll = QPushButton(self.pageList)
+        self.pushButtonDeleteAll.setObjectName(u"pushButtonDeleteAll")
+        self.pushButtonDeleteAll.setStyleSheet(u"")
+
+        self.verticalLayout_11.addWidget(self.pushButtonDeleteAll)
+
+
+        self.horizontalLayout_8.addLayout(self.verticalLayout_11)
+
+        self.horizontalLayout_8.setStretch(0, 1)
         self.stackedWidget.addWidget(self.pageList)
         self.pagePreview = QWidget()
         self.pagePreview.setObjectName(u"pagePreview")
@@ -53,7 +344,7 @@ class Ui_SeatMapWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 783, 547))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.verticalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
@@ -80,81 +371,55 @@ class Ui_SeatMapWidget(object):
 
         self.stackedWidget.addWidget(self.pagePreview)
 
-        self.verticalLayout_5.addWidget(self.stackedWidget)
+        self.verticalLayout_8.addWidget(self.stackedWidget)
 
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.groupBox = QGroupBox(SeatMapWidget)
-        self.groupBox.setObjectName(u"groupBox")
-        self.verticalLayout_2 = QVBoxLayout(self.groupBox)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.pushButtonDeleteAll = QPushButton(self.groupBox)
-        self.pushButtonDeleteAll.setObjectName(u"pushButtonDeleteAll")
-        self.pushButtonDeleteAll.setStyleSheet(u"")
-
-        self.horizontalLayout_2.addWidget(self.pushButtonDeleteAll)
-
-        self.pushButtonGenerate = QPushButton(self.groupBox)
-        self.pushButtonGenerate.setObjectName(u"pushButtonGenerate")
-
-        self.horizontalLayout_2.addWidget(self.pushButtonGenerate)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
-
-
-        self.horizontalLayout_3.addWidget(self.groupBox)
-
-        self.horizontalSpacer_2 = QSpacerItem(18, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
-
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.pushButtonPreview = QPushButton(SeatMapWidget)
         self.pushButtonPreview.setObjectName(u"pushButtonPreview")
         self.pushButtonPreview.setCheckable(True)
 
-        self.horizontalLayout_3.addWidget(self.pushButtonPreview)
+        self.horizontalLayout_4.addWidget(self.pushButtonPreview)
 
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout_3.addItem(self.horizontalSpacer_3)
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
 
-        self.groupBox_2 = QGroupBox(SeatMapWidget)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        self.verticalLayout_3 = QVBoxLayout(self.groupBox_2)
+        self.groupBoxBaseGeometry = QGroupBox(SeatMapWidget)
+        self.groupBoxBaseGeometry.setObjectName(u"groupBoxBaseGeometry")
+        self.verticalLayout_3 = QVBoxLayout(self.groupBoxBaseGeometry)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(-1, 0, -1, 0)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label = QLabel(self.groupBox_2)
+        self.label = QLabel(self.groupBoxBaseGeometry)
         self.label.setObjectName(u"label")
 
         self.horizontalLayout.addWidget(self.label)
 
-        self.spinBoxRows = QSpinBox(self.groupBox_2)
+        self.spinBoxRows = QSpinBox(self.groupBoxBaseGeometry)
         self.spinBoxRows.setObjectName(u"spinBoxRows")
         self.spinBoxRows.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout.addWidget(self.spinBoxRows)
 
-        self.label_2 = QLabel(self.groupBox_2)
+        self.label_2 = QLabel(self.groupBoxBaseGeometry)
         self.label_2.setObjectName(u"label_2")
 
         self.horizontalLayout.addWidget(self.label_2)
 
-        self.spinBoxColumns = QSpinBox(self.groupBox_2)
+        self.spinBoxColumns = QSpinBox(self.groupBoxBaseGeometry)
         self.spinBoxColumns.setObjectName(u"spinBoxColumns")
         self.spinBoxColumns.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout.addWidget(self.spinBoxColumns)
 
-        self.label_3 = QLabel(self.groupBox_2)
+        self.label_3 = QLabel(self.groupBoxBaseGeometry)
         self.label_3.setObjectName(u"label_3")
 
         self.horizontalLayout.addWidget(self.label_3)
 
-        self.spinBoxSpacing = QSpinBox(self.groupBox_2)
+        self.spinBoxSpacing = QSpinBox(self.groupBoxBaseGeometry)
         self.spinBoxSpacing.setObjectName(u"spinBoxSpacing")
         self.spinBoxSpacing.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -164,15 +429,53 @@ class Ui_SeatMapWidget(object):
         self.verticalLayout_3.addLayout(self.horizontalLayout)
 
 
-        self.horizontalLayout_3.addWidget(self.groupBox_2)
+        self.horizontalLayout_4.addWidget(self.groupBoxBaseGeometry)
 
-        self.horizontalSpacer = QSpacerItem(18, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.groupBoxMinimunSize = QGroupBox(SeatMapWidget)
+        self.groupBoxMinimunSize.setObjectName(u"groupBoxMinimunSize")
+        self.verticalLayout_5 = QVBoxLayout(self.groupBoxMinimunSize)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_5.setContentsMargins(-1, 0, -1, 0)
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label_4 = QLabel(self.groupBoxMinimunSize)
+        self.label_4.setObjectName(u"label_4")
 
-        self.horizontalLayout_3.addItem(self.horizontalSpacer)
+        self.horizontalLayout_3.addWidget(self.label_4)
+
+        self.spinBoxMinWidth = QSpinBox(self.groupBoxMinimunSize)
+        self.spinBoxMinWidth.setObjectName(u"spinBoxMinWidth")
+        self.spinBoxMinWidth.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.spinBoxMinWidth.setMinimum(30)
+        self.spinBoxMinWidth.setMaximum(300)
+
+        self.horizontalLayout_3.addWidget(self.spinBoxMinWidth)
+
+        self.label_5 = QLabel(self.groupBoxMinimunSize)
+        self.label_5.setObjectName(u"label_5")
+
+        self.horizontalLayout_3.addWidget(self.label_5)
+
+        self.spinBoxMinHeight = QSpinBox(self.groupBoxMinimunSize)
+        self.spinBoxMinHeight.setObjectName(u"spinBoxMinHeight")
+        self.spinBoxMinHeight.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.spinBoxMinHeight.setMinimum(30)
+        self.spinBoxMinHeight.setMaximum(300)
+
+        self.horizontalLayout_3.addWidget(self.spinBoxMinHeight)
 
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_3)
 
+
+        self.horizontalLayout_4.addWidget(self.groupBoxMinimunSize)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_4)
+
+#if QT_CONFIG(shortcut)
+        self.label_6.setBuddy(self.groupBoxGenerate)
+#endif // QT_CONFIG(shortcut)
 
         self.retranslateUi(SeatMapWidget)
 
@@ -184,13 +487,41 @@ class Ui_SeatMapWidget(object):
 
     def retranslateUi(self, SeatMapWidget):
         SeatMapWidget.setWindowTitle(QCoreApplication.translate("SeatMapWidget", u"Seat Map", None))
-        self.groupBox.setTitle(QCoreApplication.translate("SeatMapWidget", u"Massive editing", None))
+        self.groupBoxTablePosition.setTitle(QCoreApplication.translate("SeatMapWidget", u"Table position and number", None))
+        self.label_6.setText(QCoreApplication.translate("SeatMapWidget", u"Start row", None))
+        self.label_7.setText(QCoreApplication.translate("SeatMapWidget", u"Rows", None))
+        self.label_8.setText(QCoreApplication.translate("SeatMapWidget", u"Columns", None))
+        self.groupBoxTableCode.setTitle(QCoreApplication.translate("SeatMapWidget", u"Table code", None))
+        self.radioButtonRowColumn.setText(QCoreApplication.translate("SeatMapWidget", u"row + column", None))
+        self.radioButtonColumnRow.setText(QCoreApplication.translate("SeatMapWidget", u"column + row", None))
+        self.label_9.setText(QCoreApplication.translate("SeatMapWidget", u"Pefix", None))
+        self.label_10.setText(QCoreApplication.translate("SeatMapWidget", u"Row padding", None))
+        self.label_11.setText(QCoreApplication.translate("SeatMapWidget", u"Column padding", None))
+        self.label_12.setText(QCoreApplication.translate("SeatMapWidget", u"Suffix", None))
+        self.groupBoxButtonColor.setTitle(QCoreApplication.translate("SeatMapWidget", u"Button color", None))
+        self.pushButtonChooseBackground.setText(QCoreApplication.translate("SeatMapWidget", u"Background color ...", None))
+        self.pushButtonExample.setText(QCoreApplication.translate("SeatMapWidget", u"Example", None))
+        self.pushButtonChooseText.setText(QCoreApplication.translate("SeatMapWidget", u"Text color ...", None))
+        self.checkBoxChangeBackgroundColor.setText(QCoreApplication.translate("SeatMapWidget", u"Change background color on change row/column", None))
+        self.pushButtonBGC4.setText("")
+        self.pushButtonBGC5.setText("")
+        self.pushButtonBGC2.setText("")
+        self.pushButtonBGC3.setText("")
+        self.pushButtonBGC1.setText("")
+        self.pushButtonBGC6.setText("")
+        self.pushButtonBGC8.setText("")
+        self.pushButtonBGC7.setText("")
+        self.pushButtonBGC9.setText("")
+        self.pushButtonBGC10.setText("")
+        self.pushButtonGenerateTables.setText(QCoreApplication.translate("SeatMapWidget", u"Generate table numbers", None))
         self.pushButtonDeleteAll.setText(QCoreApplication.translate("SeatMapWidget", u"Delete All", None))
-        self.pushButtonGenerate.setText(QCoreApplication.translate("SeatMapWidget", u"Generate table numbers", None))
         self.pushButtonPreview.setText(QCoreApplication.translate("SeatMapWidget", u"Preview", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("SeatMapWidget", u"Base geometry", None))
+        self.groupBoxBaseGeometry.setTitle(QCoreApplication.translate("SeatMapWidget", u"Base geometry", None))
         self.label.setText(QCoreApplication.translate("SeatMapWidget", u"Rows", None))
         self.label_2.setText(QCoreApplication.translate("SeatMapWidget", u"Columns", None))
         self.label_3.setText(QCoreApplication.translate("SeatMapWidget", u"Spacing", None))
+        self.groupBoxMinimunSize.setTitle(QCoreApplication.translate("SeatMapWidget", u"Minimum size", None))
+        self.label_4.setText(QCoreApplication.translate("SeatMapWidget", u"Width", None))
+        self.label_5.setText(QCoreApplication.translate("SeatMapWidget", u"Height", None))
     # retranslateUi
 
