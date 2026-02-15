@@ -36,7 +36,7 @@ from App.Database.Connect import appconn
 
 
 
-def table_list():
+def table_list() -> list[tuple[str, int, int, str, str]]:
     "Returns a list of available table codes"
     script = """
     SELECT 
@@ -52,9 +52,9 @@ def table_list():
             cur.execute(script, (session['current_company'],))
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def table_delete():
+def table_delete() -> None:
     "Delete all tables"
     script = """
     DELETE FROM company.seat_map 
@@ -64,10 +64,10 @@ def table_delete():
             with appconn.cursor() as cur:
                 cur.execute(script, (session['current_company'],))
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def table_exists(table_code):
-    "Returns True if the provided table list exists"
+def table_exists(table_code: str) -> bool:
+    "Returns True if the provided table code exists"
     script = """
     SELECT table_code
     FROM seat_map
@@ -81,5 +81,5 @@ def table_exists(table_code):
                 else:
                     return True
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 

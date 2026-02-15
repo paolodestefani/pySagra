@@ -34,68 +34,87 @@ from App.Database.Connect import appconn
 
 
 
-def get_web_order_header(order_id):
+def get_web_order_header(order_id: int) -> tuple:
     "Get web order header of given id"
-    script = """SELECT delivery, table_num, customer_name, covers, total_amount, processed
+    script = """
+SELECT 
+    delivery,
+    table_num,
+    customer_name,
+    covers,
+    total_amount,
+    processed
 FROM web_order_header
 WHERE id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (order_id,))
-            if cur.rowcount:
-                return cur.fetchall()[0]  # must be only one record
+            result = next(cur, None)
+            if result:
+                return result
+            raise PyAppDBError("00000", f"Web order {order_id} not found")
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
-def get_web_order_details(order_id):
+def get_web_order_details(order_id: int) -> list[tuple]:
     "Get web order details of given id"
-    script = """SELECT item, quantity
+    script = """
+SELECT 
+    item,
+    quantity
 FROM web_order_detail
 WHERE id_header = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (order_id,))
-            if cur.rowcount:
+            if cur.rowcount > 0:
                 return cur.fetchall()
-
+            raise PyAppDBError("00000", f"Web order {order_id} details not found")
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_web_order_processed(order_id):
+def set_web_order_processed(order_id: int) -> None:
     "Set web order as processed"
-    script = """UPDATE web_order_header
+    script = """
+UPDATE web_order_header
 SET processed = true
 WHERE id = %s;"""
     try:
-        with appconn.conn:
+        with appconn.transaction():
             with appconn.cursor() as cur:
                 cur.execute(script, (order_id,))
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def delete_web_order(include_all=False):
+def delete_web_order(include_all: bool = False) -> None:
     "Delete web order"
-    script = """DELETE FROM web_order_header"""
+    script = "DELETE FROM web_order_header"
     if not include_all:
-        script += """ WHERE processed IS true"""
+        script += " WHERE processed IS true"
     script += ";"
     try:
-        with appconn.conn:
+        with appconn.transaction():
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def web_order_totals():
+def web_order_totals() -> tuple|None:
     "Calc web order totals"
-    script = """SELECT count(*),
+    script = """
+SELECT 
+    count(*),
     count(CASE WHEN processed IS true THEN 1 END),
     count(CASE WHEN processed IS false THEN 1 END)
-FROM web_order_header;"""
+FROM web_order_header
+WHERE company_id = system.pa_current_company();"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
-            return cur.fetchone()
+            result = next(cur, None)
+            if result:
+                return result
+            return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))

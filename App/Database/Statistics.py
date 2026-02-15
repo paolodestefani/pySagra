@@ -56,15 +56,21 @@ from App.Database.Connect import appconn
 #         raise PyAppDBError(er.diag.sqlstate, str(er))   
 
 
-def load_statistic_bi_data(view: str, from_event: int, to_event: int) -> tuple[Any,...]:
+def load_statistic_bi_data(view: str,
+                           from_event: int,
+                           to_event: int
+                           ) -> list[Any,...]:
     "Load a statistic data"
     script = f"""SELECT * FROM {view} WHERE "ID Evento" BETWEEN %s AND %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (from_event, to_event))
-            return [(i[0] for i in cur.description)] + cur.fetchall()
+            if cur.description:
+                return [(i[0] for i in cur.description)] + cur.fetchall()
+            else:
+                return []
     except psycopg.Error as er:
-        raise PyAppDBError(er.pgcode, er.pgerror)
+        raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
 # def available_statistics() -> tuple:

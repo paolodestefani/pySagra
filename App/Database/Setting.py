@@ -39,7 +39,7 @@ from App.Database.Utility import Record
 
 
 class SettingClass():
-    "A dict subclass for get/set a single setting parmeter"
+    "A dict like class for get/set a single setting parmeter"
 
     def __getitem__(self, key: str) -> str|None:
         "Get value for key from setting table"

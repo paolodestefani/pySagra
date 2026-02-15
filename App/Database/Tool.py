@@ -37,7 +37,7 @@ from App.Database.Connect import appconn
 
 
 
-def delete_event_order(event_id):
+def delete_event_order(event_id: int) -> None:
     "Delete all orders of the given event"
     try:
         with appconn.transaction():
@@ -46,7 +46,7 @@ def delete_event_order(event_id):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def inventory_rebuild(event_id):
+def inventory_rebuild(event_id: int) -> None:
     "Inventory rebuild for the given event"
     try:
         with appconn.transaction():
@@ -55,7 +55,7 @@ def inventory_rebuild(event_id):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def ordered_delivered_rebuild(event_id):
+def ordered_delivered_rebuild(event_id: int) -> None:
     "Ordered delivered rebuild for the given event"
     try:
         with appconn.transaction():
@@ -64,7 +64,7 @@ def ordered_delivered_rebuild(event_id):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def numbering_rebuild(event_id):
+def numbering_rebuild(event_id: int) -> None:
     "Numbering rebuild for the given event"
     try:
         with appconn.transaction():
@@ -73,7 +73,7 @@ def numbering_rebuild(event_id):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_order_as_processed(event_id):
+def set_order_as_processed(event_id: int) -> None:
     "Set all unprocessed orders as processed ad order date"
     # order headers are updated by the trigger
     # no need to filter by company id as event_id is unique per company
@@ -85,7 +85,7 @@ def set_order_as_processed(event_id):
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
     
-def delete_all_orders():
+def delete_all_orders() -> None:
     "Delete ALL orders for current company"
     script = """
 DELETE FROM order_header
@@ -102,7 +102,7 @@ WHERE company_id = system.pa_current_company();
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_web_orders():
+def delete_all_web_orders() -> None:
     "Delete ALL web orders for current company"
     script = """
 DELETE FROM web_order_header
@@ -115,7 +115,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_inventory():
+def delete_all_inventory() -> None:
     "Delete ALL stock inventory records for current company"
     script = """
 DELETE FROM stock_inventory
@@ -128,7 +128,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_events():
+def delete_all_events() -> None:
     "Delete ALL events for current company"
     script = """
 DELETE FROM event
@@ -141,7 +141,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_price_lists():
+def delete_all_price_lists() -> None:
     "Delete ALL price lists for current company"
     script = """
 DELETE FROM price_list
@@ -154,7 +154,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_items():
+def delete_all_items() -> None:
     "Delete ALL items for current company"
     script = """
 DELETE FROM item
@@ -167,7 +167,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_departments():
+def delete_all_departments() -> None:
     "Delete ALL departments for current company"
     script = """
 DELETE FROM department
@@ -179,7 +179,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_tables():
+def delete_all_tables() -> None:
     "Delete ALL tables for current company"
     script = """
 DELETE FROM numbered_table
@@ -191,7 +191,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_cash_desks():
+def delete_all_cash_desks() -> None:
     "Delete ALL cash desks for current company"
     script = """
 DELETE FROM cash_desk
@@ -203,7 +203,7 @@ WHERE company_id = system.pa_current_company();"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def delete_all_printer_classes():
+def delete_all_printer_classes() -> None:
     "Delete ALL printer classes for current company"
     script = """
 DELETE FROM printer_class
@@ -217,7 +217,7 @@ WHERE company_id = system.pa_current_company();"""
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
 
-def copy_cash_desks(from_company_id):
+def copy_cash_desks(from_company_id: int) -> None:
     "Copy ALL the cash desks from another company to current compani"
     script = """
 INSERT INTO cash_desk (

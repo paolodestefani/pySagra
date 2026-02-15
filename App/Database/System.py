@@ -37,7 +37,7 @@ from App.Database.Connect import appconn
 
 
 
-def pa_setting(setting):
+def pa_setting(setting: str) -> str|None:
     "Get current value of the system setting parameter"
     # all arguments must be string
     setting = str(setting)
@@ -48,7 +48,7 @@ def pa_setting(setting):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def pa_setting_set(setting, value):
+def pa_setting_set(setting: str, value: str|None) -> None:
     "Set the privided setting parameter to value"
     # all arguments must be string
     setting = str(setting)

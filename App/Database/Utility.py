@@ -50,33 +50,34 @@ class Record(dict):
     """
     ovfield = 'object_version'
 
-    def __init__(self, table, pkey=[]):
+    def __init__(self, table: str, pkey: list = []) -> None:
         """- table = table name
            - pkey = list of primary key's fields for update/delete"""
         self.table = table
         self.pkey = pkey
 
-    def commit(self):
+    def commit(self) -> None:
         "Commit transaction without requiring a appconn reference"
         appconn.commit()
 
-    def rollback(self):
+    def rollback(self) -> None:
         "Rollback transaction without requiring a appconn reference"
         appconn.rollback()
 
-    def select_record(self):
+    def select_record(self) -> None:
         "Select a record of a table based on primay key value"
         script = (f"SELECT * FROM {self.table} "
                   f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])};")
         try:
             with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
                 cur.execute(script, self)
-                if cur.rowcount:
-                    self.update(cur.fetchone())
+                result = next(cur, None)
+                if result:
+                    self.update(result)
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
 
-    def insert_record(self):
+    def insert_record(self) -> None:
         "Insert a record base on primary key"
         script = (f"INSERT INTO {self.table} ({', '.join(self.keys())})\n"
                   f"VALUES ({', '.join([f'%({i})s ' for i in self.keys()])})\n"
@@ -86,12 +87,13 @@ class Record(dict):
             with appconn.transaction():
                 with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
                     cur.execute(script, self)
-                    if cur.rowcount:
-                        self.update(cur.fetchone())
+                    result = next(cur, None)
+                    if result:
+                        self.update(result)
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
 
-    def update_record(self):
+    def update_record(self) -> None:
         "Update a record base on primary key, raise an exception if modified before"
         # check object_version
         if ovfield in self:
@@ -105,7 +107,7 @@ class Record(dict):
                 with appconn.transaction():
                     with appconn.cursor() as cur:
                         cur.execute(script, args)
-                        result = cur.fetchone()[0]
+                        result = next(cur, None)
                         if not result:
                             raise PyAppDBConcurrencyError()
             except psycopg.Error as er:
@@ -119,11 +121,13 @@ class Record(dict):
             with appconn.transaction():
                 with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
                     cur.execute(script, self)
-                    self.update(cur.fetchone())
+                    result = next(cur, None)
+                    if result:
+                        self.update(result)
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
 
-    def delete_record(self):
+    def delete_record(self) :
         "Delete one record base on primary key, raise an exception if modified before"
         # check row_timestamp
         if ovfield in self:
@@ -155,7 +159,7 @@ class Record(dict):
 class RecordSet(list):
     """A list of record of a database table. Each record is a Record instance"""
 
-    def __init__(self, table, pkey=None):
+    def __init__(self, table: str, pkey: list[str]) -> None:
         """table = database table
            pkey = list of primary key fields"""
         self.table = table
@@ -179,7 +183,7 @@ class RecordSet(list):
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
 
-    def select_records(self):
+    def select_records(self) -> None:
         "Select a record of a table based on primay key value"
         script = (f"SELECT * \n"
                   f"FROM {self.table}\n"
@@ -188,8 +192,8 @@ class RecordSet(list):
         try:
             with appconn.transaction():
                 with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-                    cur.execute(script, r)
-                    for r in self:
+                    cur.execute(script)
+                    for r in cur:
                         self.append(r)
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))

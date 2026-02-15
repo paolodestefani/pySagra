@@ -36,8 +36,10 @@ from App.Database.Connect import appconn
 
 
 
-def user_list():
-    sql = """SELECT id FROM system.app_user;"""
+def user_list() -> list:
+    sql = """
+SELECT id 
+FROM system.app_user;"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
@@ -46,7 +48,12 @@ def user_list():
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def user_company_set(user, company, profile, menu, toolbar):
+def user_company_set(user: str,
+                     company: int,
+                     profile: str,
+                     menu: str,
+                     toolbar: str
+                     ) -> None:
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
@@ -55,7 +62,7 @@ def user_company_set(user, company, profile, menu, toolbar):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def change_password(user, new_password):
+def change_password(user: str, new_password: str) -> None:
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
@@ -64,18 +71,22 @@ def change_password(user, new_password):
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def encrypt_password(password):
-    sql = """SELECT system.crypt(%s, system.gen_salt('bf'));"""
+def encrypt_password(password: str) -> str:
+    sql = "SELECT system.crypt(%s, system.gen_salt('bf'));"
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
                 cur.execute(sql, (password,))
-                return cur.fetchone()[0]
+                result = next(cur, None)
+                if result:
+                    return result[0]
+                raise PyAppDBError("00000", "Password encryption failed")
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def force_password_change(user):
-    sql = """UPDATE system.app_user
+def force_password_change(user: str) -> None:
+    sql = """
+UPDATE system.app_user
 SET is_change_password_required = true
 WHERE code = %s;"""
     try:
