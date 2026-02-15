@@ -49,8 +49,8 @@ from PySide6.QtWidgets import QSizePolicy
 from App import session
 from App import currentAction
 from App.Database.Exceptions import PyAppDBError
-from App.Database.Table import table_list
-from App.Database.Table import table_delete
+from App.Database.SeatMap import table_list
+from App.Database.SeatMap import table_delete
 from App.Database.Models import SeatMapModel
 from App.Database.Setting import SettingClass
 from App.Core.L10n import _tr

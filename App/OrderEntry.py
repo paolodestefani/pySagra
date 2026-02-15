@@ -75,8 +75,8 @@ from App.Database.Department import department_list
 from App.Database.Department import get_department_printer_class
 from App.Database.Department import department_takeaway_list
 from App.Database.Department import get_department_desc
-from App.Database.Table import table_list
-from App.Database.Table import table_exists
+from App.Database.SeatMap import table_list
+from App.Database.SeatMap import table_exists
 from App.Database.Item import item_list
 from App.Database.Item import is_for_takeaway
 from App.Database.Item import get_item_desc
