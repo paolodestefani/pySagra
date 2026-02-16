@@ -95,29 +95,25 @@ class GenericDelegate(QStyledItemDelegate):
               option: QStyleOptionViewItem, 
               index: QModelIndex|QPersistentModelIndex) -> None:
         value = index.model().data(index, Qt.ItemDataRole.DisplayRole)
-        #print('GenericDelegate.paint:', value, type(value))
         styleOption: QStyleOptionViewItem = QStyleOptionViewItem(option)
         self.initStyleOption(styleOption, index)
-
-        if isinstance(value, bool):
-            styleOption = QStyleOptionButton()
-            styleOption.state |= QStyle.StateFlag.State_On if value else QStyle.StateFlag.State_Off
-            styleOption.rect = self.getCheckBoxRect(option)
-            #style.drawControl(QStyle.CE_CheckBox,
-            #                    styleOption,
-            #                   painter)
-        elif isinstance(value, int):
-            styleOption.text = str(value)
-            styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-        elif isinstance(value, (QDate, QDateTime, QTime)):
-            styleOption.text = session['qlocale'].toString(value, QLocale.FormatType.ShortFormat)
-            styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        elif isinstance(value, Decimal):
-            styleOption.text = session['qlocale'].toString(float(value or 0.0), 'f', 2)
-            styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-        else:
-            styleOption.text = str(value or '')  # for null values
-            styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+        match value:
+            case bool():
+                styleOption = QStyleOptionButton()
+                styleOption.state |= QStyle.StateFlag.State_On if value else QStyle.StateFlag.State_Off
+                styleOption.rect = self.getCheckBoxRect(option)
+            case int():
+                styleOption.text = str(value)
+                styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
+            case QDate()|QDateTime()|QTime():
+                styleOption.text = session['qlocale'].toString(value, QLocale.FormatType.ShortFormat)
+                styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
+            case Decimal():
+                styleOption.text = session['qlocale'].toString(float(value or 0.0), 'f', 2)
+                styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
+            case _:
+                styleOption.text = str(value or '')  # for null values
+                styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
 
         font = index.model().data(index, Qt.ItemDataRole.FontRole)
         if font:
@@ -1107,7 +1103,7 @@ class GenericReadOnlyDelegate(QStyledItemDelegate):
             case int():
                 styleOption.text = str(value)
                 styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-            case QDate(), QDateTime():
+            case QDate()|QDateTime()|QTime():
                 styleOption.text = session['qlocale'].toString(value, QLocale.FormatType.ShortFormat)
                 styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
             case Decimal():

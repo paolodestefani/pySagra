@@ -172,6 +172,7 @@ class ItemForm(FormIndexManager):
         # set index view
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('item')
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
         self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_cdl))
         self.ui.tableView.setItemDelegateForColumn(I_STOCK, BooleanDelegate(self))
