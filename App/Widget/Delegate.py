@@ -1117,7 +1117,7 @@ class GenericReadOnlyDelegate(QStyledItemDelegate):
                 styleOption.text = str(value or '')  # for null values
                 styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
 
-        font = index.model().data(index, Qt.Weight.WFontRole)
+        font = index.model().data(index, Qt.ItemDataRole.FontRole)
         if font:
             styleOption.font = font
         painter.save()
