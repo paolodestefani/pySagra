@@ -187,9 +187,9 @@ def set_sortfilter_setting(sf_id: int,
                            sf_element: str, 
                            row: int, 
                            cmb1: int,
-                           neg: bool, 
+                           neg: bool|None, 
                            cmb2: int, 
-                           widget: str
+                           wv: str|None
                            ) -> None:
     "Set available sortfilter customizations settings for id and element"
     script = """
@@ -222,7 +222,7 @@ UPDATE SET
                                      cmb1,
                                      neg,
                                      cmb2,
-                                     widget))
+                                     wv))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 

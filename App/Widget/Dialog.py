@@ -30,13 +30,14 @@ This module contains general custom dialogs
 
 # standard library
 import os
+from typing import cast, Any
 #import time
 import logging
-from email.message import EmailMessage
-import smtplib
-import ssl
+#from email.message import EmailMessage
+#import smtplib
+#import ssl
 
-from cryptography.fernet import InvalidToken
+#from cryptography.fernet import InvalidToken
 
 # PySide6
 from PySide6.QtCore import QCoreApplication
@@ -104,6 +105,8 @@ from App.Ui.SortFilterDialog import Ui_SortFilterDialog
 from App.Ui.EventFilterDialog import Ui_EventFilterDialog
 from App.Ui.PrintPDFDialog import Ui_PrintPDFDialog
 from App.Ui.DateTimeInputDialog import Ui_DateTimeInputDialog
+from App.Database.AbstractModels.TableModel import QueryModel
+from App.Database.AbstractModels.TableModel import TableModel
 #from App.Ui.PrintEmailDialog import Ui_PrintEmailDialog
 from App.Database.Report import report_class_adapt_list
 from App.Database.Report import get_report_list
@@ -163,7 +166,9 @@ class MessageBox(QDialog, Ui_MessageDialog):
     def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
         self.setupUi(self)
-        sty = QCoreApplication.instance().style()
+        app = cast(QApplication, QCoreApplication.instance())
+        if app:
+            sty = app.style()
         icon = sty.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
         self.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
 
@@ -211,7 +216,7 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         if self.image:
             self.image.save(f)
 
-    def getImage(self) -> QPixmap:
+    def getImage(self) -> QPixmap|None:
         return self.image
 
     def setImage(self, pix: QPixmap) -> None:
@@ -241,7 +246,11 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
 class SortFilterDialog(QDialog):
     "Sort and filter Dialog for Forms"
 
-    def __init__(self, sortfilterClass: str, model: QAbstractItemModel|None = None, parent: QWidget|None = None) -> None:
+    def __init__(self, 
+                 sortfilterClass: str,
+                 model: QueryModel|TableModel|None = None,
+                 parent: QWidget|None = None
+                 ) -> None:
         super().__init__(parent)
         self.ui = Ui_SortFilterDialog()
         self.ui.setupUi(self)
@@ -312,8 +321,8 @@ class SortFilterDialog(QDialog):
         self.sortfilterClass = sortfilterClass
         self.modelId = None
         self.ui.lineEditSortFilterClass.setText(sortfilterClass)
-        self.model = model # set also on sortfiltercustomization selection
-        self.parentWidget: QWidget|None = parent  # used for apply sortings/filters
+        self.model: QueryModel|TableModel|None = model # set also on sortfiltercustomization selection
+        self.parentW: QWidget|None = parent  # used for apply sortings/filters
         # restore settings
         st = QSettings(self)
         if st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"):
@@ -372,6 +381,8 @@ class SortFilterDialog(QDialog):
 
     def fillCustomizations(self, index: int) -> None:
         "Sets filters and sorting based on current customization"
+        if not self.model:
+            return
         sortFilterId = index
         # if self.ui.comboBoxSetting.count() != 0: # have any custonization...
         #     sortFilterId = int(self.ui.comboBoxSetting.currentData())
@@ -385,23 +396,23 @@ class SortFilterDialog(QDialog):
         # filters comboboxes
         for row in range(FILTER_ROWS):
             cond = QComboBox(self)
-            cond.addItem(None, None) # item 0 for clear/reset
+            cond.addItem('', None) # item 0 for clear/reset
             for f, d, r, t in self.model.columns:
                 if t: # except None fields
                     cond.addItem(d, f)
-            cond.row = row
+            cond.row = row # type: ignore[attr-defined]
             cond.currentIndexChanged.connect(self.condIndexChanged)
             oper = QComboBox(self)
             neg = QCheckBox(self)
-            neg.row = row
+            neg.row = row # type: ignore[attr-defined]
             neg.setToolTip(_tr('SoftFilterDialog','Not'))
-            oper.row = row
+            oper.row = row # type: ignore[attr-defined]
             oper.currentIndexChanged.connect(self.operIndexChanged)
             self.ui.layoutFilters.addWidget(cond, row, FIELD)
             self.ui.layoutFilters.addWidget(neg, row, NEGATE)
             self.ui.layoutFilters.addWidget(oper, row, OPERATOR)
             sw = QWidget(self) # spacer widget
-            sw.wt = 'spacer' # widget type
+            sw.wt = 'spacer' # type: ignore[attr-defined] # widget type
             self.ui.layoutFilters.addWidget(sw, row, OPERAND) # position widget only
         if self.model.limitCondition:
             self.ui.checkBoxMaxRows.setChecked(True)
@@ -419,10 +430,10 @@ class SortFilterDialog(QDialog):
         # sorting comboboxes
         for row in range(len(self.model.columns)):
             sort = QComboBox(self)
-            sort.addItem(None, None) # item 0
+            sort.addItem('', None) # item 0
             for f, d, r, t in self.model.columns:
                 sort.addItem(d, f)
-            sort.row = row
+            sort.row = row # type: ignore[attr-defined]
             sort.currentIndexChanged.connect(self.sortIndexChanged)
             order = QComboBox(self)
             self.ui.layoutSorting.addWidget(sort, row, SORTFIELD)
@@ -493,6 +504,8 @@ class SortFilterDialog(QDialog):
 
     def updateSettings(self) -> None:
         "Save modified settings to database"
+        if not self.model:
+            return
         cid = int(self.ui.comboBoxSetting.currentData())
         # clear before updating
         clear_sortfilter_setting(cid)
@@ -503,6 +516,7 @@ class SortFilterDialog(QDialog):
                 neg = self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().isChecked()
                 cmb2 = self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().currentIndex()
                 widget = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+                wv: str|float|bool|None = None
                 if isinstance(widget, QComboBox):
                     wv = str(widget.currentIndex())
                 elif isinstance(widget, QLineEdit):
@@ -557,10 +571,12 @@ class SortFilterDialog(QDialog):
 
     def condIndexChanged(self, index: int) -> None:
         "Set combobox items (operator) and operand QWidget"
+        if not self.model:
+            return
         if index <= 0:
             return
         # get current row number
-        row = self.sender().row
+        row = self.sender().row # type: ignore[attr-defined]
         # reset negate
         self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)
         # get field type
@@ -580,10 +596,12 @@ class SortFilterDialog(QDialog):
 
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
+        if not self.model:
+            return
         if index < 0:
             return
         # get current row number
-        row = self.sender().row
+        row = self.sender().row # type: ignore[attr-defined]
         # reset negate
         #self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)    
         # clear if index is zero
@@ -594,7 +612,7 @@ class SortFilterDialog(QDialog):
             w.deleteLater()
             # add spacer
             sw = QWidget(self) # spacer widget
-            sw.wt = 'spacer' # widget type
+            sw.wt = 'spacer' # type: ignore[attr-defined] # widget type
             self.ui.layoutFilters.addWidget(sw, row, OPERAND)
             return
         # get field type
@@ -612,22 +630,23 @@ class SortFilterDialog(QDialog):
         if wt == nwt:
             return
         # insert new operand widget
+        widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
         match nwt:
             case 'SB': # spinbox
                 widget = QSpinBox(self)
-                widget.wt = 'SB'
+                widget.wt = 'SB' # type: ignore[attr-defined]
                 widget.setRange(0, 2147483647)
             case 'DSB': # double spinbox
                 widget = QDoubleSpinBox(self)
-                widget.wt = 'DSB'
+                widget.wt = 'DSB' # type: ignore[attr-defined]
                 widget.setDecimals(2)
                 widget.setMaximum(99999999.99)
             case 'CB': # check box
                 widget = QCheckBox(self)
-                widget.wt = 'CB'
+                widget.wt = 'CB' # type: ignore[attr-defined]
             case 'DE': # date edit
                 widget = QDateEdit(QDate.currentDate(), self)
-                widget.wt = 'DE'
+                widget.wt = 'DE' # type: ignore[attr-defined]
                 widget.setCalendarPopup(True)
                 widget.setMinimumDate(QDate(1800, 1, 1))
                 widget.setMaximumDate(QDate(3000, 12, 31))
@@ -635,7 +654,7 @@ class SortFilterDialog(QDialog):
                 widget.setDate(QDate.currentDate())
             case 'DTE': # date time edit
                 widget = QDateTimeEdit(self)
-                widget.wt = 'DTE'
+                widget.wt = 'DTE' # type: ignore[attr-defined]
                 widget.setCalendarPopup(True)
                 widget.setMinimumDate(QDate(1800, 1, 1))
                 widget.setMaximumDate(QDate(3000, 12, 31))
@@ -643,24 +662,25 @@ class SortFilterDialog(QDialog):
                 widget.setDate(QDate.currentDate())
             case 'LE': # line edit
                 widget = QLineEdit(self)
-                widget.wt = 'LE'
+                widget.wt = 'LE' # type: ignore[attr-defined]
             case 'SCB': # standard combo box
                 widget = QComboBox(self)
-                widget.wt = 'SCB'
+                widget.wt = 'SCB' # type: ignore[attr-defined]
                 for k, v in get_list(self.model.columns[fi][6]):
                     widget.addItem(v, k)
             case 'CCB': # chackable combo box
                 widget = CheckableComboBox(self)
-                widget.wt = 'CCB'
+                widget.wt = 'CCB' # type: ignore[attr-defined]
                 for k, v in get_list(self.model.columns[fi][6]):
                     widget.addItem(v, k)
             case 'LIST':
                 widget = QComboBox(self)
-                for k, v in self.model.reference[field]():
-                    widget.addItem(v, k)
+                if hasattr(self.model, 'reference'):
+                    for k, v in self.model.reference[field]():
+                        widget.addItem(v, k)
             case _: # no widget required (is null/is not null)
                 widget = QWidget(self)
-                widget.wt = 'spacer' # widget type
+                widget.wt = 'spacer'  # type: ignore[attr-defined] # widget type
         self.ui.layoutFilters.removeWidget(w)
         w.deleteLater()
         # new widget
@@ -668,7 +688,7 @@ class SortFilterDialog(QDialog):
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter qwidget"
-        row = self.sender().row
+        row = self.sender().row # type: ignore[attr-defined]
         # clear first
         self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().clear()
         if index != 0:
@@ -739,8 +759,11 @@ class SortFilterDialog(QDialog):
 
     def accept(self) -> None:
         "Generate the where conditions and update model"
+        if not self.model:
+            return
         # get filters
         self.model.whereCondition.clear()
+        v: list|str|int|float|QDate|QDateTime|bool|None
         for r in range(FILTER_ROWS):
             if (self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() != 0 and # field
                 self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex() != 0): # operator
@@ -764,13 +787,13 @@ class SortFilterDialog(QDialog):
                     elif isinstance(wd, QDateTimeEdit):
                         v = wd.dateTime()
                     elif isinstance(wd, QCheckBox):
-                        if wd.checkState() == Qt.Checked:
+                        if wd.checkState() == Qt.CheckState.Checked:
                             v = True
                         else:
                             v = False
                 else:
                     v = None
-
+                arg: list[str]|list[Any]|str|int|float|QDate|QDateTime|None
                 match self.FILTERING[ty][oi][2]:
                     case 0:
                         cond = f"{fl} {op} %s"
@@ -806,9 +829,9 @@ class SortFilterDialog(QDialog):
             self.model.addOrderBy(i)
         # update model and form
         #self.model.select()
-        if hasattr(self.parentWidget, 'setIndexModel'):
-            self.parentWidget.setIndexModel(self.model)
-        self.parentWidget.reload()
+        if hasattr(self.parentW, 'setIndexModel'):
+            self.parentW.setIndexModel(self.model)
+        self.parentW.reload()
         #self.parentWidget.ui.tableView.selectRow(0)
         super().accept()
 
