@@ -1004,13 +1004,13 @@ class PrintDialog(QDialog):
         try:
             if self.reportClass:
                 result = report_class_adapt_list(self.reportClass, session['l10n'])
+                for i, j, in result:
+                    self.ui.comboBoxReportCustomizations.addItem(j, i)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr('MessageDialog', 'Critical'),
                                  f"Database error: {er.code}\n{er.message}")
             return
-        for i, j, in result:
-            self.ui.comboBoxReportCustomizations.addItem(j, i)
         # reenable signal
         self.ui.comboBoxReportCustomizations.currentIndexChanged.connect(self.setReportCustomization)
 
