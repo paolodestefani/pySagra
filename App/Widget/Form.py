@@ -45,7 +45,7 @@ from App import session
 from App.Core.L10n import _tr
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
-from App.Database.AbstractModels.TableModel import TableModel
+from App.Database.AbstractModels.TableModel import TableModel, QueryModel
 #from App.Widget.Delegate import mapperItemDelegate
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
@@ -79,7 +79,7 @@ class FormManager(QWidget):
         self.availableStatus = (False, False, False, False, False, False, False, False,
                                 False, False, False, False)
         self.model = TableModel(self) # main form model
-        self.detailRelations = []  # detail relation list
+        self.detailRelations: list = []  # detail relation list
         self.state = VIEW # initial state
         self.repr = 'Generic form manager'
         self.reloadConfirmation = True  # ask confirmation on reload
@@ -89,7 +89,7 @@ class FormManager(QWidget):
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
         #self.mapper.setItemDelegate(mapperItemDelegate(self))
-        self.linkedMappers = [] # linked mapper list
+        self.linkedMappers: list = [] # linked mapper list
         self.auth = auth
         # mapper cursor changed update detail
         self.mapper.currentIndexChanged.connect(self.mapperIndexChanged)
@@ -98,7 +98,7 @@ class FormManager(QWidget):
         "Model representation"
         return self.repr
     
-    def setModel(self, model: QAbstractItemModel) -> None:
+    def setModel(self, model: TableModel) -> None:
         "Set the main form model"
         self.model = model
         self.mapper.setModel(self.model) # main form model
@@ -107,7 +107,11 @@ class FormManager(QWidget):
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
     
-    def addDetailRelation(self, relation: QAbstractItemModel, masterColumn: int, detailColumn: int) -> None:
+    def addDetailRelation(self, 
+                          relation: QueryModel|TableModel,
+                          masterColumn: int,
+                          detailColumn: int
+                          ) -> None:
         "Add linked models to detailRelations list"
         self.detailRelations.append((relation, masterColumn, detailColumn))
         if relation.isEditable:  # a modification of the relation cause an update of the status of the main form
@@ -125,7 +129,7 @@ class FormManager(QWidget):
     def mapperIndexChanged(self, row: int) -> None:
         "Reload detail relations on main model index change"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         # connecting form and tableview causes 2 time execution of this method
         if self.detailRelations:  # query model don't have primary key
             for relation, masterColumn, detailColumn in self.detailRelations:
@@ -194,10 +198,12 @@ class FormManager(QWidget):
             result = QMessageBox.question(self,
                                           _tr("MessageDialog", "Question"),
                                           _tr("Form", "The data has been modified, save ?"),
-                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-            if result == QMessageBox.Cancel:
+                                          QMessageBox.StandardButton.Yes|
+                                          QMessageBox.StandardButton.No|
+                                          QMessageBox.StandardButton.Cancel)
+            if result == QMessageBox.StandardButton.Cancel:
                 return False
-            elif result == QMessageBox.Yes:
+            elif result == QMessageBox.StandardButton.Yes:
                 self.save()
             else:
                 self.model.revert()
@@ -209,7 +215,7 @@ class FormManager(QWidget):
     def toFirst(self) -> None:
         "To first"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.mapper.toFirst()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
@@ -217,7 +223,7 @@ class FormManager(QWidget):
     def toPrevious(self) -> None:
         "To previous"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.mapper.toPrevious()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
@@ -225,7 +231,7 @@ class FormManager(QWidget):
     def toNext(self) -> None:
         "To next"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.mapper.toNext()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
@@ -233,7 +239,7 @@ class FormManager(QWidget):
     def toLast(self) -> None:
         "To last"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.mapper.toLast()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()

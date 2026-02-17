@@ -248,8 +248,8 @@ class SortFilterDialog(QDialog):
 
     def __init__(self, 
                  sortfilterClass: str,
-                 model: QueryModel|TableModel|None = None,
-                 parent: QWidget|None = None
+                 model: QueryModel|TableModel,
+                 parent: QWidget
                  ) -> None:
         super().__init__(parent)
         self.ui = Ui_SortFilterDialog()
@@ -322,7 +322,7 @@ class SortFilterDialog(QDialog):
         self.modelId = None
         self.ui.lineEditSortFilterClass.setText(sortfilterClass)
         self.model: QueryModel|TableModel|None = model # set also on sortfiltercustomization selection
-        self.parentW: QWidget|None = parent  # used for apply sortings/filters
+        #self.parentW: QWidget = parent  # used for apply sortings/filters
         # restore settings
         st = QSettings(self)
         if st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"):
@@ -571,9 +571,7 @@ class SortFilterDialog(QDialog):
 
     def condIndexChanged(self, index: int) -> None:
         "Set combobox items (operator) and operand QWidget"
-        if not self.model:
-            return
-        if index <= 0:
+        if not self.model or index <= 0:
             return
         # get current row number
         row = self.sender().row # type: ignore[attr-defined]
@@ -596,9 +594,7 @@ class SortFilterDialog(QDialog):
 
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
-        if not self.model:
-            return
-        if index < 0:
+        if not self.model or index < 0:
             return
         # get current row number
         row = self.sender().row # type: ignore[attr-defined]
@@ -793,7 +789,7 @@ class SortFilterDialog(QDialog):
                             v = False
                 else:
                     v = None
-                arg: list[str]|list[Any]|str|int|float|QDate|QDateTime|None
+                arg: Any
                 match self.FILTERING[ty][oi][2]:
                     case 0:
                         cond = f"{fl} {op} %s"
@@ -829,10 +825,11 @@ class SortFilterDialog(QDialog):
             self.model.addOrderBy(i)
         # update model and form
         #self.model.select()
-        if hasattr(self.parentW, 'setIndexModel'):
-            self.parentW.setIndexModel(self.model)
-        self.parentW.reload()
-        #self.parentWidget.ui.tableView.selectRow(0)
+        if hasattr(self.parent(), 'setIndexModel'):
+            self.parent().setIndexModel(self.model) # type: ignore
+        if hasattr(self.parent(), 'reload'):
+            self.parent().reload()  # type: ignore
+        #self.parentWidget.ui.tableView.selectRow(0) 
         super().accept()
 
     def done(self, r: int) -> None:
@@ -844,35 +841,40 @@ class SortFilterDialog(QDialog):
 
 
 
-class EventFilterDialog(QDialog, Ui_EventFilterDialog):
+class EventFilterDialog(QDialog):
 
-    def __init__(self, parent: QWidget, event: int|None = None, eventDate: QDate|None = None, dayPart: str|None = None) -> None:
+    def __init__(self, 
+                 parent: QWidget,
+                 event: int|None = None,
+                 eventDate: QDate|None = None,
+                 dayPart: str|None = None
+                 ) -> None:
         super().__init__(parent)
-        self.setupUi(self)
-        self.parent = parent
+        self.ui = Ui_EventFilterDialog()
+        self.ui.setupUi(self)
         if eventDate is None:
-            self.groupBoxDate.setVisible(False)
+            self.ui.groupBoxDate.setVisible(False)
         if dayPart is None:
-            self.groupBoxDayPart.setVisible(False)
+            self.ui.groupBoxDayPart.setVisible(False)
         self.adjustSize()
         # fill event combobox
         for i, d in event_cdl():
-            self.comboBoxEvent.addItem(d, i)
-        self.comboBoxEvent.setCurrentText(session['event_description'])
+            self.ui.comboBoxEvent.addItem(d, i)
+        self.ui.comboBoxEvent.setCurrentText(session['event_description'])
         # set date
-        self.dateEditDate.setDate(eventDate or QDate.currentDate())
+        self.ui.dateEditDate.setDate(eventDate or QDate.currentDate())
         # set day part
         if not dayPart:
             dayPart = 'D'  # de definire come recuperare il daypart corrente
         if dayPart == 'L':
-            self.radioButtonLunch.setChecked(True)
+            self.ui.radioButtonLunch.setChecked(True)
         else:
-            self.radioButtonDinner.setChecked(True)
+            self.ui.radioButtonDinner.setChecked(True)
 
     def accept(self) -> None:
-        self.parent.updateFilterConditions(self.comboBoxEvent.currentData(),
-                                           self.dateEditDate.date(),
-                                           'L' if self.radioButtonLunch.isChecked() else 'D')
+        self.parent().updateFilterConditions(self.ui.comboBoxEvent.currentData(),   # type: ignore
+                                             self.ui.dateEditDate.date(),
+                                             'L' if self.ui.radioButtonLunch.isChecked() else 'D')
         super().accept()
 
 
@@ -880,7 +882,13 @@ class EventFilterDialog(QDialog, Ui_EventFilterDialog):
 class PrintDialog(QDialog):
     "Print dialog"
     
-    def __init__(self, parent: QWidget, reportClass: str|None = None, l10n: str|None = None, reportId: int|None = None, model: QAbstractItemModel|None = None) -> None:
+    def __init__(self, 
+                 parent: QWidget, 
+                 reportClass: str|None = None,
+                 l10n: str|None = None,
+                 reportId: int|None = None,
+                 model: QueryModel|TableModel|None = None
+                 ) -> None:
         super().__init__(parent)
         self.ui = Ui_PrintDialog()
         self.ui.setupUi(self)
@@ -910,9 +918,9 @@ class PrintDialog(QDialog):
         self.ORDERING = (('ASC', _tr('Sort', 'Ascending')),
                          ('DESC', _tr('Sort', 'Descending')))
 
-        self.PDFVERSION = [(QPagedPaintDevice.PdfVersion_1_4, _tr('Dialog', 'Pdf 1.4')),
-                           (QPagedPaintDevice.PdfVersion_A1b, _tr('Dialog', 'Pdf A-1b')),
-                           (QPagedPaintDevice.PdfVersion_1_6, _tr('Dialog', 'Pdf 1.6'))]
+        self.PDFVERSION = [(QPagedPaintDevice.PdfVersion.PdfVersion_1_4, _tr('Dialog', 'Pdf 1.4')),
+                           (QPagedPaintDevice.PdfVersion.PdfVersion_A1b, _tr('Dialog', 'Pdf A-1b')),
+                           (QPagedPaintDevice.PdfVersion.PdfVersion_1_6, _tr('Dialog', 'Pdf 1.6'))]
 
         self.l10n = l10n or session['l10n']
         self.model = model
@@ -940,8 +948,9 @@ class PrintDialog(QDialog):
         if reportId:
             self.ui.comboBoxReportList.addItem(report_description(reportId), reportId)
         else:
-            for i, c, d in get_report_list(self.reportClass, self.l10n):
-                self.ui.comboBoxReportList.addItem(d, i)
+            if self.reportClass:
+                for i, c, d in get_report_list(self.reportClass, self.l10n):
+                    self.ui.comboBoxReportList.addItem(d, i)
         # signal for change report customization
         self.ui.comboBoxReportCustomizations.currentIndexChanged.connect(self.setReportCustomization)
         self.ui.comboBoxReportList.currentIndexChanged.connect(self.setReportCustomization)
@@ -965,8 +974,8 @@ class PrintDialog(QDialog):
         self.ui.tabWidget.widget(TABOPTIONS).setEnabled(session['can_edit_reports'] or
                                             session['is_admin'])
         if self.model:
-            self.tabWidget.setTabVisible(TABFILTERS, False)
-            self.tabWidget.setTabVisible(TABSORTING, False)
+            self.ui.tabWidget.setTabVisible(TABFILTERS, False)
+            self.ui.tabWidget.setTabVisible(TABSORTING, False)
 
     def reset(self) -> None:
         "Clear all filters and sorting"
@@ -993,7 +1002,8 @@ class PrintDialog(QDialog):
         # report customization list for current class and l10n
         self.ui.comboBoxReportCustomizations.clear()
         try:
-            result = report_class_adapt_list(self.reportClass, session['l10n'])
+            if self.reportClass:
+                result = report_class_adapt_list(self.reportClass, session['l10n'])
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr('MessageDialog', 'Critical'),
@@ -1014,6 +1024,7 @@ class PrintDialog(QDialog):
             if not self.ui.layoutParameters.itemAtPosition(row, 1):  # some time rowCount is wrong
                 continue
             widget = self.ui.layoutParameters.itemAtPosition(row, 1).widget()
+            wv: int|str|float|QDate|QDateTime|bool
             if isinstance(widget, QComboBox):
                 wv = widget.currentIndex()
             elif isinstance(widget, QLineEdit):
@@ -1021,11 +1032,11 @@ class PrintDialog(QDialog):
             elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
                 wv = widget.value()
             elif isinstance(widget, QDateEdit):
-                wv = widget.date().toString(Qt.ISODate)
+                wv = widget.date().toString(Qt.DateFormat.ISODate)
             elif isinstance(widget, QDateTimeEdit):
-                wv = widget.dateTime().toString(Qt.ISODate)
+                wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
             elif isinstance(widget, QCheckBox):
-                if widget.checkState() == Qt.Checked:
+                if widget.checkState() == Qt.CheckState.Checked:
                     wv = True
                 else:
                     wv = False
@@ -1033,11 +1044,11 @@ class PrintDialog(QDialog):
                 raise ReportPrintError("Unable to identify parameter type")
             try:
                 set_report_adapt(customizationId,
-                                     'P',
-                                     row,
-                                     None,
-                                     None,
-                                     str(wv))
+                                 'P',
+                                 row,
+                                 None,
+                                 None,
+                                 str(wv))
             except PyAppDBError as er:
                 QMessageBox.critical(self,
                                      _tr("MessageDialog", "Critical"),
@@ -1056,11 +1067,11 @@ class PrintDialog(QDialog):
                 elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
                     wv = widget.value()
                 elif isinstance(widget, QDateEdit):
-                    wv = widget.date().toString(Qt.ISODate)
+                    wv = widget.date().toString(Qt.DateFormat.ISODate)
                 elif isinstance(widget, QDateTimeEdit):
-                    wv = widget.dateTime().toString(Qt.ISODate)
+                    wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
                 elif isinstance(widget, QCheckBox):
-                    if widget.checkState() == Qt.Checked:
+                    if widget.checkState() == Qt.CheckState.Checked:
                         wv = True
                     else:
                         wv = False
@@ -1109,7 +1120,7 @@ class PrintDialog(QDialog):
                                  _tr("MessageDialog", "Critical"),
                                  f"Database error: {er.code}\n{er.message}")
         else:
-            self.setReportCustomization()
+            #self.setReportCustomization()
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),
                                     _tr("Dialog", "Customization deleted"))
@@ -1262,7 +1273,7 @@ class PrintDialog(QDialog):
                 case _:
                     raise ReportPrintError("Unable to identify parameter type")
             #self.widgetParams[par] = widget
-            widget.param = par
+            widget.param = par # type: ignore[attr-defined]
             self.ui.layoutParameters.addWidget(label, row, 0)
             self.ui.layoutParameters.addWidget(widget, row, 1)
         if self.report.parameter:
@@ -1271,13 +1282,13 @@ class PrintDialog(QDialog):
         # filters
         for row in range(FILTER_ROWS):
             cond = QComboBox(self)
-            cond.addItem(None, None)
+            cond.addItem('', None)
             for k, v in self.report.conditions.items():
                 cond.addItem(v.description, k)
-            cond.row = row
+            cond.row = row # type: ignore[attr-defined]
             cond.currentIndexChanged.connect(self.condIndexChanged)
             oper = QComboBox(self)
-            oper.row = row
+            oper.row = row # type: ignore[attr-defined]
             oper.currentIndexChanged.connect(self.operIndexChanged)
             self.ui.layoutFilters.addWidget(cond, row, 0)
             self.ui.layoutFilters.addWidget(oper, row, 1)
@@ -1289,10 +1300,10 @@ class PrintDialog(QDialog):
         # sorting
         for row, f in enumerate(self.report.conditions):
             sort = QComboBox(self)
-            sort.addItem(None, None)
+            sort.addItem('', None)
             for i in self.report.conditions:
                 sort.addItem(self.report.conditions[i].description, i)
-            sort.row = row
+            sort.row = row # type: ignore[attr-defined]
             sort.currentIndexChanged.connect(self.sortIndexChanged)
             order = QComboBox(self)
             self.ui.layoutSorting.addWidget(sort, row, 0)
@@ -1329,7 +1340,7 @@ class PrintDialog(QDialog):
         "Set combobox items and parameter QWidget"
         if index < 0:
             return
-        row = self.sender().row
+        row = self.sender().row # type: ignore[attr-defined]
         # clear if index is zero
         if index == 0:
             self.ui.layoutFilters.itemAtPosition(row, 1).widget().clear()
@@ -1339,7 +1350,7 @@ class PrintDialog(QDialog):
             self.ui.layoutFilters.addWidget(QWidget(self), row, 2)
             return
         # get field type
-        ftype = self.conditions[self.sender().currentData()].ftype
+        ftype = self.conditions[self.sender().currentData()].ftype # type: ignore[attr-defined]
         if self.ui.layoutFilters.itemAtPosition(row, 2):
             self.ui.layoutFilters.itemAtPosition(row, 2).widget().deleteLater()
         self.ui.layoutFilters.itemAtPosition(row, 1).widget().clear()
@@ -1383,9 +1394,9 @@ class PrintDialog(QDialog):
             case _:
                 # no widget
                 widget = QWidget(self)
-        if hasattr(self.conditions[self.sender().currentData()], 'reference'):
+        if hasattr(self.conditions[self.sender().currentData()], 'reference'): # type: ignore[attr-defined]
             widget = RelationalComboBox(self)
-            widget.setFunction(referenceList[self.conditions[self.sender().currentData()].reference])
+            widget.setFunction(referenceList[self.conditions[self.sender().currentData()].reference]) # type: ignore[attr-defined]
             for o, d, r in self.FILTERING['N']:
                 self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
         widget.setVisible(True) # initial visibility
@@ -1396,7 +1407,7 @@ class PrintDialog(QDialog):
 
     def operIndexChanged(self, index: int) -> None:
         "Disable widget if operand is not required"
-        row = self.sender().row
+        row = self.sender().row # type: ignore[attr-defined]
         if self.ui.layoutFilters.itemAtPosition(row, 1):
             i = self.ui.layoutFilters.itemAtPosition(row, 1).widget().count()
             if  self.ui.layoutFilters.itemAtPosition(row, 1).widget().currentIndex() in (i - 1, i - 2):
@@ -1406,7 +1417,7 @@ class PrintDialog(QDialog):
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter widget"
-        row = self.sender().row
+        row = self.sender().row # type: ignore[attr-defined]
         # clear first
         self.ui.layoutSorting.itemAtPosition(row, 1).widget().clear()
         if index != 0:
@@ -1423,19 +1434,19 @@ class PrintDialog(QDialog):
                     w = self.ui.layoutParameters.itemAtPosition(r, 1).widget()
                     match w:
                         case QCheckBox():
-                            self.report.parameter[w.param] = w.isChecked()
+                            self.report.parameter[w.param] = w.isChecked() # type: ignore[attr-defined]
                         case QSpinBox():
-                            self.report.parameter[w.param] = w.value()
+                            self.report.parameter[w.param] = w.value() # type: ignore[attr-defined]
                         case QDoubleSpinBox():
-                            self.report.parameter[w.param] = w.value()
+                            self.report.parameter[w.param] = w.value() # type: ignore[attr-defined]
                         case QDateEdit():
-                            self.report.parameter[w.param] = w.date()
+                            self.report.parameter[w.param] = w.date() # type: ignore[attr-defined]
                         case QLineEdit():
-                            self.report.parameter[w.param] = w.text()
+                            self.report.parameter[w.param] = w.text() # type: ignore[attr-defined]
                         case RelationalComboBox():
-                            self.report.parameter[w.param] = w.currentData() #(w.currentData(), w.currentText())
+                            self.report.parameter[w.param] = w.currentData() # type: ignore[attr-defined] #(w.currentData(), w.currentText())
                         case QComboBox():
-                            self.report.parameter[w.param] = w.currentData() #(w.currentData(), w.currentText())
+                            self.report.parameter[w.param] = w.currentData() # type: ignore[attr-defined] #(w.currentData(), w.currentText())
                         case _:
                             raise ReportException("Unknown object type")
         # get filters
@@ -1498,7 +1509,7 @@ class PrintDialog(QDialog):
         if self.report.query:
             try:
                  # cursor wait
-                QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+                QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
                 self.report.data = report_query(self.report, self.where, self.orderby)
             except PyAppDBError as er:
                 msg = _tr('PrintDialog', 'Error executing database query')
@@ -1506,7 +1517,7 @@ class PrintDialog(QDialog):
                 QMessageBox.critical(self,
                                      _tr('PrintDialog', 'Database error'),
                                       msg)
-                return
+                return False
             finally:
                 # cursor restore
                 QApplication.restoreOverrideCursor()
@@ -1536,11 +1547,14 @@ class PrintDialog(QDialog):
             return
         # print preview
         dialog = PrintPreviewDialog(self)
-        dialog.setWindowFlags(Qt.WindowType.Dialog|Qt.WindowMinMaxButtonsHint|Qt.WindowCloseButtonHint)
+        dialog.setWindowFlags(Qt.WindowType.Dialog|
+                              Qt.WindowType.WindowMinMaxButtonsHint|
+                              Qt.WindowType.WindowCloseButtonHint)
         dialog.setWindowTitle(_tr("Dialog", "Print preview"))
         # open in fit width
         pp = dialog.findChild(QPrintPreviewWidget)
-        pp.setZoomMode(QPrintPreviewWidget.ZoomMode.FitToWidth)
+        if pp:
+            pp.setZoomMode(QPrintPreviewWidget.ZoomMode.FitToWidth)
         # start
         dialog.paintRequested.connect(self.report.print)
         try:
@@ -1548,7 +1562,7 @@ class PrintDialog(QDialog):
         except ReportException as er:
             QMessageBox.critical(self,
                                  _tr("Dialog", "Critical"),
-                                 er)
+                                 str(er))
 
     def printReport(self) -> None:
         "Generated report, choose a printer and print"
@@ -1565,7 +1579,7 @@ class PrintDialog(QDialog):
             except ReportException as er:
                 QMessageBox.critical(self,
                                      _tr("Dialog", "Critical"),
-                                     er)
+                                     str(er))
 
     def printDirect(self) -> None:
         "Generated report and print"
@@ -1577,7 +1591,7 @@ class PrintDialog(QDialog):
         except ReportException as er:
             QMessageBox.critical(self,
                                  _tr("Dialog", "Critical"),
-                                 er)
+                                 str(er))
 
     def printPDF(self) -> None:
         "Generated report and a pdf file, optionally open it"
@@ -1598,7 +1612,8 @@ class PrintDialog(QDialog):
             if QMessageBox.question(self,
                                     _tr('MessageDialog', 'Question'),
                                     _tr('Dialog', "File {} exists, overwrite ?").format(file_name),
-                                    QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+                                    QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
+                                    ) == QMessageBox.StandardButton.No:
                 return
         paintDevice = QPdfWriter(file_name)
         paintDevice.setPdfVersion(self.ui.comboBoxPDFVersion.currentData())
@@ -1608,7 +1623,7 @@ class PrintDialog(QDialog):
         except ReportException as er:
             QMessageBox.critical(self,
                                  _tr("Dialog", "Critical"),
-                                 er)
+                                 str(er))
             return
         # open file if requested
         if self.ui.checkBoxOpenPDF.isChecked():
@@ -1623,7 +1638,7 @@ class PrintDialog(QDialog):
         dirname = QFileDialog.getExistingDirectory(self,
                                                    _tr('Dialog', "Select export directory"),
                                                    self.ui.lineEditDirectory.text(),
-                                                   QFileDialog.ShowDirsOnly)
+                                                   QFileDialog.Option.ShowDirsOnly)
         self.ui.lineEditDirectory.setText(dirname)
 
     def done(self, r: int) -> None:
@@ -1641,7 +1656,12 @@ class PrintDialog(QDialog):
 class PrintPDFDialog(QDialog):
     "Select export to PDF options dialog"
 
-    def __init__(self, parent: QWidget, file_name: str, current_page: int, page_count: int) -> None:
+    def __init__(self, 
+                 parent: QWidget,
+                 file_name: str,
+                 current_page: int,
+                 page_count: int
+                 ) -> None:
         "Initialize"
         super().__init__(parent)
         self.ui = Ui_PrintPDFDialog()
@@ -1678,7 +1698,7 @@ class PrintPDFDialog(QDialog):
         dirname = QFileDialog.getExistingDirectory(self,
                                                    _tr('Dialog', "Select export directory"),
                                                    self.ui.lineEditDirectory.text(),
-                                                   QFileDialog.ShowDirsOnly)
+                                                   QFileDialog.Option.ShowDirsOnly)
         self.ui.lineEditDirectory.setText(dirname)
 
     def getParameters(self) -> tuple:
@@ -1728,7 +1748,8 @@ class PrintPreviewDialog(QPrintPreviewDialog):
         "Export to PDF file"
         printer = self.printer()
         pw = self.findChild(QPrintPreviewWidget)
-        op = PrintPDFDialog(self, printer.docName(), pw.currentPage(), pw.pageCount())
+        if pw:
+            op = PrintPDFDialog(self, printer.docName(), pw.currentPage(), pw.pageCount())
         if op.exec() == QDialog.DialogCode.Rejected:
             return
         file_name, from_page, to_page, open_file, pdf_version, resolution = op.getParameters()
@@ -1747,7 +1768,8 @@ class PrintPreviewDialog(QPrintPreviewDialog):
         # restore printer to normal operation
         printer.setOutputFormat(QPrinter.OutputFormat.NativeFormat)
         printer.setOutputFileName('')
-        printer.setFromTo(1, pw.pageCount())
+        if pw:
+            printer.setFromTo(1, pw.pageCount())
         # open file if requested
         if open_file:
             QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))

@@ -460,6 +460,7 @@ class TableModel(QAbstractTableModel):
         self.limitCondition: int | None = None
         self.isDirty = False # setted on data changed
         self.isEditable = True # used in forms
+        self.hasTotalsRow = False
         self.repr = 'Generic editable table model' # printable representation of the object
         
     def __repr__(self) -> str:

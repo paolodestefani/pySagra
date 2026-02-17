@@ -168,9 +168,9 @@ ORDER BY adapt_type, layout_row;"""
 def set_report_adapt(adapt_id: int, 
                      adapt_type: str, 
                      layout_row: int,
-                     combo1_index: int, 
-                     combo2_index: int, 
-                     widget_value: str
+                     combo1_index: int|None, 
+                     combo2_index: int|None, 
+                     widget_value: str|None
                      ) -> None:
     "Set the report adaptation definition"
     script = """
@@ -351,7 +351,7 @@ WHERE report_id = %s;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_report_from_adapt(adapt_id: int) -> tuple|None:
+def get_report_from_adapt(adapt_id: int) -> tuple|tuple[None]:
     script = """
 SELECT 
     r.report_id,
@@ -365,7 +365,7 @@ WHERE ra.report_adapt_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (adapt_id,))
-            return next(cur, None)
+            return next(cur, (None, None, None, None, None))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
