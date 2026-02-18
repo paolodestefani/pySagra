@@ -39,6 +39,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDataWidgetMapper
 from PySide6.QtWidgets import QAbstractItemView
+from PySide6.QtWidgets import QTableView
 
 # application modules
 from App import session
@@ -78,7 +79,7 @@ class FormManager(QWidget):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False, False, False, False, False, False, False, False,
                                 False, False, False, False)
-        self.model = TableModel(self) # main form model
+        self.model: TableModel # main form model
         self.detailRelations: list = []  # detail relation list
         self.state = VIEW # initial state
         self.repr = 'Generic form manager'
@@ -88,6 +89,7 @@ class FormManager(QWidget):
         # mapper
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
+        self.ui: QWidget = QWidget()
         #self.mapper.setItemDelegate(mapperItemDelegate(self))
         self.linkedMappers: list = [] # linked mapper list
         self.auth = auth
@@ -114,8 +116,9 @@ class FormManager(QWidget):
                           ) -> None:
         "Add linked models to detailRelations list"
         self.detailRelations.append((relation, masterColumn, detailColumn))
-        if relation.isEditable:  # a modification of the relation cause an update of the status of the main form
-            relation.userDataChanged.connect(self.modelChanged)
+        if relation.isEditable:
+            if hasattr(relation, 'userDataChanged'):
+                relation.userDataChanged.connect(self.modelChanged)
 
     def addLinkedMapper(self, mapper: QDataWidgetMapper) -> None:
         "Add linked mapper"
@@ -193,7 +196,7 @@ class FormManager(QWidget):
         "Alert of unsaved changes if any"
         if self.state == VIEW:
             return True
-        row = self._mapper.currentIndex()
+        row = self.mapper.currentIndex()
         if self.model.isEditable and self.model.isDirty:
             result = QMessageBox.question(self,
                                           _tr("MessageDialog", "Question"),
@@ -293,7 +296,7 @@ class FormManager(QWidget):
                 msg = (f"Unrecognized database error code: {er.code}\n"
                        f"For more information click on 'Show Details...'")
             mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Critical)
+            mbox.setIcon(QMessageBox.Icon.Critical)
             mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
             mbox.setText(msg)
             mbox.setDetailedText(er.message)
@@ -321,7 +324,7 @@ class FormManager(QWidget):
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
                 mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Critical)
+                mbox.setIcon(QMessageBox.Icon.Critical)
                 mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
                 mbox.setText(msg)
                 mbox.setDetailedText(str(er.message))
@@ -355,7 +358,7 @@ class FormManager(QWidget):
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
                 mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Critical)
+                mbox.setIcon(QMessageBox.Icon.Critical)
                 mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
                 mbox.setText(msg)
                 mbox.setDetailedText(er.message)
@@ -378,7 +381,7 @@ class FormManager(QWidget):
         except PyAppDBError as er:
             if er.code == '23503':
                 mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Critical)
+                mbox.setIcon(QMessageBox.Icon.Critical)
                 mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
                 mbox.setText(_tr("Form", "Referential integrity violation: "
                                  "unable to delete the current record because "
@@ -414,7 +417,7 @@ class FormManager(QWidget):
         row = self.mapper.currentIndex()
         try:
             # cursor wait
-            QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             self.model.revertAll()  # also do a select()
         except PyAppDBError as er:
             msg = "Error: {}\n{}".format(er.code, er.message)
@@ -459,29 +462,30 @@ class FormViewManager(QWidget):
 
     def __init__(self, parent: QWidget, auth: str) -> None:
         super().__init__(parent)
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         # subclass must define available status, default: nothing is available
         # 12 boolean values:
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False, False, False, False, False, False, False, False,
                                 False, False, False, False)
-        self.model = None
+        self.model: QueryModel|TableModel|None
         self.state = VIEW # initial state
         self.reloadConfirmation = True  # ask confirmation on reload
         # model is mapped direct to tableview
-        self.auth = auth
-        self.view = None # subclass must set this
+        self.auth: str = auth
+        self.view: QTableView|None = None # subclass must set this
         
-    def setModel(self, model: QAbstractItemModel) -> None:
+    def setModel(self, model: QueryModel|TableModel) -> None:
         "Set the main form model"
         self.model = model
         # used for isDirty method, only for editable models
         if self.model.isEditable:
-            self.model.userDataChanged.connect(self.modelChanged)
+            if hasattr(self.model, 'userDataChanged'):
+                self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
         
-    def setView(self, view: QAbstractItemView) -> None:
+    def setView(self, view: QTableView) -> None:
         "Set the form view to manage and link the model to the view"
         self.view = view
         self.view.setModel(self.model)
@@ -498,10 +502,14 @@ class FormViewManager(QWidget):
 
     def updateEditStatus(self) -> None:
         "Update main window edit status based on current model and mapper index"
+        if not self.model:
+            return
+        if not self.view:
+            return
         # default attributes for view/edit status
         EDVIEW = True, False, True, True    # new, save, delete, relod
         EDEDIT = False, True, False, True   # new, save, delete, relod
-
+        
         total = self.model.rowCount()
         index = self.view.selectionModel().currentIndex()
         if index:
@@ -530,16 +538,20 @@ class FormViewManager(QWidget):
 
     def checkIfDirty(self) -> bool:
         "Alert of unsaved changes if any"
+        if not self.model:
+            return False
         if self.state == VIEW:
             return True
         if self.model.isEditable and self.model.isDirty:
             result = QMessageBox.question(self,
                                           _tr("MessageDialog", "Question"),
                                           _tr("Form", "The data has been modified, save ?"),
-                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-            if result == QMessageBox.Cancel:
+                                          QMessageBox.StandardButton.Yes|
+                                          QMessageBox.StandardButton.No|
+                                          QMessageBox.StandardButton.Cancel)
+            if result == QMessageBox.StandardButton.Cancel:
                 return False
-            elif result == QMessageBox.Yes:
+            elif result == QMessageBox.StandardButton.Yes:
                 self.save()
             else:
                 self.model.revert()
@@ -547,13 +559,20 @@ class FormViewManager(QWidget):
                 self.updateEditStatus()
         return True
 
-    def currentPrimaryKey(self) -> list:
+    def currentPrimaryKey(self) -> list|None:
+        if not self.model:
+            return None
+        if not self.view:
+            return None
         if self.view.selectionModel().currentIndex():
             if self.model.primaryKey(self.view.selectionModel().currentIndex().row()):
                 return list(self.model.primaryKey(self.view.selectionModel().currentIndex().row()).values())[0]
+        return None
 
     def new(self) -> None:
         "Create a new record on model"
+        if not self.view:
+            return None
         self.view.add()
         self.state = EDIT
 
@@ -578,7 +597,7 @@ class FormViewManager(QWidget):
                        f"For more information click on 'Show Details...'")
 
             mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Critical)
+            mbox.setIcon(QMessageBox.Icon.Critical)
             mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
             mbox.setText(msg)
             mbox.setDetailedText(str(er.message))
@@ -601,13 +620,15 @@ class FormViewManager(QWidget):
                                 #_tr("Form", "Are you sure you want to delete the current record ?"),
                                 #QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
             #return
+        if not self.view:
+            return None
         self.view.remove()
         try:
             self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
                 mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Critical)
+                mbox.setIcon(QMessageBox.Icon.Critical)
                 mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
                 mbox.setText(_tr("Form", "Referential integrity violation: "
                                  "unable to delete the current record because "
@@ -628,7 +649,7 @@ class FormViewManager(QWidget):
     def reload(self) -> None:
         "Undo pending changes and Reload data from db"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.model.revertAll() # also do a select()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
@@ -643,22 +664,29 @@ class FormViewManager(QWidget):
 
     def toFirst(self) -> None:
         "To first"
-        self.view.selectRow(0)
+        if self.view:
+            self.view.selectRow(0)
 
     def toPrevious(self) -> None:
         "To previous"
+        if not self.view:
+            return None
         index = self.view.selectionModel().currentIndex()
         if index:
             self.view.selectRow(index.row() - 1)
 
     def toNext(self) -> None:
         "To next"
+        if not self.view:
+            return None
         index = self.view.selectionModel().currentIndex()
         if index:
             self.view.selectRow(index.row() + 1)
 
     def toLast(self) -> None:
         "To last"
+        if not self.view:
+            return None
         self.view.selectRow(self._model.rowCount() - 1)
 
 
@@ -673,7 +701,7 @@ class FormIndexManager(QWidget):
 
     def __init__(self, parent: QWidget, auth: str) -> None:
         super().__init__(parent)
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         # subclass must define available status, default: nothing is available
         # 12 boolean values:
         # new, save, delete, reload, first, previous, next,
