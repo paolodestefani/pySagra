@@ -538,7 +538,7 @@ class FormViewManager(QWidget):
 
     def checkIfDirty(self) -> bool:
         "Alert of unsaved changes if any"
-        if not self.model:
+        if not self.model or isinstance(self.model, QueryModel):
             return False
         if self.state == VIEW:
             return True
@@ -560,13 +560,13 @@ class FormViewManager(QWidget):
         return True
 
     def currentPrimaryKey(self) -> list|None:
-        if not self.model:
+        if not self.model or isinstance(self.model, QueryModel):
             return None
         if not self.view:
             return None
         if self.view.selectionModel().currentIndex():
-            if self.model.primaryKey(self.view.selectionModel().currentIndex().row()):
-                return list(self.model.primaryKey(self.view.selectionModel().currentIndex().row()).values())[0]
+            if self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()):
+                return list(self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()).values())[0]
         return None
 
     def new(self) -> None:
@@ -687,7 +687,8 @@ class FormViewManager(QWidget):
         "To last"
         if not self.view:
             return None
-        self.view.selectRow(self._model.rowCount() - 1)
+        if self.model:
+            self.view.selectRow(self.model.rowCount() - 1)
 
 
 class FormIndexManager(QWidget):
@@ -699,7 +700,10 @@ class FormIndexManager(QWidget):
     - drive linked forms/grids
     Index model and main model are implicitly linked by the first column of both"""
 
-    def __init__(self, parent: QWidget, auth: str) -> None:
+    def __init__(self, 
+                 parent: QWidget,
+                 auth: str
+                 ) -> None:
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         # subclass must define available status, default: nothing is available
@@ -712,9 +716,10 @@ class FormIndexManager(QWidget):
         # track form's state
         self.state = VIEW # initial state
         self.auth = auth
-        self.detailRelations = []  # detail relation list
-        self.model = TableModel()
-        self.indexModel = None
+        self.detailRelations: list = []  # detail relation list
+        self.model: QueryModel|TableModel = TableModel()
+        self.indexModel = QueryModel()
+        self.ui: QWidget = QWidget()
         # index mapper
         self.indexMapper = QDataWidgetMapper(self)
         self.indexMapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
@@ -724,19 +729,19 @@ class FormIndexManager(QWidget):
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
         #self.mapper.setItemDelegate(mapperItemDelegate(self))
 
-    def setModel(self, model, indexModel):
+    def setModel(self, model: QueryModel|TableModel, indexModel: QueryModel) -> None:
         "Set the main form model and index model, index model can change from filter dialog"
         self.model = model
         self.indexModel = indexModel
         self.mapper.setModel(self.model) # main form model
         self.indexMapper.setModel(self.indexModel) # index model
         # used for isDirty method, only for editable models
-        if self.model.isEditable:
+        if hasattr(self.model, 'userDataChanged'):
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.indexModel, self)
         #self.indexMapper.setModel(self.sortFilterDialog.model)
 
-    def setIndexView(self, view):
+    def setIndexView(self, view: QTableView) -> None:
         "Set index view"
         self.indexView = view
         self.indexView.setModel(self.indexModel) # set index model
@@ -744,26 +749,30 @@ class FormIndexManager(QWidget):
         self.indexView.selectionModel().currentRowChanged.connect(self.indexMapper.setCurrentModelIndex)
         self.indexMapper.currentIndexChanged.connect(self.indexView.selectRow)
         # read only view
-        self.indexView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.indexView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.indexView.activateWindow()
         self.indexView.horizontalHeader().setSectionsMovable(True)
 
-    def addDetailRelation(self, relation, masterColumn, detailColumn):
+    def addDetailRelation(self, 
+                          relation: QueryModel|TableModel,
+                          masterColumn: int,
+                          detailColumn: int
+                          ) -> None:
         "Add linked models to detailRelations list"
         self.detailRelations.append((relation, masterColumn, detailColumn))
         #print("add relation", relation, masterColumn, detailColumn)
-        if relation.isEditable:  # a modification of the relation cause an update of the status of the main form
+        if hasattr(relation, 'userDataChanged'):  # a modification of the relation cause an update of the status of the main form
             relation.userDataChanged.connect(self.modelChanged)
 
-    def modelChanged(self):
+    def modelChanged(self) -> None:
         "Update status and navigation on model changed"
         self.state = EDIT
         self.updateEditStatus()
 
-    def mapperIndexChanged(self, index):
+    def mapperIndexChanged(self, index: int) -> None:
         "Reload form model and detail relations on mapper index change"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         #QGuiApplication.processEvents() # non funziona...
         self.model.filter(0, self.indexModel.index(index, 0).data())
         self.mapper.toFirst()
@@ -775,7 +784,7 @@ class FormIndexManager(QWidget):
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
 
-    def updateEditStatus(self):
+    def updateEditStatus(self) -> None:
         "Update main window edit status based on current model and mapper index"
         # default attributes for view/edit status
         EDVIEW = True, False, True, True # new, save, delete, relod
@@ -817,10 +826,12 @@ class FormIndexManager(QWidget):
         if self.state != EDIT and self.availableStatus[DELETE]:
             if total == 0:
                 status[DELETE] = False
-                self.ui.stackedWidget.setDisabled(True)
+                if hasattr(self.ui, 'stackedWidget'):
+                    self.ui.stackedWidget.setDisabled(True)
             else:
                 status[DELETE] = True
-                self.ui.stackedWidget.setEnabled(True)
+                if hasattr(self.ui, 'stackedWidget'):
+                    self.ui.stackedWidget.setEnabled(True)
         # disable unavailable actions for R auth
         if self.auth == 'R':
             for i in (NEW, SAVE, DELETE):
@@ -846,30 +857,34 @@ class FormIndexManager(QWidget):
     #             self.updateEditStatus()
     #     return True
 
-    def toFirst(self):
+    def toFirst(self) -> None:
         "To first"
         self.indexMapper.toFirst()
 
-    def toPrevious(self):
+    def toPrevious(self) -> None:
         "To previous"
         self.indexMapper.toPrevious()
 
-    def toNext(self):
+    def toNext(self) -> None:
         "To next"
         self.indexMapper.toNext()
 
-    def toLast(self):
+    def toLast(self) -> None:
         "To last"
         self.indexMapper.toLast()
 
-    def new(self):
+    def new(self) -> None:
         "Create a new record on model deleting the current one"
+        if isinstance(self.model, QueryModel):
+            return
         # enable widget, in case it's disabled)
-        if self.ui.stackedWidget:
-            self.ui.stackedWidget.setEnabled(True)
-            # move in the form view
-            self.ui.stackedWidget.setCurrentIndex(FORM)
-        self.model.clearData() # delete current data if any
+        if hasattr(self.ui, 'stackedWidget'):
+            if self.ui.stackedWidget:
+                self.ui.stackedWidget.setEnabled(True)
+                # move in the form view
+                self.ui.stackedWidget.setCurrentIndex(FORM)
+        if hasattr(self.model, 'clearData'):
+            self.model.clearData() # delete current data if any
         if not self.model.insertRow(0):
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -882,8 +897,10 @@ class FormIndexManager(QWidget):
         self._new = True
         self.updateEditStatus()
 
-    def save(self):
+    def save(self) -> None:
         "Save data to db and commit"
+        if isinstance(self.model, QueryModel):
+            return
         # get current index
         #current_index = self.indexMapper.currentIndex()
         #self.model.filter(0, self.indexModel.index(index, 0).data())
@@ -923,7 +940,7 @@ class FormIndexManager(QWidget):
                     msg = (f"Unrecognized database error code: {er.code}\n"
                         f"For more information click on 'Show Details...'")
             mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Critical)
+            mbox.setIcon(QMessageBox.Icon.Critical)
             mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
             mbox.setText(msg)
             mbox.setDetailedText(str(er.message))
@@ -948,7 +965,7 @@ class FormIndexManager(QWidget):
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
                 mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Critical)
+                mbox.setIcon(QMessageBox.Icon.Critical)
                 mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
                 mbox.setText(msg)
                 mbox.setDetailedText(str(er.message))
@@ -972,8 +989,10 @@ class FormIndexManager(QWidget):
         self._new = False
         self.state = VIEW
 
-    def delete(self):
+    def delete(self) -> None:
         "Delete current record and commit. Resets the index mapper to the previous value -1"
+        if isinstance(self.model, QueryModel):
+            return
         # confirm deletion request BETTER DO THIS IN SUBCLASS
         current_index = self.indexMapper.currentIndex()
         # details data
@@ -994,7 +1013,7 @@ class FormIndexManager(QWidget):
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
                 mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Critical)
+                mbox.setIcon(QMessageBox.Icon.Critical)
                 mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
                 mbox.setText(msg)
                 mbox.setDetailedText(er.message)
@@ -1016,7 +1035,7 @@ class FormIndexManager(QWidget):
         except PyAppDBError as er:
             if er.code == '23503':
                 mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Critical)
+                mbox.setIcon(QMessageBox.Icon.Critical)
                 mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
                 mbox.setText(_tr("Form", "Referential integrity violation: "
                                  "unable to delete the current record because "
@@ -1037,12 +1056,12 @@ class FormIndexManager(QWidget):
         self.indexMapper.setCurrentIndex(current_index - 1)
         self.state = VIEW
 
-    def reload(self):
+    def reload(self) -> None:
         "Undo pending changes and Reload data from db. Index mapper is set to the previous value"
         if not self.indexModel: # no index model currently setted
             return
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         currentIndex = self.indexMapper.currentIndex() # before first select = -1
         brc = self.indexModel.rowCount() # before first select = 0
         # 
@@ -1074,15 +1093,17 @@ class FormIndexManager(QWidget):
         self.state = VIEW
         self.updateEditStatus()
 
-    def setIndexModel(self, model):
+    def setIndexModel(self, model: QueryModel) -> None:
         self.indexModel = model
 
-    def setFilters(self):
+    def setFilters(self) -> None:
         "Create/open filter dialog and update main model"
         self.sortFilterDialog.show()
 
-    def changeView(self):
+    def changeView(self) -> None:
         "Move from and to form/grid view"
+        if not hasattr(self.ui, 'stackedWidget'):
+            return
         if self.ui.stackedWidget.currentIndex() == FORM:
             self.ui.stackedWidget.setCurrentIndex(GRID)
         else:
