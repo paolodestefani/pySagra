@@ -25,9 +25,7 @@ class Ui_MessageDialog(object):
         if not MessageDialog.objectName():
             MessageDialog.setObjectName(u"MessageDialog")
         MessageDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        MessageDialog.resize(512, 512)
-        MessageDialog.setMinimumSize(QSize(512, 512))
-        MessageDialog.setSizeGripEnabled(True)
+        MessageDialog.setSizeGripEnabled(False)
         self.verticalLayout_4 = QVBoxLayout(MessageDialog)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
@@ -53,7 +51,8 @@ class Ui_MessageDialog(object):
 
         self.labelMessage = QLabel(MessageDialog)
         self.labelMessage.setObjectName(u"labelMessage")
-        self.labelMessage.setMinimumSize(QSize(300, 60))
+        self.labelMessage.setMinimumSize(QSize(300, 100))
+        self.labelMessage.setWordWrap(True)
 
         self.horizontalLayout.addWidget(self.labelMessage)
 
@@ -64,13 +63,14 @@ class Ui_MessageDialog(object):
         self.buttonBox = QDialogButtonBox(MessageDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setCenterButtons(True)
 
         self.mainVerticalLayout.addWidget(self.buttonBox)
 
         self.checkBoxShowDetailMessage = QCheckBox(MessageDialog)
         self.checkBoxShowDetailMessage.setObjectName(u"checkBoxShowDetailMessage")
-        self.checkBoxShowDetailMessage.setChecked(True)
+        self.checkBoxShowDetailMessage.setChecked(False)
 
         self.mainVerticalLayout.addWidget(self.checkBoxShowDetailMessage)
 
@@ -84,6 +84,7 @@ class Ui_MessageDialog(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.plainTextEditDetailMessage = QPlainTextEdit(self.frameDetails)
         self.plainTextEditDetailMessage.setObjectName(u"plainTextEditDetailMessage")
+        self.plainTextEditDetailMessage.setMinimumSize(QSize(512, 256))
         self.plainTextEditDetailMessage.setReadOnly(True)
 
         self.verticalLayout.addWidget(self.plainTextEditDetailMessage)
@@ -108,6 +109,5 @@ class Ui_MessageDialog(object):
         self.labelIcon.setText(QCoreApplication.translate("MessageDialog", u"icon", None))
         self.labelMessage.setText(QCoreApplication.translate("MessageDialog", u"Message", None))
         self.checkBoxShowDetailMessage.setText(QCoreApplication.translate("MessageDialog", u"Show detail message", None))
-        self.plainTextEditDetailMessage.setPlainText("")
     # retranslateUi
 

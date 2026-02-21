@@ -79,7 +79,7 @@ from App.Database.Connect import get_company_desc
 from App.Database.Connect import get_current_event
 from App.Database.Connect import can_use_company
 from App.Database.Connect import get_current_event
-from App.Widget.Dialog import MessageBox
+from App.Widget.Dialog import MessageBoxCritical
 from App.System.User import ChangePasswordDialog
 from App.System.Preferences import setTheme
 from App.System.Preferences import setColorScheme
@@ -152,9 +152,10 @@ class LoginDialog(QDialog):
             # for normal cursor on error message box
             QGuiApplication.restoreOverrideCursor()
             msg = _tr("Login", "Error on connecting to database server")
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"<p><b>{msg}</b></p><pre><tt>{er}</tt></pre>")
+            MessageBoxCritical(self,
+                               _tr("MessageDialog", "Database connection"),
+                               msg,
+                               str(er))
             self.ui.lineEditPassword.clear()
             logger.error("Database connection error %s", er)
             return
@@ -174,12 +175,10 @@ class LoginDialog(QDialog):
             else:
                 msg = f"Error:{er.code or 'undefined'}"
 
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Icon.Critical)
-            mbox.setWindowTitle(_tr('MessageDialog', 'Critical'))
-            mbox.setText(f"<p><b>{msg}</b>")
-            mbox.setDetailedText(str(er.message))
-            mbox.exec()
+            MessageBoxCritical(self,
+                               _tr('MessageDialog', 'Critical'),
+                               msg,
+                               str(er.message))
             self.ui.lineEditPassword.clear()
             logger.error("Connection error %s\n%s", er.code, er.message)
             
@@ -256,10 +255,10 @@ class LoginDialog(QDialog):
                     sys.exit(0)
                 dlg.close()
             else:
-                QMessageBox.critical(self,
-                                     _tr('MessageDialog', "Critical"),
-                                     _tr('Login', "There is no company "
-                                         "you can log on"))
+                MessageBoxCritical(self,
+                                   _tr('MessageDialog', "Critical"),
+                                   _tr('Login', "There is no company "
+                                       "you can log on"))
                 return
             
         # get current event
@@ -267,9 +266,10 @@ class LoginDialog(QDialog):
         try:
             get_current_event()
         except PyAppDBError as er:
-            QMessageBox.critical(None,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            MessageBoxCritical(None,
+                               _tr("MessageDialog", "Database error"),
+                               er.code,
+                               er.message)
             logger.error("Database error %s %s", er.code, er.message)
             return
         logger.info("Current event setted to %s %s",
@@ -302,9 +302,10 @@ class ChangeCompanyDialog(QDialog):
         try:
             companies = get_companies_list(session['user'])
         except PyAppDBError as er:
-            QMessageBox.critical(parent,
-                                 _tr('MessageDialog', "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            MessageBoxCritical(parent,
+                               _tr('MessageDialog', "Database error"),
+                               er.code,
+                               er.message)
             logger.error("Database error %s %s", er.code, er.message)
             return
         if not companies:
@@ -337,13 +338,10 @@ class ChangeCompanyDialog(QDialog):
             else:
                 msg = f"Database error: {er.code}"
 
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Icon.Critical)
-            mbox.setWindowTitle(_tr('MessageDialog', 'Critical'))
-            mbox.setText(f"<p><b>{msg}</b>")
-            mbox.setDetailedText(er.message)
-            mbox.exec_()
-
+            MessageBoxCritical(self,
+                               _tr('MessageDialog', 'Critical'),
+                               msg,
+                               er.message)
             logger.error("Database error %s %s", er.code, er.message)
             return
         session['company'] = newco
@@ -354,9 +352,10 @@ class ChangeCompanyDialog(QDialog):
         try:
             get_current_event()
         except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            MessageBoxCritical(self,
+                               _tr('MessageDialog', "Database error"),
+                               er.code,
+                               er.message)
             logger.error("On change company database error %s %s", er.code, er.message)
         else:
             logger.info("On change company current event setted to %s %s",

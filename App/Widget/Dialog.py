@@ -160,18 +160,30 @@ referenceList = {'eventList': event_cdl,
                  'itemList': item_cdl}
 
 
-class MessageBox(QDialog, Ui_MessageDialog):
+class MessageBox(QDialog):
     "Custom message dialog"
 
     def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
-        self.setupUi(self)
+        self.ui = Ui_MessageDialog()
+        self.ui.setupUi(self)
         app = cast(QApplication, QCoreApplication.instance())
         if app:
             sty = app.style()
         icon = sty.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
-        self.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
-
+        self.ui.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
+        self.ui.checkBoxShowDetailMessage.setChecked(False)
+        self.ui.frameDetails.setVisible(False)
+        
+def MessageBoxCritical(parent, 
+                       title: str|None = None, 
+                       text: str|None = None, 
+                       detail: str|None = None):
+    dlg = MessageBox(parent)
+    dlg.setWindowTitle(title or _tr('Dialog', "Critical error"),)
+    dlg.ui.labelMessage.setText(text or _tr('Dialog', "Unidentified critical error"),)
+    dlg.ui.plainTextEditDetailMessage.setPlainText(detail or "")
+    dlg.exec()
 
 class SelectImageDialog(QDialog, Ui_SelectImageDialog):
     "Select Image Dialog"
