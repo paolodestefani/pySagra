@@ -6,21 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>643</width>
-    <height>388</height>
+    <width>640</width>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Inventory</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Orientation::Vertical</enum>
      </property>
+     <property name="opaqueResize">
+      <bool>true</bool>
+     </property>
      <widget class="QWidget" name="layoutWidget">
-      <layout class="QVBoxLayout" name="verticalLayoutNormal">
+      <layout class="QVBoxLayout" name="verticalLayoutNormalItem" stretch="0,0">
+       <property name="spacing">
+        <number>6</number>
+       </property>
        <item>
         <widget class="QLabel" name="labelNormalItem">
          <property name="font">
@@ -43,8 +49,11 @@
      </widget>
      <widget class="QWidget" name="layoutWidget">
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>6</number>
+       </property>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayoutKit">
+        <layout class="QVBoxLayout" name="verticalLayout_1">
          <item>
           <widget class="QLabel" name="labelKit">
            <property name="font">
@@ -66,7 +75,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayoutMenu">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLabel" name="labelMenu">
            <property name="font">

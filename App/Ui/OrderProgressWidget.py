@@ -27,18 +27,17 @@ class Ui_OrderProgressWidget(object):
     def setupUi(self, OrderProgressWidget):
         if not OrderProgressWidget.objectName():
             OrderProgressWidget.setObjectName(u"OrderProgressWidget")
-        OrderProgressWidget.resize(667, 459)
-        OrderProgressWidget.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        self.verticalLayout_5 = QVBoxLayout(OrderProgressWidget)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        OrderProgressWidget.resize(777, 509)
+        self.verticalLayout = QVBoxLayout(OrderProgressWidget)
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.splitter = QSplitter(OrderProgressWidget)
         self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Orientation.Vertical)
         self.layoutWidget = QWidget(self.splitter)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.verticalLayout_4 = QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout1Order = QVBoxLayout(self.layoutWidget)
+        self.verticalLayout1Order.setObjectName(u"verticalLayout1Order")
+        self.verticalLayout1Order.setContentsMargins(0, 0, 0, 0)
         self.label_4 = QLabel(self.layoutWidget)
         self.label_4.setObjectName(u"label_4")
         font = QFont()
@@ -46,12 +45,12 @@ class Ui_OrderProgressWidget(object):
         self.label_4.setFont(font)
         self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout_4.addWidget(self.label_4)
+        self.verticalLayout1Order.addWidget(self.label_4)
 
         self.tableViewOrder = EnhancedTableView(self.layoutWidget)
         self.tableViewOrder.setObjectName(u"tableViewOrder")
 
-        self.verticalLayout_4.addWidget(self.tableViewOrder)
+        self.verticalLayout1Order.addWidget(self.tableViewOrder)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -94,29 +93,29 @@ class Ui_OrderProgressWidget(object):
         self.horizontalLayout.addWidget(self.comboBoxLimit)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout)
+        self.verticalLayout1Order.addLayout(self.horizontalLayout)
 
         self.splitter.addWidget(self.layoutWidget)
-        self.layoutWidget1 = QWidget(self.splitter)
-        self.layoutWidget1.setObjectName(u"layoutWidget1")
-        self.verticalLayout = QVBoxLayout(self.layoutWidget1)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.label_2 = QLabel(self.layoutWidget1)
+        self.layoutWidget_2 = QWidget(self.splitter)
+        self.layoutWidget_2.setObjectName(u"layoutWidget_2")
+        self.verticalLayout2Barcode = QVBoxLayout(self.layoutWidget_2)
+        self.verticalLayout2Barcode.setObjectName(u"verticalLayout2Barcode")
+        self.verticalLayout2Barcode.setContentsMargins(0, 0, 0, 0)
+        self.label_2 = QLabel(self.layoutWidget_2)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setFont(font)
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout.addWidget(self.label_2)
+        self.verticalLayout2Barcode.addWidget(self.label_2)
 
-        self.tableWidgetScans = QTableWidget(self.layoutWidget1)
+        self.tableWidgetScans = QTableWidget(self.layoutWidget_2)
         self.tableWidgetScans.setObjectName(u"tableWidgetScans")
 
-        self.verticalLayout.addWidget(self.tableWidgetScans)
+        self.verticalLayout2Barcode.addWidget(self.tableWidgetScans)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.groupBox = QGroupBox(self.layoutWidget1)
+        self.groupBox = QGroupBox(self.layoutWidget_2)
         self.groupBox.setObjectName(u"groupBox")
         self.verticalLayout_2 = QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -153,7 +152,7 @@ class Ui_OrderProgressWidget(object):
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_3)
 
-        self.groupBox_2 = QGroupBox(self.layoutWidget1)
+        self.groupBox_2 = QGroupBox(self.layoutWidget_2)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.verticalLayout_3 = QVBoxLayout(self.groupBox_2)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -170,19 +169,12 @@ class Ui_OrderProgressWidget(object):
         self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.verticalLayout2Barcode.addLayout(self.horizontalLayout_3)
 
-        self.splitter.addWidget(self.layoutWidget1)
+        self.splitter.addWidget(self.layoutWidget_2)
 
-        self.verticalLayout_5.addWidget(self.splitter)
+        self.verticalLayout.addWidget(self.splitter)
 
-        QWidget.setTabOrder(self.tableViewOrder, self.checkBoxAcquired)
-        QWidget.setTabOrder(self.checkBoxAcquired, self.checkBoxInProgress)
-        QWidget.setTabOrder(self.checkBoxInProgress, self.checkBoxProcessed)
-        QWidget.setTabOrder(self.checkBoxProcessed, self.comboBoxLimit)
-        QWidget.setTabOrder(self.comboBoxLimit, self.tableWidgetScans)
-        QWidget.setTabOrder(self.tableWidgetScans, self.lineEditBarcode)
-        QWidget.setTabOrder(self.lineEditBarcode, self.pushButtonSetAsUnprocessed)
 
         self.retranslateUi(OrderProgressWidget)
 

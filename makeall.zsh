@@ -25,9 +25,11 @@ pyside6-lrelease translation/ts/login_it.ts -qm translation/login_it.qm
 # translations without pro file, sources and forms
 pyside6-lupdate	\
 	pySagra.py \
-	App/System/Connection.py \
+	App/System/About.py \
+    App/System/Action.py \
+    App/System/Company.py \
+    App/System/Connection.py \
 	App/System/Customization.py \
-	App/System/Action.py \
 	App/System/Help.py \
 	App/System/Mainwindow.py \
 	App/System/Menu.py \
@@ -36,11 +38,12 @@ pyside6-lupdate	\
 	App/System/Report.py \
 	App/System/Scripting.py \
 	App/System/User.py \
-	App/System/Utility.py \
 	App/Widget/Control.py \
 	App/Widget/Delegate.py \
 	App/Widget/Dialog.py \
 	App/Widget/Form.py \
+    App/Ui/AboutDialog.ui \
+    App/Ui/CompanyWidget.ui \
 	-tr-function-alias translate+=_tr -noobsolete -ts translation/ts/pySagra_it.ts 
 
 pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm

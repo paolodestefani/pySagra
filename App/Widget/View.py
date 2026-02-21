@@ -171,7 +171,7 @@ class EnhancedTableView(QTableView):
         self.setItemDelegate(GenericReadOnlyDelegate(self))
         # self.horizontalHeader().setStretchLastSection(True)
         # state of the hoerizontal header, used for reset
-        self.horizontalHeaderState = None
+        self.horizontalHeaderState: QByteArray|None = None
         # context menu actions
         # activate/deactivate column sorting
         self.cmSorting = QAction(_tr("View", "Column sorting"), self)
@@ -266,6 +266,8 @@ class EnhancedTableView(QTableView):
         self.customContextMenuRequested.connect(self.contextMenuEvent)
 
     def fillCustomizationMenu(self) -> None:
+        if not self.layoutName:
+            return
         # clear everything
         for i in self.ag.actions():
             self.ag.removeAction(i)
@@ -291,7 +293,7 @@ class EnhancedTableView(QTableView):
         super().setModel(model)
         self.setSortingEnabled(False) # better not to sort when editing
 
-    def setLayoutName(self, name: str|None) -> None:
+    def setLayoutName(self, name: str) -> None:
         "As EnhancedTableView is declared in QtDesigner we must set the name of the layout after instantiation"
         self.layoutName = name
         self.fillCustomizationMenu()
@@ -430,7 +432,7 @@ class EnhancedTableView(QTableView):
             for i in range(columns):
                 if self.isColumnHidden(i):
                     continue
-                row.append(model.headerData(i, Qt.Horizontal))
+                row.append(model.headerData(i, Qt.Orientation.Horizontal))
             writer.writerow(row)
             # details
             for i in range(rows):
@@ -450,9 +452,9 @@ class EnhancedTableView(QTableView):
                     if isinstance(data, QByteArray):
                         data = _tr('View', 'BINARY DATA')
                     if isinstance(data, QDate):
-                        data = session['qlocale'].toString(data, QLocale.ShortFormat)
+                        data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
                     elif isinstance(data, QDateTime):
-                        data = session['qlocale'].toString(data, QLocale.ShortFormat)
+                        data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
                     elif isinstance(data, bool):
                         #data = "\u2611" if data else "\u2610" # tick
                         data = "I" if data else "O" # less problem with excel
@@ -468,7 +470,8 @@ class EnhancedTableView(QTableView):
                                 _tr('MessageDialog', "Question"),
                                 _tr('View', "Export data completed.\n"
                                     "Open the generated file?"),
-                                QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
+                                ) == QMessageBox.StandardButton.Yes:
             QDesktopServices.openUrl(QUrl("file:///{}".format(fname)))
 
     def hideCurrentColumn(self) -> None:
@@ -499,7 +502,7 @@ class EnhancedTableView(QTableView):
         dialog.groupBoxViewSettings.setTitle(title)
         dialog.exec_()
 
-    def updateViewLayout(self, viewId: int = None) -> None:
+    def updateViewLayout(self, viewId: int|None = None) -> None:
         "Save current view layout to database"
         if not viewId:
             viewId = int(self.ag.checkedAction().data())
@@ -520,6 +523,8 @@ class EnhancedTableView(QTableView):
                                     _tr("View", "Layout customization saved"))
 
     def saveViewLayoutAs(self) -> None:
+        if not self.layoutName:
+            return
         "Create a new layout customization"
         viewDesc, ok = QInputDialog.getText(self,
                                             _tr("View", "New layout customization"),
@@ -539,7 +544,7 @@ class EnhancedTableView(QTableView):
             # recreate customization list
             self.fillCustomizationMenu()
 
-    def deleteViewLayout(self, action: QAction = None) -> None:
+    def deleteViewLayout(self, action: QAction|None = None) -> None:
         "Delete current view layout from database"
         viewId = int(self.ag.checkedAction().data())
         try:
@@ -557,6 +562,8 @@ class EnhancedTableView(QTableView):
 
     def defaultViewLayout(self) -> None:
         "Set curent layout as default for view class"
+        if not self.layoutName:
+            return
         if not self.ag.checkedAction():  # no layout setted
             QMessageBox.warning(self,
                                 _tr("MessageDialog", "Warning"),

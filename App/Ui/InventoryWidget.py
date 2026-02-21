@@ -24,77 +24,74 @@ class Ui_InventoryWidget(object):
     def setupUi(self, InventoryWidget):
         if not InventoryWidget.objectName():
             InventoryWidget.setObjectName(u"InventoryWidget")
-        InventoryWidget.resize(640, 413)
-        self.verticalLayout_4 = QVBoxLayout(InventoryWidget)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        InventoryWidget.resize(643, 388)
+        self.verticalLayout = QVBoxLayout(InventoryWidget)
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.splitter = QSplitter(InventoryWidget)
         self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Orientation.Vertical)
-        self.splitter.setOpaqueResize(True)
         self.layoutWidget = QWidget(self.splitter)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.verticalLayout_3 = QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_3.setSpacing(6)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.label_4 = QLabel(self.layoutWidget)
-        self.label_4.setObjectName(u"label_4")
+        self.verticalLayoutNormal = QVBoxLayout(self.layoutWidget)
+        self.verticalLayoutNormal.setObjectName(u"verticalLayoutNormal")
+        self.verticalLayoutNormal.setContentsMargins(0, 0, 0, 0)
+        self.labelNormalItem = QLabel(self.layoutWidget)
+        self.labelNormalItem.setObjectName(u"labelNormalItem")
         font = QFont()
         font.setBold(True)
-        self.label_4.setFont(font)
-        self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.labelNormalItem.setFont(font)
+        self.labelNormalItem.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout_3.addWidget(self.label_4)
+        self.verticalLayoutNormal.addWidget(self.labelNormalItem)
 
         self.tableViewItem = EnhancedTableView(self.layoutWidget)
         self.tableViewItem.setObjectName(u"tableViewItem")
 
-        self.verticalLayout_3.addWidget(self.tableViewItem)
+        self.verticalLayoutNormal.addWidget(self.tableViewItem)
 
         self.splitter.addWidget(self.layoutWidget)
         self.layoutWidget1 = QWidget(self.splitter)
         self.layoutWidget1.setObjectName(u"layoutWidget1")
         self.horizontalLayout = QHBoxLayout(self.layoutWidget1)
-        self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.label = QLabel(self.layoutWidget1)
-        self.label.setObjectName(u"label")
-        self.label.setFont(font)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.verticalLayoutKit = QVBoxLayout()
+        self.verticalLayoutKit.setObjectName(u"verticalLayoutKit")
+        self.labelKit = QLabel(self.layoutWidget1)
+        self.labelKit.setObjectName(u"labelKit")
+        self.labelKit.setFont(font)
+        self.labelKit.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout.addWidget(self.label)
+        self.verticalLayoutKit.addWidget(self.labelKit)
 
         self.tableViewKit = EnhancedTableView(self.layoutWidget1)
         self.tableViewKit.setObjectName(u"tableViewKit")
 
-        self.verticalLayout.addWidget(self.tableViewKit)
+        self.verticalLayoutKit.addWidget(self.tableViewKit)
 
 
-        self.horizontalLayout.addLayout(self.verticalLayout)
+        self.horizontalLayout.addLayout(self.verticalLayoutKit)
 
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.label_2 = QLabel(self.layoutWidget1)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setFont(font)
-        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.verticalLayoutMenu = QVBoxLayout()
+        self.verticalLayoutMenu.setObjectName(u"verticalLayoutMenu")
+        self.labelMenu = QLabel(self.layoutWidget1)
+        self.labelMenu.setObjectName(u"labelMenu")
+        self.labelMenu.setFont(font)
+        self.labelMenu.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout_2.addWidget(self.label_2)
+        self.verticalLayoutMenu.addWidget(self.labelMenu)
 
         self.tableViewMenu = EnhancedTableView(self.layoutWidget1)
         self.tableViewMenu.setObjectName(u"tableViewMenu")
 
-        self.verticalLayout_2.addWidget(self.tableViewMenu)
+        self.verticalLayoutMenu.addWidget(self.tableViewMenu)
 
 
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
+        self.horizontalLayout.addLayout(self.verticalLayoutMenu)
 
         self.splitter.addWidget(self.layoutWidget1)
 
-        self.verticalLayout_4.addWidget(self.splitter)
+        self.verticalLayout.addWidget(self.splitter)
 
 
         self.retranslateUi(InventoryWidget)
@@ -104,8 +101,8 @@ class Ui_InventoryWidget(object):
 
     def retranslateUi(self, InventoryWidget):
         InventoryWidget.setWindowTitle(QCoreApplication.translate("InventoryWidget", u"Inventory", None))
-        self.label_4.setText(QCoreApplication.translate("InventoryWidget", u"Normal items inventory", None))
-        self.label.setText(QCoreApplication.translate("InventoryWidget", u"Kit availability", None))
-        self.label_2.setText(QCoreApplication.translate("InventoryWidget", u"Menu availability", None))
+        self.labelNormalItem.setText(QCoreApplication.translate("InventoryWidget", u"Normal items inventory", None))
+        self.labelKit.setText(QCoreApplication.translate("InventoryWidget", u"Kit availability", None))
+        self.labelMenu.setText(QCoreApplication.translate("InventoryWidget", u"Menu availability", None))
     # retranslateUi
 

@@ -31,6 +31,7 @@ This module contains general custom views
 # standard library
 import os
 import csv
+from typing import Any
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -85,23 +86,24 @@ FORM, GRID = range(2)
 
 
 class TableWidgetItem(QTableWidgetItem):
+    
     def __init__(self, value: object = None) -> None:
         super().__init__()
-        if isinstance(value, (int, str, bool, QDate, QDateTime)):
+        if isinstance(value, int|str|bool|QDate|QDateTime|None):
             self._data = value
         else:
             self._data = None
 
-    def flags(self) -> Qt.ItemFlags:
-        return Qt.ItemIsEditable
+    def flags(self) -> Qt.ItemFlag:
+        return Qt.ItemFlag.ItemIsEditable
 
-    def data(self, role: Qt.ItemDataRole = Qt.DisplayRole) -> object:
-        if role == Qt.DisplayRole:
+    def data(self, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        if role == Qt.ItemDataRole.DisplayRole:
             return self._data
         else:
             return None
 
-    def setData(self, role: Qt.ItemDataRole, value) -> None:
+    def setData(self, role: int, value: Any) -> None:
         self._data = value
 
     def copy(self) -> QTableWidgetItem:
@@ -119,9 +121,9 @@ class TableWidgetDragRows(QTableWidget):
         self.setDragDropOverwriteMode(False)
         self.setDropIndicatorShown(True)
 
-        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
     def dropEvent(self, event: QDropEvent) -> None:
         if not event.isAccepted() and event.source() == self:

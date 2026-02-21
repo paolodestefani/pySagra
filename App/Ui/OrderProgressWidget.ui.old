@@ -6,9 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>777</width>
-    <height>509</height>
+    <width>610</width>
+    <height>453</height>
    </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::FocusPolicy::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Order Progress</string>
@@ -109,7 +112,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget_2">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout2Barcode">
        <item>
         <widget class="QLabel" name="label_2">
@@ -237,6 +240,16 @@ QLineEdit#lineEditBarcode::focus {
    <header>App.Widget.Control</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tableViewOrder</tabstop>
+  <tabstop>checkBoxAcquired</tabstop>
+  <tabstop>checkBoxInProgress</tabstop>
+  <tabstop>checkBoxProcessed</tabstop>
+  <tabstop>comboBoxLimit</tabstop>
+  <tabstop>tableWidgetScans</tabstop>
+  <tabstop>lineEditBarcode</tabstop>
+  <tabstop>pushButtonSetAsUnprocessed</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
