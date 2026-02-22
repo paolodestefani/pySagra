@@ -110,7 +110,7 @@ def changePassword() -> None:
     logging.info('Change password dialog shown')
 
 
-class UsersForm(FormIndexManager):
+class UsersForm(FormIndexManager[Ui_UserWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -126,7 +126,7 @@ class UsersForm(FormIndexManager):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, True, True, True, True,
                                 True, True, True, True)
-        self.ui = Ui_UserWidget()
+        self.ui: Ui_UserWidget = Ui_UserWidget()
         self.ui.setupUi(self)
         # icons for add/remove buttons
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
@@ -194,12 +194,12 @@ class UsersForm(FormIndexManager):
         # scripting
         self.script = scriptInit(self)
 
-    def deactivateTls(self, state: int) -> None:
-        if state == Qt.CheckState.Checked:
-            self.ui.checkBoxTLS.setCheckState(Qt.CheckState.Unchecked)
-            self.ui.checkBoxTLS.setDisabled(True)
-        else:
-            self.ui.checkBoxTLS.setEnabled(True)
+    # def deactivateTls(self, state: int) -> None:
+    #     if state == Qt.CheckState.Checked:
+    #         self.ui.checkBoxTLS.setCheckState(Qt.CheckState.Unchecked)
+    #         self.ui.checkBoxTLS.setDisabled(True)
+    #     else:
+    #         self.ui.checkBoxTLS.setEnabled(True)
 
     def add(self) -> None:
         self.ui.tableViewUserCompany.add()
@@ -271,7 +271,7 @@ class UsersForm(FormIndexManager):
         userIndex = self.model.index(self.mapper.currentIndex(), CODE)
         passwordIndex = self.model.index(self.mapper.currentIndex(), PASSWORD)
         dlg = SetPasswordDialog(self, self.model, userIndex, passwordIndex)
-        if dlg.exec_() == QDialog.Accepted:
+        if dlg.exec_() == QDialog.DialogCode.Accepted:
             # if password was modified set for change required
             cprIndex = self.model.index(self.mapper.currentIndex(), CHANGEPWDREQ)
             self.model.setData(cprIndex, True)
@@ -291,7 +291,7 @@ class UsersForm(FormIndexManager):
         pix = QPixmap(f)
         if pix.width() > 640 or pix.height() > 480:
             pix = pix.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
-            self.ui.labelCompanyImage.setPixmap(pix)
+            self.ui.labelImage.setPixmap(pix)
             QMessageBox.warning(self,
                                 _tr('MessageDialog', "Warning"),
                                 _tr('User', "The selected image is too big, it was"

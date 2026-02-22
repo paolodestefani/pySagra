@@ -29,6 +29,7 @@ This module contains custom form objects, used for data entry management
 """
 
 # standard library
+from typing import TypeVar, Generic
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -690,8 +691,9 @@ class FormViewManager(QWidget):
         if self.model:
             self.view.selectRow(self.model.rowCount() - 1)
 
+T = TypeVar("T")
 
-class FormIndexManager(QWidget):
+class FormIndexManager(Generic[T], QWidget):
     """Generic form manager container with index model
     This container class manage the main form and linked form in a
     master/detail behavior. The role of this class is:
@@ -699,6 +701,7 @@ class FormIndexManager(QWidget):
     - consider user authorizations (r/w or r/o form)
     - drive linked forms/grids
     Index model and main model are implicitly linked by the first column of both"""
+    #ui: T # The type will be decided by the subclass
 
     def __init__(self, 
                  parent: QWidget,
@@ -719,7 +722,7 @@ class FormIndexManager(QWidget):
         self.detailRelations: list = []  # detail relation list
         self.model: QueryModel|TableModel = TableModel()
         self.indexModel = QueryModel()
-        self.ui: QWidget = QWidget()
+        self.ui: T # The type will be decided by the subclass
         # index mapper
         self.indexMapper = QDataWidgetMapper(self)
         self.indexMapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)

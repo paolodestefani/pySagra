@@ -170,7 +170,7 @@ class EventForm(FormIndexManager):
             return
         pix = QPixmap(f)
         if pix.width() > 640 or pix.height() > 480:
-            pix = pix.scaled(640, 480, Qt.KeepAspectRatio)
+            pix = pix.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
             self.ui.labelEventImage.setPixmap(pix)
             QMessageBox.warning(self,
                                 _tr("MessageDialog", "Warning"),
@@ -202,9 +202,9 @@ class EventForm(FormIndexManager):
                                     _tr("MessageDialog", "Information"),
                                     _tr("Event", "Image file saved"))
         else:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 _tr("Event", "Error on saving image file"))
+            QMessageBoxCritical(self,
+                                _tr("MessageDialog", "Critical"),
+                                _tr("Event", "Error on saving image file"))
 
     @scriptMethod
     def removeImage(self) -> None:

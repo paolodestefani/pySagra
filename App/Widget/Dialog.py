@@ -178,12 +178,13 @@ class MessageBox(QDialog):
 def MessageBoxCritical(parent, 
                        title: str|None = None, 
                        text: str|None = None, 
-                       detail: str|None = None):
+                       detail: str|None = None) -> None:
     dlg = MessageBox(parent)
     dlg.setWindowTitle(title or _tr('Dialog', "Critical error"),)
     dlg.ui.labelMessage.setText(text or _tr('Dialog', "Unidentified critical error"),)
     dlg.ui.plainTextEditDetailMessage.setPlainText(detail or "")
     dlg.exec()
+
 
 class SelectImageDialog(QDialog, Ui_SelectImageDialog):
     "Select Image Dialog"

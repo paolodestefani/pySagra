@@ -4,7 +4,7 @@
 <context>
     <name>ChangeCompany</name>
     <message>
-        <location filename="../../App/System/Login.py" line="300"/>
+        <location filename="../../App/System/Login.py" line="299"/>
         <source>Change company</source>
         <translation>Cambia azienda</translation>
     </message>
@@ -57,12 +57,12 @@
         <translation>Autenticazione fallita (utente o password errati)</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="262"/>
+        <location filename="../../App/System/Login.py" line="260"/>
         <source>There is no company you can log on</source>
         <translation>Non ci sono aziende alle quali collegarci</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="284"/>
+        <location filename="../../App/System/Login.py" line="283"/>
         <source>Password change is required</source>
         <translation>E&apos; necessario modificare la password</translation>
     </message>
@@ -184,18 +184,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="180"/>
-        <location filename="../../App/System/Login.py" line="249"/>
-        <location filename="../../App/System/Login.py" line="261"/>
-        <location filename="../../App/System/Login.py" line="272"/>
-        <location filename="../../App/System/Login.py" line="307"/>
-        <location filename="../../App/System/Login.py" line="343"/>
-        <location filename="../../App/System/Login.py" line="359"/>
+        <location filename="../../App/System/Login.py" line="179"/>
+        <location filename="../../App/System/Login.py" line="247"/>
+        <location filename="../../App/System/Login.py" line="259"/>
+        <location filename="../../App/System/Login.py" line="342"/>
         <source>Critical</source>
         <translation>Critico</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="283"/>
+        <location filename="../../App/System/Login.py" line="270"/>
+        <location filename="../../App/System/Login.py" line="306"/>
+        <location filename="../../App/System/Login.py" line="356"/>
+        <source>Database error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Login.py" line="282"/>
         <source>Information</source>
         <translation>Informazioni</translation>
     </message>

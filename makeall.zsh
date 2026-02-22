@@ -7,9 +7,18 @@ cd /Users/paolo/Development/pySagra
 source /Users/paolo/Development/venv/pyside-ppg/bin/activate
 
 # create lib ui modules
+#for filename in App/Ui/*.ui; do
+#    pyside6-uic -o "${filename%.*}".py "$filename"
+#done
+
 for filename in App/Ui/*.ui; do
-    pyside6-uic -o "${filename%.*}".py "$filename"
+    output_file="${filename%.*}.py"
+    echo "Compiling $filename -> $output_file..."
+    pyside6-uic "$filename" -o "$output_file"
 done
+
+echo "Completed"
+
 
 # resources
 pyside6-rcc resources.qrc -o resources_rc.py 
