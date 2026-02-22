@@ -68,7 +68,7 @@ def inventory(auth):
     logging.info('Stock inventory Form added to main window')
 
 
-class InventoryForm(FormViewManager):
+class InventoryForm(FormViewManager[Ui_InventoryWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

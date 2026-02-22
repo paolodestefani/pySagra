@@ -84,7 +84,7 @@ def orderProgress() -> None:
     logging.info('Order progress form shown')
 
 
-class OrderProgressForm(FormViewManager):
+class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
     
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

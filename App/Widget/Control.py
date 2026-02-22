@@ -128,7 +128,11 @@ class LabelImage(QLabel):
         else:
             self.clear()
 
-    imageBytearray = Property(QByteArray, fget=_get_imageBytearray, fset=_set_imageBytearray, notify=imageChanged)
+    imageBytearray = Property(QByteArray, 
+                              fget=_get_imageBytearray,
+                              fset=_set_imageBytearray,
+                              notify=imageChanged,
+                              user=True)
 
     def clear(self) -> None:
         super().clear()
@@ -137,7 +141,7 @@ class LabelImage(QLabel):
 
 class SpinBoxDecimal(QDoubleSpinBox):
 
-    valueChanged=Signal()
+    customValueChanged=Signal(decimal.Decimal)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
@@ -162,12 +166,16 @@ class SpinBoxDecimal(QDoubleSpinBox):
         else:
             self.setValue(float(value))
 
-    modelDataDecimal = Property(object, fget=_get_modelDataDecimal, fset=_set_modelDataDecimal, notify=valueChanged)
+    modelDataDecimal = Property(object,
+                                fget=_get_modelDataDecimal,
+                                fset=_set_modelDataDecimal,
+                                notify=customValueChanged,
+                                user=True)
 
 
 class SpinBoxInt(QSpinBox):
 
-    valueChanged=Signal()
+    customValueChanged=Signal(int)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
@@ -187,12 +195,16 @@ class SpinBoxInt(QSpinBox):
             value = self.minimum()
         self.setValue(int(value))
 
-    modelDataInt = Property(object, fget=_get_modelDataInt, fset=_set_modelDataInt, notify=valueChanged)
+    modelDataInt = Property(object,
+                            fget=_get_modelDataInt,
+                            fset=_set_modelDataInt,
+                            notify=customValueChanged,
+                            user=True)
 
 
 class CheckBox(QCheckBox):
 
-    checkStateChanged=Signal()
+    customCheckStateChanged=Signal()
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
@@ -213,7 +225,12 @@ class CheckBox(QCheckBox):
             self.setCheckState(Qt.CheckState.Unchecked)
         else:
             self.setCheckState(Qt.CheckState.PartiallyChecked)
-    modelDataState = Property(object, fget=_get_modelDataState, fset=_set_modelDataState, notify=checkStateChanged)
+    
+    modelDataState = Property(object,
+                              fget=_get_modelDataState, 
+                              fset=_set_modelDataState,
+                              notify=customCheckStateChanged,
+                              user=True)
 
 
 class DateEdit(QLineEdit):
@@ -276,19 +293,23 @@ class DateEdit(QLineEdit):
     def _set_modelDataDate(self, value: QDate|None) -> None:
         self.setDate(value)
 
-    modelDataDate = Property(QDate, fget=_get_modelDataDate, fset=_set_modelDataDate, notify=dateChanged, user=True)
+    modelDataDate = Property(QDate, 
+                             fget=_get_modelDataDate,
+                             fset=_set_modelDataDate, 
+                             notify=dateChanged, 
+                             user=True)
 
 
 class DateTimeEdit(QDateTimeEdit):
     "A QDateTimeEdit class that accepts Null values"
 
-    valueChanged = Signal() 
+    customValueChanged = Signal(QDateTime) 
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.setSpecialValueText(" ")
         self.setMinimumDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
-        self.dateTimeChanged.connect(self.valueChanged.emit)
+        self.dateTimeChanged.connect(self.customValueChanged.emit)
 
     # def fixup(self, text: str) -> None:
     #     # if input is invalid set specialValueText = Null
@@ -301,16 +322,17 @@ class DateTimeEdit(QDateTimeEdit):
 
     def _set_modelDataDateTime(self, value: QDateTime|None) -> None:
         self.blockSignals(True)
-        if value is None or (isinstance(value, QDateTime) and not value.isValid()):
+        if value is None or not value.isValid() or value.isNull():
             self.setDateTime(self.minimumDateTime())
         else:
             self.setDateTime(value)
         self.blockSignals(False)
-        self.valueChanged.emit()
+        self.customValueChanged.emit(self.dateTime())
 
-    modelDataDateTime = Property(QDateTime, fget=_get_modelDataDateTime, 
+    modelDataDateTime = Property(QDateTime, 
+                                 fget=_get_modelDataDateTime, 
                                  fset=_set_modelDataDateTime, 
-                                 notify=valueChanged, 
+                                 notify=customValueChanged, 
                                  user=True)
 
 # class DateTimeEdit(QDateTimeEdit):
@@ -422,7 +444,11 @@ class RelationalComboBox(QComboBox):
         index = self.findData(data)
         self.setCurrentIndex(index if index >= 0 else 0) # can be -1 on New
 
-    modelDataInt = Property(int, fget=_get_modelDataInt, fset=_set_modelDataInt, notify=itemChanged)
+    modelDataInt = Property(int, 
+                            fget=_get_modelDataInt,
+                            fset=_set_modelDataInt,
+                            notify=itemChanged,
+                            user=True)
 
     def _get_modelDataStr(self) -> str|None:
         val = self.currentData(Qt.ItemDataRole.UserRole)
@@ -432,7 +458,11 @@ class RelationalComboBox(QComboBox):
         index = self.findData(data, Qt.ItemDataRole.UserRole, Qt.MatchFlag.MatchExactly|Qt.MatchFlag.MatchCaseSensitive)
         self.setCurrentIndex(index if index >= 0 else 0) # can be -1 on New
 
-    modelDataStr = Property(str, fget=_get_modelDataStr, fset=_set_modelDataStr, notify=itemChanged)
+    modelDataStr = Property(str, 
+                            fget=_get_modelDataStr, 
+                            fset=_set_modelDataStr, 
+                            notify=itemChanged,
+                            user=True)
         
 
 class DataWidgetMapper(QDataWidgetMapper):
@@ -481,7 +511,11 @@ class ColorComboBox(QComboBox):
         index = self.findData(data)
         self.setCurrentIndex(index if index >= 0 else 0)  # can be -1 on New
 
-    modelDataStr = Property(str, fget=_get_modelDataStr, fset=_set_modelDataStr, notify=itemChanged)
+    modelDataStr = Property(str, 
+                            fget=_get_modelDataStr,
+                            fset=_set_modelDataStr,
+                            notify=itemChanged,
+                            user=True)
 
 
 class CheckableComboBox(QComboBox):
@@ -489,7 +523,10 @@ class CheckableComboBox(QComboBox):
     # Subclass Delegate to increase item height
     class Delegate(QStyledItemDelegate):
 
-        def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex|QPersistentModelIndex) -> QSize:
+        def sizeHint(self, 
+                     option: QStyleOptionViewItem, 
+                     index: QModelIndex|QPersistentModelIndex
+                     ) -> QSize:
             size = super().sizeHint(option, index)
             size.setHeight(20)
             return size
@@ -672,7 +709,11 @@ class PasswordLineEdit(QLineEdit):
         if data:
             self.setText(string_decode(data))
 
-    modelDataEncrypt = Property(str, fget=_get_modelDataEncrypt, fset=_set_modelDataEncrypt, notify=textChanged)
+    modelDataEncrypt = Property(str, 
+                                fget=_get_modelDataEncrypt,
+                                fset=_set_modelDataEncrypt,
+                                notify=textChanged,
+                                user=True)
 
 
 class ColorSetComboBox(QComboBox):

@@ -30,7 +30,7 @@ This module contains custom general delegates
 
 # standard library
 from decimal import Decimal
-from typing import Any
+from typing import Any, cast
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -99,9 +99,19 @@ class GenericDelegate(QStyledItemDelegate):
         self.initStyleOption(styleOption, index)
         match value:
             case bool():
-                styleOption = QStyleOptionButton()
-                styleOption.state |= QStyle.StateFlag.State_On if value else QStyle.StateFlag.State_Off
-                styleOption.rect = self.getCheckBoxRect(option)
+                check_option = QStyleOptionViewItem(option)
+                check_option.rect = self.getCheckBoxRect(option)
+                check_option.state |= QStyle.StateFlag.State_Enabled
+                if value:
+                    check_option.state |= QStyle.StateFlag.State_On
+                else:
+                    check_option.state |= QStyle.StateFlag.State_Off
+                QApplication.style().drawPrimitive(
+                    QStyle.PrimitiveElement.PE_IndicatorCheckBox, 
+                    check_option, 
+                    painter
+                )
+                styleOption.text = "" 
             case int():
                 styleOption.text = str(value)
                 styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
@@ -131,9 +141,12 @@ class GenericDelegate(QStyledItemDelegate):
     def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
         check_box_style_option = QStyleOptionButton()
         check_box_rect = QApplication.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, check_box_style_option, None)
-        check_box_point = QPoint(int(option.rect.x() + option.rect.width() / 2 - check_box_rect.width() / 2),
-                                 int(option.rect.y() + option.rect.height() / 2 - check_box_rect.height() / 2))
-        return QRect(check_box_point, check_box_rect.size())
+        #check_box_point = QPoint(int(option.rect.x() + option.rect.width() / 2 - check_box_rect.width() / 2),
+        #                         int(option.rect.y() + option.rect.height() / 2 - check_box_rect.height() / 2))
+        x = int(option.rect.x() + (option.rect.width() - check_box_rect.width()) / 2)
+        y = int(option.rect.y() + (option.rect.height() - check_box_rect.height()) / 2)
+
+        return QRect(QPoint(x, y), check_box_rect.size())
 
     def createEditor(self, 
                      parent: QWidget,
@@ -141,7 +154,7 @@ class GenericDelegate(QStyledItemDelegate):
                      index: QModelIndex|QPersistentModelIndex
                      ) -> QWidget:
         model = index.model()
-        fieldType = model.columns[index.column()][3]
+        fieldType = cast(str, model.columns[index.column()][3])
         widget: QCheckBox|QSpinBox|QDateEdit|QDateTimeEdit|QDoubleSpinBox|QLineEdit
         match fieldType:
             case 'bool':  # must be checked before int (bool is subclass of int)
@@ -172,7 +185,7 @@ class GenericDelegate(QStyledItemDelegate):
                       editor: QWidget, 
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
-        if not index.data():
+        if index.data() is None:
             return
         match editor:
             case QCheckBox():

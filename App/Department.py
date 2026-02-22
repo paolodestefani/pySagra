@@ -69,7 +69,7 @@ def department() -> None:
     logging.info('Departments Form added to main window')
 
 
-class DepartmentForm(FormViewManager):
+class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

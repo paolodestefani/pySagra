@@ -77,7 +77,7 @@ def salesSummary(auth):
     logging.info('Sales summary Form added to main window')
 
 
-class SalesSummaryForm(FormViewManager):
+class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

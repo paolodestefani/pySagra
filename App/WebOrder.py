@@ -80,7 +80,7 @@ def webOrder() -> None:
     logging.info('Web orders form added to main window')
 
 
-class WebOrderForm(FormManager):
+class WebOrderForm(FormManager[Ui_WebOrderWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

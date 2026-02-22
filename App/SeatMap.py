@@ -83,7 +83,7 @@ def seatMap() -> None:
     logging.info('Tables Form added to main window')
 
 
-class SeatMapForm(FormManager):
+class SeatMapForm(FormManager[Ui_SeatMapWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

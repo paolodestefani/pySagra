@@ -76,7 +76,7 @@ def orderedDelivered(auth):
     logging.info('Ordered delivered Form added to main window')
 
 
-class OrderedDeliveredForm(FormViewManager):
+class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

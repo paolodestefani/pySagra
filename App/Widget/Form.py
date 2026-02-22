@@ -29,7 +29,7 @@ This module contains custom form objects, used for data entry management
 """
 
 # standard library
-from typing import TypeVar, Generic
+#from typing import TypeVar, Generic
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -61,7 +61,7 @@ VIEW, EDIT = range(2)
 FORM, GRID = range(2)
 
 
-class FormManager(QWidget):
+class FormManager[T](QWidget):
     """Generic form manager container
     
     This container class manage the main form and secondary form in a
@@ -90,7 +90,7 @@ class FormManager(QWidget):
         # mapper
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
-        self.ui: QWidget = QWidget()
+        self.ui: T # The type will be decided by the subclass
         #self.mapper.setItemDelegate(mapperItemDelegate(self))
         self.linkedMappers: list = [] # linked mapper list
         self.auth = auth
@@ -457,13 +457,14 @@ class FormManager(QWidget):
                 #self.mapper.setCurrentModelIndex(self.widget.tableView.selectionModel().currentIndex())
 
 
-class FormViewManager(QWidget):
+class FormViewManager[T](QWidget):
     """A simplified form manager container for only one tableview to manage, no mapper
     """
 
     def __init__(self, parent: QWidget, auth: str) -> None:
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.ui: T # The type will be decided by the subclass
         # subclass must define available status, default: nothing is available
         # 12 boolean values:
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
@@ -691,9 +692,8 @@ class FormViewManager(QWidget):
         if self.model:
             self.view.selectRow(self.model.rowCount() - 1)
 
-T = TypeVar("T")
 
-class FormIndexManager(Generic[T], QWidget):
+class FormIndexManager[T](QWidget):
     """Generic form manager container with index model
     This container class manage the main form and linked form in a
     master/detail behavior. The role of this class is:

@@ -69,7 +69,7 @@ def cashDesk() -> None:
     logging.info('Cash Desk Form added to main window')
 
 
-class CashDeskForm(FormViewManager):
+class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

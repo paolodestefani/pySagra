@@ -82,7 +82,7 @@ def connectionHistory() -> None:
     logger.info('Connections history Form added to main window')
 
 
-class ConnectionForm(FormManager):
+class ConnectionForm(FormManager[Ui_ConnectionWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -155,7 +155,7 @@ class ConnectionForm(FormManager):
         self.ui.tableView.exportView()
 
 
-class ConnectionHistoryForm(FormManager):
+class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
     "Connections History form"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:

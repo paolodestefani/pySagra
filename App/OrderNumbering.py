@@ -70,7 +70,7 @@ def orderNumbering() -> None:
     logging.info('Order numbers form added to main window')
 
 
-class OrderNumberingForm(FormViewManager):
+class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)

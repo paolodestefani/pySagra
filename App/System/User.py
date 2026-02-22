@@ -41,6 +41,8 @@ from PySide6.QtCore import QDir
 from PySide6.QtCore import QFileInfo
 from PySide6.QtCore import QSize
 from PySide6.QtCore import QAbstractItemModel
+from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QPersistentModelIndex
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QFileDialog
@@ -52,6 +54,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App import currentAction
 from App import currentIcon
+from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Exceptions import PyAppDBError
 from App.Database.User import change_password
 from App.Database.CodeDescriptionList import company_cdl
@@ -156,12 +159,12 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.mapper.addMapping(self.ui.lineEditUser, CODE)
         self.mapper.addMapping(self.ui.lineEditUserDescription, DESCRIPTION)
         #self.mapper.addMapping(self.ui.lineEditEmail, EMAIL)
-        self.mapper.addMapping(self.ui.labelImage, IMAGE, b"imageBytearray")
+        self.mapper.addMapping(self.ui.labelImage, IMAGE)
         self.mapper.addMapping(self.ui.lineEditLastCompany, LASTCOMPANY)
-        self.mapper.addMapping(self.ui.dateTimeEditLastLogin, LASTLOGIN, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.dateTimeEditLastLogin, LASTLOGIN)
         self.ui.comboBoxL10n.setItemList(langCountryFlags())
-        self.mapper.addMapping(self.ui.comboBoxL10n, L10N, b"modelDataStr")
-        self.mapper.addMapping(self.ui.dateTimeEditPasswordDate, PWDDATE, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.comboBoxL10n, L10N)
+        self.mapper.addMapping(self.ui.dateTimeEditPasswordDate, PWDDATE)
         self.mapper.addMapping(self.ui.checkBoxForcePasswordChange, CHANGEPWDREQ)
         self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
         self.mapper.addMapping(self.ui.checkBoxIsAdmin, ISADMIN)
@@ -280,7 +283,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
     def upload(self) -> None:
         "Upload user image file"
         st = QSettings()
-        path = st.value("PathImagesUsers", QDir.current().path())
+        path = str(st.value("PathImagesUsers", QDir.current().path()))
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr('User', "Select the image to upload"),
                                            path,
@@ -299,8 +302,9 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         else:
             self.ui.labelImage.setPixmap(pix)
         st.setValue("PathImagesUsers", QFileInfo(f).path())
-        self.model.isDirty = True
-        self.model.userDataChanged.emit()
+        if isinstance(self.model, TableModel):
+            self.model.isDirty = True
+            self.model.userDataChanged.emit()
 
     @scriptMethod
     def download(self, checked: bool) -> None:
@@ -308,7 +312,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         if not self.ui.labelImage.pixmap():
             return
         st = QSettings()
-        path = st.value("PathImagesUsers", QDir.current().path())
+        path = str(st.value("PathImagesUsers", QDir.current().path()))
         f, t = QFileDialog.getSaveFileName(self,
                                            _tr('User', "Select the destination file name"),
                                            path,
@@ -329,8 +333,9 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         "Remove company image"
         self.ui.labelImage.clear()
         self.ui.labelImage.setText(_tr('User', "NO IMAGE"))
-        self.model.isDirty = True
-        self.model.userDataChanged.emit()
+        if isinstance(self.model, TableModel):
+            self.model.isDirty = True
+            self.model.userDataChanged.emit()
 
     def print(self) -> None:
         dialog = PrintDialog(self, 'USER')
@@ -387,7 +392,11 @@ class ChangePasswordDialog(QDialog):
 
 class SetPasswordDialog(ChangePasswordDialog):
 
-    def __init__(self, parent: QWidget, model: QAbstractItemModel, userIndex: int, passwordIndex: int) -> None:
+    def __init__(self, 
+                 parent: QWidget,
+                 model: QAbstractItemModel,
+                 userIndex: QModelIndex | QPersistentModelIndex,
+                 passwordIndex: QModelIndex | QPersistentModelIndex) -> None:
         super().__init__(parent, model.data(userIndex))
         self.model = model
         self.userIndex = userIndex
