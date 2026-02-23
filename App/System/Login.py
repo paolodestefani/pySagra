@@ -180,7 +180,7 @@ class LoginDialog(QDialog):
                                msg,
                                str(er.message))
             self.ui.lineEditPassword.clear()
-            logger.error("Connection error %s\n%s", er.code, er.message)
+            logger.critical("Connection error %s\n%s", er.code, er.message)
             
             return
         finally:
