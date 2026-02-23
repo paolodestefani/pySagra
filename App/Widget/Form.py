@@ -51,11 +51,15 @@ from App.Database.AbstractModels.TableModel import TableModel, QueryModel
 #from App.Widget.Delegate import mapperItemDelegate
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
+from App.Widget.Dialog import MessageBoxCritical
 
 # edit status settings
+(NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST,
+ FILTER, CHANGE, REPORT, EXPORT) = range(12)
 
-(NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT,
- LAST, FILTER, ADDCHILD, ADD, REMOVE, CHANGE, REPORT, EXPORT) = range(15)
+# default attributes for view/edit status
+EDVIEW = True, False, True, True # new, save, delete, reload
+EDEDIT = False, True, False, True # new, save, delete, reload
 
 VIEW, EDIT = range(2)
 FORM, GRID = range(2)
@@ -78,8 +82,8 @@ class FormManager[T](QWidget):
         # 12 boolean values:
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False, False, False, False, False, False, False, False,
-                                False, False, False, False)
+        self.availableStatus = (False,) * 12 # False, False, False, False, False, False, False,
+                                #False, False, False, False)
         self.model: TableModel # main form model
         self.detailRelations: list = []  # detail relation list
         self.state = VIEW # initial state
@@ -145,9 +149,6 @@ class FormManager[T](QWidget):
 
     def updateEditStatus(self) -> None:
         "Update main window edit status based on current model and mapper index"
-        # default attributes for view/edit status
-        EDVIEW = True, False, True, True # new, save, delete, reload
-        EDEDIT = False, True, False, True # new, save, delete, reload
         # get current values
         current = self.mapper.currentIndex() + 1 # mapper index is zero based
         total = self.model.rowCount()
@@ -176,9 +177,9 @@ class FormManager[T](QWidget):
         if self.state == EDIT:
             # don't allow navigation while editing
             nav = False, False, False, False
-            currentStatus = EDEDIT + nav + (False, True, True, True, False, False, False)
+            currentStatus = EDEDIT + nav + (False, True, True, True)
         else:
-            currentStatus = EDVIEW + nav + (True, True, True, True, True, True, True)
+            currentStatus = EDVIEW + nav + (True, True, True, True)
         # filter available status
         status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
         # disable Delete and form if no record
@@ -296,12 +297,10 @@ class FormManager[T](QWidget):
             else:
                 msg = (f"Unrecognized database error code: {er.code}\n"
                        f"For more information click on 'Show Details...'")
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Icon.Critical)
-            mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
-            mbox.setText(msg)
-            mbox.setDetailedText(er.message)
-            mbox.exec()
+            MessageBoxCritical(self, 
+                               _tr("Form", "Error on model submit all"),
+                               msg,
+                               er.message)
             appconn.rollback()
             self.mapper.setCurrentIndex(row)
             return
@@ -324,12 +323,10 @@ class FormManager[T](QWidget):
                 else:
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
-                mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Icon.Critical)
-                mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
-                mbox.setText(msg)
-                mbox.setDetailedText(str(er.message))
-                mbox.exec_()
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on model detail submit all"),
+                                   msg,
+                                   er.message)
                 appconn.rollback()
                 return
         # commit transactions
@@ -358,12 +355,10 @@ class FormManager[T](QWidget):
                 else:
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
-                mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Icon.Critical)
-                mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
-                mbox.setText(msg)
-                mbox.setDetailedText(er.message)
-                mbox.exec_()
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on model detail submit all"),
+                                   msg,
+                                   er.message)
                 appconn.rollback()
                 return
         # master table
@@ -381,19 +376,17 @@ class FormManager[T](QWidget):
             self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
-                mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Icon.Critical)
-                mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
-                mbox.setText(_tr("Form", "Referential integrity violation: "
-                                 "unable to delete the current record because "
-                                 "is still referenced from another database object"))
-                mbox.setDetailedText(er.message)
-                mbox.exec()
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on model submit all"),
+                                   _tr("Form", "Referential integrity violation: "
+                                    "unable to delete the current record because "
+                                    "is still referenced from another database object"),
+                                   er.message)
             else:
-                msg = "Error: {}\n{}".format(er.code, er.message)
-                QMessageBox.critical(self,
-                                     _tr("MessageDialog", "Critical"),
-                                     msg)
+                MessageBoxCritical(self,
+                                   _tr("MessageDialog", "Critical"),
+                                   er.code,
+                                   er.message)
             appconn.rollback()
             self.reload()
             return
@@ -469,8 +462,7 @@ class FormViewManager[T](QWidget):
         # 12 boolean values:
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False, False, False, False, False, False, False, False,
-                                False, False, False, False)
+        self.availableStatus = (False,) * 12
         self.model: QueryModel|TableModel|None
         self.state = VIEW # initial state
         self.reloadConfirmation = True  # ask confirmation on reload
@@ -508,10 +500,6 @@ class FormViewManager[T](QWidget):
             return
         if not self.view:
             return
-        # default attributes for view/edit status
-        EDVIEW = True, False, True, True    # new, save, delete, relod
-        EDEDIT = False, True, False, True   # new, save, delete, relod
-        
         total = self.model.rowCount()
         index = self.view.selectionModel().currentIndex()
         if index:
@@ -520,9 +508,9 @@ class FormViewManager[T](QWidget):
             current = -1
 
         if self.state == EDIT:
-            currentStatus = EDEDIT + (False,) * 11
+            currentStatus = EDEDIT + (False,) * 8
         else:
-            currentStatus = EDVIEW + (True, True, True, True, True, True, True, True)
+            currentStatus = EDVIEW + (True,) * 8
 
         # filter available status
         status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
@@ -575,7 +563,8 @@ class FormViewManager[T](QWidget):
         "Create a new record on model"
         if not self.view:
             return None
-        self.view.add()
+        if hasattr(self.view, 'add'):
+            self.view.add()
         self.state = EDIT
 
     def save(self) -> None:
@@ -583,8 +572,11 @@ class FormViewManager[T](QWidget):
         # save only if not editing anything
         #if self.tableViewCompetitors.state() != QAbstractItemView.NoState:
         #    return
+        if not self.model:
+            return None
         try:
-            self.model.submitAll()
+            if hasattr(self.model, 'submitAll'):
+                self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
                 msg = _tr("Form", "Referential integrity violation: "
@@ -598,12 +590,10 @@ class FormViewManager[T](QWidget):
                 msg = (f"Unrecognized database error code: {er.code}\n"
                        f"For more information click on 'Show Details...'")
 
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Icon.Critical)
-            mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
-            mbox.setText(msg)
-            mbox.setDetailedText(str(er.message))
-            mbox.exec_()
+            MessageBoxCritical(self,
+                               _tr("Form", "Error on model submit all"),
+                               msg,
+                               er.message)
 
             appconn.rollback()
         else:
@@ -622,24 +612,28 @@ class FormViewManager[T](QWidget):
                                 #_tr("Form", "Are you sure you want to delete the current record ?"),
                                 #QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
             #return
+        if not self.model:
+            return None
         if not self.view:
             return None
-        self.view.remove()
+        if hasattr(self.view, 'remove'):
+            self.view.remove()
         try:
-            self.model.submitAll()
+            if hasattr(self. model, 'submitAll'):
+                self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
-                mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Icon.Critical)
-                mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
-                mbox.setText(_tr("Form", "Referential integrity violation: "
-                                 "unable to delete the current record because "
-                                 "is still referenced from another database object"))
-                mbox.setDetailedText(er.message)
-                mbox.exec()
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on model submit all"),
+                                   _tr("Form", "Referential integrity violation: "
+                                    "unable to delete the current record because "
+                                    "is still referenced from another database object"),
+                                   er.message)
             else:
-                msg = "Error: {}\n{}".format(er.code, er.message)
-                QMessageBox.critical(self, _tr("Form", "Error on submitAll"), msg)
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on submitAll"),
+                                   er.code,
+                                   er.message)
             appconn.rollback()
         else:
             # commit transactions
@@ -652,13 +646,16 @@ class FormViewManager[T](QWidget):
         "Undo pending changes and Reload data from db"
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        self.model.revertAll() # also do a select()
+        if hasattr(self. model, 'submitAll'):
+            self.model.revertAll() # also do a select()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
         self.state = VIEW
         self.updateEditStatus()
 
     def setFilters(self) -> None:
+        if not self.model:
+            return None
         # create filter dialog if not exists
         if not hasattr(self, 'sortFilterDialog'):
             self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
@@ -713,8 +710,7 @@ class FormIndexManager[T](QWidget):
         # 12 boolean values:
         # new, save, delete, reload, first, previous, next,
         # last, filter, change, report, export
-        self.availableStatus = (False, False, False, False, False, False, False,
-                                False, False, False, False, False)
+        self.availableStatus = (False,) * 12
         self.reloadConfirmation = True  # ask confirmation on reload
         # track form's state
         self.state = VIEW # initial state
@@ -789,9 +785,6 @@ class FormIndexManager[T](QWidget):
 
     def updateEditStatus(self) -> None:
         "Update main window edit status based on current model and mapper index"
-        # default attributes for view/edit status
-        EDVIEW = True, False, True, True # new, save, delete, relod
-        EDEDIT = False, True, False, True # new, save, delete, relod
         # get current values
         current = self.indexMapper.currentIndex() + 1
         total = self.indexModel.rowCount()
@@ -820,9 +813,9 @@ class FormIndexManager[T](QWidget):
         if self.state == EDIT:
             # don't allow navigation while editing
             nav = False, False, False, False
-            currentStatus = EDEDIT + nav + (False, True, True, True, False, False, False)
+            currentStatus = EDEDIT + nav + (False, True, True, True)
         else:
-            currentStatus = EDVIEW + nav + (True, True, True, True, True, True, True)
+            currentStatus = EDVIEW + nav + (True, True, True, True)
         # filter available status
         status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
         # disable Delete and form if no record
@@ -889,9 +882,9 @@ class FormIndexManager[T](QWidget):
         if hasattr(self.model, 'clearData'):
             self.model.clearData() # delete current data if any
         if not self.model.insertRow(0):
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 _tr("Form", "Error inserting a new row"))
+            QMessageBoxCritical(self,
+                                _tr("MessageDialog", "Critical"),
+                                _tr("Form", "Error inserting a new row"))
         self.state = EDIT
         self.mapper.toFirst() # setCurrentIndex() imply updateEditStatus()
         for relation, masterColumn, detailColumn in self.detailRelations:
@@ -942,12 +935,10 @@ class FormIndexManager[T](QWidget):
                 case _:
                     msg = (f"Unrecognized database error code: {er.code}\n"
                         f"For more information click on 'Show Details...'")
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Icon.Critical)
-            mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
-            mbox.setText(msg)
-            mbox.setDetailedText(str(er.message))
-            mbox.exec_()
+            MessageBoxCritical(self,
+                               _tr("Form", "Error on model submit all"),
+                               msg,
+                               er.message)
             appconn.rollback()
             return
         # details data
@@ -967,28 +958,15 @@ class FormIndexManager[T](QWidget):
                 else:
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
-                mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Icon.Critical)
-                mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
-                mbox.setText(msg)
-                mbox.setDetailedText(str(er.message))
-                mbox.exec_()
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on model detail submit all"),
+                                   msg,
+                                   er.message)
                 appconn.rollback()
                 return
         # commit transactions
         appconn.commit()
         self.reload()
-        # mapper repositioning
-        # print(self.model.rowCount())
-        # key = self.model.index(0, 0).data()
-        # for i in range(self.indexModel.rowCount()):
-        #     if self.indexModel.index(i, 0).data() == key:
-        #         break
-        # self.indexMapper.setCurrentIndex(i)
-        # if self._new:
-        #     self.indexMapper.toLast()
-        # else:
-        #     self.indexMapper.setCurrentIndex(current_index)
         self._new = False
         self.state = VIEW
 
@@ -1015,41 +993,37 @@ class FormIndexManager[T](QWidget):
                 else:
                     msg = (f"Unrecognized database error code: {er.code}\n"
                            f"For more information click on 'Show Details...'")
-                mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Icon.Critical)
-                mbox.setWindowTitle(_tr("Form", "Error on model detail submit all"))
-                mbox.setText(msg)
-                mbox.setDetailedText(er.message)
-                mbox.exec_()
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on model detail submit all"),
+                                   msg,
+                                   er.message)
                 appconn.rollback()
                 return
         # master data
         try:
             self.model.removeRow(0)
         except PyAppDBError as er:
-            msg = "Error: {}\n{}".format(er.code, er.message)
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 msg)
+            QMessageBoxCritical(self,
+                                _tr("MessageDialog", "Critical"),
+                                msg,
+                                er.message)
             appconn.rollback()
             return
         try:
             self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
-                mbox = QMessageBox(self)
-                mbox.setIcon(QMessageBox.Icon.Critical)
-                mbox.setWindowTitle(_tr("Form", "Error on model submit all"))
-                mbox.setText(_tr("Form", "Referential integrity violation: "
+                MessageBoxCritical(self,
+                                   _tr("Form", "Error on model submit all"),
+                                   _tr("Form", "Referential integrity violation: "
                                  "unable to delete the current record because "
-                                 "is still referenced from another database object"))
-                mbox.setDetailedText(er.message)
-                mbox.exec()
+                                 "is still referenced from another database object"),
+                                   er.message)
             else:
-                msg = "Error: {}\n{}".format(er.code, er.message)
-                QMessageBox.critical(self,
-                                     _tr("MessageDialog", "Critical"),
-                                     msg)
+                MessageBoxCritical(self,
+                                   _tr("MessageDialog", "Critical"),
+                                   msg,
+                                   er.message)
             appconn.rollback()
             self.reload()
             return
