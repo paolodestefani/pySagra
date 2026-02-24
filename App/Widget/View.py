@@ -95,59 +95,81 @@ VIEW, EDIT = range(2)
 FORM, GRID = range(2)
 
 
-class TableViewSettingsDialog(QDialog, Ui_ViewSettingsDialog):
+class TableViewSettingsDialog(QDialog):
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self, parent: EnhancedTableView) -> None:
         super().__init__(parent)
-        self.setupUi(self)
-        self.tableWidget.setColumnCount(5)
-        self.tableWidget.setItemDelegateForColumn(3, BooleanDelegate(self))
-        self.tableWidget.setItemDelegateForColumn(4, IntegerDelegate(self))
-        self.tableWidget.setHorizontalHeaderLabels([_tr('View', 'Field index'),
-                                                    _tr('View', 'Field'),
-                                                    _tr('View', 'Sorting'),
-                                                    _tr('View', 'Visible'),
-                                                    _tr('View', 'Width')])
-        self.tableWidget.verticalHeader().setVisible(True)
-        self.tableWidget.setRowCount(parent.model().columnCount())
+        self._parent = parent
+        self.ui = Ui_ViewSettingsDialog()
+        self.ui.setupUi(self)
+        self.ui.tableWidget.setColumnCount(5)
+        self.ui.tableWidget.setItemDelegateForColumn(3, BooleanDelegate(self))
+        self.ui.tableWidget.setItemDelegateForColumn(4, IntegerDelegate(self))
+        self.ui.tableWidget.setHorizontalHeaderLabels([_tr('View', 'Field index'),
+                                                       _tr('View', 'Field'),
+                                                       _tr('View', 'Sorting'),
+                                                       _tr('View', 'Visible'),
+                                                       _tr('View', 'Width')])
+        self.ui.tableWidget.verticalHeader().setVisible(True)
+        self.ui.tableWidget.setRowCount(parent.model().columnCount())
         for i in range(parent.horizontalHeader().count()):
-            self.tableWidget.setItem(i, 0, TableWidgetItem(i))
-            self.tableWidget.setItem(i, 1, TableWidgetItem(parent.model().headerData(i, Qt.Orientation.Horizontal)))  # header
-            self.tableWidget.setItem(i, 2, TableWidgetItem(parent.horizontalHeader().visualIndex(i)))
-            self.tableWidget.setItem(i, 3, TableWidgetItem(not parent.isColumnHidden(i)))
-            self.tableWidget.setItem(i, 4, TableWidgetItem(parent.columnWidth(i)))
-        self.tableWidget.sortItems(2, Qt.SortOrder.AscendingOrder)
-        self.tableWidget.horizontalHeader().hideSection(0)
-        self.tableWidget.horizontalHeader().hideSection(2)
-        self.tableWidget.resizeColumnToContents(1)
+            self.ui.tableWidget.setItem(i, 0, TableWidgetItem(i))
+            self.ui.tableWidget.setItem(i, 1, TableWidgetItem(parent.model().headerData(i, Qt.Orientation.Horizontal)))  # header
+            self.ui.tableWidget.setItem(i, 2, TableWidgetItem(parent.horizontalHeader().visualIndex(i)))
+            self.ui.tableWidget.setItem(i, 3, TableWidgetItem(not parent.isColumnHidden(i)))
+            self.ui.tableWidget.setItem(i, 4, TableWidgetItem(parent.columnWidth(i)))
+        self.ui.tableWidget.sortItems(2, Qt.SortOrder.AscendingOrder)
+        self.ui.tableWidget.horizontalHeader().hideSection(0)
+        self.ui.tableWidget.horizontalHeader().hideSection(2)
+        self.ui.tableWidget.resizeColumnToContents(1)
 
         for r in range(parent.horizontalHeader().count()):
             for c in range(5):
                 if c in (0, 1, 2):
-                    self.tableWidget.item(r, c).setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable|Qt.ItemFlag.ItemIsDragEnabled|Qt.ItemFlag.ItemIsDropEnabled)
+                    self.ui.tableWidget.item(r, c).setFlags(Qt.ItemFlag.ItemIsEnabled|
+                                                            Qt.ItemFlag.ItemIsSelectable|
+                                                            Qt.ItemFlag.ItemIsDragEnabled|
+                                                            Qt.ItemFlag.ItemIsDropEnabled)
 
     def accept(self) -> None:
         # reset layout first (first time store the state)
-        if self.parent().horizontalHeaderState:
-            self.parent().horizontalHeader().restoreState(self.parent().horizontalHeaderState)
+        if self._parent.horizontalHeaderState:
+            self._parent.horizontalHeader().restoreState(self._parent.horizontalHeaderState)
         else:
-            self.parent().horizontalHeaderState = self.parent().horizontalHeader().saveState()
+            self._parent.horizontalHeaderState = self._parent.horizontalHeader().saveState()
 
-        for r in range(self.tableWidget.rowCount()):
-            c = int(self.tableWidget.item(r, 0).data())
-            # ci = self.tableWidget.item(r, 2).data()
-            v = bool(self.tableWidget.item(r, 3).data())
-            s = int(self.tableWidget.item(r, 4).data())
-            # set position
-            ci = self.parent().horizontalHeader().visualIndex(c)
-            self.parent().horizontalHeader().moveSection(ci, r)
-            # show/hide
-            if not v:
-                self.parent().setColumnHidden(c, True)
-            # width
-            self.parent().setColumnWidth(c, s)
+        header = self._parent.horizontalHeader()
+        # avoid table redraw while updating layout
+        header.blockSignals(True)
+        
+        def get_val(row: int, col: int) -> Any:
+            item = self.ui.tableWidget.item(row, col)
+            # Prendi l'EditRole (dato fresco dal delegate) 
+            # o il DisplayRole (dato iniziale) se l'EditRole è None
+            v = item.data(Qt.ItemDataRole.EditRole)
+            return v if v is not None else item.data(Qt.ItemDataRole.DisplayRole)
+
+        try:
+            for r in range(self.ui.tableWidget.rowCount()):
+                # Ora il codice è di nuovo pulitissimo!
+                logical_idx = int(get_val(r, 0))
+                visible = bool(get_val(r, 3))
+                width = int(get_val(r, 4))
+
+                # Applicazione layout (con visualIndex per evitare l'effetto domino)
+                current_visual = header.visualIndex(logical_idx)
+                header.moveSection(current_visual, r)
+                
+                self._parent.setColumnHidden(logical_idx, not visible)
+                if visible:
+                    self._parent.setColumnWidth(logical_idx, width)
+        finally:
+            # 2. Sblocca e forza un aggiornamento finale pulito
+            header.blockSignals(False)
+            header.viewport().update()
+            
         super().accept()
-
+        
 
 class EnhancedTableView(QTableView):
     "Generic (but enhanced :-) ) table View"
@@ -443,7 +465,8 @@ class EnhancedTableView(QTableView):
                     index = model.index(i, j)
                     # custom delegates
                     if isinstance(self.itemDelegateForColumn(j), RelationDelegate):
-                        data = self.itemDelegateForColumn(j).getRelationData(index)
+                        if hasattr(self.itemDelegateForColumn(j), 'getRelationData'):
+                            data = self.itemDelegateForColumn(j).getRelationData(index)
                     elif isinstance(self.itemDelegateForColumn(j), HideTextDelegate):
                         data = _tr('View', 'HIDDEN TEXT')
                     else:
@@ -499,7 +522,7 @@ class EnhancedTableView(QTableView):
         dialog = TableViewSettingsDialog(self)
         title = _tr('view', 'View settings')
         title = f'{title} (layout: {self.layoutName})'
-        dialog.groupBoxViewSettings.setTitle(title)
+        dialog.ui.groupBoxViewSettings.setTitle(title)
         dialog.exec_()
 
     def updateViewLayout(self, viewId: int|None = None) -> None:

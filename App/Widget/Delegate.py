@@ -434,7 +434,12 @@ class BooleanDelegate(QStyledItemDelegate):
               option: QStyleOptionViewItem,
               index: QModelIndex|QPersistentModelIndex) -> None:
         "Paint a checkbox without the label."
-        checked = bool(index.model().data(index, Qt.ItemDataRole.DisplayRole))
+        # Cerca prima in EditRole, se manca usa DisplayRole
+        val = index.data(Qt.ItemDataRole.EditRole)
+        if val is None:
+            val = index.data(Qt.ItemDataRole.DisplayRole)
+        checked = bool(val)
+        #checked = bool(index.model().data(index, Qt.ItemDataRole.DisplayRole))
         check_box_style_option = QStyleOptionButton()
         painter.save()
         if option.state & QStyle.StateFlag.State_Selected:  # selected
@@ -700,7 +705,11 @@ class IntegerDelegate(QStyledItemDelegate):
               painter: QPainter,
               option: QStyleOptionViewItem,
               index: QModelIndex|QPersistentModelIndex) -> None:
-        option.text = str(index.data()) #str(int(index.data() or 0)  # can be null on insert row
+        # Leggi prima EditRole (il valore che l'utente ha appena digitato)
+        val = index.data(Qt.ItemDataRole.EditRole)
+        if val is None:
+            val = index.data(Qt.ItemDataRole.DisplayRole)
+        option.text = str(val) #str(int(index.data() or 0)  # can be null on insert row
         option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         if self.bold:
             option.font.setWeight(QFont.Weight.Bold)
