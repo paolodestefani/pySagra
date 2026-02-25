@@ -364,11 +364,12 @@ class ImageDelegate(QStyledItemDelegate):
             pix.loadFromData(ba)
             dd.setImage(pix)
         if dd.exec_() == QDialog.DialogCode.Accepted:
-            pix = dd.getImage()
+            px = dd.getImage()
             ba = QByteArray()
             buf = QBuffer(ba)
             buf.open(QIODevice.OpenModeFlag.WriteOnly)
-            pix.save(buf, "PNG")
+            if px:
+                px.save(buf, "PNG")
             index.model().setData(index, ba, Qt.ItemDataRole.EditRole)
         return QWidget(parent)  # dummy editor, not used
 
@@ -700,7 +701,7 @@ class RelationDelegate(QStyledItemDelegate):
         if not index.data():
             return None
         cb = cast(QComboBox, editor)
-        cb.setCurrentText(self.data.get(index.data()))
+        cb.setCurrentText(self.data.get(index.data()) or '')
 
     def setModelData(self, 
                      editor: QWidget,
@@ -709,7 +710,8 @@ class RelationDelegate(QStyledItemDelegate):
                      ) -> None:
         # if editor.currentText(): # can happend in insert row
         #print("Editor data", editor.currentData())
-        model.setData(index, editor.currentData())
+        cb = cast(QComboBox, editor)
+        model.setData(index, cb.currentData())
 
     def getRelationData(self, index: QModelIndex) -> Any:
         return self.data.get(index.data())
@@ -773,19 +775,21 @@ class IntegerDelegate(QStyledItemDelegate):
         return sb
 
     def setEditorData(self, 
-                      editor: QSpinBox, 
+                      editor: QWidget, 
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
         if not index.data():
             return
-        editor.setValue(index.data())
+        sb = cast(QSpinBox, editor)
+        sb.setValue(index.data())
 
     def setModelData(self, 
-                     editor: QSpinBox,
+                     editor: QWidget,
                      model: QAbstractItemModel,
                      index: QModelIndex|QPersistentModelIndex
                      ) -> None:
-        model.setData(index, editor.value())
+        sb = cast(QSpinBox, editor)
+        model.setData(index, sb.value())
 
 
 class DecimalDelegate(QStyledItemDelegate):
@@ -846,18 +850,20 @@ class DecimalDelegate(QStyledItemDelegate):
         return sb
 
     def setEditorData(self, 
-                      editor: QDoubleSpinBox,
+                      editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
         if not index.data():
             return
-        editor.setValue(index.data())
+        dsb = cast(QDoubleSpinBox, editor)
+        dsb.setValue(index.data())
 
     def setModelData(self, 
-                     editor: QDoubleSpinBox,
+                     editor: QWidget,
                      model: QAbstractItemModel,
                      index: QModelIndex|QPersistentModelIndex) -> None:
-        model.setData(index, editor.value())
+        dsb = cast(QDoubleSpinBox, editor)
+        model.setData(index, dsb.value())
 
 class QuantityDelegate(DecimalDelegate):
     "Delegate for quantity values"
@@ -901,27 +907,31 @@ class NewStockDelegate(QuantityDelegate):
     #    return dsb
 
     def setEditorData(self, 
-                      editor: QDoubleSpinBox,
+                      editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
+        if index.data() is None:
+            return
         model = index.model()
         stockIndex = model.createIndex(index.row(), self.STOCK)
         newLoads = model.data(stockIndex) or 0.0
-        editor.setValue(newLoads)
+        dsb = cast(QDoubleSpinBox, editor)
+        dsb.setValue(newLoads)
 
     def setModelData(self, 
-                     editor: QDoubleSpinBox,
+                     editor: QWidget,
                      model: QAbstractItemModel,
                      index: QModelIndex|QPersistentModelIndex
                      ) -> None:
+        dsb = cast(QDoubleSpinBox, editor)
         # update loads
         loadsIndex = model.createIndex(index.row(), self.LOAD)
         unloadsIndex = model.createIndex(index.row(), self.UNLOAD)
         unloads = model.data(unloadsIndex) or Decimal(0)
-        model.setData(loadsIndex, Decimal(editor.value()) + unloads)
+        model.setData(loadsIndex, Decimal(dsb.value()) + unloads)
         # update stock
         stockIndex = model.createIndex(index.row(), self.STOCK)
-        stock = Decimal(editor.value())
+        stock = Decimal(dsb.value())
         model.setData(stockIndex, stock)
         # update available
         orderedIndex = model.createIndex(index.row(), self.ORDERED)
@@ -1049,20 +1059,22 @@ class ActionDelegate(QStyledItemDelegate):
         return cb
 
     def setEditorData(self, 
-                      editor: QComboBox,
+                      editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
         if not index.data():
             return
-        editor.setCurrentText(self.action.get(index.data()))
+        cb = cast(QComboBox, editor)
+        cb.setCurrentText(self.action.get(index.data()) or '')
 
     def setModelData(self, 
-                     editor: QComboBox, 
+                     editor: QWidget, 
                      model: QAbstractItemModel, 
                      index: QModelIndex|QPersistentModelIndex
                      ) -> None:
         #print(editor.currentData())
-        model.setData(index, editor.currentData())
+        cb = cast(QComboBox, editor)
+        model.setData(index, cb.currentData())
 
 
 class PasswordDelegate(QStyledItemDelegate):
@@ -1111,19 +1123,21 @@ class PasswordDelegate(QStyledItemDelegate):
         return le
 
     def setEditorData(self, 
-                      editor: QLineEdit,
+                      editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
         if not index.data():
             return
-        editor.setText(string_decode(index.data()))
+        le = cast(QLineEdit, editor)
+        le.setText(string_decode(index.data()))
 
     def setModelData(self, 
-                     editor: QLineEdit, 
+                     editor: QWidget, 
                      model: QAbstractItemModel, 
                      index: QModelIndex|QPersistentModelIndex
                      ) -> None:
-        model.setData(index, string_encode(editor.text()))
+        le = cast(QLineEdit, editor)
+        model.setData(index, string_encode(le.text()))
 
 
 class GenericReadOnlyDelegate(QStyledItemDelegate):
