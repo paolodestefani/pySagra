@@ -516,6 +516,7 @@ class Field(BaseRenderer):
         self.value = None
         self.fieldName = fieldName
         self.aspectRatio = AspectRatio[paramdict.get("aspectRatio", options['aspectRatio'])]
+        self.hideIfRepeat = 'True' == paramdict.get("hideIfRepeat", "False") 
 
     def setValue(self, value: str|int|float|decimal.Decimal|QByteArray) -> None:
         if isinstance(value, QByteArray):
@@ -866,7 +867,12 @@ class Band(list):
         # draw band's elements
         for element in self:
             if isinstance(element, Field):
-                element.setValue(record[element.fieldName])
+                if element.hideIfRepeat: 
+                    if prev_record:
+                        if record[element.fieldName] == prev_record[element.fieldName]:
+                            continue 
+                else:
+                    element.setValue(record[element.fieldName])
             # if element.isVisible:
             element.render(offset, newHeight)
         # update report offset
@@ -994,17 +1000,17 @@ class Report():
         for child in opt:
             attr = child.attrib.get('type')
             val = child.text or '0' # for numeric and boolean options text must be not empty, for string options can be empty but not None
-            if attr == 'bool':
-                self.options[child.tag] = True if val == 'True' else False
-            elif attr == 'str':
-                self.options[child.tag] = val
-            elif attr == 'int':
-                self.options[child.tag] = int(val)
-            elif attr == 'float':
-                self.options[child.tag] = float(val)
-            else:
-                raise ReportXMLParseError(f"Option with wrong/without type "
-                                          f"attribute: <{child.tag}> = {val}")
+            match attr:
+                case 'bool':
+                    self.options[child.tag] = True if val == 'True' else False
+                case 'str':
+                    self.options[child.tag] = val
+                case 'int':
+                    self.options[child.tag] = int(val)
+                case 'float':
+                    self.options[child.tag] = float(val)
+                case _:
+                    raise ReportXMLParseError(f"Option with wrong/without type attribute: <{child.tag}> = {val}")
 
         # report parameters
         params = root.find('parameters')
@@ -1017,6 +1023,8 @@ class Report():
                     items: dict = {}
                     referenceList = child.attrib.get('reference')
                     df = child.attrib.get('default')
+                    #print("Param", param)
+                    #print("Ptype", ptype)
                     if not df:
                         raise ReportXMLParseError(f"Parameter with empty default value: <parameter id='{param}'>")
                     match ptype:
@@ -1053,19 +1061,22 @@ class Report():
         query = root.find('query')
         if query is not None:
             for child in query:
-                if child.tag == 'select':
-                    self.query = child.text
-                if child.tag == 'where':
-                    self.query_where = child.text
-                if child.tag == 'groupBy':
-                    self.query_group_by = child.text
-                if child.tag == 'orderBy':
-                    self.query_order_by = child.text
-                if child.tag == 'conditions':
-                    for cond in child.findall("condition"):
-                        self.conditions[cond.text] = SqlField(cond.attrib.get('code'),
-                                                              cond.attrib.get('description'),
-                                                              cond.attrib.get('type'))
+                match child.tag:
+                    case 'select':
+                        self.query = child.text
+                    case 'where':
+                        self.query_where = child.text
+                    case 'groupBy':
+                        self.query_group_by = child.text
+                    case 'orderBy':
+                        self.query_order_by = child.text
+                    case 'conditions':
+                        for cond in child.findall("condition"):
+                            self.conditions[cond.text] = SqlField(cond.attrib.get('code'),
+                                                                  cond.attrib.get('description'),
+                                                                  cond.attrib.get('type'))
+                    case _:
+                        pass
 
         # columns' names
         columns = root.find('columns')
@@ -1098,26 +1109,24 @@ class Report():
 
         # other render elements
         for child in root:
-            if child.tag == "pageBackground":
-                for sub in child:
-                    self.page_background.append(drawobj[sub.tag](self.options, sub.attrib, sub.text))
-
-            if child.tag == "pageHeader":
-                self.page_header = self.appendBands(child)
-
-            if child.tag == "reportHeader":
-                self.report_header = self.appendBands(child)
-
-            if child.tag == "details":
-                self.details = self.appendBands(child)
-
-            if child.tag == "pageFooter":
-                for i in self.appendBands(child):
-                    i.isPageFooter = True
-                    self.page_footer.append(i)
-
-            if child.tag == "reportFooter":
-                self.report_footer = self.appendBands(child)
+            match child.tag:
+                case "pageBackground":
+                    for sub in child:
+                        self.page_background.append(drawobj[sub.tag](self.options, sub.attrib, sub.text))
+                case "pageHeader":
+                    self.page_header = self.appendBands(child)
+                case "reportHeader":
+                    self.report_header = self.appendBands(child)
+                case "details":
+                    self.details = self.appendBands(child)
+                case "pageFooter":
+                    for i in self.appendBands(child):
+                        i.isPageFooter = True
+                        self.page_footer.append(i)
+                case "reportFooter":
+                    self.report_footer = self.appendBands(child)
+                case _:
+                    pass
 
         if self.details is None:
             raise ReportXMLParseError("The mandatory element 'details' was not found.")
@@ -1596,8 +1605,8 @@ if __name__ == "__main__":
         <parameter type="int" id="intExample" default="1" items="1:a|5:b|7:c|22:d|29:e">Integer parameter example</parameter>
         <parameter type="float" id="floatExample" default="123456.789" items="1.2:a|1.3:b|2.1:c">Float parameter example</parameter>
         <parameter type="date" id="dateExample" default="20180101" items="20180101:a|20180201:b|20171231:c|20160630:d">Date (QDate) parameter example</parameter>
-        <parameter type="str" id="stringExample">String parameter example</parameter>
-        <parameter type="str" id="stringSecondExample" items="First:First|Second:Second|Tirth:Tirth">Second string parameter example</parameter>
+        <parameter type="str" id="stringExample" default="--***--">String parameter example</parameter>
+        <parameter type="str" id="stringSecondExample" default="First" items="First:First|Second:Second|Tirth:Tirth">Second string parameter example</parameter>
     </parameters>
     <sorting>
         <sort field="department" reverse="False"/>
@@ -1717,11 +1726,6 @@ if __name__ == "__main__":
         <fieldName>quantity</fieldName>
         <fieldName>date</fieldName>
     </columns>
-    <sorting>
-        <sort field="department" reverse="False"/>
-        <sort field="date" reverse="False"/>
-        <sort field="quantity" reverse="True"/>
-    </sorting>
     <pageBackground>
         <rectangle color="red" left="0" top="0" width="210" height="297" lineWidth="1"/>
     </pageBackground>
@@ -1743,7 +1747,7 @@ if __name__ == "__main__":
     <details>
         <band height="8" canGrow="True">
             <special left="2" top="2" width="13" height="6" fontSize="3" textAlign="AlignLeft" color="green" format="{:0>3d}">recordNumber</special>
-            <field left="15" top="2" width="30" height="6" fontSize="3" textAlign="AlignLeft">code</field>
+            <field left="15" top="2" width="30" height="6" fontSize="3" textAlign="AlignLeft" hideIfRepeat="True">code</field>
             <field left="45" top="2" width="65" height="6" fontSize="3" canGrow="True">description</field>
             <field left="110" top="2" width="30" height="6" fontSize="3">department</field>
             <field left="140" top="2" width="10" height="6" fontSize="3" textAlign="AlignHCenter">stock_control</field>
@@ -1795,11 +1799,11 @@ if __name__ == "__main__":
                 ('ZZZZZ', 'description 26', 'Production', True, 25, QDate(2018, 2, 2)),
                 ('11111', 'description 27', 'Accounting', False, 0, QDate(2018, 3, 3)),
                 ('22222', 'description 28', 'Research', True, 23, QDate(2018, 1, 1)),
-                ('33333', 'description 29', 'Production', True, 25, QDate(2018, 2, 2)),
-                ('44444', 'description 30', 'Accounting', False, 0, QDate(2018, 3, 3)),
+                ('22222', 'description 29', 'Production', True, 25, QDate(2018, 2, 2)),
+                ('22222', 'description 30', 'Accounting', False, 0, QDate(2018, 3, 3)),
                 ('55555', 'description 31', 'Research', True, 33, QDate(2018, 1, 1)),
-                ('66666', 'description 32', 'Production', True, 9991, QDate(2018, 2, 2)),
-                ('77777', 'description 33', 'Accounting', False, 0, QDate(2018, 3, 3)),
+                ('55555', 'description 32', 'Production', True, 9991, QDate(2018, 2, 2)),
+                ('55555', 'description 33', 'Accounting', False, 0, QDate(2018, 3, 3)),
                 ('88888', 'description 34', 'Research', True, 23, QDate(2018, 1, 1)),
                 ('99999', 'description 35', 'Production', True, 26, QDate(2018, 2, 2)),
                 ('00000', 'description 36', 'Production', True, 26, QDate(2018, 2, 2)),
