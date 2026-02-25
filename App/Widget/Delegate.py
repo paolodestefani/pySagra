@@ -48,6 +48,8 @@ from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QSize
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
+from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QKeyEvent
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QColor
@@ -80,6 +82,7 @@ from App import session
 from App import actionDefinition
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
+from App.Database.AbstractModels.TableModel import QueryModel, TableModel
 from App.Database.Setting import SettingClass
 from App.Widget.Control import ColorComboBox
 from App.Widget.Control import RelationalComboBox
@@ -94,7 +97,7 @@ class GenericDelegate(QStyledItemDelegate):
               painter: QPainter,
               option: QStyleOptionViewItem, 
               index: QModelIndex|QPersistentModelIndex) -> None:
-        value = index.model().data(index, Qt.ItemDataRole.DisplayRole)
+        value = index.data(Qt.ItemDataRole.DisplayRole)
         styleOption: QStyleOptionViewItem = QStyleOptionViewItem(option)
         self.initStyleOption(styleOption, index)
         match value:
@@ -129,10 +132,10 @@ class GenericDelegate(QStyledItemDelegate):
         if font:
             styleOption.font = font
         painter.save()
-        if option.state & QStyle.StateFlag.State_Selected:  # selected
-            if option.state & QStyle.StateFlag.State_Active:  # selected active
-                styleOption.backgroundBrush = option.palette.highlight()
-
+        # Disegna lo sfondo (Selection, Hover, Alternate Background)
+        QApplication.style().drawPrimitive(
+            QStyle.PrimitiveElement.PE_PanelItemViewItem, styleOption, painter, styleOption.widget
+)
         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
                                          styleOption,
                                          painter)
@@ -153,7 +156,8 @@ class GenericDelegate(QStyledItemDelegate):
                      option: QStyleOptionViewItem,
                      index: QModelIndex|QPersistentModelIndex
                      ) -> QWidget:
-        model = index.model()
+        abstract_model = index.model()
+        model = cast(QueryModel|TableModel, abstract_model)
         fieldType = cast(str, model.columns[index.column()][3])
         widget: QCheckBox|QSpinBox|QDateEdit|QDateTimeEdit|QDoubleSpinBox|QLineEdit
         match fieldType:
@@ -185,21 +189,22 @@ class GenericDelegate(QStyledItemDelegate):
                       editor: QWidget, 
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
-        if index.data() is None:
+        val = index.data()
+        if val is None:
             return
         match editor:
-            case QCheckBox():
-                editor.setChecked(index.data())
-            case QSpinBox():
-                editor.setValue(index.data())
-            case QDateEdit():
-                editor.setDate(index.data())
-            case QDateTimeEdit():
-                editor.setDateTime(index.data())
-            case QDoubleSpinBox():
-                editor.setValue(index.data())
-            case QLineEdit():
-                editor.setText(str(index.data()))
+            case QCheckBox() as cb:
+                cb.setChecked(bool(val))
+            case QSpinBox() as sb:
+                sb.setValue(int(val))
+            case QDateEdit() as de:
+                de.setDate(val)
+            case QDateTimeEdit() as dte:
+                dte.setDateTime(val)
+            case QDoubleSpinBox() as dsb:
+                dsb.setValue(val)
+            case QLineEdit() as le:
+                le.setText(str(val))
             case _:
                 raise TypeError(f"Unsupported editor type: {type(editor)}")
 
@@ -278,20 +283,22 @@ class ColorComboDelegate(QStyledItemDelegate):
         return cb
 
     def setEditorData(self, 
-                      editor: ColorComboBox,
+                      editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
         if not index.data():
             return
-        cbi = editor.findData(index.data())
-        editor.setCurrentIndex(cbi if cbi >= 0 else 0)  # can be -1 on New
+        color_editor = cast(ColorComboBox, editor)
+        cbi = color_editor.findData(index.data())
+        color_editor.setCurrentIndex(cbi if cbi >= 0 else 0)  # can be -1 on New
 
     def setModelData(self, 
-                     editor: ColorComboBox,
+                     editor: QWidget,
                      model: QAbstractItemModel,
                      index: QModelIndex|QPersistentModelIndex
                      ) -> None:
-        model.setData(index, editor.currentData(Qt.ItemDataRole.UserRole), Qt.ItemDataRole.EditRole)
+        ccb = cast(ColorComboBox, editor)
+        model.setData(index, ccb.currentData(Qt.ItemDataRole.UserRole), Qt.ItemDataRole.EditRole)
 
     def paint(self, 
               painter: QPainter,
@@ -366,10 +373,13 @@ class ImageDelegate(QStyledItemDelegate):
         return QWidget(parent)  # dummy editor, not used
 
     def setEditorData(self, 
-                      editor: SelectImageDialog,
+                      editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
-        QStyledItemDelegate.setEditorData(self, editor, index)
+        if not index.data():
+            return
+        imgdlg = cast(SelectImageDialog, editor)
+        QStyledItemDelegate.setEditorData(self, imgdlg, index)
 
 
 class HideTextDelegate(QStyledItemDelegate):
@@ -430,45 +440,49 @@ class BooleanDelegate(QStyledItemDelegate):
         return QWidget(parent)  # dummy editor, not used
 
     def paint(self, 
-              painter: QPainter,
-              option: QStyleOptionViewItem,
-              index: QModelIndex|QPersistentModelIndex) -> None:
-        "Paint a checkbox without the label."
-        # Cerca prima in EditRole, se manca usa DisplayRole
+          painter: QPainter,
+          option: QStyleOptionViewItem,
+          index: QModelIndex|QPersistentModelIndex) -> None:
+        # 1. Inizializza le opzioni standard (gestisce colori, selezione, ecc.)
+        opts = QStyleOptionViewItem(option)
+        self.initStyleOption(opts, index)
+        
+        painter.save()
+        
+        # 2. Disegna lo sfondo standard (selezione, hover, alternate rows)
+        # Questo sostituisce tutti i tuoi if/else sulla palette e fillRect
+        QApplication.style().drawPrimitive(
+            QStyle.PrimitiveElement.PE_PanelItemViewItem, opts, painter, opts.widget
+        )
+
+        # 3. Configura l'opzione per la CheckBox
+        check_box_style_option = QStyleOptionButton()
+        check_box_style_option.rect = self.getCheckBoxRect(opts)
+        
+        # Sincronizza lo stato (Enabled, Selected, ecc.)
+        check_box_style_option.state = opts.state
+        
+        # Determina se è ON o OFF basandosi sui dati del modello
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
             val = index.data(Qt.ItemDataRole.DisplayRole)
-        checked = bool(val)
-        #checked = bool(index.model().data(index, Qt.ItemDataRole.DisplayRole))
-        check_box_style_option = QStyleOptionButton()
-        painter.save()
-        if option.state & QStyle.StateFlag.State_Selected:  # selected
-            if option.state & QStyle.StateFlag.State_Active:  # selected active
-                painter.fillRect(option.rect, option.palette.highlight())
-            else:  # selected not active
-                if option.features & QStyleOptionViewItem.ViewItemFeature.Alternate:
-                    painter.fillRect(option.rect, option.palette.alternateBase())
-                else:
-                    painter.fillRect(option.rect, option.palette.base())
-        else:  # not selected
-            if option.features & QStyleOptionViewItem.ViewItemFeature.Alternate:
-                painter.fillRect(option.rect, option.palette.alternateBase())
-            else:
-                painter.fillRect(option.rect, option.palette.base())
-        if (option.state & QStyle.StateFlag.State_Selected):
-            check_box_style_option.state |= QStyle.StateFlag.State_Selected
-        if option.state & QStyle.StateFlag.State_Enabled:
-            check_box_style_option.state |= QStyle.StateFlag.State_Enabled
-        if checked:
+            
+        if bool(val):
             check_box_style_option.state |= QStyle.StateFlag.State_On
         else:
             check_box_style_option.state |= QStyle.StateFlag.State_Off
-        check_box_style_option.rect = self.getCheckBoxRect(option)
-        if not index.flags() & Qt.ItemFlag.ItemIsEditable:
+
+        # Se non modificabile, aggiungi ReadOnly (opzionale per feedback visivo)
+        if not (index.flags() & Qt.ItemFlag.ItemIsEditable):
             check_box_style_option.state |= QStyle.StateFlag.State_ReadOnly
-        QApplication.style().drawControl(QStyle.ControlElement.CE_CheckBox,
-                                         check_box_style_option,
-                                         painter)
+
+        # 4. Disegna la CheckBox
+        QApplication.style().drawControl(
+            QStyle.ControlElement.CE_CheckBox,
+            check_box_style_option,
+            painter
+        )
+        
         painter.restore()
 
     def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
@@ -483,41 +497,45 @@ class BooleanDelegate(QStyledItemDelegate):
                     model: QAbstractItemModel, 
                     option: QStyleOptionViewItem, 
                     index: QModelIndex|QPersistentModelIndex
-                    ) -> bool   :
-        """Change the data in the model and the state of the checkbox
-        if the user presses the left mousebutton or presses
-        Key_Space or Key_Select and this cell is editable. Otherwise do nothing.
-        """
-        # if int(not index.flags() & Qt.ItemIsEditable) > 0:
-        if not (index.flags() & Qt.ItemFlag.ItemIsEditable):
+                    ) -> bool:
+    
+        # 1. Controllo immediato dei flag del modello (la fonte della verità)
+        if not (index.flags() & Qt.ItemFlag.ItemIsEditable) or not (index.flags() & Qt.ItemFlag.ItemIsEnabled):
             return False
-        # do nothing if view is not editable. Parent of the delegate must be the view
-        if hasattr(self.parent(), 'editTriggers'):
-            if self.parent().editTriggers() == QAbstractItemView.EditTrigger.NoEditTriggers:
-                return False
-        # Do not change the checkbox-state
-        if event.type() == QEvent.Type.MouseButtonRelease or event.type() == QEvent.Type.MouseButtonDblClick:
-            if event.button() != Qt.MouseButton.LeftButton or not self.getCheckBoxRect(option).contains(event.pos()):
-                return False
-            if event.type() == QEvent.Type.MouseButtonDblClick:
-                return True
-        elif event.type() == QEvent.Type.KeyPress:
-            if event.key() != Qt.Key.Key_Space and event.key() != Qt.Key.Key_Select:
-                return False
-        else:
-            return False
-        # Change the checkbox-state
-        self.setModelData(None, model, index)
-        return True
 
-    def setModelData(self, 
-                     editor: QWidget,
-                     model: QAbstractItemModel,
-                     index: QModelIndex|QPersistentModelIndex
-                     ) -> None:
-        "The user wanted to change the old state in the opposite."
-        newValue = not bool(index.model().data(index, Qt.ItemDataRole.DisplayRole))
-        model.setData(index, newValue, Qt.ItemDataRole.EditRole)
+        # 2. Gestione Mouse
+        if event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonRelease, QEvent.Type.MouseButtonDblClick):
+            # Cast necessario per accedere a .pos() e .button()
+            mouse_event = cast(QMouseEvent, event) # Importa cast da typing per Mypy
+            
+            if mouse_event.button() != Qt.MouseButton.LeftButton or \
+            not self.getCheckBoxRect(option).contains(mouse_event.pos()):
+                return False
+            
+            # Facciamo il toggle solo al rilascio (standard UI)
+            if event.type() == QEvent.Type.MouseButtonRelease:
+                self.setModelData(None, model, index)
+                return True
+            
+            # Blocchiamo il doppio click per evitare che apra editor o faccia toggle multipli
+            return True 
+
+        # 3. Gestione Tastiera
+        elif event.type() == QEvent.Type.KeyPress:
+            key_event = cast(QKeyEvent, event)
+            if key_event.key() in (Qt.Key.Key_Space, Qt.Key.Key_Select):
+                self.setModelData(None, model, index)
+                return True
+
+        return False
+
+    def setModelData(self, editor, model, index):
+        # Usa il valore corrente per invertire lo stato
+        current_val = index.data(Qt.ItemDataRole.EditRole)
+        if current_val is None:
+            current_val = index.data(Qt.ItemDataRole.DisplayRole)
+        model.setData(index, not bool(current_val), Qt.ItemDataRole.EditRole)
+
 
 class ItemsDelegate(QStyledItemDelegate):
     "A delegate (combo box) for choose a value from a list"
@@ -555,19 +573,21 @@ class ItemsDelegate(QStyledItemDelegate):
         return cb
 
     def setEditorData(self, 
-                      editor: QComboBox,
+                      editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
         if not index.data():
             return
-        editor.setCurrentText(index.data())
+        cb = cast(QComboBox, editor)
+        cb.setCurrentText(index.data())
 
     def setModelData(self, 
-                     editor: QComboBox,
+                     editor: QWidget,
                      model: QAbstractItemModel,
                      index: QModelIndex|QPersistentModelIndex
                      ) -> None:
-        model.setData(index, editor.currentText())
+        cb = cast(QComboBox, editor)
+        model.setData(index, cb.currentText())
 
 
 class PrintersDelegate(ItemsDelegate):
@@ -679,7 +699,8 @@ class RelationDelegate(QStyledItemDelegate):
                       index: QModelIndex|QPersistentModelIndex) -> None:
         if not index.data():
             return None
-        editor.setCurrentText(self.data.get(index.data()))
+        cb = cast(QComboBox, editor)
+        cb.setCurrentText(self.data.get(index.data()))
 
     def setModelData(self, 
                      editor: QWidget,
