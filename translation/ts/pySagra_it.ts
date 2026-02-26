@@ -638,27 +638,27 @@
 <context>
     <name>ChangePassword</name>
     <message>
-        <location filename="../../App/System/User.py" line="402"/>
+        <location filename="../../App/System/User.py" line="411"/>
         <source>Insert a valid password on both the line edit</source>
         <translation>Inserire una apssword valida in entrambe le caselle</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="381"/>
+        <location filename="../../App/System/User.py" line="386"/>
         <source>Password changed successfully</source>
         <translation>Password modificata correttamente</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="361"/>
+        <location filename="../../App/System/User.py" line="366"/>
         <source>Insert a valid password on both the line edit boxes</source>
         <translation>Inserire una password valida in entrambe le caselle</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="367"/>
+        <location filename="../../App/System/User.py" line="372"/>
         <source>The Inserted password in the &apos;New password&apos; does not match that of the &apos;Confirm password&apos;</source>
         <translation>La password inserita in &apos;Nuova password&apos; non corrisponde a quella inserita in &apos;Conferma password&apos;</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="406"/>
+        <location filename="../../App/System/User.py" line="415"/>
         <source>New password and confirmed password does not match</source>
         <translation>La nuova poassword non corrisponde alla conferma password</translation>
     </message>
@@ -860,97 +860,97 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Controls</name>
     <message>
-        <location filename="../../App/Widget/Control.py" line="135"/>
+        <location filename="../../App/Widget/Control.py" line="139"/>
         <source>NO IMAGE</source>
         <translation>NESSUNA IMMAGINE</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="685"/>
+        <location filename="../../App/Widget/Control.py" line="726"/>
         <source>Transparent</source>
         <translation>Trasparente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="686"/>
+        <location filename="../../App/Widget/Control.py" line="727"/>
         <source>Black</source>
         <translation>Nero</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="687"/>
+        <location filename="../../App/Widget/Control.py" line="728"/>
         <source>Red</source>
         <translation>Rosso</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="688"/>
+        <location filename="../../App/Widget/Control.py" line="729"/>
         <source>Dark red</source>
         <translation>Rosso scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="689"/>
+        <location filename="../../App/Widget/Control.py" line="730"/>
         <source>Green</source>
         <translation>Verde</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="690"/>
+        <location filename="../../App/Widget/Control.py" line="731"/>
         <source>Dark green</source>
         <translation>Verde scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="691"/>
+        <location filename="../../App/Widget/Control.py" line="732"/>
         <source>Blue</source>
         <translation>Blu</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="692"/>
+        <location filename="../../App/Widget/Control.py" line="733"/>
         <source>Dark blue</source>
         <translation>Blu scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="693"/>
+        <location filename="../../App/Widget/Control.py" line="734"/>
         <source>Cyan</source>
         <translation>Ciano</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="694"/>
+        <location filename="../../App/Widget/Control.py" line="735"/>
         <source>Dark cyan</source>
         <translation>Ciano scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="695"/>
+        <location filename="../../App/Widget/Control.py" line="736"/>
         <source>Magenta</source>
         <translation>Magenta</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="696"/>
+        <location filename="../../App/Widget/Control.py" line="737"/>
         <source>Dark magenta</source>
         <translation>Magenta scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="697"/>
+        <location filename="../../App/Widget/Control.py" line="738"/>
         <source>Yellow</source>
         <translation>Giallo</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="698"/>
+        <location filename="../../App/Widget/Control.py" line="739"/>
         <source>Dark yellow</source>
         <translation>Giallo scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="699"/>
+        <location filename="../../App/Widget/Control.py" line="740"/>
         <source>Gray</source>
         <translation>Grigio</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="700"/>
+        <location filename="../../App/Widget/Control.py" line="741"/>
         <source>Dark gray</source>
         <translation>Grigio scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="701"/>
+        <location filename="../../App/Widget/Control.py" line="742"/>
         <source>Light gray</source>
         <translation>Grigio chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="702"/>
+        <location filename="../../App/Widget/Control.py" line="743"/>
         <source>White</source>
         <translation>Bianco</translation>
     </message>
@@ -1152,52 +1152,52 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Form</name>
     <message>
-        <location filename="../../App/Widget/Form.py" line="204"/>
-        <location filename="../../App/Widget/Form.py" line="549"/>
+        <location filename="../../App/Widget/Form.py" line="205"/>
+        <location filename="../../App/Widget/Form.py" line="538"/>
         <source>The data has been modified, save ?</source>
         <translation>I dati sono stati modificati, vuoi salvare ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="262"/>
-        <location filename="../../App/Widget/Form.py" line="894"/>
+        <location filename="../../App/Widget/Form.py" line="263"/>
+        <location filename="../../App/Widget/Form.py" line="887"/>
         <source>Error inserting a new row</source>
         <translation>Errore in inserimento di una nuova riga</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="274"/>
-        <location filename="../../App/Widget/Form.py" line="914"/>
+        <location filename="../../App/Widget/Form.py" line="275"/>
+        <location filename="../../App/Widget/Form.py" line="907"/>
         <source>Error on mapper submit</source>
         <translation>Errore in mapper submit</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="301"/>
-        <location filename="../../App/Widget/Form.py" line="386"/>
-        <location filename="../../App/Widget/Form.py" line="602"/>
-        <location filename="../../App/Widget/Form.py" line="633"/>
-        <location filename="../../App/Widget/Form.py" line="947"/>
-        <location filename="../../App/Widget/Form.py" line="1042"/>
+        <location filename="../../App/Widget/Form.py" line="380"/>
+        <location filename="../../App/Widget/Form.py" line="594"/>
+        <location filename="../../App/Widget/Form.py" line="627"/>
+        <location filename="../../App/Widget/Form.py" line="939"/>
+        <location filename="../../App/Widget/Form.py" line="1017"/>
         <source>Error on model submit all</source>
         <translation>Errore in model submitt all</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="317"/>
-        <location filename="../../App/Widget/Form.py" line="351"/>
-        <location filename="../../App/Widget/Form.py" line="387"/>
-        <location filename="../../App/Widget/Form.py" line="589"/>
-        <location filename="../../App/Widget/Form.py" line="634"/>
-        <location filename="../../App/Widget/Form.py" line="960"/>
-        <location filename="../../App/Widget/Form.py" line="1008"/>
-        <location filename="../../App/Widget/Form.py" line="1043"/>
+        <location filename="../../App/Widget/Form.py" line="316"/>
+        <location filename="../../App/Widget/Form.py" line="348"/>
+        <location filename="../../App/Widget/Form.py" line="381"/>
+        <location filename="../../App/Widget/Form.py" line="582"/>
+        <location filename="../../App/Widget/Form.py" line="628"/>
+        <location filename="../../App/Widget/Form.py" line="951"/>
+        <location filename="../../App/Widget/Form.py" line="986"/>
+        <location filename="../../App/Widget/Form.py" line="1018"/>
         <source>Referential integrity violation: unable to delete the current record because is still referenced from another database object</source>
         <translation>Violazione dell&apos;integrità referenziale: impossibile cancellare il record corrente perchè è referenziato da un altro oggetto del database</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="641"/>
+        <location filename="../../App/Widget/Form.py" line="634"/>
         <source>Error on submitAll</source>
         <translation>Errore in submit all</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="922"/>
+        <location filename="../../App/Widget/Form.py" line="915"/>
         <source>Row modified before update/delete: unable to commit the transaction because the row was modified before update or delete from unother client</source>
         <translation>Riga modificata prima dell&apos;aggiornamento/cancellazione: impossibile salvare perchè la riga è stata modificata da un altro client</translation>
     </message>
@@ -1207,39 +1207,39 @@ Proseguire ugualmente ?</translation>
         <translation>Annullare le modifiche e ricaricare i dati ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="293"/>
-        <location filename="../../App/Widget/Form.py" line="321"/>
-        <location filename="../../App/Widget/Form.py" line="355"/>
-        <location filename="../../App/Widget/Form.py" line="593"/>
-        <location filename="../../App/Widget/Form.py" line="939"/>
-        <location filename="../../App/Widget/Form.py" line="964"/>
-        <location filename="../../App/Widget/Form.py" line="1012"/>
+        <location filename="../../App/Widget/Form.py" line="294"/>
+        <location filename="../../App/Widget/Form.py" line="320"/>
+        <location filename="../../App/Widget/Form.py" line="352"/>
+        <location filename="../../App/Widget/Form.py" line="586"/>
+        <location filename="../../App/Widget/Form.py" line="932"/>
+        <location filename="../../App/Widget/Form.py" line="955"/>
+        <location filename="../../App/Widget/Form.py" line="990"/>
         <source>Duplicate key value violates unique constraint: Can not insert the current record because a key value is already present in the database table</source>
         <translation>Valore chiave duplicato viola un vincolo di univocità: Non è possibile inserire il record corrente perché un valore chiave è già presente nella tabella del database</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="329"/>
-        <location filename="../../App/Widget/Form.py" line="363"/>
-        <location filename="../../App/Widget/Form.py" line="972"/>
-        <location filename="../../App/Widget/Form.py" line="1020"/>
+        <location filename="../../App/Widget/Form.py" line="327"/>
+        <location filename="../../App/Widget/Form.py" line="359"/>
+        <location filename="../../App/Widget/Form.py" line="962"/>
+        <location filename="../../App/Widget/Form.py" line="997"/>
         <source>Error on model detail submit all</source>
         <translation>Errore in model detail submit all</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="281"/>
-        <location filename="../../App/Widget/Form.py" line="927"/>
+        <location filename="../../App/Widget/Form.py" line="282"/>
+        <location filename="../../App/Widget/Form.py" line="920"/>
         <source>Integrity constraint violation: unable to commit the transaction because a generic integrity violation occured</source>
         <translation>Violazione di un vincolo di integrità: impossibile completare la transazione per un generico errore di violazione di integrità</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="285"/>
-        <location filename="../../App/Widget/Form.py" line="931"/>
+        <location filename="../../App/Widget/Form.py" line="286"/>
+        <location filename="../../App/Widget/Form.py" line="924"/>
         <source>Integrity constraint violation: unable to commit the transaction because a not null error occured</source>
         <translation>Violazione di un vincolo di integrità: impossibile completare la transazione per un errore di valore nullo non permesso</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="289"/>
-        <location filename="../../App/Widget/Form.py" line="935"/>
+        <location filename="../../App/Widget/Form.py" line="290"/>
+        <location filename="../../App/Widget/Form.py" line="928"/>
         <source>Foreign key violation: unable to delete the current record because is still referenced from another database object</source>
         <translation>Violazione di una chiave esterna: impossibile cancellare il record corrente perchè è referenziato da un altro oggetto del database</translation>
     </message>
@@ -1410,12 +1410,12 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Report.py" line="394"/>
         <location filename="../../App/System/Scripting.py" line="382"/>
         <location filename="../../App/System/Scripting.py" line="426"/>
-        <location filename="../../App/System/User.py" line="325"/>
-        <location filename="../../App/System/User.py" line="360"/>
-        <location filename="../../App/System/User.py" line="366"/>
-        <location filename="../../App/System/User.py" line="376"/>
-        <location filename="../../App/System/User.py" line="401"/>
-        <location filename="../../App/System/User.py" line="405"/>
+        <location filename="../../App/System/User.py" line="329"/>
+        <location filename="../../App/System/User.py" line="365"/>
+        <location filename="../../App/System/User.py" line="371"/>
+        <location filename="../../App/System/User.py" line="381"/>
+        <location filename="../../App/System/User.py" line="410"/>
+        <location filename="../../App/System/User.py" line="414"/>
         <location filename="../../App/Widget/Dialog.py" line="213"/>
         <location filename="../../App/Widget/Dialog.py" line="367"/>
         <location filename="../../App/Widget/Dialog.py" line="472"/>
@@ -1438,15 +1438,15 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1342"/>
         <location filename="../../App/Widget/Dialog.py" line="1615"/>
         <location filename="../../App/Widget/Dialog.py" line="1620"/>
-        <location filename="../../App/Widget/Form.py" line="261"/>
-        <location filename="../../App/Widget/Form.py" line="273"/>
-        <location filename="../../App/Widget/Form.py" line="376"/>
-        <location filename="../../App/Widget/Form.py" line="395"/>
-        <location filename="../../App/Widget/Form.py" line="426"/>
-        <location filename="../../App/Widget/Form.py" line="893"/>
-        <location filename="../../App/Widget/Form.py" line="913"/>
-        <location filename="../../App/Widget/Form.py" line="1032"/>
-        <location filename="../../App/Widget/Form.py" line="1051"/>
+        <location filename="../../App/Widget/Form.py" line="262"/>
+        <location filename="../../App/Widget/Form.py" line="274"/>
+        <location filename="../../App/Widget/Form.py" line="371"/>
+        <location filename="../../App/Widget/Form.py" line="387"/>
+        <location filename="../../App/Widget/Form.py" line="419"/>
+        <location filename="../../App/Widget/Form.py" line="886"/>
+        <location filename="../../App/Widget/Form.py" line="906"/>
+        <location filename="../../App/Widget/Form.py" line="1007"/>
+        <location filename="../../App/Widget/Form.py" line="1024"/>
         <source>Critical</source>
         <translation>Errore critico</translation>
     </message>
@@ -1455,7 +1455,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Company.py" line="285"/>
         <location filename="../../App/System/Connection.py" line="129"/>
         <location filename="../../App/System/Connection.py" line="135"/>
-        <location filename="../../App/System/User.py" line="296"/>
+        <location filename="../../App/System/User.py" line="299"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
@@ -1473,9 +1473,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Profile.py" line="190"/>
         <location filename="../../App/System/Report.py" line="177"/>
         <location filename="../../App/System/Report.py" line="188"/>
-        <location filename="../../App/System/User.py" line="236"/>
-        <location filename="../../App/System/User.py" line="321"/>
-        <location filename="../../App/System/User.py" line="380"/>
+        <location filename="../../App/System/User.py" line="239"/>
+        <location filename="../../App/System/User.py" line="325"/>
+        <location filename="../../App/System/User.py" line="385"/>
         <location filename="../../App/Widget/Dialog.py" line="582"/>
         <location filename="../../App/Widget/Dialog.py" line="718"/>
         <location filename="../../App/Widget/Dialog.py" line="735"/>
@@ -1504,11 +1504,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Report.py" line="194"/>
         <location filename="../../App/System/Report.py" line="242"/>
         <location filename="../../App/System/Scripting.py" line="245"/>
-        <location filename="../../App/System/User.py" line="241"/>
+        <location filename="../../App/System/User.py" line="244"/>
         <location filename="../../App/Widget/Dialog.py" line="1626"/>
         <location filename="../../App/Widget/Dialog.py" line="1771"/>
-        <location filename="../../App/Widget/Form.py" line="203"/>
-        <location filename="../../App/Widget/Form.py" line="548"/>
+        <location filename="../../App/Widget/Form.py" line="204"/>
+        <location filename="../../App/Widget/Form.py" line="537"/>
         <source>Question</source>
         <translation>Richiesta</translation>
     </message>
@@ -2036,58 +2036,58 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>User</name>
     <message>
-        <location filename="../../App/System/User.py" line="237"/>
+        <location filename="../../App/System/User.py" line="240"/>
         <source>It is not possible to delete a system user</source>
         <translation>Non è possibile eliminare un utente di sistema</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="285"/>
+        <location filename="../../App/System/User.py" line="288"/>
         <source>Select the image to upload</source>
         <translation>Selezionare l&apos;immagine da caricare</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="287"/>
-        <location filename="../../App/System/User.py" line="315"/>
+        <location filename="../../App/System/User.py" line="290"/>
+        <location filename="../../App/System/User.py" line="319"/>
         <source>Portable Network Graphics (*.png);;All files (*.*)</source>
         <translation>Portable Network Graphics (*.png);;Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="313"/>
+        <location filename="../../App/System/User.py" line="317"/>
         <source>Select the destination file name</source>
         <translation>Selezionare il nome del file di destinazione</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="322"/>
+        <location filename="../../App/System/User.py" line="326"/>
         <source>Image file saved</source>
         <translation>Immagine salvata</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="326"/>
+        <location filename="../../App/System/User.py" line="330"/>
         <source>Error on saving image file</source>
         <translation>Errore in salvataggio dell&apos;immagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="331"/>
+        <location filename="../../App/System/User.py" line="335"/>
         <source>NO IMAGE</source>
         <translation>NESSUNA IMMAGINE</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="297"/>
+        <location filename="../../App/System/User.py" line="300"/>
         <source>The selected image is too big, it wasautomaticlly resized to the max allowed size of 640x480 pixels</source>
         <translation>L&apos;immagine selezionata è troppo grande, è stata automaticamente ridimensionata alla massima dimensione permessa di 640x480 pixel</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="349"/>
+        <location filename="../../App/System/User.py" line="354"/>
         <source>Change password</source>
         <translation>Modifica password</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="395"/>
+        <location filename="../../App/System/User.py" line="404"/>
         <source>Set temporary password dialog</source>
         <translation>Imposta una password temporanea</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="239"/>
+        <location filename="../../App/System/User.py" line="242"/>
         <source>Are you sure you want to delete this user ?</source>
         <translation>Sei sicuro di voler eliminare questo utente ?</translation>
     </message>
@@ -2095,7 +2095,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>controls</name>
     <message>
-        <location filename="../../App/Widget/Control.py" line="666"/>
+        <location filename="../../App/Widget/Control.py" line="703"/>
         <source>Type the password here</source>
         <translation>Inserire la password</translation>
     </message>

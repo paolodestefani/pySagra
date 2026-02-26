@@ -43,6 +43,7 @@ from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QLocale
 from PySide6.QtCore import QPoint
 from PySide6.QtCore import QAbstractItemModel
+from PySide6.QtCore import QTimer
 
 from PySide6.QtGui import QDropEvent
 from PySide6.QtGui import QDesktopServices
@@ -285,7 +286,7 @@ class EnhancedTableView(QTableView):
             self.cm.addSeparator()
             self.cm.addActions([self.cmHide, self.cmShow, self.cmReset, self.cmManage])
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.contextMenuEvent)
+        self.customContextMenuRequested.connect(self.showContextMenu)
 
     def fillCustomizationMenu(self) -> None:
         if not self.layoutName:
@@ -319,11 +320,13 @@ class EnhancedTableView(QTableView):
         "As EnhancedTableView is declared in QtDesigner we must set the name of the layout after instantiation"
         self.layoutName = name
         self.fillCustomizationMenu()
-        self.setStoredLayout(self.ag.checkedAction())
+        target_action = self.ag.checkedAction() # pyside6 requirement... 
+        QTimer.singleShot(0, lambda: self.setStoredLayout(target_action))
 
     def setStoredLayout(self, action: QAction) -> None:
         if not action: # no customization available
             return
+        print(f"DEBUG: Header count is {self.horizontalHeader().count()}")
         viewId = int(action.data())
         # reset layout first (first time store the state)
         if self.horizontalHeaderState:
@@ -338,19 +341,29 @@ class EnhancedTableView(QTableView):
                                  _tr("MessageDialog", "Critical"),
                                  "{}\n{}".format(er.code, er.message))
             return
+        
+        self.setSortingEnabled(False)
+        header = self.horizontalHeader()
         for c, i, v, s in result:
-            # set position
-            ci = self.horizontalHeader().visualIndex(c)
-            self.horizontalHeader().moveSection(ci, i)
+            # check if column exists
+            if c >= header.count():
+                continue
             # show/hide
-            if not v:
-                self.setColumnHidden(c, True)
+            self.setColumnHidden(c, not v)
             # width
-            self.setColumnWidth(c, s)
+            if v and s > 0:
+                self.setColumnWidth(c, s)
+            # set position
+            ci = header.visualIndex(c)
+            if ci != i:
+                header.moveSection(ci, i)
 
-    def contextMenuEvent(self, position: QContextMenuEvent) -> None:
-        # self.cm.exec_(self.viewport().mapToGlobal(position))
-        self.cm.exec_(QCursor.pos())
+    # def contextMenuEvent(self, position: QContextMenuEvent) -> None:
+    #     # self.cm.exec_(self.viewport().mapToGlobal(position))
+    #     self.cm.exec(QCursor.pos())
+        
+    def showContextMenu(self, pos) -> None:
+        self.cm.exec(self.mapToGlobal(pos))
 
     def activateSorting(self) -> None:
         "Activate/deactivate sorting by column"

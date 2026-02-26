@@ -26,9 +26,6 @@ class Ui_LoginDialog(object):
         if not LoginDialog.objectName():
             LoginDialog.setObjectName(u"LoginDialog")
         LoginDialog.resize(335, 552)
-        font = QFont()
-        font.setPointSize(10)
-        LoginDialog.setFont(font)
         LoginDialog.setSizeGripEnabled(True)
         LoginDialog.setModal(False)
         self.verticalLayout_3 = QVBoxLayout(LoginDialog)
@@ -118,10 +115,6 @@ class Ui_LoginDialog(object):
 
         self.label_5 = QLabel(LoginDialog)
         self.label_5.setObjectName(u"label_5")
-        font1 = QFont()
-        font1.setPointSize(10)
-        font1.setBold(False)
-        self.label_5.setFont(font1)
         self.label_5.setLineWidth(0)
 
         self.gridLayout.addWidget(self.label_5, 0, 0, 1, 1)
@@ -135,7 +128,6 @@ class Ui_LoginDialog(object):
 
         self.label_6 = QLabel(LoginDialog)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setFont(font1)
 
         self.gridLayout.addWidget(self.label_6, 1, 0, 1, 1)
 
@@ -146,16 +138,11 @@ class Ui_LoginDialog(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.pushButtonLogin = QPushButton(LoginDialog)
         self.pushButtonLogin.setObjectName(u"pushButtonLogin")
-        font2 = QFont()
-        font2.setPointSize(10)
-        font2.setBold(True)
-        self.pushButtonLogin.setFont(font2)
 
         self.horizontalLayout.addWidget(self.pushButtonLogin)
 
         self.pushButtonCancel = QPushButton(LoginDialog)
         self.pushButtonCancel.setObjectName(u"pushButtonCancel")
-        self.pushButtonCancel.setFont(font2)
 
         self.horizontalLayout.addWidget(self.pushButtonCancel)
 
@@ -164,7 +151,6 @@ class Ui_LoginDialog(object):
 
         self.checkBoxMore = QCheckBox(LoginDialog)
         self.checkBoxMore.setObjectName(u"checkBoxMore")
-        self.checkBoxMore.setFont(font)
 
         self.verticalLayout_2.addWidget(self.checkBoxMore)
 
@@ -187,7 +173,6 @@ class Ui_LoginDialog(object):
 
         self.label_4 = QLabel(self.frameMore)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setFont(font)
 
         self.gridLayout_2.addWidget(self.label_4, 4, 0, 1, 1)
 
@@ -214,7 +199,6 @@ class Ui_LoginDialog(object):
 
         self.label_8 = QLabel(self.frameMore)
         self.label_8.setObjectName(u"label_8")
-        self.label_8.setFont(font)
 
         self.gridLayout_2.addWidget(self.label_8, 5, 0, 1, 1)
 
@@ -228,19 +212,16 @@ class Ui_LoginDialog(object):
 
         self.label_9 = QLabel(self.frameMore)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setFont(font)
 
         self.gridLayout_2.addWidget(self.label_9, 6, 0, 1, 1)
 
         self.label_2 = QLabel(self.frameMore)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setFont(font)
 
         self.gridLayout_2.addWidget(self.label_2, 2, 0, 1, 1)
 
         self.label_3 = QLabel(self.frameMore)
         self.label_3.setObjectName(u"label_3")
-        self.label_3.setFont(font)
 
         self.gridLayout_2.addWidget(self.label_3, 3, 0, 1, 1)
 
@@ -249,7 +230,6 @@ class Ui_LoginDialog(object):
 
         self.labelVersion = QLabel(self.frameMore)
         self.labelVersion.setObjectName(u"labelVersion")
-        self.labelVersion.setFont(font1)
         self.labelVersion.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.labelVersion)

@@ -11,11 +11,6 @@
     <height>552</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <pointsize>10</pointsize>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>Login</string>
   </property>
@@ -344,12 +339,6 @@
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_5">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <bold>false</bold>
-          </font>
-         </property>
          <property name="lineWidth">
           <number>0</number>
          </property>
@@ -376,12 +365,6 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_6">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <bold>false</bold>
-          </font>
-         </property>
          <property name="text">
           <string>Password</string>
          </property>
@@ -396,12 +379,6 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="pushButtonLogin">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <bold>true</bold>
-          </font>
-         </property>
          <property name="whatsThis">
           <string>Click to connect to the server and start the application</string>
          </property>
@@ -412,12 +389,6 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonCancel">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <bold>true</bold>
-          </font>
-         </property>
          <property name="whatsThis">
           <string>Cancel and close the login dialog</string>
          </property>
@@ -430,11 +401,6 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxMore">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
        <property name="whatsThis">
         <string>Show/hide the connection parameters</string>
        </property>
@@ -475,11 +441,6 @@
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_4">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Database</string>
             </property>
@@ -529,11 +490,6 @@
           </item>
           <item row="5" column="0">
            <widget class="QLabel" name="label_8">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>DB User</string>
             </property>
@@ -560,11 +516,6 @@
           </item>
           <item row="6" column="0">
            <widget class="QLabel" name="label_9">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>DB Password</string>
             </property>
@@ -575,11 +526,6 @@
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_2">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Server</string>
             </property>
@@ -590,11 +536,6 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_3">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Port</string>
             </property>
@@ -607,12 +548,6 @@
         </item>
         <item>
          <widget class="QLabel" name="labelVersion">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <bold>false</bold>
-           </font>
-          </property>
           <property name="text">
            <string>Current App Version</string>
           </property>

@@ -71,7 +71,7 @@ ORDER BY itemview_adapt_id;"""
 
 def get_view_columns(view_id: int) -> list[tuple]:
     "Returns the view definition"
-    script = """""
+    script = """
 SELECT 	
     column_number,
     sorting,
@@ -99,20 +99,16 @@ INSERT INTO system.itemview_adapt_setting (
 VALUES (%s, %s, %s, %s, %s)
 ON CONFLICT ON CONSTRAINT itemview_adapt_setting_pk DO
 UPDATE SET sorting = %s, is_visible = %s, size = %s;"""
+    params = [(view_id, c, p, h, w, p, h, w) for c, p, h, w in columns]
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                for c, p, h, w in columns:
-                    cur.execute(script, (view_id,
-                                         c,
-                                         p,
-                                         h,
-                                         w,
-                                         p,
-                                         h,
-                                         w))
+                # Esecuzione batch: molto più veloce del loop for
+                cur.executemany(script, params)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        # Recuperiamo lo stato SQL se disponibile
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))
 
 def delete_view_layout(view_id: int) -> None:
     "Delete a view customization"
@@ -128,16 +124,18 @@ WHERE itemview_adapt_id = %s;"""
 
 def set_default_view_layout(view_class: str, view_id: int) -> None:
     "Set default layout for view class"
-    script = """
+    script1 = """
 UPDATE system.itemview_adapt
 SET is_default_for_class = false
-WHERE itemview_class = %s;
+WHERE itemview_class = %s;"""
+    script2 = """
 UPDATE system.itemview_adapt
 SET is_default_for_class = true
 WHERE itemview_adapt_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (view_class, view_id))
+                cur.execute(script1, (view_class,))
+                cur.execute(script2, (view_id,))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))

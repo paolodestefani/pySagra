@@ -73,6 +73,8 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
+        self.ui = Ui_CashDeskWidget()
+        self.ui.setupUi(self)
         model = CashDeskModel(self)
         self.setModel(model)
         self.tabName = title
@@ -82,8 +84,6 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, False, False, False, False,
                                 False, False, False, False)
-        self.ui = Ui_CashDeskWidget()
-        self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('cashDesk')
         self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
