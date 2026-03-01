@@ -128,7 +128,7 @@ class CompanyForm(FormIndexManager):
         # mapper mappings
         self.mapper.addMapping(self.ui.spinBoxId, COMP_ID)
         self.mapper.addMapping(self.ui.lineEditDescription, COMP_DESC)
-        self.mapper.addMapping(self.ui.labelCompanyImage, COMP_IMAGE, b"imageBytearray")
+        self.mapper.addMapping(self.ui.labelCompanyImage, COMP_IMAGE) #, b"imageBytearray")
         self.mapper.addMapping(self.ui.checkBoxSystem, COMP_SYSTEM)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -174,7 +174,7 @@ class CompanyForm(FormIndexManager):
         st.setValue("PathImagesCompanies", QFileInfo(f).path())
         self.model.isDirty = True
         self.model.userDataChanged.emit()
-
+        
     def download(self, checked: bool) -> None:
         "Download company image to file"
         if not self.ui.labelCompanyImage.pixmap():

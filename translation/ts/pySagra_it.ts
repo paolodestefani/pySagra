@@ -860,97 +860,97 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Controls</name>
     <message>
-        <location filename="../../App/Widget/Control.py" line="139"/>
+        <location filename="../../App/Widget/Control.py" line="138"/>
         <source>NO IMAGE</source>
         <translation>NESSUNA IMMAGINE</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="726"/>
+        <location filename="../../App/Widget/Control.py" line="788"/>
         <source>Transparent</source>
         <translation>Trasparente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="727"/>
+        <location filename="../../App/Widget/Control.py" line="789"/>
         <source>Black</source>
         <translation>Nero</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="728"/>
+        <location filename="../../App/Widget/Control.py" line="790"/>
         <source>Red</source>
         <translation>Rosso</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="729"/>
+        <location filename="../../App/Widget/Control.py" line="791"/>
         <source>Dark red</source>
         <translation>Rosso scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="730"/>
+        <location filename="../../App/Widget/Control.py" line="792"/>
         <source>Green</source>
         <translation>Verde</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="731"/>
+        <location filename="../../App/Widget/Control.py" line="793"/>
         <source>Dark green</source>
         <translation>Verde scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="732"/>
+        <location filename="../../App/Widget/Control.py" line="794"/>
         <source>Blue</source>
         <translation>Blu</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="733"/>
+        <location filename="../../App/Widget/Control.py" line="795"/>
         <source>Dark blue</source>
         <translation>Blu scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="734"/>
+        <location filename="../../App/Widget/Control.py" line="796"/>
         <source>Cyan</source>
         <translation>Ciano</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="735"/>
+        <location filename="../../App/Widget/Control.py" line="797"/>
         <source>Dark cyan</source>
         <translation>Ciano scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="736"/>
+        <location filename="../../App/Widget/Control.py" line="798"/>
         <source>Magenta</source>
         <translation>Magenta</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="737"/>
+        <location filename="../../App/Widget/Control.py" line="799"/>
         <source>Dark magenta</source>
         <translation>Magenta scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="738"/>
+        <location filename="../../App/Widget/Control.py" line="800"/>
         <source>Yellow</source>
         <translation>Giallo</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="739"/>
+        <location filename="../../App/Widget/Control.py" line="801"/>
         <source>Dark yellow</source>
         <translation>Giallo scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="740"/>
+        <location filename="../../App/Widget/Control.py" line="802"/>
         <source>Gray</source>
         <translation>Grigio</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="741"/>
+        <location filename="../../App/Widget/Control.py" line="803"/>
         <source>Dark gray</source>
         <translation>Grigio scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="742"/>
+        <location filename="../../App/Widget/Control.py" line="804"/>
         <source>Light gray</source>
         <translation>Grigio chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="743"/>
+        <location filename="../../App/Widget/Control.py" line="805"/>
         <source>White</source>
         <translation>Bianco</translation>
     </message>
@@ -1303,8 +1303,8 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/System/About.py" line="97"/>
-        <source>pySagra&apos;s icon is from DelliOS System Icons set created by</source>
-        <translation>l&apos;icona di pySagra è estratta dal set di icone di sistema DelliOS creato da</translation>
+        <source>pySagra&apos;s icon is from DelliOS System Icons by</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/System/About.py" line="98"/>
@@ -2095,7 +2095,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>controls</name>
     <message>
-        <location filename="../../App/Widget/Control.py" line="703"/>
+        <location filename="../../App/Widget/Control.py" line="765"/>
         <source>Type the password here</source>
         <translation>Inserire la password</translation>
     </message>

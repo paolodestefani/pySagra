@@ -297,7 +297,7 @@ class ChangeCompanyDialog(QDialog):
         self.ui = Ui_ChangeCompanyDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(_tr('ChangeCompany', 'Change company'))
-        self.ui.labelIcon.setPixmap(currentIcon['system_changecompany'].pixmap(100))
+        self.ui.labelIcon.setPixmap(currentIcon['system_change_company'].pixmap(100))
         # get available companies
         try:
             companies = get_companies_list(session['user'])

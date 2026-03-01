@@ -75,11 +75,6 @@ from App import session
 from App.System.Login import LoginDialog
 from App.System.MainWindow import MainWindow
 
-
-# Forza l'uso di icone ad alta risoluzione (evita l'effetto sgranato)
-os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
-#os.environ["QT_USE_HIGHDPI_PIXMAPS"] = "1" # non serve con le icone svg
-
 # logger
 logger = logging.getLogger(__name__)
 
@@ -194,21 +189,8 @@ if __name__ == "__main__":
     logger.info('')
     # start PySide6 Application
     logger.info('Setting up QApplication')
-    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    #QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv)
-    # 1. Definisci una dimensione base che ti piace su Windows (es. 9 o 10)
-    # 2. Aumentala di 1 o 2 punti solo se sei su macOS
-    base_font_size = 10 
-    if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-        base_font_size = 12
-
-    # 3. Applica il font a tutta l'applicazione
-    default_font = app.font()
-    default_font.setPointSize(base_font_size)
-    # Opzionale: imposta una famiglia di font più neutra se vuoi coerenza totale
-    # default_font.setFamily("Segoe UI" if platform.system() == "Windows" else "Helvetica Neue")
-
-    app.setFont(default_font)
     # l10n
     logger.info('Setting up QLocale to system locale')
     lang = QLocale.system().name()[:2]  # = system language

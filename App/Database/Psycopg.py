@@ -137,7 +137,6 @@ psycopg.adapters.register_dumper(QTime, QTimeTimeDumper)
 # bytea <--> QBytearray
 #
 
-
 class ByteaQByteArrayLoader(Loader):
     def load(self, value: bytes) -> QByteArray:
         return QByteArray.fromHex(bytes(value))
@@ -150,7 +149,6 @@ class QByteArrayByteaDumper(Dumper):
         return b"\\x" + value.toHex().data()
 
 psycopg.adapters.register_dumper(QByteArray, QByteArrayByteaDumper)
-
 
 
 #

@@ -94,7 +94,7 @@ class AboutDialog(QDialog):
         qtRef = _tr('Help', 'cross-platform application and UI framework')
         pySideRef = _tr('Help', 'a set of python bindings for Qt')
         oxygenRef = _tr('Help', 'icon set')
-        iconRef = _tr('Help', "pySagra's icon is from DelliOS System Icons set created by")
+        iconRef = _tr('Help', "pySagra's icon is from DelliOS System Icons by")
         gifRef = _tr('Help', "pySagra's login/version animation was created by")
         licence1 = _tr('Help', """This program is <b>FREE SOFTWARE</b>: you can redistribute it and/or modify
             it under the terms of the GNU General Public License as published by
@@ -122,7 +122,7 @@ class AboutDialog(QDialog):
             f'<li><a href="https://doc.qt.io/qtforpython-6/">Qt for Python</a> {pySideRef}</li>'
             f'<li><a href="https://github.com/KDE/oxygen-icons">Oxygen icons</a> {oxygenRef}</li>'
             f'</ul>'
-            f'<p>{iconRef} <a href="http://www.wendellverli.com/">Wendell Fernandes</a></p>'
+            f'<p>{iconRef} <a href="https://dellustrations.com/ )">Dellustrations</a></p>'
             f'<p>{gifRef} <a href="https://pixabay.com/users/placidplace-25572496/">Placidplace</a></p>'
             f'<p>{licence1}</p>'
             f'<p>{licence2}</p>'

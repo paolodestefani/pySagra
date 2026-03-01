@@ -86,7 +86,7 @@ def preferences() -> None:
     mw = session['mainwin']
     auth = currentAction['sys_preferences'].data()
     title = currentAction['sys_preferences'].text()
-    icon = currentIcon['sys_preferences']
+    icon = currentIcon['system_preferences']
     dialog = PreferencesDialog(mw, title, icon, auth)
     dialog.show()
     logger.info('Preferences dialog shown')

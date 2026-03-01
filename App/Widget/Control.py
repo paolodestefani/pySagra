@@ -120,7 +120,6 @@ class LabelImage(QLabel):
             return None
 
     def _set_imageBytearray(self, ba: QByteArray|None) -> None:
-        #print(type(ba))
         if ba:
             pix = QPixmap()
             pix.loadFromData(ba)
@@ -137,7 +136,70 @@ class LabelImage(QLabel):
     def clear(self) -> None:
         super().clear()
         self.setText(_tr("Controls", "NO IMAGE"))
+        
 
+
+# class LabelImage(QLabel):
+#     imageChanged = Signal()
+
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#         self._ba = QByteArray()  # Cache interna per i byte
+#         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+#         self.setText("NO IMAGE")
+
+#     def setPixmap(self, pixmap: QPixmap|QImage) -> None:
+#         """Override del metodo standard per intercettare l'upload manuale"""
+#         super().setPixmap(pixmap)
+#         # Svuotiamo la cache così il getter saprà di dover rigenerare i byte dalla pixmap
+#         self._ba = QByteArray() 
+#         self.imageChanged.emit()
+
+#     def _get_imageBytearray(self) -> QByteArray:
+#         """Restituisce i byte per il database (chiamato dal Mapper/Modello)"""
+#         # Se la cache è vuota ma c'è una pixmap (impostata via upload), generiamo i byte
+#         if self._ba.isEmpty() and self.pixmap() and not self.pixmap().isNull():
+#             ba = QByteArray()
+#             buf = QBuffer(ba)
+#             buf.open(QIODeviceBase.OpenModeFlag.WriteOnly)
+#             self.pixmap().save(buf, "PNG")
+#             self._ba = ba
+#         return self._ba
+
+#     def _set_imageBytearray(self, ba: QByteArray | None) -> None:
+#         """Imposta l'immagine dai byte (chiamato dal Database via Mapper)"""
+#         # Se i dati in ingresso sono uguali alla cache, non facciamo nulla (ottimizzazione)
+#         if ba == self._ba:
+#             return
+            
+#         self._ba = QByteArray(ba) if ba else QByteArray()
+        
+#         if not self._ba.isEmpty():
+#             pix = QPixmap()
+#             if pix.loadFromData(self._ba):
+#                 # Usiamo il metodo della classe base per non resettare la cache
+#                 super().setPixmap(pix)
+#             else:
+#                 self.clear()
+#         else:
+#             self.clear()
+        
+#         self.imageChanged.emit()
+
+#     def clear(self) -> None:
+#         """Svuota immagine e cache"""
+#         self._ba = QByteArray()
+#         super().clear()
+#         self.setText("NO IMAGE")
+#         self.imageChanged.emit()
+
+#     # Definizione della Property per il QDataWidgetMapper
+#     imageBytearray = Property(QByteArray, 
+#                               fget=_get_imageBytearray, 
+#                               fset=_set_imageBytearray, 
+#                               notify=imageChanged, 
+#                               user=True)
+    
 
 class SpinBoxDecimal(QDoubleSpinBox):
 

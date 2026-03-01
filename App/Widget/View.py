@@ -224,46 +224,46 @@ class EnhancedTableView(QTableView):
         self.cmResizeRowsToContent.triggered.connect(self.resizeRowsToContents)
         # export to CSV file
         self.cmExport = QAction(_tr("View", "Export to CSV file"), self)
-        self.cmExport.setIcon(currentIcon['edit_export'])
+        #self.cmExport.setIcon(currentIcon['edit_export'])
         self.cmExport.triggered.connect(self.exportView)
         # layout customizations
         self.cmCustomizations = QMenu(_tr("View", "Set layout"), self)
-        self.cmCustomizations.setIcon(currentIcon['view_layout'])
+        #self.cmCustomizations.setIcon(currentIcon['view_layout'])
         self.ag = QActionGroup(self)
         # customizations are inserted in a separate method after name assignement
         self.ag.triggered.connect(self.setStoredLayout)
         if session['can_edit_views']:
             # save customization
             self.cmUpdateLayout = QAction(_tr("View", "Update current layout"), self)
-            self.cmUpdateLayout.setIcon(currentIcon['edit_save'])
+            #self.cmUpdateLayout.setIcon(currentIcon['edit_save'])
             self.cmUpdateLayout.triggered.connect(self.updateViewLayout)
             # delete view layout
             self.cmDelete = QAction(_tr("View", "Delete current layout"), self)
-            self.cmDelete.setIcon(currentIcon['view_delete'])
+            #self.cmDelete.setIcon(currentIcon['view_delete'])
             self.cmDelete.triggered.connect(self.deleteViewLayout)
             # set as default current view layout
             self.cmDefault = QAction(_tr("View", "Set current layout as default"), self)
-            self.cmDefault.setIcon(currentIcon['view_default'])
+            #self.cmDefault.setIcon(currentIcon['view_default'])
             self.cmDefault.triggered.connect(self.defaultViewLayout)
             # save customization as
             self.cmSaveLayout = QAction(_tr("View", "Save current layout as ..."), self)
-            self.cmSaveLayout.setIcon(currentIcon['edit_save_as'])
+            #self.cmSaveLayout.setIcon(currentIcon['edit_save_as'])
             self.cmSaveLayout.triggered.connect(self.saveViewLayoutAs)
             # hide current column
             self.cmHide = QAction(_tr("View", "Hide current column"), self)
-            self.cmHide.setIcon(currentIcon['view_hide_column'])
+            #self.cmHide.setIcon(currentIcon['view_hide_column'])
             self.cmHide.triggered.connect(self.hideCurrentColumn)
             # show all view columns
             self.cmShow = QAction(_tr("View", "Show all columns"), self)
-            self.cmShow.setIcon(currentIcon['view_show_columns'])
+            #self.cmShow.setIcon(currentIcon['view_show_columns'])
             self.cmShow.triggered.connect(self.showAllColumns)
             # reset view state
             self.cmReset = QAction(_tr("View", "Reset view state"), self)
-            self.cmReset.setIcon(currentIcon['edit_reload'])
+            #self.cmReset.setIcon(currentIcon['edit_reload'])
             self.cmReset.triggered.connect(self.resetViewState)
             # manage view settings
             self.cmManage = QAction(_tr("View", "Manage settings"), self)
-            self.cmManage.setIcon(currentIcon['view_configure'])
+            #self.cmManage.setIcon(currentIcon['view_configure'])
             self.cmManage.triggered.connect(self.manageSettings)
         # add actions to context menu
         self.cm = QMenu(self)

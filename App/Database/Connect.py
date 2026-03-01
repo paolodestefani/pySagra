@@ -165,13 +165,14 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
     #         logging.error("Connection lost")
     #         session['mainwin'].disconnected(er)
 
-    def cursor(self, row_factory: Optional[psycopg.rows.RowFactory[Any]] = None
+    def cursor(self, row_factory: Optional[psycopg.rows.RowFactory[Any]] = None,
+                binary: bool = False
                ) -> psycopg.Cursor[Any]|psycopg.ServerCursor[Any]:
         "Returns a new cursor"
         if row_factory is None:
-            return self._conn.cursor()
+            return self._conn.cursor(binary=binary)
         else:
-            return self._conn.cursor(row_factory=row_factory)
+            return self._conn.cursor(row_factory=row_factory, binary=binary)
 
     def transaction(self, savepoint: str|None = None, force_rollback: bool = False
                     ) -> ContextManager[psycopg.Transaction]:

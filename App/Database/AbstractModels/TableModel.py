@@ -49,6 +49,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
+from PySide6.QtCore import QByteArray
 
 # application modules
 from App import session
@@ -592,12 +593,22 @@ class TableModel(QAbstractTableModel):
                     args.update({k: pkey[k] for k in pkey})
                     logger.info(f"**** {self.repr} UPDATE script ****\n{script}")
                     logger.info(f"**** {self.repr} UPDATE args   ****\n{args}")
+                    
+                    for k, v in args.items():
+                        #print("Key:", k, "Value:", v, "Type:", type(v))
+                        if isinstance(v, QByteArray):
+                            print(f"CAMPO {k}: Invio binario puro, dimensione {v.size()} bytes")
                     cur.execute(script, args)
                     # repopulate the modified row
                     for record in cur:
                         # selected fields
                         for index in range(self.cols):
                             self.dataSet[row][index] = record[index]
+                            # DEBUG: Verifica cosa è tornato dal database
+                            if isinstance(self.dataSet[row][index], QByteArray):
+                                logger.info(f"RICEVUTO correttamente QByteArray per colonna {index}")
+                            else:
+                                logger.error(f"ERRORE: Ricevuto tipo {type(record[index])} invece di QByteArray")
                         # row object version
                         self.dataSet[row][ovfield] = record[-1] # ovfield is always the last onefield
                     self.dataChanged.emit(self.createIndex(row, 0),
