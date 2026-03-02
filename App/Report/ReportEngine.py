@@ -251,7 +251,7 @@ defaultOptions = {'documentName':           'pyReportEngine document',
                   'rightMargin':            5.0,
                   'barcodeType':            None,
                   'fontName':               'Arial',
-                  'fontSize':               8,
+                  'fontSize':               8.0,
                   'fontItalic':             False,
                   'fontWeight':             'Normal',
                   'textAlign':              'AlignLeft',
@@ -349,7 +349,7 @@ class BaseRenderer():
         self.height = float(paramdict.get("height", 0))
         self.barcode = paramdict.get("barcodeType", options['barcodeType'])
         self.fontName = paramdict.get("fontName", options['fontName'])
-        self.fontSize = int(paramdict.get("fontSize", options['fontSize']))
+        self.fontSize = float(paramdict.get("fontSize", options['fontSize']))
         self.MacOSFontScaleFactor = int(paramdict.get("MacOSFontScaleFactor", options['MacOSFontScaleFactor']))
         self.fontItalic = 'True' == paramdict.get("fontItalic", options['fontItalic'])
         self.fontWeight = FontWeight[paramdict.get("fontWeight", options['fontWeight'])]
@@ -411,6 +411,9 @@ class BaseRenderer():
         # if an object is not visible don't need to check height
         if not self.isVisible:
             return bandHeight
+        # if the object can't grow return the band height without checking the content height
+        if self.canGrow is False:
+            return max(self.height, bandHeight)
         painter = self.report.painter
         height = self.height if bandOffset + self.top + self.height <= bandOffset + bandHeight else bandHeight - self.top
         # check image
@@ -425,10 +428,13 @@ class BaseRenderer():
         painter.save()
         # for MacOS font scale factor %
         if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-            fontSize = int(self.fontSize * self.MacOSFontScaleFactor / 100.0)
+            #fontSize = float(self.fontSize * self.MacOSFontScaleFactor / 100.0)
+            fontSize = float(self.fontSize * 96.0 / 72.0)
         else:
             fontSize = self.fontSize 
-        painter.setFont(QFont(self.fontName, fontSize, self.fontWeight, self.fontItalic))
+        font = QFont(self.fontName, 8, self.fontWeight, self.fontItalic)
+        font.setPointSizeF(fontSize)
+        painter.setFont(font)
         text = self.textFormat() or ' '  # for painter.boundingRect a string NOT empty is required
         flags = self.textAlign
         if self.canGrow:
@@ -459,10 +465,13 @@ class BaseRenderer():
         painter.setPen(pen)
         # for MacOS font scale factor %
         if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-            fontSize = int(self.fontSize * self.MacOSFontScaleFactor / 100.0)
+            #fontSize = int(self.fontSize * self.MacOSFontScaleFactor / 100.0)
+            fontSize = float(self.fontSize * 96.0 / 72.0)
         else:
             fontSize = self.fontSize
-        painter.setFont(QFont(self.fontName, fontSize, self.fontWeight, self.fontItalic))
+        font = QFont(self.fontName, 8, self.fontWeight, self.fontItalic)
+        font.setPointSizeF(fontSize)
+        painter.setFont(font)
         # effect
         painter.setOpacity(self.opacity)
         # contain the dimentions into the band boundary
@@ -674,6 +683,7 @@ class Line():
         y1 = self.y1 + bandOffset if self.y1 + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
         y2 = self.y2 + bandOffset if self.y2 + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
         # draw
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.drawLine(QLineF(self.x1,
                                 y1,
                                 self.x2,
@@ -729,7 +739,7 @@ class Rectangle():
         # contain the dimentions into the band boundary
         top = self.top + bandOffset if self.top + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
         height = self.height if bandOffset + self.top + self.height <= bandOffset + bandHeight else bandHeight - self.top
-
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         # draw
         if self.xRadius and self.yRadius:
             # draw a rounded rectangle
@@ -1019,7 +1029,7 @@ class Report():
                 if child.tag == 'parameter':
                     param = child.attrib.get('id')
                     ptype = child.attrib.get('type')
-                    value = None
+                    value: bool|int|float|QDate|str|None = None
                     items: dict = {}
                     referenceList = child.attrib.get('reference')
                     df = child.attrib.get('default')
@@ -1031,15 +1041,17 @@ class Report():
                         case 'bool':
                             value = True if df == 'True' else False
                         case 'int':
-                            value = int(df) # type: ignore
+                            value = int(df)
                         case 'float':
-                            value = float(df) # type: ignore
+                            value = float(df)
                         case 'str':
-                            value = df or '' # type: ignore
+                            value = df or ''
                         case 'date':
-                            value = QDate.fromString(df, 'yyyyMMdd') # type: ignore
+                            value = QDate.fromString(df, 'yyyyMMdd')
+                            if not value.isValid():
+                                value = QDate.fromString('19000101', 'yyyyMMdd') # fallback to a default date if parsing failed
                         case 'list':
-                            value = df # type: ignore
+                            value = df
                         case _:
                             raise ReportXMLParseError(f"Parameter with wrong/without type "
                                                     f"attribute: <parameter id='{param}'> with type '{ptype}'")
@@ -1138,13 +1150,23 @@ class Report():
                                  PSUnit[self.options["unit"]]) # type: ignore
         else:
             pageSize = QPageSize(PageSize[self.options['pageSize']]) # type: ignore
-        self.pageLayout = QPageLayout(pageSize,
-                                      Orientation[self.options['orientation']], # type: ignore
-                                      QMarginsF(self.options['leftMargin'], # type: ignore
-                                                self.options['topMargin'],
-                                                self.options['rightMargin'],
-                                                self.options['bottomMargin']),
-                                      Unit[self.options["unit"]]) # type: ignore
+        # self.pageLayout = QPageLayout(pageSize,
+        #                               Orientation[self.options['orientation']], # type: ignore
+        #                               QMarginsF(self.options['leftMargin'], # type: ignore
+        #                                         self.options['topMargin'],
+        #                                         self.options['rightMargin'],
+        #                                         self.options['bottomMargin']),
+        #                               Unit[self.options["unit"]]) # type: ignore
+        self.pageLayout = QPageLayout()
+        self.pageLayout.setPageSize(pageSize)
+        self.pageLayout.setOrientation(Orientation[self.options['orientation']]) # type: ignore
+        #self.pageLayout.setMode(QPageLayout.Mode.FullPageMode)
+        self.pageLayout.setMargins(QMarginsF(self.options['leftMargin'], # type: ignore
+                                            self.options['topMargin'],
+                                            self.options['rightMargin'],
+                                            self.options['bottomMargin'])) # type: ignore
+        self.pageLayout.setUnits(Unit[self.options["unit"]]) # type: ignore
+        
 
     def setData(self, dataSet: list[Any]|tuple[Any]|None = None) -> None:
         self.data = dataSet
@@ -1360,10 +1382,10 @@ if __name__ == "__main__":
     xml_string0 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
-        <topMargin type="float">0.0</topMargin>
-        <bottomMargin type="float">0.0</bottomMargin>
-        <leftMargin type="float">0.0</leftMargin>
-        <rightMargin type="float">0.0</rightMargin>
+        <topMargin type="float">10.0</topMargin>
+        <bottomMargin type="float">10.0</bottomMargin>
+        <leftMargin type="float">10.0</leftMargin>
+        <rightMargin type="float">10.0</rightMargin>
     </options>
     <columns>
         <fieldName>Empty</fieldName>
