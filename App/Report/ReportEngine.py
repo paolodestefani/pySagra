@@ -189,6 +189,12 @@ PageSize = {'A0':           QPageSize.PageSizeId.A0,
             'Tabloid':      QPageSize.PageSizeId.Tabloid,
             'Custom':       QPageSize.PageSizeId.Custom}
 
+PageLayoutMode = {'Standard': QPageLayout.Mode.StandardMode, # Default
+                  'FullPage': QPageLayout.Mode.FullPageMode} 
+# in full page mode the margins are ignored and the whole page is available for printing,
+# in standard mode the margins are applied and the printable area is reduced by the margins
+# usefull with printdavices that fails to set payge layout
+
 # standard font properties
 
 FontWeight = {'Thin':       QFont.Weight.Thin,
@@ -244,6 +250,7 @@ defaultOptions = {'documentName':           'pyReportEngine document',
                   'orientation':            'Portrait',
                   'unit':                   'Point',
                   'pageSize':               'A4',
+                  'pageLayoutMode':         'Standard',
                   'ignoreWarningOnSetPageLayout': False,
                   'topMargin':              5.0,
                   'bottomMargin':           5.0,
@@ -1160,11 +1167,11 @@ class Report():
         self.pageLayout = QPageLayout()
         self.pageLayout.setPageSize(pageSize)
         self.pageLayout.setOrientation(Orientation[self.options['orientation']]) # type: ignore
-        #self.pageLayout.setMode(QPageLayout.Mode.FullPageMode)
+        self.pageLayout.setMode(PageLayoutMode[self.options['pageLayoutMode']]) # type: ignore
         self.pageLayout.setMargins(QMarginsF(self.options['leftMargin'], # type: ignore
-                                            self.options['topMargin'],
-                                            self.options['rightMargin'],
-                                            self.options['bottomMargin'])) # type: ignore
+                                             self.options['topMargin'],
+                                             self.options['rightMargin'],
+                                             self.options['bottomMargin'])) # type: ignore
         self.pageLayout.setUnits(Unit[self.options["unit"]]) # type: ignore
         
 
@@ -1384,6 +1391,7 @@ if __name__ == "__main__":
     <options>
         <topMargin type="float">10.0</topMargin>
         <bottomMargin type="float">10.0</bottomMargin>
+        <pageLayoutMode type="str">FullPage</pageLayoutMode>
         <leftMargin type="float">10.0</leftMargin>
         <rightMargin type="float">10.0</rightMargin>
     </options>
