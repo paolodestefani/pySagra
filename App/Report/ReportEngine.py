@@ -671,6 +671,61 @@ class Line():
         return
 
 
+class Ellipse():
+    "Ellipse class"
+
+    def __init__(self, options: dict, paramdict: dict, text: str|None) -> None: # text is required for generic drawobj
+        self.isVisible = True
+        self.isVisibleParameter = paramdict.get("isVisibleParameter")
+        self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
+        self.report = options['reportInstance']
+        self.left = float(paramdict.get("left", 0.0))
+        self.top = float(paramdict.get("top", 0.0))
+        self.width = float(paramdict.get("width", 0.0))
+        self.height = float(paramdict.get("height", 0.0))
+        #self.xRadius = float(paramdict.get("xRadius", 0.0)) or None
+        #self.yRadius = float(paramdict.get("yRadius", 0.0)) or None
+        self.lineWidth = float(paramdict.get("lineWidth", 0.0))
+        self.color = QColor(paramdict.get("color", options['color']))
+        self.style = PenStyle[paramdict.get("style", options['lineStyle'])]
+        #self.brushColor = QColor(paramdict.get("brushColor", options['color']))
+        #self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
+        self.opacity = float(paramdict.get("opacity", options['opacity']))
+
+    def render(self, bandHeight: float) -> None:
+        if self.isVisibleParameter:
+            self.isVisible = self.report.parameter[self.isVisibleParameter]
+        if self.isNotVisibleParameter:
+            self.isVisible = not self.report.parameter[self.isNotVisibleParameter]
+        if not self.isVisible:
+            return
+        painter = self.report.painter
+        painter.save()
+        # pen for outline, brush for fill
+        pen = QPen()
+        pen.setColor(self.color)
+        pen.setWidthF(self.lineWidth)
+        pen.setStyle(self.style)
+        pen.setCapStyle(Qt.PenCapStyle.FlatCap)
+        painter.setPen(pen)
+        # if self.brushStyle != Qt.BrushStyle.NoBrush:
+        #     brush = QBrush()
+        #     brush.setStyle(self.brushStyle)
+        #     brush.setColor(self.brushColor)
+        #     painter.setBrush(brush)
+        painter.setOpacity(self.opacity)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        # draw
+        delta = pen.widthF()
+        
+        # draw an ellipse as a rounded rectangle
+        painter.drawEllipse(QRectF(self.left + delta / 2,
+                                        self.top + delta / 2,
+                                        self.width -  delta,
+                                        self.height - delta))
+        painter.restore()
+
+
 class Rectangle():
     "Rectangle class"
 
@@ -727,10 +782,10 @@ class Rectangle():
                                     self.yRadius)
         else:
             # draw a rectangle
-            painter.drawRect(QRectF(self.left,
-                                    self.top,
-                                    self.width,
-                                    self.height - pen.widthF())) # for rect the height must be reduced of half line width to avoid that the border is cut
+            painter.drawRect(QRectF(self.left + delta / 2,
+                                    self.top + delta / 2,
+                                    self.width - delta,
+                                    self.height - delta)) # for rect the height must be reduced of half line width to avoid that the border is cut
         painter.restore()
 
 
@@ -784,6 +839,7 @@ drawobj = {"label": Label,
            "summary": Summary,
            "special": Special,
            "line": Line,
+           "ellipse": Ellipse,
            "rectangle": Rectangle,
            "image": Image}
 
@@ -1147,7 +1203,7 @@ class Report():
         self.pages.append(page)
         # set page margins left/top using clipping
         self.painter.resetTransform()
-        self.painter.translate(self.options['leftMargin'],
+        self.painter.translate(self.options['leftMargin'], # type: ignore
                                self.options['topMargin'])
         # set margins for page layout using clipping
         self.painter.setClipRect(QRectF(0, 
@@ -1365,10 +1421,10 @@ if __name__ == "__main__":
     xml_string0 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
-        <topMargin type="float">10.0</topMargin>
-        <bottomMargin type="float">10.0</bottomMargin>
-        <leftMargin type="float">10.0</leftMargin>
-        <rightMargin type="float">10.0</rightMargin>
+        <topMargin type="float">0.0</topMargin>
+        <bottomMargin type="float">0.0</bottomMargin>
+        <leftMargin type="float">0.0</leftMargin>
+        <rightMargin type="float">0.0</rightMargin>
     </options>
     <columns>
         <fieldName>code</fieldName>
@@ -1379,25 +1435,34 @@ if __name__ == "__main__":
         <fieldName>date</fieldName>
     </columns>
     <pageBackground>
-        <rectangle color="red" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="3.0"/>
-        <line x1="0.0" y1="0.0" x2="595.0" y2="842.0" lineWidth="1.0"/>
-        <line x1="595.0" y1="0.0" x2="0.0" y2="842.0" lineWidth="1.0"/>
+        <rectangle color="red" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="5.0"/>
+        <ellipse color="blue" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="1.0"/>
+        <ellipse color="blue" left="48.0" top="171.0" width="500.0" height="500.0" lineWidth="1.0"/>
+        <ellipse color="blue" left="148.0" top="271.0" width="300.0" height="300.0" lineWidth="1.0"/>
+        <ellipse color="blue" left="198.0" top="321.0" width="200.0" height="200.0" lineWidth="1.0"/>
+        <line color="blue" x1="0.0" y1="0.0" x2="595.0" y2="842.0" lineWidth="1.0"/>
+        <line color="blue" x1="595.0" y1="0.0" x2="0.0" y2="842.0" lineWidth="1.0"/>
     </pageBackground>
     <pageHeader>
         <band height="75.0">
             <label left="0.0" top="10.0" width="595.0" height="50.0" color="blue"
                 fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="32"
                 textAlign="AlignHCenter">*** MINIMAL REPORT EXAMPLE ***</label>
-            <label left="0.0" top="60.0" width="595.0" height="80.0">line example</label>
+        </band>
+        <band height="50.0">
+            <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">This is the page header</label>
+            <label left="0.0" top="15.0" width="595.0" height="15.0" textAlign="AlignHCenter">A report must have at least one record</label>
+            <label left="0.0" top="30.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins and page background</label>
         </band>
     </pageHeader>
     <details>
-        <band height="100.0" canGrow="True">
-            <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">A report must have at least one record, even if it is empty.</label>
-            <label left="0.0" top="10.0" width="595.0" height="15.0" textAlign="AlignHCenter">In this example the dataset is one record of one field that is None/Null</label>
-            <label left="0.0" top="20.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins, page background and one dataset line</label>
-            <field left="15.0" top="30.0" width="30" height="20" fontFamily="Courier New" textAlign="AlignLeft">code</field>
-            <field left="45.0" top="30.0" width="100" height="20" fontFamily="Courier New" textAlign="AlignLeft" canGrow="True">description</field>
+        <band height="30.0" canGrow="True">
+            <field left="10.0" top="0.0" width="100" height="15" textAlign="AlignLeft">code</field>
+            <field left="110.0" top="0.0" width="200" height="15" textAlign="AlignLeft" canGrow="True">description</field>
+            <field left="310.0" top="0.0" width="100" height="15" textAlign="AlignLeft">department</field>
+            <field left="410.0" top="0.0" width="50" height="15" textAlign="AlignHCenter">stock_control</field>
+            <field left="460.0" top="0.0" width="60" height="15" textAlign="AlignRight">quantity</field>
+            <field left="520.0" top="0.0" width="70" height="15" textAlign="AlignRight">date</field>
         </band>
     </details>
 </report>
@@ -1486,7 +1551,7 @@ if __name__ == "__main__":
         <label left="0.0" top="20.0" width="550.0" height="38.0" color="blue"
         fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
         textAlign="AlignHCenter">Example of a complete report</label>
-        <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="72.0" width="585.0" height="15.0" lineWidth="1.0"/>
+        <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="85.0" width="575.0" height="15.0" lineWidth="1.0"/>
         <label left="5.0" top="60.0" width="585.0" height="15.0" fontSize="6">A complete report with 2 level of grouping, department and date, and aggregate functions</label>
         <label left="5.0" top="75.0" width="100.0" height="15.0">Code</label>
         <label left="100.0" top="75.0" width="240.0" height="15.0">Description</label>
