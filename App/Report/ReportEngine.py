@@ -25,7 +25,7 @@
 items/tuples or SQL query
 
 This module is a pure PySide6 simple report engine for printing reports.
-The report definition is an XML document. The dataset are a python list or
+The report definition is an XML document string. The dataset are a python list or
 tuple or the result set of an SQL query.
 
 Architecture:
@@ -33,6 +33,7 @@ A report definition is made of bands. Every band is a collection of painting
 objects (label, fields, lines, images, etc.). Every band have a fixed
 height (but can grow). Every object has position relative to the including band.
 In every report we can have this sections:
+- a page background printed as a background of every page
 - a page header printed at the beginning of every page
 - a report header printed at the beginning of the
   report in the first page after the page header
@@ -54,13 +55,13 @@ All sections are optional but a report need at least one detail band.
 # standard library
 import sys
 import os
-from typing import Any
 import collections
 import decimal
 import itertools
 import xml.etree.ElementTree as ET
 import operator
 import logging
+from typing import Any
 
 # PySide6
 from PySide6.QtCore import QOperatingSystemVersion
@@ -189,12 +190,6 @@ PageSize = {'A0':           QPageSize.PageSizeId.A0,
             'Tabloid':      QPageSize.PageSizeId.Tabloid,
             'Custom':       QPageSize.PageSizeId.Custom}
 
-PageLayoutMode = {'Standard': QPageLayout.Mode.StandardMode, # Default
-                  'FullPage': QPageLayout.Mode.FullPageMode} 
-# in full page mode the margins are ignored and the whole page is available for printing,
-# in standard mode the margins are applied and the printable area is reduced by the margins
-# usefull with printdavices that fails to set payge layout
-
 # standard font properties
 
 FontWeight = {'Thin':       QFont.Weight.Thin,
@@ -250,14 +245,13 @@ defaultOptions = {'documentName':           'pyReportEngine document',
                   'orientation':            'Portrait',
                   'unit':                   'Point',
                   'pageSize':               'A4',
-                  'pageLayoutMode':         'Standard',
                   'ignoreWarningOnSetPageLayout': False,
                   'topMargin':              5.0,
                   'bottomMargin':           5.0,
                   'leftMargin':             5.0,
                   'rightMargin':            5.0,
                   'barcodeType':            None,
-                  'fontName':               'Arial',
+                  'fontFamily':             'Arial',
                   'fontSize':               8.0,
                   'fontItalic':             False,
                   'fontWeight':             'Normal',
@@ -271,11 +265,13 @@ defaultOptions = {'documentName':           'pyReportEngine document',
                   'opacity':                1.0,
                   'quantityDecimals':       2,
                   'currencySymbol':         '€',
-                  'MacOSFontScaleFactor':   120.0, # percent
                   'trueSymbol':             '\u25CF',
                   'falseSymbol':            '\u25CB'
                   }
 
+
+
+### CODE 39 BARCODE ENCODING FUNCTION ###
 
 # code39 barcode characters
 CODE39CHRS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%'
@@ -301,6 +297,8 @@ def code39encode(text: str, checksum: bool = False) -> str|None:
         chkchar = CODE39CHRS[chknum % 43]
     return '*' + text + chkchar + '*'
 
+
+### CODE 128 BARCODE ENCODING FUNCTION ###
 
 # Source - https://stackoverflow.com/a
 # Posted by Mark Ransom, modified by community. See post 'Timeline' for change history
@@ -339,7 +337,7 @@ def code128encode(s: str) -> str|None:
 
 
 
-# base elements
+### BASE RENDER OBJECTS ###
 
 class BaseRenderer():
     "Base class for all tex renderer elements"
@@ -350,14 +348,13 @@ class BaseRenderer():
         self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
         self.report = options['reportInstance']
         self.fieldFormat = paramdict.get("format", "")
-        self.left = float(paramdict.get("left", 0))
-        self.top = float(paramdict.get("top", 0))
+        self.left = float(paramdict.get("left", 0)) + options['leftMargin']
+        self.top = float(paramdict.get("top", 0)) + options['topMargin']
         self.width = float(paramdict.get("width", 0))
         self.height = float(paramdict.get("height", 0))
         self.barcode = paramdict.get("barcodeType", options['barcodeType'])
-        self.fontName = paramdict.get("fontName", options['fontName'])
+        self.fontFamily = paramdict.get("fontFamily", options['fontFamily'])
         self.fontSize = float(paramdict.get("fontSize", options['fontSize']))
-        self.MacOSFontScaleFactor = int(paramdict.get("MacOSFontScaleFactor", options['MacOSFontScaleFactor']))
         self.fontItalic = 'True' == paramdict.get("fontItalic", options['fontItalic'])
         self.fontWeight = FontWeight[paramdict.get("fontWeight", options['fontWeight'])]
         self.textAlign = TextAlign[paramdict.get("textAlign", options['textAlign'])]
@@ -413,51 +410,43 @@ class BaseRenderer():
                 text = str(self.value or '') # None for string print empty string    
         return text
     
-    def checkHeight(self, bandOffset: float, bandHeight:float) -> float:
+    def checkHeight(self, bandHeight: float) -> float:
         "Returns the new band height if band can grow"
-        # if an object is not visible don't need to check height
         if not self.isVisible:
             return bandHeight
-        # if the object can't grow return the band height without checking the content height
-        if self.canGrow is False:
-            return max(self.height, bandHeight)
+        if not self.canGrow:
+            return max(self.top + self.height, bandHeight)
+
+        if isinstance(self.value, QImage) and not self.value.isNull():
+            ratio = self.value.height() / self.value.width()
+            proportionalHeight = self.width * ratio
+            return max(self.top + proportionalHeight, bandHeight)
+
         painter = self.report.painter
-        height = self.height if bandOffset + self.top + self.height <= bandOffset + bandHeight else bandHeight - self.top
-        # check image
-        if isinstance(self.value, QImage):
-            painter.save()
-            source = QRectF(self.value.rect())
-            if height < self.height and not self.canGrow:
-                source.setHeight(height)
-            painter.restore()
-            return max(source.height(), bandHeight)
-        # check text elements
         painter.save()
-        # for MacOS font scale factor %
+        
+        # Setup Font (MacOS vs Others)
         if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-            #fontSize = float(self.fontSize * self.MacOSFontScaleFactor / 100.0)
-            fontSize = float(self.fontSize * 96.0 / 72.0)
+            fontSize = float(self.fontSize * 96.0 / 72.0) 
         else:
-            fontSize = self.fontSize 
-        font = QFont(self.fontName, 8, self.fontWeight, self.fontItalic)
+            fontSize = self.fontSize
+        font = QFont(self.fontFamily, 8, self.fontWeight, self.fontItalic)
         font.setPointSizeF(fontSize)
         painter.setFont(font)
-        text = self.textFormat() or ' '  # for painter.boundingRect a string NOT empty is required
-        flags = self.textAlign
-        if self.canGrow:
-            flags |= Qt.TextFlag.TextWordWrap
-        rect = painter.boundingRect(QRectF(self.left,
-                                           self.top,
-                                           self.width,
-                                           self.height),
+        
+        text = self.textFormat() or ' ' 
+        flags = self.textAlign | Qt.TextFlag.TextWordWrap
+
+        # boundingRect returns the rectangle needed to draw the text with the specified width and flags
+        rect = painter.boundingRect(QRectF(self.left, self.top, self.width, 9999),
                                     flags,
                                     text)
         painter.restore()
-        if rect.height():
-            return max(rect.height(), bandHeight)
+        if rect.isValid():
+            return max(self.top + rect.height(), bandHeight)
         return bandHeight
 
-    def render(self, bandOffset:float, bandHeight:float) -> None:
+    def render(self, bandHeight:float) -> None:
         "Paint an image or text"
         if self.isVisibleParameter:
             self.isVisible = self.report.parameter[self.isVisibleParameter]
@@ -467,53 +456,39 @@ class BaseRenderer():
             return
         painter = self.report.painter
         painter.save()
+        
         pen = QPen()
         pen.setColor(QColor(self.color))
         painter.setPen(pen)
-        # for MacOS font scale factor %
+        # for MacOS set font size with scale factor %
         if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-            #fontSize = int(self.fontSize * self.MacOSFontScaleFactor / 100.0)
             fontSize = float(self.fontSize * 96.0 / 72.0)
         else:
             fontSize = self.fontSize
-        font = QFont(self.fontName, 8, self.fontWeight, self.fontItalic)
+        font = QFont(self.fontFamily, 8, self.fontWeight, self.fontItalic)
         font.setPointSizeF(fontSize)
         painter.setFont(font)
-        # effect
         painter.setOpacity(self.opacity)
-        # contain the dimentions into the band boundary
-        top = self.top + bandOffset if self.top + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
-        height = self.height if bandOffset + self.top + self.height <= bandOffset + bandHeight else bandHeight - self.top
-
-        # draw image
-        if isinstance(self.value, QImage):
-            source = QRectF(self.value.rect())
-            if height < self.height and (not self.canGrow):
-                source.setHeight(height)
-            painter.drawImage(QRectF(self.left,
-                                     top,
-                                     self.width,
-                                     height),
-                              self.value,
-                              source)
-            painter.restore()
-            return
-
-        # draw text convertable values
-        text = self.textFormat()
-        flags = self.textAlign
+        
+        target_rect = QRectF(self.left, self.top, self.width, self.height)
         if self.canGrow:
-            flags |= Qt.TextFlag.TextWordWrap
-            height = bandHeight
-        # draw text
-        painter.drawText(QRectF(self.left,
-                                top,
-                                self.width,
-                                height),
-                         flags,
-                         text)
+            target_rect.setHeight(max(self.height, bandHeight - self.top))
+        
+        if isinstance(self.value, QImage):
+            painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+            painter.drawImage(target_rect,
+                              self.value,
+                              self.value.rect(), 
+                              Qt.AspectRatioMode.KeepAspectRatio)
+        else:
+            text = self.textFormat()
+            if text:
+                flags = self.textAlign
+                if self.canGrow:
+                    flags |= Qt.TextFlag.TextWordWrap
+                painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+                painter.drawText(target_rect, flags, text)
         painter.restore()
-        return
 
 
 class Label(BaseRenderer):
@@ -571,24 +546,25 @@ class Summary(BaseRenderer):
                 return
             self.lastValue = record[self.onRelatedField]
 
-        if self.function == 'sum':
-            self.summary += record[self.fieldName]
-        elif self.function == 'count':
-            self.summary += 1
-        elif self.function == 'min':
-            if self.items > 0:
-                self.summary = min(record[self.fieldName], self.summary)
-            else:
-                self.summary = record[self.fieldName]
-        elif self.function == 'max':
-            if self.items > 0:
-                self.summary = max(record[self.fieldName], self.summary)
-            else:
-                self.summary = record[self.fieldName]
-        elif self.function == 'average':
-            self.summary += record[self.fieldName]
-        else:
-            pass
+        match self.function:
+            case 'sum':
+                self.summary += record[self.fieldName]
+            case 'count':
+                self.summary += 1
+            case 'min':
+                if self.items > 0:
+                    self.summary = min(record[self.fieldName], self.summary)
+                else:
+                    self.summary = record[self.fieldName]
+            case 'max':
+                if self.items > 0:
+                    self.summary = max(record[self.fieldName], self.summary)
+                else:
+                    self.summary = record[self.fieldName]
+            case 'average':
+                self.summary += record[self.fieldName]
+            case _:
+                pass
         self.items += 1
 
     def reset(self) -> None:
@@ -596,7 +572,7 @@ class Summary(BaseRenderer):
         self.summary = 0
         self.items = 0
 
-    def render(self, bandOffset: float, bandHeight: float) -> None:
+    def render(self, bandHeight: float) -> None:
         if self.function == 'average':
             if self.items != 0:
                 self.value = self.summary / self.items
@@ -604,7 +580,7 @@ class Summary(BaseRenderer):
                 self.value = f"{self.summary}/{self.items}"
         else:
             self.value = self.summary
-        super().render(bandOffset, bandHeight)
+        super().render(bandHeight)
 
 
 class Special(BaseRenderer):
@@ -615,7 +591,7 @@ class Special(BaseRenderer):
         self.varName = varName
         self.value = None # band.render() set the field value
 
-    def render(self, bandOffset: float, bandHeight: float) -> None:
+    def render(self, bandHeight: float) -> None:
         match self.varName:
             case 'pageNumber':
                 self.value = self.report.page_num
@@ -649,7 +625,7 @@ class Special(BaseRenderer):
                 self.value.loadFromData(session['event_image'])
             case _:
                 self.value = ''
-        super().render(bandOffset, bandHeight)
+        super().render(bandHeight)
 
 
 class Line():
@@ -669,7 +645,7 @@ class Line():
         self.lineWidth = float(paramdict.get("lineWidth", options['lineWidth']))
         self.style = PenStyle[paramdict.get("style", options['lineStyle'])]
 
-    def render(self, bandOffset: float, bandHeight: float) -> None:
+    def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
             self.isVisible = self.report.parameter[self.isVisibleParameter]
         if self.isNotVisibleParameter:
@@ -684,17 +660,13 @@ class Line():
         pen.setStyle(self.style)
         pen.setCapStyle(Qt.PenCapStyle.FlatCap)
         painter.setPen(pen)
-        # effect
         painter.setOpacity(self.opacity)
-        # contain the dimentions into the band boundary
-        y1 = self.y1 + bandOffset if self.y1 + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
-        y2 = self.y2 + bandOffset if self.y2 + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
         # draw
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.drawLine(QLineF(self.x1,
-                                y1,
+                                self.y1,
                                 self.x2,
-                                y2))
+                                self.y2))
         painter.restore()
         return
 
@@ -720,7 +692,7 @@ class Rectangle():
         self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
         self.opacity = float(paramdict.get("opacity", options['opacity']))
 
-    def render(self, bandOffset: float, bandHeight: float) -> None:
+    def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
             self.isVisible = self.report.parameter[self.isVisibleParameter]
         if self.isNotVisibleParameter:
@@ -741,27 +713,24 @@ class Rectangle():
             brush.setStyle(self.brushStyle)
             brush.setColor(self.brushColor)
             painter.setBrush(brush)
-        # effect
         painter.setOpacity(self.opacity)
-        # contain the dimentions into the band boundary
-        top = self.top + bandOffset if self.top + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
-        height = self.height if bandOffset + self.top + self.height <= bandOffset + bandHeight else bandHeight - self.top
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         # draw
+        delta = pen.widthF()
         if self.xRadius and self.yRadius:
             # draw a rounded rectangle
-            painter.drawRoundedRect(QRectF(self.left,
-                                           top,
-                                           self.width,
-                                           height),
+            painter.drawRoundedRect(QRectF(self.left + delta / 2,
+                                           self.top + delta / 2,
+                                           self.width -  delta,
+                                           self.height - delta), # for rounded rect the height must be reduced of half line width to avoid that the border is cut
                                     self.xRadius,
                                     self.yRadius)
         else:
             # draw a rectangle
             painter.drawRect(QRectF(self.left,
-                                    top,
+                                    self.top,
                                     self.width,
-                                    height))
+                                    self.height - pen.widthF())) # for rect the height must be reduced of half line width to avoid that the border is cut
         painter.restore()
 
 
@@ -772,10 +741,9 @@ class Image():
         self.isVisible = 'True' == paramdict.get("isVisible", "True")
         self.isVisibleParameter = paramdict.get("isVisibleParameter")
         self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
-        #self.canGrow = 'True' == paramdict.get("canGrow", "False")
         self.report = options['reportInstance']
-        self.left = float(paramdict.get("left", 0.0))
-        self.top = float(paramdict.get("top", 0.0))
+        self.left = float(paramdict.get("left", 0.0)) + options['leftMargin']
+        self.top = float(paramdict.get("top", 0.0)) + options['topMargin']
         self.width = float(paramdict.get("width", 0.0))
         self.height = float(paramdict.get("height", 0.0))
         self.fromResource = paramdict.get("fromResource")
@@ -788,7 +756,7 @@ class Image():
             image.load(f":/{self.fromResource}")  # from resource
         self.image = image.scaled(int(self.width), int(self.height), self.aspectRatio, Qt.TransformationMode.SmoothTransformation)
 
-    def render(self, bandOffset: float, bandHeight: float) -> None:
+    def render(self, bandHeight: float) -> None:
         "Draw image if necessary"
         if self.isVisibleParameter:
             self.isVisible = self.report.parameter[self.isVisibleParameter]
@@ -798,16 +766,13 @@ class Image():
             return
         painter = self.report.painter
         painter.save()
-        # effect
         painter.setOpacity(self.opacity)
-        # contain the dimentions into the band boundary
-        top = self.top + bandOffset if self.top + bandOffset <= bandOffset + bandHeight else bandOffset + bandHeight
-        height = self.height if bandOffset + self.top + self.height <= bandOffset + bandHeight else bandHeight - self.top
         # draw
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         painter.drawImage(QRectF(self.left,
-                                 top,
+                                 self.top,
                                  self.width,
-                                 height),
+                                 self.height),
                           self.image)
         painter.restore()
 
@@ -846,7 +811,6 @@ class Band(list):
         "Render the contained objects after setting record value"
         # call newPage if have a pending request
         if self.report.newPageRequest:
-            #self.report.newPageRequest = False # must be before newPage because newPage have other bands
             self.report.newPage(record)
 
         # python scripting
@@ -873,14 +837,15 @@ class Band(list):
                 if isinstance(element, Field):
                     element.setValue(record[element.fieldName])
                 if isinstance(element, BaseRenderer):  # check heigh for fields, labels, summaries, etc.
-                    newHeight = element.checkHeight(self.report.offset, newHeight)
+                    newHeight = element.checkHeight(newHeight)
         if not self.isPageFooter:
             # start a new page if necessary
             if self.report.offset + newHeight > self.report.page_height - self.report.footer_height:
                 self.report.newPage(record)
-        # offset must be set after newPage if any
-        offset = self.report.offset
-
+        # band clippping
+        self.report.painter.save()
+        self.report.painter.translate(0, self.report.offset)
+        self.report.painter.setClipRect(QRectF(0, 0, self.report.page_width, newHeight))
         # draw band's elements
         for element in self:
             if isinstance(element, Field):
@@ -891,9 +856,9 @@ class Band(list):
                 else:
                     element.setValue(record[element.fieldName])
             # if element.isVisible:
-            element.render(offset, newHeight)
+            element.render(newHeight)
         # update report offset
-        self.report.offset += newHeight
+        self.report.offset = round(self.report.offset + newHeight, 2)
         # execute python code after rendering
         if self.executeAfter:
             exec(self.executeAfter, globalsParameters)
@@ -903,6 +868,7 @@ class Band(list):
         # new page if required
         if self.newPageAfter and self.report.rn < self.report.last_record_num:
             self.report.newPageRequest = True
+        self.report.painter.restore() # remove band clipping for next bands
 
 
 class Sort(str):
@@ -965,7 +931,6 @@ class Report():
         # report parameters as a param: value dictionary
         self.parameter: collections.OrderedDict = collections.OrderedDict()
         self.summaries: list = []  # each summary init update this list, must be set before calling setReportDefinition
-        #print('Modules:', sys.modules.keys())
         if 'App.Database.Setting' in sys.modules:
             setting = Setting()
             defaultOptions['quantityDecimals'] = setting['quantity_decimal_places']
@@ -1016,7 +981,8 @@ class Report():
             raise ReportXMLParseError("The mandatory element 'options' was not found.")
         for child in opt:
             attr = child.attrib.get('type')
-            val = child.text or '0' # for numeric and boolean options text must be not empty, for string options can be empty but not None
+            val = child.text or '0' # for numeric and boolean options text must be not empty,
+                                    # for string options can be empty but not None
             match attr:
                 case 'bool':
                     self.options[child.tag] = True if val == 'True' else False
@@ -1157,23 +1123,14 @@ class Report():
                                  PSUnit[self.options["unit"]]) # type: ignore
         else:
             pageSize = QPageSize(PageSize[self.options['pageSize']]) # type: ignore
-        # self.pageLayout = QPageLayout(pageSize,
-        #                               Orientation[self.options['orientation']], # type: ignore
-        #                               QMarginsF(self.options['leftMargin'], # type: ignore
-        #                                         self.options['topMargin'],
-        #                                         self.options['rightMargin'],
-        #                                         self.options['bottomMargin']),
-        #                               Unit[self.options["unit"]]) # type: ignore
-        self.pageLayout = QPageLayout()
-        self.pageLayout.setPageSize(pageSize)
-        self.pageLayout.setOrientation(Orientation[self.options['orientation']]) # type: ignore
-        self.pageLayout.setMode(PageLayoutMode[self.options['pageLayoutMode']]) # type: ignore
-        self.pageLayout.setMargins(QMarginsF(self.options['leftMargin'], # type: ignore
-                                             self.options['topMargin'],
-                                             self.options['rightMargin'],
-                                             self.options['bottomMargin'])) # type: ignore
-        self.pageLayout.setUnits(Unit[self.options["unit"]]) # type: ignore
-        
+        self.pageLayout = QPageLayout(pageSize,
+                                      Orientation[self.options['orientation']], # type: ignore
+                                      QMarginsF(0.0, 
+                                                0.0,
+                                                0.0,
+                                                0.0),
+                                      Unit[self.options["unit"]]) # type: ignore
+        self.pageLayout.setMode(QPageLayout.Mode.FullPageMode) # set full page mode to use the entire page for rendering, margins are handled by bands
 
     def setData(self, dataSet: list[Any]|tuple[Any]|None = None) -> None:
         self.data = dataSet
@@ -1182,21 +1139,31 @@ class Report():
         "Add a new page with header/footer if required"
         # reset newPageRequest first
         self.newPageRequest = False
-        page = QPicture()
-        self.pages.append(page)
         # close last page and start with the new one
         if self.painter.isActive():
             self.painter.end()
+        page = QPicture()
         self.painter.begin(page)
+        self.pages.append(page)
+        # set page margins left/top using clipping
+        self.painter.resetTransform()
+        self.painter.translate(self.options['leftMargin'],
+                               self.options['topMargin'])
+        # set margins for page layout using clipping
+        self.painter.setClipRect(QRectF(0, 
+                                        0, 
+                                        self.page_width,
+                                        self.page_height),
+                                 Qt.ClipOperation.ReplaceClip)
         self.page_num += 1
         # set page and footer offset
-        self.offset = float(self.options['topMargin']) # type: ignore
-        # print page background
+        self.offset = 0.0
+        # print page background objects
         if self.page_background:
             for i in self.page_background:
                 if isinstance(i, Field):
                     i.setValue(record[i.fieldName])
-                i.render(0.0, self.page_height)
+                i.render(self.page_height)
         # print page header
         if self.page_header:
             for b in self.page_header:
@@ -1272,11 +1239,17 @@ class Report():
         self.page_num = 0
         for s in self.summaries:
             s.reset()
-        # Calc space available for details bands and all the other bands
-        self.page_height = self.pageLayout.fullRect(Unit[self.options["unit"]]).height() #type: ignore
-        self.offset = float(self.options['topMargin']) #type: ignore
+        # Calculate the space available for details bands and all the other bands
+        self.page_width = (self.pageLayout.fullRect(Unit[self.options["unit"]]).width() #type: ignore
+                           - self.options['leftMargin'] #type: ignore
+                           - self.options['rightMargin']) #type: ignore
+        self.page_height = (self.pageLayout.fullRect(Unit[self.options["unit"]]).height()#type: ignore
+                            - self.options['topMargin'] #type: ignore
+                            - self.options['bottomMargin']) #type: ignore
+        self.offset = 0.0 #float(self.options['topMargin']) #type: ignore
+        
         # calc footer height
-        self.footer_height = float(self.options['bottomMargin']) #type: ignore
+        self.footer_height = 0.0 #float(self.options['bottomMargin']) #type: ignore
         if self.page_footer:
             for b in self.page_footer:
                 self.footer_height += b.height
@@ -1305,17 +1278,14 @@ class Report():
                     # sort with None values and numbers
                     self.data.sort(key= lambda i: 0 if not i[col] else i[col], reverse=rev) #type: ignore
 
-        first_record_num = 1
-        last_record_num = len(self.data)
-        self.last_record_num = last_record_num # reference for bands
+        self.rn = 1 # record number, start from 1 for compatibility with report definition functions
+        self.last_record_num = len(self.data) # reference for bands
 
         # report scripting, only one time before starting
         if self.execute:
             globalsParameters = {'Qt': Qt,
                                  'report': self}
             exec(self.execute, globalsParameters)
-
-        self.rn = first_record_num
 
         # begin with new page and report header if required on first record
         first_record = {k: self.data[0][v] for k, v in self.column.items()}
@@ -1349,22 +1319,26 @@ class Report():
         elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
             paintDevice.setTitle(self.options['documentName']) #type: ignore
         # forse printer resolution to platform specific DPI avoiding scaling problems
-        if isinstance(paintDevice, QPrinter):
-            if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
-                paintDevice.setResolution(96)  # Windows and Linux use 96 DPI          
+        #if isinstance(paintDevice, QPrinter):
+        #    if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
+        #        paintDevice.setResolution(96)  # Windows and Linux use 96 DPI          
         # force the printer page layout to the report settings
-        if not paintDevice.setPageLayout(self.pageLayout): #type: ignore
-            w = self.pageLayout.fullRect().size().width()
-            h = self.pageLayout.fullRect().size().height()
-            u = list(Unit.keys())[list(Unit.values()).index(self.pageLayout.units())]
-            if not self.options['ignoreWarningOnSetPageLayout']:
-                raise ReportPrintError(f"Unable to set page layout ( {u} {w} x {h} ) to paint device")
-        # Coordinate system to selected unit of report definition (converted to Points)
-        rect = self.pageLayout.paintRect(self.pageLayout.units()).toRect()
-        rect.moveTo(0, 0)
+        #if not paintDevice.setPageLayout(self.pageLayout): #type: ignore
+        #    w = self.pageLayout.fullRect().size().width()
+        #    h = self.pageLayout.fullRect().size().height()
+        #    u = list(Unit.keys())[list(Unit.values()).index(self.pageLayout.units())]
+        #    if not self.options['ignoreWarningOnSetPageLayout']:
+        #        raise ReportPrintError(f"Unable to set page layout ( {u} {w} x {h} ) to paint device")
+        
+        rect = self.pageLayout.fullRect(self.pageLayout.units()).toRect()
         painter = QPainter(paintDevice)
-        painter.setWindow(rect)
-        painter.setViewport(0, 0, paintDevice.width(), paintDevice.height())
+        scale_x = paintDevice.width() / rect.width() # required scale for fit the page layout into the paint device
+        scale_y = paintDevice.height() / rect.height()
+        painter.scale(scale_x, scale_y)
+        
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
         
         if isinstance(paintDevice, QPrinter):
             fromPage = paintDevice.fromPage() or 1
@@ -1375,7 +1349,9 @@ class Report():
 
         for pn, page in enumerate(self.pages, 1):
             if fromPage <= pn <= toPage:
+                painter.save() 
                 page.play(painter)
+                painter.restore() 
                 if pn != toPage: # newPage not on last page
                     paintDevice.newPage() #type: ignore
         painter.end()
@@ -1391,12 +1367,16 @@ if __name__ == "__main__":
     <options>
         <topMargin type="float">10.0</topMargin>
         <bottomMargin type="float">10.0</bottomMargin>
-        <pageLayoutMode type="str">FullPage</pageLayoutMode>
         <leftMargin type="float">10.0</leftMargin>
         <rightMargin type="float">10.0</rightMargin>
     </options>
     <columns>
-        <fieldName>Empty</fieldName>
+        <fieldName>code</fieldName>
+        <fieldName>description</fieldName>
+        <fieldName>department</fieldName>
+        <fieldName>stock_control</fieldName>
+        <fieldName>quantity</fieldName>
+        <fieldName>date</fieldName>
     </columns>
     <pageBackground>
         <rectangle color="red" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="3.0"/>
@@ -1404,17 +1384,20 @@ if __name__ == "__main__":
         <line x1="595.0" y1="0.0" x2="0.0" y2="842.0" lineWidth="1.0"/>
     </pageBackground>
     <pageHeader>
-        <band height="80.0">
-        <label left="0.0" top="10.0" width="595.0" height="80.0" color="blue"
-        fontName="Impact" fontWeight="Bold" fontItalic="True" fontSize="32"
-        textAlign="AlignHCenter">*** MINIMAL REPORT EXAMPLE ***</label>
+        <band height="75.0">
+            <label left="0.0" top="10.0" width="595.0" height="50.0" color="blue"
+                fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="32"
+                textAlign="AlignHCenter">*** MINIMAL REPORT EXAMPLE ***</label>
+            <label left="0.0" top="60.0" width="595.0" height="80.0">line example</label>
         </band>
     </pageHeader>
     <details>
         <band height="100.0" canGrow="True">
             <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">A report must have at least one record, even if it is empty.</label>
-            <label left="0.0" top="20.0" width="595.0" height="15.0" textAlign="AlignHCenter">In this example the dataset is one record of one field that is None/Null</label>
-            <label left="0.0" top="50.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins, page background and one dataset line</label>
+            <label left="0.0" top="10.0" width="595.0" height="15.0" textAlign="AlignHCenter">In this example the dataset is one record of one field that is None/Null</label>
+            <label left="0.0" top="20.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins, page background and one dataset line</label>
+            <field left="15.0" top="30.0" width="30" height="20" fontFamily="Courier New" textAlign="AlignLeft">code</field>
+            <field left="45.0" top="30.0" width="100" height="20" fontFamily="Courier New" textAlign="AlignLeft" canGrow="True">description</field>
         </band>
     </details>
 </report>
@@ -1425,11 +1408,11 @@ if __name__ == "__main__":
         <documentName type="str">Example of a complete report</documentName>
         <orientation type="str">Portrait</orientation>
         <pageSize type="str">A4</pageSize>
-        <topMargin type="float">5.0</topMargin>
-        <bottomMargin type="float">5.0</bottomMargin>
-        <leftMargin type="float">5.0</leftMargin>
-        <rightMargin type="float">5.0</rightMargin>
-        <fontName type="str">Arial</fontName>
+        <topMargin type="float">10.0</topMargin>
+        <bottomMargin type="float">10.0</bottomMargin>
+        <leftMargin type="float">10.0</leftMargin>
+        <rightMargin type="float">10.0</rightMargin>
+        <fontFamily type="str">Arial</fontFamily>
         <fontSize type="int">8</fontSize>
     </options>
     <columns>
@@ -1501,7 +1484,7 @@ if __name__ == "__main__":
         /8TLX+VXc9DnC5AyyL23EGZ8vHaCveubrPw/bojI3qsIymU8vwv3ep/x/7X90Ba5k+pnAAAA
         AElFTkSuQmCC</image>
         <label left="0.0" top="20.0" width="550.0" height="38.0" color="blue"
-        fontName="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
+        fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
         textAlign="AlignHCenter">Example of a complete report</label>
         <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="72.0" width="585.0" height="15.0" lineWidth="1.0"/>
         <label left="5.0" top="60.0" width="585.0" height="15.0" fontSize="6">A complete report with 2 level of grouping, department and date, and aggregate functions</label>
@@ -1570,7 +1553,7 @@ if __name__ == "__main__":
     </groups>
     <details>
         <band height="20.0" canGrow="True">
-            <field left="5.0" top="3" width="100" height="20" fontName="Courier New" textAlign="AlignLeft">code</field>
+            <field left="5.0" top="3" width="100" height="20" fontFamily="Courier New" textAlign="AlignLeft">code</field>
             <field left="100.0" top="3" width="240.0" height="20.0" canGrow="True">description</field>
             <field left="340.0" top="3" width="100.0" height="20.0">department</field>
             <field left="440.0" top="3" width="15.0" height="20.0" textAlign="AlignHCenter">stock_control</field>
@@ -1619,7 +1602,7 @@ if __name__ == "__main__":
         <bottomMargin type="float">5.0</bottomMargin>
         <leftMargin type="float">5.0</leftMargin>
         <rightMargin type="float">5.0</rightMargin>
-        <fontName type="str">Arial</fontName>
+        <fontFamily type="str">Arial</fontFamily>
         <fontSize type="int">8</fontSize>
     </options>
     <columns><!-- Must have a columnNumber/fieldName for every column of the dataset -->
@@ -1701,9 +1684,9 @@ if __name__ == "__main__":
     </pageBackground>
     <pageHeader>
         <band height="120.0">
-            <label left="0.0" top="0.0" width="585.0" height="50.0" fontName="Archon Code 39 Barcode" fontSize="36" textAlign="AlignLeft" barcodeType="Code39">ABCD12345</label>
-            <label left="0.0" top="0.0" width="585.0" height="50.0" fontName="Code 128" fontSize="36" textAlign="AlignRight" barcodeType="Code128">ABCD12345</label>
-            <label left="0.0" top="50.0" width="585.0" height="40.0" color="blue" fontName="Impact" fontWeight="Bold" fontItalic="True" fontSize="24" textAlign="AlignHCenter">Test report Barcode</label>
+            <label left="0.0" top="0.0" width="585.0" height="50.0" fontFamily="Archon Code 39 Barcode" fontSize="36" textAlign="AlignLeft" barcodeType="Code39">ABCD12345</label>
+            <label left="0.0" top="0.0" width="585.0" height="50.0" fontFamily="Code 128" fontSize="36" textAlign="AlignRight" barcodeType="Code128">ABCD12345</label>
+            <label left="0.0" top="50.0" width="585.0" height="40.0" color="blue" fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24" textAlign="AlignHCenter">Test report Barcode</label>
             <label left="0.0" top="90.0" width="28.0" height="15.0" fontWeight="Bold">R.N.</label>
             <label left="30.0" top="90.0" width="110.0" height="15.0" fontWeight="Bold">Code128</label>
             <label left="140.0" top="90.0" width="110.0" height="15.0" fontWeight="Bold">Code39</label>
@@ -1717,8 +1700,8 @@ if __name__ == "__main__":
     <details>
         <band height="35.0" canGrow="True">
             <special left="2.0" top="3.0" width="28.0" height="30.0" textAlign="AlignLeft" color="red" format="{:0>3d}">recordNumber</special>
-            <field left="30.0" top="3" width="110" height="30.0" fontName="Code 128" fontSize="20" textAlign="AlignLeft" barcodeType="Code128">code</field>
-            <field left="140.0" top="3" width="110" height="30.0" fontName="Archon Code 39 Barcode" fontSize="20" textAlign="AlignLeft" barcodeType="Code39">code</field>
+            <field left="30.0" top="3" width="110" height="30.0" fontFamily="Code 128" fontSize="20" textAlign="AlignLeft" barcodeType="Code128">code</field>
+            <field left="140.0" top="3" width="110" height="30.0" fontFamily="Archon Code 39 Barcode" fontSize="20" textAlign="AlignLeft" barcodeType="Code39">code</field>
             <field left="250.0" top="3" width="60" height="30.0">code</field>
             <field left="310.0" top="3" width="150.0" height="30.0" canGrow="True">description</field>
             <field left="460.0" top="3" width="60.0" height="30.0" textAlign="AlignRight">quantity</field>
@@ -1741,11 +1724,11 @@ if __name__ == "__main__":
         <orientation type="str">Portrait</orientation>
         <unit type="str">Millimeter</unit>
         <pageSize type="str">A4</pageSize>
-        <topMargin type="float">0.0</topMargin>
-        <bottomMargin type="float">0.0</bottomMargin>
-        <leftMargin type="float">0.0</leftMargin>
-        <rightMargin type="float">0.0</rightMargin>
-        <fontName type="str">Arial</fontName>
+        <topMargin type="float">10.0</topMargin>
+        <bottomMargin type="float">10.0</bottomMargin>
+        <leftMargin type="float">10.0</leftMargin>
+        <rightMargin type="float">10.0</rightMargin>
+        <fontFamily type="str">Arial</fontFamily>
         <fontSize type="int">4</fontSize>
     </options>
     <columns>
@@ -1762,7 +1745,7 @@ if __name__ == "__main__":
     <pageHeader>
         <band height="30">
             <label left="0" top="0" width="210" height="20" color="blue"
-            fontName="Impact" fontWeight="Bold" fontItalic="True" fontSize="8"
+            fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="8"
             textAlign="AlignHCenter">Test report in millimeters</label>
             <label left="2" top="20" width="13" height="8" fontSize="4" fontWeight="Bold">R.N.</label>
             <label left="15" top="20" width="30" height="8" fontSize="4" fontWeight="Bold">Code</label>
@@ -1845,9 +1828,6 @@ if __name__ == "__main__":
                 ('AAAAAA', 'description 42', 'Production', True, 30, QDate(2018, 2, 2)),
                 ('AAAAAAA', 'description 43', 'Production', True, 31, QDate(2018, 2, 2)),
                 ('AAAAAAAA', 'description 44', 'Accounting', False, 0, QDate(2018, 3, 3))])
-        if i == xml_string0:
-            r.setData([('', 'One line recordset test', 'Accounting', False, 0, QDate(2018, 3, 3))])
-            r.setData([(None,)])  # test empty dataset
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         r.generate()
