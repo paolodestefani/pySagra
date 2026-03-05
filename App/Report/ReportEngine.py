@@ -1473,8 +1473,8 @@ if __name__ == "__main__":
         <documentName type="str">Example of a complete report</documentName>
         <orientation type="str">Portrait</orientation>
         <pageSize type="str">A4</pageSize>
-        <topMargin type="float">10.0</topMargin>
-        <bottomMargin type="float">10.0</bottomMargin>
+        <topMargin type="float">20.0</topMargin>
+        <bottomMargin type="float">20.0</bottomMargin>
         <leftMargin type="float">10.0</leftMargin>
         <rightMargin type="float">10.0</rightMargin>
         <fontFamily type="str">Arial</fontFamily>
