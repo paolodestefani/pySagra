@@ -672,7 +672,7 @@ class Line():
 
 
 class Ellipse():
-    "Ellipse class"
+    "Ellipse class. For a filled ellipse use the brushStyle and brushColor properties. For a circle set width and height to the same value"
 
     def __init__(self, options: dict, paramdict: dict, text: str|None) -> None: # text is required for generic drawobj
         self.isVisible = True
@@ -683,13 +683,11 @@ class Ellipse():
         self.top = float(paramdict.get("top", 0.0))
         self.width = float(paramdict.get("width", 0.0))
         self.height = float(paramdict.get("height", 0.0))
-        #self.xRadius = float(paramdict.get("xRadius", 0.0)) or None
-        #self.yRadius = float(paramdict.get("yRadius", 0.0)) or None
         self.lineWidth = float(paramdict.get("lineWidth", 0.0))
         self.color = QColor(paramdict.get("color", options['color']))
         self.style = PenStyle[paramdict.get("style", options['lineStyle'])]
-        #self.brushColor = QColor(paramdict.get("brushColor", options['color']))
-        #self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
+        self.brushColor = QColor(paramdict.get("brushColor", options['color']))
+        self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
         self.opacity = float(paramdict.get("opacity", options['opacity']))
 
     def render(self, bandHeight: float) -> None:
@@ -708,11 +706,11 @@ class Ellipse():
         pen.setStyle(self.style)
         pen.setCapStyle(Qt.PenCapStyle.FlatCap)
         painter.setPen(pen)
-        # if self.brushStyle != Qt.BrushStyle.NoBrush:
-        #     brush = QBrush()
-        #     brush.setStyle(self.brushStyle)
-        #     brush.setColor(self.brushColor)
-        #     painter.setBrush(brush)
+        if self.brushStyle != Qt.BrushStyle.NoBrush:
+            brush = QBrush()
+            brush.setStyle(self.brushStyle)
+            brush.setColor(self.brushColor)
+            painter.setBrush(brush)
         painter.setOpacity(self.opacity)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         # draw
@@ -727,7 +725,7 @@ class Ellipse():
 
 
 class Rectangle():
-    "Rectangle class"
+    "Rectangle class. For a filled rectangle use the brushStyle and brushColor properties. For a square set width and height to the same value"
 
     def __init__(self, options: dict, paramdict: dict, text: str|None) -> None: # text is required for generic drawobj
         self.isVisible = True
@@ -1418,7 +1416,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     QLocale.setDefault(QLocale.Language.English)
     
-    xml_string0 = """<?xml version="1.0" encoding="UTF-8"?>
+    xml_string1 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
         <topMargin type="float">0.0</topMargin>
@@ -1449,10 +1447,11 @@ if __name__ == "__main__":
                 fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="32"
                 textAlign="AlignHCenter">*** MINIMAL REPORT EXAMPLE ***</label>
         </band>
-        <band height="50.0">
+        <band height="60.0">
             <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">This is the page header</label>
             <label left="0.0" top="15.0" width="595.0" height="15.0" textAlign="AlignHCenter">A report must have at least one record</label>
             <label left="0.0" top="30.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins and page background</label>
+            <label left="0.0" top="45.0" width="595.0" height="15.0" textAlign="AlignRight">text aligned to the right</label>
         </band>
     </pageHeader>
     <details>
@@ -1467,7 +1466,7 @@ if __name__ == "__main__":
     </details>
 </report>
 """
-    xml_string1 = """<?xml version="1.0" encoding="UTF-8"?>
+    xml_string2 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
         <documentName type="str">Example of a complete report</documentName>
@@ -1475,10 +1474,10 @@ if __name__ == "__main__":
         <pageSize type="str">A4</pageSize>
         <topMargin type="float">20.0</topMargin>
         <bottomMargin type="float">20.0</bottomMargin>
-        <leftMargin type="float">10.0</leftMargin>
-        <rightMargin type="float">10.0</rightMargin>
+        <leftMargin type="float">0.0</leftMargin>
+        <rightMargin type="float">0.0</rightMargin>
         <fontFamily type="str">Arial</fontFamily>
-        <fontSize type="int">8</fontSize>
+        <fontSize type="int">7</fontSize>
     </options>
     <columns>
         <fieldName>code</fieldName>
@@ -1494,7 +1493,7 @@ if __name__ == "__main__":
         <sort field="quantity" reverse="True"/>
     </sorting>
     <pageHeader>
-        <band height="100.0">
+        <band height="110.0">
         <image left="0.0" top="0.0" width="48.0" height="48.0" aspectRatio="KeepAspectRatio" opacity="1.0">
         iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABHNCSVQICAgIfAhkiAAAAAlw
         SFlzAAAFMQAABTEBt+0oUgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoA
@@ -1551,7 +1550,7 @@ if __name__ == "__main__":
         <label left="0.0" top="20.0" width="550.0" height="38.0" color="blue"
         fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
         textAlign="AlignHCenter">Example of a complete report</label>
-        <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="85.0" width="575.0" height="15.0" lineWidth="1.0"/>
+        <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="10.0" width="575.0" height="20.0" lineWidth="1.0"/>
         <label left="5.0" top="60.0" width="585.0" height="15.0" fontSize="6">A complete report with 2 level of grouping, department and date, and aggregate functions</label>
         <label left="5.0" top="75.0" width="100.0" height="15.0">Code</label>
         <label left="100.0" top="75.0" width="240.0" height="15.0">Description</label>
@@ -1559,6 +1558,9 @@ if __name__ == "__main__":
         <label left="440.0" top="75.0" width="15.0" height="15.0" textAlign="AlignHCenter">SC</label>
         <label left="450.0" top="75.0" width="60.0" height="15.0" textAlign="AlignRight">Quantity</label>
         <label left="510.0" top="75.0" width="65.0" height="15.0" textAlign="AlignRight">Date</label>
+        <line color="blue" x1="0.0" y1="3.0" x2="575.0" y2="3.0" lineWidth="1.0"/>
+        <line color="red" x1="0.0" y1="5.0" x2="570.0" y2="5.0" lineWidth="1.0"/>
+        <label left="0.0" top="45.0" width="575.0" height="15.0" textAlign="AlignRight">text aligned to the right</label>
     </band>
     </pageHeader>
     <groups>
@@ -1656,7 +1658,7 @@ if __name__ == "__main__":
     </pageFooter>
 </report>
 """
-    xml_string2 = """<?xml version="1.0" encoding="UTF-8"?>
+    xml_string3 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
         <documentName type="str">Test report Barcode</documentName>
@@ -1782,7 +1784,7 @@ if __name__ == "__main__":
     </pageFooter>
 </report>
 """
-    xml_string3 = """<?xml version="1.0" encoding="UTF-8"?>
+    xml_string4 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
         <documentName type="str">Test report in millimeters</documentName>
@@ -1842,10 +1844,10 @@ if __name__ == "__main__":
 </report>
 """
     for i in (
-              xml_string0,
               xml_string1,
               xml_string2,
               xml_string3,
+              xml_string4,
                  ):
         r = Report(i)
         r.setData([
