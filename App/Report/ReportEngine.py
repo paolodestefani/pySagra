@@ -348,10 +348,10 @@ class BaseRenderer():
         self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
         self.report = options['reportInstance']
         self.fieldFormat = paramdict.get("format", "")
-        self.left = float(paramdict.get("left", 0)) + options['leftMargin']
-        self.top = float(paramdict.get("top", 0)) + options['topMargin']
-        self.width = float(paramdict.get("width", 0))
-        self.height = float(paramdict.get("height", 0))
+        self.left = float(paramdict.get("left", 0.0)) + options['leftMargin']
+        self.top = float(paramdict.get("top", 0.0)) + options['topMargin']
+        self.width = float(paramdict.get("width", 0.0))
+        self.height = float(paramdict.get("height", 0.0))
         self.barcode = paramdict.get("barcodeType", options['barcodeType'])
         self.fontFamily = paramdict.get("fontFamily", options['fontFamily'])
         self.fontSize = float(paramdict.get("fontSize", options['fontSize']))
@@ -494,9 +494,9 @@ class BaseRenderer():
 class Label(BaseRenderer):
     "Label class"
 
-    def __init__(self, options: dict, paramdict: dict, string: str) -> None:
+    def __init__(self, options: dict, paramdict: dict, text: str) -> None:
         super().__init__(options, paramdict)
-        self.value = string # for labels string is the text
+        self.value = text # for labels string is the text
 
 
 class Field(BaseRenderer):
@@ -1060,8 +1060,6 @@ class Report():
                     items: dict = {}
                     referenceList = child.attrib.get('reference')
                     df = child.attrib.get('default')
-                    #print("Param", param)
-                    #print("Ptype", ptype)
                     if not df:
                         raise ReportXMLParseError(f"Parameter with empty default value: <parameter id='{param}'>")
                     match ptype:
@@ -1445,13 +1443,14 @@ if __name__ == "__main__":
         <band height="75.0">
             <label left="0.0" top="10.0" width="595.0" height="50.0" color="blue"
                 fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="32"
-                textAlign="AlignHCenter">*** MINIMAL REPORT EXAMPLE ***</label>
+                textAlign="AlignHCenter">*** FIRST REPORT EXAMPLE ***</label>
         </band>
         <band height="60.0">
             <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">This is the page header</label>
             <label left="0.0" top="15.0" width="595.0" height="15.0" textAlign="AlignHCenter">A report must have at least one record</label>
             <label left="0.0" top="30.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins and page background</label>
-            <label left="0.0" top="45.0" width="595.0" height="15.0" textAlign="AlignRight">text aligned to the right</label>
+            <label left="0.0" top="45.0" width="595.0" height="15.0" textAlign="AlignLeft">text left aligned</label>
+            <label left="0.0" top="45.0" width="595.0" height="15.0" textAlign="AlignRight">text right aligned</label>
         </band>
     </pageHeader>
     <details>
@@ -1474,8 +1473,8 @@ if __name__ == "__main__":
         <pageSize type="str">A4</pageSize>
         <topMargin type="float">20.0</topMargin>
         <bottomMargin type="float">20.0</bottomMargin>
-        <leftMargin type="float">0.0</leftMargin>
-        <rightMargin type="float">0.0</rightMargin>
+        <leftMargin type="float">10.0</leftMargin>
+        <rightMargin type="float">10.0</rightMargin>
         <fontFamily type="str">Arial</fontFamily>
         <fontSize type="int">7</fontSize>
     </options>
@@ -1547,6 +1546,8 @@ if __name__ == "__main__":
         5Zvo6dta+FJ9srFBjB6JW/z9yAhHp1bT2LOfWGeN87S9u8TPxeRWd7G6MsinwLs2X86OnT5Z
         /8TLX+VXc9DnC5AyyL23EGZ8vHaCveubrPw/bojI3qsIymU8vwv3ep/x/7X90Ba5k+pnAAAA
         AElFTkSuQmCC</image>
+        <label left="0.0" top="45.0" width="575.0" height="15.0" textAlign="AlignLeft">* left aligned text</label>
+        <label left="0.0" top="45.0" width="575.0" height="15.0" textAlign="AlignRight">right aligned text *</label>
         <label left="0.0" top="20.0" width="550.0" height="38.0" color="blue"
         fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
         textAlign="AlignHCenter">Example of a complete report</label>
@@ -1560,7 +1561,6 @@ if __name__ == "__main__":
         <label left="510.0" top="75.0" width="65.0" height="15.0" textAlign="AlignRight">Date</label>
         <line color="blue" x1="0.0" y1="3.0" x2="575.0" y2="3.0" lineWidth="1.0"/>
         <line color="red" x1="0.0" y1="5.0" x2="570.0" y2="5.0" lineWidth="1.0"/>
-        <label left="0.0" top="45.0" width="575.0" height="15.0" textAlign="AlignRight">text aligned to the right</label>
     </band>
     </pageHeader>
     <groups>
@@ -1844,10 +1844,10 @@ if __name__ == "__main__":
 </report>
 """
     for i in (
-              xml_string1,
+              #xml_string1,
               xml_string2,
-              xml_string3,
-              xml_string4,
+              #xml_string3,
+              #xml_string4,
                  ):
         r = Report(i)
         r.setData([
