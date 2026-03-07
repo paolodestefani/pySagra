@@ -1629,6 +1629,7 @@ class PrintDialog(QDialog):
                                     ) == QMessageBox.StandardButton.No:
                 return
         paintDevice = QPdfWriter(file_name)
+        paintDevice.setResolution(600) # platform independent, better to set it before setting pdf version
         paintDevice.setPdfVersion(self.ui.comboBoxPDFVersion.currentData())
         paintDevice.setResolution(self.ui.spinBoxResolution.value())
         try:

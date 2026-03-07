@@ -124,6 +124,9 @@ else:
 # report engine version
 VERSION = '1.0'
 
+# DPI standard Qt/Windows (96 DPI)
+STANDARD_DPI = 96.0
+
 
 class ReportException(Exception):
     pass
@@ -348,8 +351,8 @@ class BaseRenderer():
         self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
         self.report = options['reportInstance']
         self.fieldFormat = paramdict.get("format", "")
-        self.left = float(paramdict.get("left", 0.0)) + options['leftMargin']
-        self.top = float(paramdict.get("top", 0.0)) + options['topMargin']
+        self.left = float(paramdict.get("left", 0.0))
+        self.top = float(paramdict.get("top", 0.0))
         self.width = float(paramdict.get("width", 0.0))
         self.height = float(paramdict.get("height", 0.0))
         self.barcode = paramdict.get("barcodeType", options['barcodeType'])
@@ -425,11 +428,8 @@ class BaseRenderer():
         painter = self.report.painter
         painter.save()
         
-        # Setup Font (MacOS vs Others)
-        if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-            fontSize = float(self.fontSize * 96.0 / 72.0) 
-        else:
-            fontSize = self.fontSize
+        # scale font based on actual DPI of screen because the final paint device is not known yet
+        fontSize = self.fontSize * (STANDARD_DPI / QGuiApplication.primaryScreen().logicalDotsPerInchX())
         font = QFont(self.fontFamily, 8, self.fontWeight, self.fontItalic)
         font.setPointSizeF(fontSize)
         painter.setFont(font)
@@ -460,17 +460,17 @@ class BaseRenderer():
         pen = QPen()
         pen.setColor(QColor(self.color))
         painter.setPen(pen)
-        # for MacOS set font size with scale factor %
-        if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-            fontSize = float(self.fontSize * 96.0 / 72.0)
-        else:
-            fontSize = self.fontSize
+         
+        # scale font based on actual DPI of screen because the final paint device is not known yet
+        fontSize = self.fontSize * (STANDARD_DPI / QGuiApplication.primaryScreen().logicalDotsPerInchX())
         font = QFont(self.fontFamily, 8, self.fontWeight, self.fontItalic)
         font.setPointSizeF(fontSize)
         painter.setFont(font)
+        
         painter.setOpacity(self.opacity)
         
         target_rect = QRectF(self.left, self.top, self.width, self.height)
+        
         if self.canGrow:
             target_rect.setHeight(max(self.height, bandHeight - self.top))
         
@@ -1364,48 +1364,92 @@ class Report():
     def reportName(self) -> str:
         return self.options['documentName']  #type: ignore
 
+    # def print(self, paintDevice: QPaintDevice) -> None:
+    #     "Print document from generated report"
+    #     if isinstance(paintDevice, QPrinter):
+    #         paintDevice.setDocName(self.options['documentName']) #type: ignore
+    #     elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
+    #         paintDevice.setTitle(self.options['documentName']) #type: ignore
+    #     # forse printer resolution to platform specific DPI avoiding scaling problems
+    #     #if isinstance(paintDevice, QPrinter):
+    #     #    if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
+    #     #        paintDevice.setResolution(96)  # Windows and Linux use 96 DPI          
+    #     # force the printer page layout to the report settings
+    #     #if not paintDevice.setPageLayout(self.pageLayout): #type: ignore
+    #     #    w = self.pageLayout.fullRect().size().width()
+    #     #    h = self.pageLayout.fullRect().size().height()
+    #     #    u = list(Unit.keys())[list(Unit.values()).index(self.pageLayout.units())]
+    #     #    if not self.options['ignoreWarningOnSetPageLayout']:
+    #     #        raise ReportPrintError(f"Unable to set page layout ( {u} {w} x {h} ) to paint device")
+        
+    #     rect = self.pageLayout.fullRect(self.pageLayout.units()).toRect()
+    #     painter = QPainter(paintDevice)
+    #     scale_x = paintDevice.width() / rect.width() # required scale for fit the page layout into the paint device
+    #     scale_y = paintDevice.height() / rect.height()
+    #     painter.scale(scale_x, scale_y)
+        
+    #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    #     painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+    #     painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+        
+    #     if isinstance(paintDevice, QPrinter):
+    #         fromPage = paintDevice.fromPage() or 1
+    #         toPage = paintDevice.toPage() or len(self.pages)
+    #     elif isinstance(paintDevice, QPdfWriter): # for PDFWriter
+    #         fromPage = 1
+    #         toPage = len(self.pages)
+
+    #     for pn, page in enumerate(self.pages, 1):
+    #         if fromPage <= pn <= toPage:
+    #             painter.save() 
+    #             page.play(painter)
+    #             painter.restore() 
+    #             if pn != toPage: # newPage not on last page
+    #                 paintDevice.newPage() #type: ignore
+    #     painter.end()
+    
     def print(self, paintDevice: QPaintDevice) -> None:
-        "Print document from generated report"
+        "Print document from generated report in the actual paint device"
         if isinstance(paintDevice, QPrinter):
             paintDevice.setDocName(self.options['documentName']) #type: ignore
         elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
             paintDevice.setTitle(self.options['documentName']) #type: ignore
-        # forse printer resolution to platform specific DPI avoiding scaling problems
-        #if isinstance(paintDevice, QPrinter):
-        #    if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
-        #        paintDevice.setResolution(96)  # Windows and Linux use 96 DPI          
-        # force the printer page layout to the report settings
-        #if not paintDevice.setPageLayout(self.pageLayout): #type: ignore
-        #    w = self.pageLayout.fullRect().size().width()
-        #    h = self.pageLayout.fullRect().size().height()
-        #    u = list(Unit.keys())[list(Unit.values()).index(self.pageLayout.units())]
-        #    if not self.options['ignoreWarningOnSetPageLayout']:
-        #        raise ReportPrintError(f"Unable to set page layout ( {u} {w} x {h} ) to paint device")
+            
+        target_dpi = paintDevice.logicalDpiX()
         
-        rect = self.pageLayout.fullRect(self.pageLayout.units()).toRect()
+        # 2. Layout di Pagina (Fondamentale!)
+        # Assicurati che il dispositivo di stampa abbia lo stesso layout del report
+        paintDevice.setPageLayout(self.pageLayout) # type: ignore
+        
+        rect = self.pageLayout.fullRect(self.pageLayout.units())
+        
         painter = QPainter(paintDevice)
-        scale_x = paintDevice.width() / rect.width() # required scale for fit the page layout into the paint device
+        
+        scale_x = paintDevice.width() / rect.width()
         scale_y = paintDevice.height() / rect.height()
+        #print("Scale X:", scale_x, "Scale Y:", scale_y)
+        
         painter.scale(scale_x, scale_y)
         
+        # ... render hints ...
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-        
+
         if isinstance(paintDevice, QPrinter):
             fromPage = paintDevice.fromPage() or 1
             toPage = paintDevice.toPage() or len(self.pages)
         elif isinstance(paintDevice, QPdfWriter): # for PDFWriter
             fromPage = 1
             toPage = len(self.pages)
-
+            
         for pn, page in enumerate(self.pages, 1):
             if fromPage <= pn <= toPage:
-                painter.save() 
-                page.play(painter)
-                painter.restore() 
-                if pn != toPage: # newPage not on last page
-                    paintDevice.newPage() #type: ignore
+                painter.save()
+                page.play(painter) 
+                painter.restore()
+                if pn != toPage:
+                    paintDevice.newPage() # type: ignore
         painter.end()
 
 
@@ -1844,10 +1888,10 @@ if __name__ == "__main__":
 </report>
 """
     for i in (
-              #xml_string1,
+              xml_string1,
               xml_string2,
-              #xml_string3,
-              #xml_string4,
+              xml_string3,
+              xml_string4,
                  ):
         r = Report(i)
         r.setData([
