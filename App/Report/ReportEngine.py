@@ -478,9 +478,9 @@ class BaseRenderer():
         if isinstance(self.value, QImage):
             painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
             painter.drawImage(target_rect,
-                              self.value,
-                              self.value.rect(), 
-                              Qt.AspectRatioMode.KeepAspectRatio)
+                              self.value),
+                              #QRectF(self.value.rect()), 
+                              #Qt.AspectRatioMode.KeepAspectRatio)
         else:
             text = self.textFormat()
             if text:
