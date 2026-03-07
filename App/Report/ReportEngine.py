@@ -1526,6 +1526,104 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     QLocale.setDefault(QLocale.Language.English)
     
+    xml_string0 = """<?xml version="1.0" encoding="UTF-8"?>
+<report version="1.0">
+    <options>
+        <documentName type="str">Report Example</documentName>
+        <orientation type="str">Portrait</orientation>
+        <pageSize type="str">A4</pageSize>
+        <topMargin type="float">10.0</topMargin>
+        <bottomMargin type="float">10.0</bottomMargin>
+        <leftMargin type="float">10.0</leftMargin>
+        <rightMargin type="float">10.0</rightMargin>
+        <fontFamily type="str">Arial</fontFamily>
+        <fontSize type="int">7</fontSize>
+    </options>
+    <columns>
+        <fieldName>code</fieldName>
+        <fieldName>description</fieldName>
+        <fieldName>department</fieldName>
+        <fieldName>stock_control</fieldName>
+        <fieldName>quantity</fieldName>
+        <fieldName>date</fieldName>
+    </columns>
+    <pageBackground>
+        <rectangle left="0.0" top="0.0" width="575.0" height="822.0" lineWidth="0.5"/>
+    </pageBackground>
+    <reportHeader>
+        <band height="60.0">
+            <!-- Graphics -->
+            <!-- Lines -->
+            <line x1="10.0" y1="5.0" x2="10.0" y2="40.0" style="SolidLine" lineWidth="2.0"/>
+            <line x1="15.0" y1="5.0" x2="15.0" y2="40.0" style="DashLine" lineWidth="2.0"/>
+            <line x1="20.0" y1="5.0" x2="20.0" y2="40.0" style="DotLine" lineWidth="2.0"/>
+            <line x1="25.0" y1="5.0" x2="25.0" y2="40.0" style="DashDotLine" lineWidth="2.0"/>
+            <line x1="30.0" y1="5.0" x2="30.0" y2="40.0" style="DashDotDotLine" lineWidth="2.0"/>
+            <line x1="40.0" y1="5.0" x2="60.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
+            <line x1="45.0" y1="5.0" x2="65.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
+            <line x1="65.0" y1="5.0" x2="45.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
+            <line x1="60.0" y1="5.0" x2="40.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
+            <!-- Red Eye -->
+            <ellipse left="80.0" top="5.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="yellow"/>
+            <ellipse left="85.0" top="10.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="orange"/>
+            <ellipse left="90.0" top="15.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="red"/>
+            <!-- Black Eye -->
+            <ellipse left="120.0" top="5.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="lightgray"/>
+            <ellipse left="125.0" top="10.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="olive"/>
+            <ellipse left="130.0" top="15.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="black"/>
+            <!-- Lines -->
+            <line x1="170.0" y1="10.0" x2="200.0" y2="10.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="170.0" y1="12.0" x2="220.0" y2="12.0" style="SolidLine" color="blue" lineWidth="1.0"/>
+            <line x1="170.0" y1="15.0" x2="240.0" y2="15.0" style="SolidLine" color="green" lineWidth="2.0"/>
+            <line x1="170.0" y1="20.0" x2="260.0" y2="20.0" style="SolidLine" color="red" lineWidth="4.0"/>
+            <line x1="170.0" y1="30.0" x2="280.0" y2="30.0" style="SolidLine" color="gray" lineWidth="8.0"/>
+            <!-- Rectangles -->
+            <rectangle xRadius="5.0" yRadius="5.0" left="300.0" top="5.0" width="100.0" height="30.0" lineWidth="3.0"/>
+            <rectangle xRadius="3.0" yRadius="3.0" left="310.0" top="10.0" width="80.0" height="20.0" lineWidth="2.0"/>
+            <rectangle xRadius="1.0" yRadius="1.0" left="320.0" top="15.0" width="60.0" height="10.0" lineWidth="1.0"/>
+            <rectangle xRadius="0.0" yRadius="0.0" left="330.0" top="20.0" width="40.0" height="2.0" lineWidth="0.5"/>
+            <!-- Rectangles and Ellipses -->
+            <rectangle left="450.0" top="5.0" width="100.0" height="30.0" lineWidth="0.5"/>
+            <ellipse left="450.0" top="5.0" width="100.0" height="30.0" lineWidth="0.5"/>
+            <rectangle left="475.0" top="10.0" width="50.0" height="20.0" lineWidth="0.5"/>
+            <ellipse left="475.0" top="10.0" width="50.0" height="20.0" lineWidth="0.5"/>
+            <!-- Last line -->
+            <line x1="0.0" y1="50.0" x2="575.0" y2="50.0" style="SolidLine" lineWidth="1.0"/>
+        </band>
+        <band height="500.0">
+            <!-- Fonts -->
+            <label left="5.0" top="0.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="6">Arial 6pt</label>
+            <label left="5.0" top="10.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="7">Arial 7pt</label>
+            <label left="5.0" top="20.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="8">Arial 8pt</label>
+            <label left="5.0" top="30.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="9">Arial 9pt</label>
+            <label left="5.0" top="40.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="10">Arial 10pt</label>
+            <label left="5.0" top="53.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="11">Arial 11pt</label>
+            <label left="5.0" top="65.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="12">Arial 12pt</label>
+            <label left="5.0" top="80.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="13">Arial 13pt</label>
+            <label left="5.0" top="95.0" width="100.0" height="25.0" fontFamily="Arial" fontSize="14">Arial 14pt</label>
+            <label left="5.0" top="115.0" width="100.0" height="25.0" fontFamily="Arial" fontSize="15">Arial 15pt</label>
+            <label left="5.0" top="135.0" width="100.0" height="25.0" fontFamily="Arial" fontSize="16">Arial 16pt</label>
+            <label left="5.0" top="155.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="17">Arial 17pt</label>
+            <label left="5.0" top="180.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="18">Arial 18pt</label>
+            <label left="5.0" top="205.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="19">Arial 19pt</label>
+            <label left="5.0" top="235.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="20">Arial 20pt</label>
+        </band>
+    </reportHeader>
+    <pageHeader>
+    </pageHeader>
+    <details>
+        <band height="0.0" canGrow="False">
+            <field left="10.0" top="0.0" width="100" height="15" textAlign="AlignLeft">code</field>
+            <field left="110.0" top="0.0" width="200" height="15" textAlign="AlignLeft" canGrow="True">description</field>
+            <field left="310.0" top="0.0" width="100" height="15" textAlign="AlignLeft">department</field>
+            <field left="410.0" top="0.0" width="50" height="15" textAlign="AlignHCenter">stock_control</field>
+            <field left="460.0" top="0.0" width="60" height="15" textAlign="AlignRight">quantity</field>
+            <field left="520.0" top="0.0" width="70" height="15" textAlign="AlignRight">date</field>
+        </band>
+    </details>
+</report>
+"""
+    
     xml_string1 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
@@ -1965,10 +2063,11 @@ if __name__ == "__main__":
 </report>
 """
     for i in (
-              xml_string1,
-              xml_string2,
-              xml_string3,
-              xml_string4,
+              xml_string0,
+              #xml_string1,
+              #xml_string2,
+              #xml_string3,
+              #xml_string4,
                  ):
         r = Report(i)
         r.setData([
