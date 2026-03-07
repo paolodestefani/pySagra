@@ -477,10 +477,10 @@ class BaseRenderer():
         
         if isinstance(self.value, QImage):
             painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-            painter.drawImage(target_rect,
-                              self.value),
-                              #QRectF(self.value.rect()), 
-                              #Qt.AspectRatioMode.KeepAspectRatio)
+            painter.drawImage(target_rect, self.value)
+            # painter.drawImage(target_rect.topLeft(),
+            #                   self.value,
+            #                   QRectF(self.value.rect()))
         else:
             text = self.textFormat()
             if text:
