@@ -1199,7 +1199,7 @@ class Report():
         if self.painter.isActive():
             self.painter.end()
         page = QPicture()
-        print("QPicture DPI", page.logicalDpiX(), page.logicalDpiY())
+        #print("QPicture DPI", page.logicalDpiX(), page.logicalDpiY())
         self.painter.begin(page)
         self.pages.append(page)
         # set page margins left/top using clipping
@@ -1421,17 +1421,21 @@ class Report():
         elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
             paintDevice.setTitle(self.options['documentName']) #type: ignore
             
-        system_ratio = QGuiApplication.primaryScreen().devicePixelRatio()
-        #target_dpi = paintDevice.logicalDpiX()
+        dpr = QGuiApplication.primaryScreen().devicePixelRatio()
         
+        # on macOS the devicePixelRatio is already handled by Qt and is not required to scale the painter
+        # in fact it cause scaling problems on high DPI screens
+        if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
+            dpr = 1.0 
+            
         paintDevice.setPageLayout(self.pageLayout) # type: ignore
         
         rect = self.pageLayout.fullRect(self.pageLayout.units())
         
         painter = QPainter(paintDevice)
         
-        scale_x = paintDevice.width() / rect.width() / system_ratio
-        scale_y = paintDevice.height() / rect.height() / system_ratio
+        scale_x = paintDevice.width() / rect.width() / dpr
+        scale_y = paintDevice.height() / rect.height() / dpr
        
         painter.scale(scale_x, scale_y)
         
