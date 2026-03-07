@@ -214,7 +214,8 @@ TextAlign = {'AlignLeft':       Qt.AlignmentFlag.AlignLeft, # Default
 
 # line styles
 
-PenStyle = {'SolidLine':        Qt.PenStyle.SolidLine,
+PenStyle = {'NoPen':            Qt.PenStyle.NoPen, # for filled without boundary lines
+            'SolidLine':        Qt.PenStyle.SolidLine,
             'DashLine':         Qt.PenStyle.DashLine,
             'DotLine':          Qt.PenStyle.DotLine,
             'DashDotLine':      Qt.PenStyle.DashDotLine,
@@ -760,6 +761,7 @@ class Rectangle():
         pen.setWidthF(self.lineWidth)
         pen.setStyle(self.style)
         pen.setCapStyle(Qt.PenCapStyle.FlatCap)
+        pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
         painter.setPen(pen)
         if self.brushStyle != Qt.BrushStyle.NoBrush:
             brush = QBrush()
@@ -1489,12 +1491,21 @@ if __name__ == "__main__":
                 fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="32"
                 textAlign="AlignHCenter">*** FIRST REPORT EXAMPLE ***</label>
         </band>
-        <band height="60.0">
+        <band height="70.0">
             <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">This is the page header</label>
-            <label left="0.0" top="15.0" width="595.0" height="15.0" textAlign="AlignHCenter">A report must have at least one record</label>
-            <label left="0.0" top="30.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins and page background</label>
-            <label left="0.0" top="45.0" width="595.0" height="15.0" textAlign="AlignLeft">text left aligned</label>
-            <label left="0.0" top="45.0" width="595.0" height="15.0" textAlign="AlignRight">text right aligned</label>
+            <label left="0.0" top="15.0" width="595.0" height="15.0" textAlign="AlignHCenter">A page background draws rectangles and ellipses</label>
+            <label left="0.0" top="30.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins, no page footer</label>
+            <label left="0.0" top="45.0" width="595.0" height="15.0" fontWeight="Bold" textAlign="AlignLeft">text left aligned</label>
+            <label left="0.0" top="45.0" width="595.0" height="15.0" fontWeight="Bold" textAlign="AlignRight">text right aligned</label>
+            <!-- Eye on the left -->
+            <ellipse left="100.0" top="0.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="yellow"/>
+            <ellipse left="105.0" top="5.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="orange"/>
+            <ellipse left="110.0" top="10.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="red"/>
+            <!-- Eye on the right -->
+            <ellipse left="470.0" top="0.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="lightgray"/>
+            <ellipse left="475.0" top="5.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="olive"/>
+            <ellipse left="480.0" top="10.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="black"/>
+            <label left="0.0" top="45.0" width="595.0" height="15.0" color="blue" textAlign="AlignHCenter">A printed recordset follows without columns headers</label>
         </band>
     </pageHeader>
     <details>
