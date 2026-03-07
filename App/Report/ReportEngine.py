@@ -1591,7 +1591,7 @@ if __name__ == "__main__":
             <line x1="0.0" y1="50.0" x2="575.0" y2="50.0" style="SolidLine" lineWidth="1.0"/>
         </band>
         <band height="500.0">
-            <!-- Fonts -->
+            <!-- Font sizes -->
             <label left="5.0" top="0.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="6">Arial 6pt</label>
             <label left="5.0" top="10.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="7">Arial 7pt</label>
             <label left="5.0" top="20.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="8">Arial 8pt</label>
@@ -1607,12 +1607,30 @@ if __name__ == "__main__":
             <label left="5.0" top="180.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="18">Arial 18pt</label>
             <label left="5.0" top="205.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="19">Arial 19pt</label>
             <label left="5.0" top="235.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="20">Arial 20pt</label>
+            <!-- Font weights -->
+            <label left="200.0" top="0.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Thin">Arial 10pt Thin</label>
+            <label left="200.0" top="15.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Normal">Arial 10pt Normal</label>
+            <label left="200.0" top="30.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="ExtraLight">Arial 10pt ExtraLight</label>
+            <label left="200.0" top="45.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Light">Arial 10pt Light</label>
+            <label left="200.0" top="60.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Medium">Arial 10pt Medium</label>
+            <label left="200.0" top="75.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="DemiBold">Arial 10pt DemiBold</label>
+            <label left="200.0" top="90.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Bold">Arial 10pt Bold</label>
+            <label left="200.0" top="105.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="ExtraBold">Arial 10pt ExtraBold</label>
+            <label left="200.0" top="120.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Black">Arial 10pt Black</label>
+            <!-- Font weights italic -->
+            <label left="350.0" top="0.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Thin" fontItalic="True">Arial 10pt Thin italic</label>
+            <label left="350.0" top="15.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Normal" fontItalic="True">Arial 10pt Normal italic</label>
+            <label left="350.0" top="30.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="ExtraLight" fontItalic="True">Arial 10pt ExtraLight italic</label>
+            <label left="350.0" top="45.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Light" fontItalic="True">Arial 10pt Light italic</label>
+            <label left="350.0" top="60.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Medium" fontItalic="True">Arial 10pt Medium italic</label>
+            <label left="350.0" top="75.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="DemiBold" fontItalic="True">Arial 10pt DemiBold italic</label>
+            <label left="350.0" top="90.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Black" fontItalic="True">Arial 10pt Black italic</label>
         </band>
     </reportHeader>
     <pageHeader>
     </pageHeader>
     <details>
-        <band height="0.0" canGrow="False">
+        <band height="0.0" isVisible="False">
             <field left="10.0" top="0.0" width="100" height="15" textAlign="AlignLeft">code</field>
             <field left="110.0" top="0.0" width="200" height="15" textAlign="AlignLeft" canGrow="True">description</field>
             <field left="310.0" top="0.0" width="100" height="15" textAlign="AlignLeft">department</field>
