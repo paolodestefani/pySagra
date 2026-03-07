@@ -72,6 +72,7 @@ from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QSizeF
+from PySide6.QtCore import QRect
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import QLineF
 from PySide6.QtCore import QMarginsF
@@ -89,6 +90,7 @@ from PySide6.QtGui import QPageSize
 from PySide6.QtGui import QPageLayout
 from PySide6.QtGui import QPaintDevice
 from PySide6.QtGui import QPdfWriter
+from PySide6.QtGui import QTransform
 from PySide6.QtWidgets import QApplication
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
@@ -1197,6 +1199,7 @@ class Report():
         if self.painter.isActive():
             self.painter.end()
         page = QPicture()
+        print("QPicture DPI", page.logicalDpiX(), page.logicalDpiY())
         self.painter.begin(page)
         self.pages.append(page)
         # set page margins left/top using clipping
@@ -1389,7 +1392,8 @@ class Report():
     #     scale_x = paintDevice.width() / rect.width() # required scale for fit the page layout into the paint device
     #     scale_y = paintDevice.height() / rect.height()
     #     painter.scale(scale_x, scale_y)
-        
+    #     print("Scale X:", scale_x, "Scale Y:", scale_y)
+
     #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     #     painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
     #     painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
@@ -1417,20 +1421,18 @@ class Report():
         elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
             paintDevice.setTitle(self.options['documentName']) #type: ignore
             
-        target_dpi = paintDevice.logicalDpiX()
+        system_ratio = QGuiApplication.primaryScreen().devicePixelRatio()
+        #target_dpi = paintDevice.logicalDpiX()
         
-        # 2. Layout di Pagina (Fondamentale!)
-        # Assicurati che il dispositivo di stampa abbia lo stesso layout del report
         paintDevice.setPageLayout(self.pageLayout) # type: ignore
         
         rect = self.pageLayout.fullRect(self.pageLayout.units())
         
         painter = QPainter(paintDevice)
         
-        scale_x = paintDevice.width() / rect.width()
-        scale_y = paintDevice.height() / rect.height()
-        #print("Scale X:", scale_x, "Scale Y:", scale_y)
-        
+        scale_x = paintDevice.width() / rect.width() / system_ratio
+        scale_y = paintDevice.height() / rect.height() / system_ratio
+       
         painter.scale(scale_x, scale_y)
         
         # ... render hints ...
@@ -1453,6 +1455,66 @@ class Report():
                 if pn != toPage:
                     paintDevice.newPage() # type: ignore
         painter.end()
+
+    # def print(self, paintDevice: QPaintDevice) -> None:
+    #     "Print document from generated report in the actual paint device"
+    #     if isinstance(paintDevice, QPrinter):
+    #         paintDevice.setDocName(self.options['documentName']) #type: ignore
+    #     elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
+    #         paintDevice.setTitle(self.options['documentName']) #type: ignore
+        
+    #     target_dpi = paintDevice.logicalDpiX()
+    #     print("Target DPI:", target_dpi)
+    #     # 1. IDENTIFICA L'UNITÀ DI MISURA DEL REPORT
+    #     # Supponiamo che tu abbia una variabile self.report_unit ('mm', 'pt', etc.)
+    #     um = self.options.get('unit', 'Point')
+    #     match um:
+    #         case 'Millimeter':
+    #             # Se il report è in millimetri, lo scale deve essere Target_DPI / 25.4
+    #             # (Esempio: 144 / 25.4 = 5.66 pixel per ogni mm del tuo report)
+    #             scale_x = target_dpi / 25.4
+    #             scale_y = target_dpi / 25.4
+    #         case 'Point':
+    #             # Se il report è in PUNTI (1/72 di pollice)
+    #             # Lo scale deve essere Target_DPI / 72.0
+    #             # (Esempio: 144 / 72 = 2.0 pixel per ogni punto del tuo report)
+    #             scale_x = target_dpi / 72.0
+    #             scale_y = target_dpi / 72.0
+    #         case 'Inch'|'Pica'|'Didot'|'Cicero':
+    #             pass
+    #         case _:
+    #             # default is Point
+    #             scale_x = target_dpi / 72.0
+    #             scale_y = target_dpi / 72.0
+
+    #     painter = QPainter(paintDevice)
+        
+    #     # IMPORTANTE: Resetta ogni trasformazione High-DPI automatica di Qt
+    #     painter.setWorldTransform(QTransform())
+        
+    #     # Applica lo scaling fisico puro
+    #     painter.scale(scale_x, scale_y)
+            
+    #     # ... render hints ...
+    #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    #     painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+    #     painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+
+    #     if isinstance(paintDevice, QPrinter):
+    #         fromPage = paintDevice.fromPage() or 1
+    #         toPage = paintDevice.toPage() or len(self.pages)
+    #     elif isinstance(paintDevice, QPdfWriter): # for PDFWriter
+    #         fromPage = 1
+    #         toPage = len(self.pages)
+            
+    #     for pn, page in enumerate(self.pages, 1):
+    #         if fromPage <= pn <= toPage:
+    #             painter.save()
+    #             page.play(painter) 
+    #             painter.restore()
+    #             if pn != toPage:
+    #                 paintDevice.newPage() # type: ignore
+    #     painter.end()
 
 
 
