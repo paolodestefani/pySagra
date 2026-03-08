@@ -1743,7 +1743,7 @@ if __name__ == "__main__":
             <ellipse left="350.0" top="15.0" width="190.0" height="30.0"/>
             <ellipse left="380.0" top="25.0" width="130.0" height="10.0"/>
         </band>
-        <band height="150.0"> <!-- Lines -->
+        <band height="200.0"> <!-- Lines -->
             <!-- Line size and color-->
             <line x1="5.0" y1="0.0" x2="200.0" y2="0.0" style="SolidLine" lineWidth="0.5"/>
             <line x1="5.0" y1="5.0" x2="250.0" y2="5.0" style="SolidLine" color="blue" lineWidth="1.0"/>
