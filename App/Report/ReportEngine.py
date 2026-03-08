@@ -121,7 +121,10 @@ else:
     WEBSITE = "https:\\www.paolodestefani.it"
     session = dict()
     session['qlocale'] = QLocale()
+    session['event_description'] = "Sagra Dimostrativa 2026"
     session['event_image'] = QByteArray()
+    session['company_description'] = "Comitato Festeggiamenti Dimostrativo"
+    session['company_image'] = QByteArray()
    
 # report engine version
 VERSION = '1.0'
@@ -260,6 +263,8 @@ defaultOptions = {'documentName':           'pyReportEngine document',
                   'fontFamily':             'Arial',
                   'fontSize':               8.0,
                   'fontItalic':             False,
+                  'fontUnderline':          False,
+                  'fontStrikeOut':          False,
                   'fontWeight':             'Normal',
                   'textAlign':              'AlignLeft',
                   'color':                  'black',
@@ -362,6 +367,8 @@ class BaseRenderer():
         self.fontFamily = paramdict.get("fontFamily", options['fontFamily'])
         self.fontSize = float(paramdict.get("fontSize", options['fontSize']))
         self.fontItalic = 'True' == paramdict.get("fontItalic", options['fontItalic'])
+        self.fontUnderline = 'True' == paramdict.get("fontUnderline", options['fontUnderline'])
+        self.fontStrikeOut = 'True' == paramdict.get("fontStrikeOut", options['fontStrikeOut'])
         self.fontWeight = FontWeight[paramdict.get("fontWeight", options['fontWeight'])]
         self.textAlign = TextAlign[paramdict.get("textAlign", options['textAlign'])]
         self.color = paramdict.get("color", options['color'])
@@ -434,6 +441,8 @@ class BaseRenderer():
         # scale font based on actual DPI of screen because the final paint device is not known yet
         fontSize = self.fontSize * (STANDARD_DPI / QGuiApplication.primaryScreen().logicalDotsPerInchX())
         font = QFont(self.fontFamily, 8, self.fontWeight, self.fontItalic)
+        font.setUnderline(self.fontUnderline)
+        font.setStrikeOut(self.fontStrikeOut)
         font.setPointSizeF(fontSize)
         painter.setFont(font)
         
@@ -467,6 +476,8 @@ class BaseRenderer():
         # scale font based on actual DPI of screen because the final paint device is not known yet
         fontSize = self.fontSize * (STANDARD_DPI / QGuiApplication.primaryScreen().logicalDotsPerInchX())
         font = QFont(self.fontFamily, 8, self.fontWeight, self.fontItalic)
+        font.setUnderline(self.fontUnderline)
+        font.setStrikeOut(self.fontStrikeOut)
         font.setPointSizeF(fontSize)
         painter.setFont(font)
         
@@ -480,9 +491,6 @@ class BaseRenderer():
         if isinstance(self.value, QImage):
             painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
             painter.drawImage(target_rect, self.value)
-            # painter.drawImage(target_rect.topLeft(),
-            #                   self.value,
-            #                   QRectF(self.value.rect()))
         else:
             text = self.textFormat()
             if text:
@@ -1529,7 +1537,7 @@ if __name__ == "__main__":
     xml_string0 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
-        <documentName type="str">Report Example</documentName>
+        <documentName type="str">Font properties and graphics</documentName>
         <orientation type="str">Portrait</orientation>
         <pageSize type="str">A4</pageSize>
         <topMargin type="float">10.0</topMargin>
@@ -1551,186 +1559,229 @@ if __name__ == "__main__":
         <rectangle left="0.0" top="0.0" width="575.0" height="822.0" lineWidth="0.5"/>
     </pageBackground>
     <reportHeader>
-        <band height="60.0">
-            <!-- Graphics -->
-            <!-- Lines -->
-            <line x1="10.0" y1="5.0" x2="10.0" y2="40.0" style="SolidLine" lineWidth="2.0"/>
-            <line x1="15.0" y1="5.0" x2="15.0" y2="40.0" style="DashLine" lineWidth="2.0"/>
-            <line x1="20.0" y1="5.0" x2="20.0" y2="40.0" style="DotLine" lineWidth="2.0"/>
-            <line x1="25.0" y1="5.0" x2="25.0" y2="40.0" style="DashDotLine" lineWidth="2.0"/>
-            <line x1="30.0" y1="5.0" x2="30.0" y2="40.0" style="DashDotDotLine" lineWidth="2.0"/>
-            <line x1="40.0" y1="5.0" x2="60.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
-            <line x1="45.0" y1="5.0" x2="65.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
-            <line x1="65.0" y1="5.0" x2="45.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
-            <line x1="60.0" y1="5.0" x2="40.0" y2="40.0" style="SolidLine" lineWidth="1.0"/>
-            <!-- Red Eye -->
-            <ellipse left="80.0" top="5.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="yellow"/>
-            <ellipse left="85.0" top="10.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="orange"/>
-            <ellipse left="90.0" top="15.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="red"/>
-            <!-- Black Eye -->
-            <ellipse left="120.0" top="5.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="lightgray"/>
-            <ellipse left="125.0" top="10.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="olive"/>
-            <ellipse left="130.0" top="15.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="black"/>
-            <!-- Lines -->
-            <line x1="170.0" y1="10.0" x2="200.0" y2="10.0" style="SolidLine" lineWidth="0.5"/>
-            <line x1="170.0" y1="12.0" x2="220.0" y2="12.0" style="SolidLine" color="blue" lineWidth="1.0"/>
-            <line x1="170.0" y1="15.0" x2="240.0" y2="15.0" style="SolidLine" color="green" lineWidth="2.0"/>
-            <line x1="170.0" y1="20.0" x2="260.0" y2="20.0" style="SolidLine" color="red" lineWidth="4.0"/>
-            <line x1="170.0" y1="30.0" x2="280.0" y2="30.0" style="SolidLine" color="gray" lineWidth="8.0"/>
-            <!-- Rectangles -->
-            <rectangle xRadius="5.0" yRadius="5.0" left="300.0" top="5.0" width="100.0" height="30.0" lineWidth="3.0"/>
-            <rectangle xRadius="3.0" yRadius="3.0" left="310.0" top="10.0" width="80.0" height="20.0" lineWidth="2.0"/>
-            <rectangle xRadius="1.0" yRadius="1.0" left="320.0" top="15.0" width="60.0" height="10.0" lineWidth="1.0"/>
-            <rectangle xRadius="0.0" yRadius="0.0" left="330.0" top="20.0" width="40.0" height="2.0" lineWidth="0.5"/>
-            <!-- Rectangles and Ellipses -->
-            <rectangle left="450.0" top="5.0" width="100.0" height="30.0" lineWidth="0.5"/>
-            <ellipse left="450.0" top="5.0" width="100.0" height="30.0" lineWidth="0.5"/>
-            <rectangle left="475.0" top="10.0" width="50.0" height="20.0" lineWidth="0.5"/>
-            <ellipse left="475.0" top="10.0" width="50.0" height="20.0" lineWidth="0.5"/>
-            <!-- Last line -->
-            <line x1="0.0" y1="50.0" x2="575.0" y2="50.0" style="SolidLine" lineWidth="1.0"/>
+        <band height="40">
+            <label left="0.0" top="0.0" width="575.0" height="40.0" color="blue"
+                fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
+                textAlign="AlignHCenter">*** FONT PROPERTIES AND GRAPHICS ***</label>
+            <line x1="0.0" y1="40.0" x2="575.0" y2="40.0" style="SolidLine" lineWidth="0.5"/>
         </band>
-        <band height="500.0">
+        <band height="190.0"> <!-- Arial font family -->
             <!-- Font sizes -->
-            <label left="5.0" top="0.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="6">Arial 6pt</label>
-            <label left="5.0" top="10.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="7">Arial 7pt</label>
-            <label left="5.0" top="20.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="8">Arial 8pt</label>
-            <label left="5.0" top="30.0" width="100.0" height="15.0" fontFamily="Arial" fontSize="9">Arial 9pt</label>
-            <label left="5.0" top="40.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="10">Arial 10pt</label>
-            <label left="5.0" top="53.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="11">Arial 11pt</label>
-            <label left="5.0" top="65.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="12">Arial 12pt</label>
-            <label left="5.0" top="80.0" width="100.0" height="20.0" fontFamily="Arial" fontSize="13">Arial 13pt</label>
-            <label left="5.0" top="95.0" width="100.0" height="25.0" fontFamily="Arial" fontSize="14">Arial 14pt</label>
-            <label left="5.0" top="115.0" width="100.0" height="25.0" fontFamily="Arial" fontSize="15">Arial 15pt</label>
-            <label left="5.0" top="135.0" width="100.0" height="25.0" fontFamily="Arial" fontSize="16">Arial 16pt</label>
-            <label left="5.0" top="155.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="17">Arial 17pt</label>
-            <label left="5.0" top="180.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="18">Arial 18pt</label>
-            <label left="5.0" top="205.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="19">Arial 19pt</label>
-            <label left="5.0" top="235.0" width="120.0" height="30.0" fontFamily="Arial" fontSize="20">Arial 20pt</label>
+            <label left="5.0" top="0.0" width="180.0" height="15.0" fontFamily="Arial" fontSize="6">Arial 6pt</label>
+            <label left="5.0" top="10.0" width="180.0" height="15.0" fontFamily="Arial" fontSize="7">Arial 7pt</label>
+            <label left="5.0" top="20.0" width="180.0" height="15.0" fontFamily="Arial" fontSize="8">Arial 8pt</label>
+            <label left="5.0" top="30.0" width="180.0" height="15.0" fontFamily="Arial" fontSize="9">Arial 9pt</label>
+            <label left="5.0" top="40.0" width="180.0" height="20.0" fontFamily="Arial" fontSize="10">Arial 10pt</label>
+            <label left="5.0" top="53.0" width="180.0" height="20.0" fontFamily="Arial" fontSize="11">Arial 11pt</label>
+            <label left="5.0" top="65.0" width="180.0" height="20.0" fontFamily="Arial" fontSize="12">Arial 12pt</label>
+            <label left="5.0" top="80.0" width="180.0" height="20.0" fontFamily="Arial" fontSize="13">Arial 13pt</label>
+            <label left="5.0" top="95.0" width="180.0" height="25.0" fontFamily="Arial" fontSize="14">Arial 14pt</label>
+            <label left="5.0" top="115.0" width="180.0" height="25.0" fontFamily="Arial" fontSize="15">Arial 15pt</label>
+            <label left="5.0" top="135.0" width="180.0" height="25.0" fontFamily="Arial" fontSize="16">Arial 16pt</label>
+            <label left="5.0" top="155.0" width="180.0" height="30.0" fontFamily="Arial" fontSize="17">Arial 17pt</label>
             <!-- Font weights -->
-            <label left="200.0" top="0.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Thin">Arial 10pt Thin</label>
-            <label left="200.0" top="15.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Normal">Arial 10pt Normal</label>
-            <label left="200.0" top="30.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="ExtraLight">Arial 10pt ExtraLight</label>
-            <label left="200.0" top="45.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Light">Arial 10pt Light</label>
-            <label left="200.0" top="60.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Medium">Arial 10pt Medium</label>
-            <label left="200.0" top="75.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="DemiBold">Arial 10pt DemiBold</label>
-            <label left="200.0" top="90.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Bold">Arial 10pt Bold</label>
-            <label left="200.0" top="105.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="ExtraBold">Arial 10pt ExtraBold</label>
-            <label left="200.0" top="120.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Black">Arial 10pt Black</label>
-            <!-- Font weights italic -->
-            <label left="350.0" top="0.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Thin" fontItalic="True">Arial 10pt Thin italic</label>
-            <label left="350.0" top="15.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Normal" fontItalic="True">Arial 10pt Normal italic</label>
-            <label left="350.0" top="30.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="ExtraLight" fontItalic="True">Arial 10pt ExtraLight italic</label>
-            <label left="350.0" top="45.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Light" fontItalic="True">Arial 10pt Light italic</label>
-            <label left="350.0" top="60.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Medium" fontItalic="True">Arial 10pt Medium italic</label>
-            <label left="350.0" top="75.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="DemiBold" fontItalic="True">Arial 10pt DemiBold italic</label>
-            <label left="350.0" top="90.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="10" fontWeight="Black" fontItalic="True">Arial 10pt Black italic</label>
+            <label left="190.0" top="0.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Thin">Arial Thin</label>
+            <label left="190.0" top="15.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Normal">Arial Normal</label>
+            <label left="190.0" top="30.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="ExtraLight">Arial ExtraLight</label>
+            <label left="190.0" top="45.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Light">Arial Light</label>
+            <label left="190.0" top="60.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Medium">Arial Medium</label>
+            <label left="190.0" top="75.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="DemiBold">Arial DemiBold</label>
+            <label left="190.0" top="90.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Bold">Arial Bold</label>
+            <label left="190.0" top="105.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="ExtraBold">Arial ExtraBold</label>
+            <label left="190.0" top="120.0" width="150.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Black">Arial Black</label>
+            <!-- Font weights italic/underline/overline/strikeout -->
+            <label left="345.0" top="0.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Normal" fontItalic="True">Arial Normal Italic</label>
+            <label left="345.0" top="15.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Bold" fontItalic="True">Arial Bold Italic</label>
+            <label left="345.0" top="30.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Normal" fontUnderline="True">Arial Normal Underline</label>
+            <label left="345.0" top="45.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Bold" fontUnderline="True">Arial Bold Underline</label>
+            <label left="345.0" top="60.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Normal" fontStrikeOut="True">Arial Normal StrikeOut</label>
+            <label left="345.0" top="75.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" fontWeight="Bold" fontStrikeOut="True">Arial Bold StrikeOut</label>
+            <label left="345.0" top="90.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" 
+            fontItalic="True" fontUnderline="True" fontOverline="True" fontStrikeOut="True">Arial Normal Italic Underline StrikeOut</label>
+            <!-- Font colors -->
+            <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="red">Arial Normal Red</label>
+            <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="green">Arial Normal Green</label>
+            <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="blue">Arial Normal Blue</label>
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="magenta">Arial Normal magenta</label> 
         </band>
-    </reportHeader>
-    <pageHeader>
-    </pageHeader>
-    <details>
-        <band height="0.0" isVisible="False">
-            <field left="10.0" top="0.0" width="100" height="15" textAlign="AlignLeft">code</field>
-            <field left="110.0" top="0.0" width="200" height="15" textAlign="AlignLeft" canGrow="True">description</field>
-            <field left="310.0" top="0.0" width="100" height="15" textAlign="AlignLeft">department</field>
-            <field left="410.0" top="0.0" width="50" height="15" textAlign="AlignHCenter">stock_control</field>
-            <field left="460.0" top="0.0" width="60" height="15" textAlign="AlignRight">quantity</field>
-            <field left="520.0" top="0.0" width="70" height="15" textAlign="AlignRight">date</field>
+        <band height="190.0"> <!-- Helvetica font family -->
+            <!-- Font sizes -->
+            <label left="5.0" top="0.0" width="180.0" height="15.0" fontFamily="Helvetica" fontSize="6">Helvetica 6pt</label>
+            <label left="5.0" top="10.0" width="180.0" height="15.0" fontFamily="Helvetica" fontSize="7">Helvetica 7pt</label>
+            <label left="5.0" top="20.0" width="180.0" height="15.0" fontFamily="Helvetica" fontSize="8">Helvetica 8pt</label>
+            <label left="5.0" top="30.0" width="180.0" height="15.0" fontFamily="Helvetica" fontSize="9">Helvetica 9pt</label>
+            <label left="5.0" top="40.0" width="180.0" height="20.0" fontFamily="Helvetica" fontSize="10">Helvetica 10pt</label>
+            <label left="5.0" top="53.0" width="180.0" height="20.0" fontFamily="Helvetica" fontSize="11">Helvetica 11pt</label>
+            <label left="5.0" top="65.0" width="180.0" height="20.0" fontFamily="Helvetica" fontSize="12">Helvetica 12pt</label>
+            <label left="5.0" top="80.0" width="180.0" height="20.0" fontFamily="Helvetica" fontSize="13">Helvetica 13pt</label>
+            <label left="5.0" top="95.0" width="180.0" height="25.0" fontFamily="Helvetica" fontSize="14">Helvetica 14pt</label>
+            <label left="5.0" top="115.0" width="180.0" height="25.0" fontFamily="Helvetica" fontSize="15">Helvetica 15pt</label>
+            <label left="5.0" top="135.0" width="180.0" height="25.0" fontFamily="Helvetica" fontSize="16">Helvetica 16pt</label>
+            <label left="5.0" top="155.0" width="180.0" height="30.0" fontFamily="Helvetica" fontSize="17">Helvetica 17pt</label>
+            <!-- Font weights -->
+            <label left="190.0" top="0.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Thin">Helvetica Thin</label>
+            <label left="190.0" top="15.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Normal">Helvetica Normal</label>
+            <label left="190.0" top="30.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="ExtraLight">Helvetica ExtraLight</label>
+            <label left="190.0" top="45.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Light">Helvetica Light</label>
+            <label left="190.0" top="60.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Medium">Helvetica Medium</label>
+            <label left="190.0" top="75.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="DemiBold">Helvetica DemiBold</label>
+            <label left="190.0" top="90.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Bold">Helvetica Bold</label>
+            <label left="190.0" top="105.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="ExtraBold">Helvetica ExtraBold</label>
+            <label left="190.0" top="120.0" width="150.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Black">Helvetica Black</label>
+            <!-- Font weights italic/underline/overline/strikeout -->
+            <label left="345.0" top="0.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Normal" fontItalic="True">Helvetica Normal Italic</label>
+            <label left="345.0" top="15.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Bold" fontItalic="True">Helvetica Bold Italic</label>
+            <label left="345.0" top="30.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Normal" fontUnderline="True">Helvetica Normal Underline</label>
+            <label left="345.0" top="45.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Bold" fontUnderline="True">Helvetica Bold Underline</label>
+            <label left="345.0" top="60.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Normal" fontStrikeOut="True">Helvetica Normal StrikeOut</label>
+            <label left="345.0" top="75.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" fontWeight="Bold" fontStrikeOut="True">Helvetica Bold StrikeOut</label>
+            <label left="345.0" top="90.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" 
+            fontItalic="True" fontUnderline="True" fontOverline="True" fontStrikeOut="True">Helvetica Normal Italic Underline StrikeOut</label>
+            <!-- Font colors -->
+            <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="red">Helvetica Normal Red</label>
+            <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="green">Helvetica Normal Green</label>
+            <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="blue">Helvetica Normal Blue</label>
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="magenta">Helvetica Normal magenta</label>  
         </band>
-    </details>
-</report>
-"""
-    
-    xml_string1 = """<?xml version="1.0" encoding="UTF-8"?>
-<report version="1.0">
-    <options>
-        <topMargin type="float">0.0</topMargin>
-        <bottomMargin type="float">0.0</bottomMargin>
-        <leftMargin type="float">0.0</leftMargin>
-        <rightMargin type="float">0.0</rightMargin>
-    </options>
-    <columns>
-        <fieldName>code</fieldName>
-        <fieldName>description</fieldName>
-        <fieldName>department</fieldName>
-        <fieldName>stock_control</fieldName>
-        <fieldName>quantity</fieldName>
-        <fieldName>date</fieldName>
-    </columns>
-    <pageBackground>
-        <rectangle color="red" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="5.0"/>
-        <ellipse color="blue" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="1.0"/>
-        <ellipse color="blue" left="48.0" top="171.0" width="500.0" height="500.0" lineWidth="1.0"/>
-        <ellipse color="blue" left="148.0" top="271.0" width="300.0" height="300.0" lineWidth="1.0"/>
-        <ellipse color="blue" left="198.0" top="321.0" width="200.0" height="200.0" lineWidth="1.0"/>
-        <line color="blue" x1="0.0" y1="0.0" x2="595.0" y2="842.0" lineWidth="1.0"/>
-        <line color="blue" x1="595.0" y1="0.0" x2="0.0" y2="842.0" lineWidth="1.0"/>
-    </pageBackground>
-    <pageHeader>
-        <band height="75.0">
-            <label left="0.0" top="10.0" width="595.0" height="50.0" color="blue"
-                fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="32"
-                textAlign="AlignHCenter">*** FIRST REPORT EXAMPLE ***</label>
+        <band height="190.0"> <!-- Verdana font family -->
+            <!-- Font sizes -->
+            <label left="5.0" top="0.0" width="180.0" height="15.0" fontFamily="Verdana" fontSize="6">Verdana 6pt</label>
+            <label left="5.0" top="10.0" width="180.0" height="15.0" fontFamily="Verdana" fontSize="7">Verdana 7pt</label>
+            <label left="5.0" top="20.0" width="180.0" height="15.0" fontFamily="Verdana" fontSize="8">Verdana 8pt</label>
+            <label left="5.0" top="30.0" width="180.0" height="15.0" fontFamily="Verdana" fontSize="9">Verdana 9pt</label>
+            <label left="5.0" top="40.0" width="180.0" height="20.0" fontFamily="Verdana" fontSize="10">Verdana 10pt</label>
+            <label left="5.0" top="53.0" width="180.0" height="20.0" fontFamily="Verdana" fontSize="11">Verdana 11pt</label>
+            <label left="5.0" top="65.0" width="180.0" height="20.0" fontFamily="Verdana" fontSize="12">Verdana 12pt</label>
+            <label left="5.0" top="80.0" width="180.0" height="20.0" fontFamily="Verdana" fontSize="13">Verdana 13pt</label>
+            <label left="5.0" top="95.0" width="180.0" height="25.0" fontFamily="Verdana" fontSize="14">Verdana 14pt</label>
+            <label left="5.0" top="115.0" width="180.0" height="25.0" fontFamily="Verdana" fontSize="15">Verdana 15pt</label>
+            <label left="5.0" top="135.0" width="180.0" height="25.0" fontFamily="Verdana" fontSize="16">Verdana 16pt</label>
+            <label left="5.0" top="155.0" width="180.0" height="30.0" fontFamily="Verdana" fontSize="17">Verdana 17pt</label>
+            <!-- Font weights -->
+            <label left="190.0" top="0.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Thin">Verdana Thin</label>
+            <label left="190.0" top="15.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Normal">Verdana Normal</label>
+            <label left="190.0" top="30.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="ExtraLight">Verdana ExtraLight</label>
+            <label left="190.0" top="45.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Light">Verdana Light</label>
+            <label left="190.0" top="60.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Medium">Verdana Medium</label>
+            <label left="190.0" top="75.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="DemiBold">Verdana DemiBold</label>
+            <label left="190.0" top="90.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Bold">Verdana Bold</label>
+            <label left="190.0" top="105.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="ExtraBold">Verdana ExtraBold</label>
+            <label left="190.0" top="120.0" width="150.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Black">Verdana Black</label>
+            <!-- Font weights italic/underline/overline/strikeout -->
+            <label left="345.0" top="0.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Normal" fontItalic="True">Verdana Normal Italic</label>
+            <label left="345.0" top="15.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Bold" fontItalic="True">Verdana Bold Italic</label>
+            <label left="345.0" top="30.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Normal" fontUnderline="True">Verdana Normal Underline</label>
+            <label left="345.0" top="45.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Bold" fontUnderline="True">Verdana Bold Underline</label>
+            <label left="345.0" top="60.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Normal" fontStrikeOut="True">Verdana Normal StrikeOut</label>
+            <label left="345.0" top="75.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" fontWeight="Bold" fontStrikeOut="True">Verdana Bold StrikeOut</label>
+            <label left="345.0" top="90.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" 
+            fontItalic="True" fontUnderline="True" fontOverline="True" fontStrikeOut="True">Verdana Normal Italic Underline StrikeOut</label>
+            <!-- Font colors -->
+            <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="red">Verdana Normal Red</label>
+            <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="green">Verdana Normal Green</label>
+            <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="blue">Verdana Normal Blue</label> 
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="magenta">Verdana Normal magenta</label>  
         </band>
-        <band height="70.0">
-            <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">This is the page header</label>
-            <label left="0.0" top="15.0" width="595.0" height="15.0" textAlign="AlignHCenter">A page background draws rectangles and ellipses</label>
-            <label left="0.0" top="30.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins, no page footer</label>
-            <label left="0.0" top="45.0" width="595.0" height="15.0" fontWeight="Bold" textAlign="AlignLeft">text left aligned</label>
-            <label left="0.0" top="45.0" width="595.0" height="15.0" fontWeight="Bold" textAlign="AlignRight">text right aligned</label>
-            <!-- Eye on the left -->
-            <ellipse left="100.0" top="0.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="yellow"/>
-            <ellipse left="105.0" top="5.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="orange"/>
-            <ellipse left="110.0" top="10.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="red"/>
-            <!-- Eye on the right -->
-            <ellipse left="470.0" top="0.0" width="30.0" height="30.0" style="SolidLine" brushStyle="SolidPattern" brushColor="lightgray"/>
-            <ellipse left="475.0" top="5.0" width="20.0" height="20.0" style="NoPen" brushStyle="SolidPattern" brushColor="olive"/>
-            <ellipse left="480.0" top="10.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="black"/>
-            <label left="0.0" top="45.0" width="595.0" height="15.0" color="blue" textAlign="AlignHCenter">A printed recordset follows without columns headers</label>
+        <band height="190.0"> <!-- Comic Sans MS font family -->
+            <!-- Font sizes -->
+            <label left="5.0" top="0.0" width="180.0" height="15.0" fontFamily="Comic Sans MS" fontSize="6">Comic Sans MS 6pt</label>
+            <label left="5.0" top="10.0" width="180.0" height="15.0" fontFamily="Comic Sans MS" fontSize="7">Comic Sans MS 7pt</label>
+            <label left="5.0" top="20.0" width="180.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8">Comic Sans MS 8pt</label>
+            <label left="5.0" top="30.0" width="180.0" height="15.0" fontFamily="Comic Sans MS" fontSize="9">Comic Sans MS 9pt</label>
+            <label left="5.0" top="40.0" width="180.0" height="20.0" fontFamily="Comic Sans MS" fontSize="10">Comic Sans MS 10pt</label>
+            <label left="5.0" top="53.0" width="180.0" height="20.0" fontFamily="Comic Sans MS" fontSize="11">Comic Sans MS 11pt</label>
+            <label left="5.0" top="65.0" width="180.0" height="20.0" fontFamily="Comic Sans MS" fontSize="12">Comic Sans MS 12pt</label>
+            <label left="5.0" top="80.0" width="180.0" height="20.0" fontFamily="Comic Sans MS" fontSize="13">Comic Sans MS 13pt</label>
+            <label left="5.0" top="95.0" width="180.0" height="25.0" fontFamily="Comic Sans MS" fontSize="14">Comic Sans MS 14pt</label>
+            <label left="5.0" top="115.0" width="180.0" height="25.0" fontFamily="Comic Sans MS" fontSize="15">Comic Sans MS 15pt</label>
+            <label left="5.0" top="135.0" width="180.0" height="25.0" fontFamily="Comic Sans MS" fontSize="16">Comic Sans MS 16pt</label>
+            <label left="5.0" top="155.0" width="180.0" height="30.0" fontFamily="Comic Sans MS" fontSize="17">Comic Sans MS 17pt</label>
+            <!-- Font weights -->
+            <label left="190.0" top="0.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Thin">Comic Sans MS Thin</label>
+            <label left="190.0" top="15.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Normal">Comic Sans MS Normal</label>
+            <label left="190.0" top="30.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="ExtraLight">Comic Sans MS ExtraLight</label>
+            <label left="190.0" top="45.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Light">Comic Sans MS Light</label>
+            <label left="190.0" top="60.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Medium">Comic Sans MS Medium</label>
+            <label left="190.0" top="75.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="DemiBold">Comic Sans MS DemiBold</label>
+            <label left="190.0" top="90.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Bold">Comic Sans MS Bold</label>
+            <label left="190.0" top="105.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="ExtraBold">Comic Sans MS ExtraBold</label>
+            <label left="190.0" top="120.0" width="150.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Black">Comic Sans MS Black</label>
+            <!-- Font weights italic/underline/overline/strikeout -->
+            <label left="345.0" top="0.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Normal" fontItalic="True">Comic Sans MS Normal Italic</label>
+            <label left="345.0" top="15.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Bold" fontItalic="True">Comic Sans MS Bold Italic</label>
+            <label left="345.0" top="30.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Normal" fontUnderline="True">Comic Sans MS Normal Underline</label>
+            <label left="345.0" top="45.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Bold" fontUnderline="True">Comic Sans MS Bold Underline</label>
+            <label left="345.0" top="60.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Normal" fontStrikeOut="True">Comic Sans MS Normal StrikeOut</label>
+            <label left="345.0" top="75.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" fontWeight="Bold" fontStrikeOut="True">Comic Sans MS Bold StrikeOut</label>
+            <label left="345.0" top="90.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" 
+            fontItalic="True" fontUnderline="True" fontOverline="True" fontStrikeOut="True">Comic Sans MS Normal Italic Underline StrikeOut</label>
+            <!-- Font colors -->
+            <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="red">Comic Sans MS Normal Red</label>
+            <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="green">Comic Sans MS Normal Green</label>
+            <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="blue">Comic Sans MS Normal Blue</label> 
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="magenta">Comic Sans MS Normal magenta</label>
         </band>
-    </pageHeader>
-    <details>
-        <band height="30.0" canGrow="True">
-            <field left="10.0" top="0.0" width="100" height="15" textAlign="AlignLeft">code</field>
-            <field left="110.0" top="0.0" width="200" height="15" textAlign="AlignLeft" canGrow="True">description</field>
-            <field left="310.0" top="0.0" width="100" height="15" textAlign="AlignLeft">department</field>
-            <field left="410.0" top="0.0" width="50" height="15" textAlign="AlignHCenter">stock_control</field>
-            <field left="460.0" top="0.0" width="60" height="15" textAlign="AlignRight">quantity</field>
-            <field left="520.0" top="0.0" width="70" height="15" textAlign="AlignRight">date</field>
+        <band height="75.0"> <!-- Circles and Ellipses -->
+            <!-- Circle -->
+            <ellipse left="5.0" top="5.0" width="50.0" height="50.0" style="SolidLine"/>
+            <ellipse left="15.0" top="15.0" width="30.0" height="30.0" style="NoPen" brushStyle="SolidPattern" brushColor="lightgray"/>
+            <ellipse left="25.0" top="25.0" width="10.0" height="10.0" style="SolidLine" brushStyle="SolidPattern" brushColor="black"/>
+            <!-- Blue Eye -->
+            <ellipse left="80.0" top="5.0" width="50.0" height="50.0" style="SolidLine"/>
+            <ellipse left="90.0" top="15.0" width="30.0" height="30.0" style="NoPen" brushStyle="SolidPattern" brushColor="cyan"/>
+            <ellipse left="100.0" top="25.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="blue"/>
+            <!-- Red Eye -->
+            <ellipse left="160.0" top="5.0" width="50.0" height="50.0" style="SolidLine" brushStyle="SolidPattern" brushColor="yellow"/>
+            <ellipse left="170.0" top="15.0" width="30.0" height="30.0" style="NoPen" brushStyle="SolidPattern" brushColor="orange"/>
+            <ellipse left="180.0" top="25.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="red"/>
+            <!-- Black Eye -->
+            <ellipse left="240.0" top="5.0" width="50.0" height="50.0" style="SolidLine" brushStyle="SolidPattern" brushColor="lightgray"/>
+            <ellipse left="250.0" top="15.0" width="30.0" height="30.0" style="NoPen" brushStyle="SolidPattern" brushColor="olive"/>
+            <ellipse left="260.0" top="25.0" width="10.0" height="10.0" style="NoPen" brushStyle="SolidPattern" brushColor="black"/>
+            <!-- Nested ellipses -->
+            <ellipse left="320.0" top="5.0" width="250.0" height="50.0"/>
+            <ellipse left="350.0" top="15.0" width="190.0" height="30.0"/>
+            <ellipse left="380.0" top="25.0" width="130.0" height="10.0"/>
         </band>
-    </details>
-</report>
-"""
-    xml_string2 = """<?xml version="1.0" encoding="UTF-8"?>
-<report version="1.0">
-    <options>
-        <documentName type="str">Example of a complete report</documentName>
-        <orientation type="str">Portrait</orientation>
-        <pageSize type="str">A4</pageSize>
-        <topMargin type="float">20.0</topMargin>
-        <bottomMargin type="float">20.0</bottomMargin>
-        <leftMargin type="float">10.0</leftMargin>
-        <rightMargin type="float">10.0</rightMargin>
-        <fontFamily type="str">Arial</fontFamily>
-        <fontSize type="int">7</fontSize>
-    </options>
-    <columns>
-        <fieldName>code</fieldName>
-        <fieldName>description</fieldName>
-        <fieldName>department</fieldName>
-        <fieldName>stock_control</fieldName>
-        <fieldName>quantity</fieldName>
-        <fieldName>date</fieldName>
-    </columns>
-    <sorting>
-        <sort field="department" reverse="False"/>
-        <sort field="date" reverse="False"/>
-        <sort field="quantity" reverse="True"/>
-    </sorting>
-    <pageHeader>
-        <band height="110.0">
-        <image left="0.0" top="0.0" width="48.0" height="48.0" aspectRatio="KeepAspectRatio" opacity="1.0">
+        <band height="150.0"> <!-- Lines -->
+            <!-- Line size and color-->
+            <line x1="5.0" y1="0.0" x2="200.0" y2="0.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="5.0" x2="250.0" y2="5.0" style="SolidLine" color="blue" lineWidth="1.0"/>
+            <line x1="5.0" y1="11.0" x2="310.0" y2="11.0" style="SolidLine" color="green" lineWidth="2.0"/>
+            <line x1="5.0" y1="17.0" x2="380.0" y2="17.0" style="SolidLine" color="red" lineWidth="3.0"/>
+            <line x1="5.0" y1="25.0" x2="460.0" y2="25.0" style="SolidLine" color="magenta" lineWidth="6.0"/>
+            <line x1="5.0" y1="34.0" x2="550.0" y2="34.0" style="SolidLine" color="black" lineWidth="8.0"/>
+            <!-- Line style -->
+            <line x1="5.0" y1="50.0" x2="570.0" y2="50.0" style="SolidLine" lineWidth="2.0"/>
+            <line x1="5.0" y1="60.0" x2="570.0" y2="60.0" style="DashLine" lineWidth="2.0"/>
+            <line x1="5.0" y1="70.0" x2="570.0" y2="70.0" style="DotLine" lineWidth="2.0"/>
+            <line x1="5.0" y1="80.0" x2="570.0" y2="80.0" style="DashDotLine" lineWidth="2.0"/>
+            <line x1="5.0" y1="90.0" x2="570.0" y2="90.0" style="DashDotDotLine" lineWidth="2.0"/>
+            <!-- Line draw -->
+            <line x1="5.0" y1="100.0" x2="575.0" y2="150.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="100.0" x2="575.0" y2="160.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="100.0" x2="575.0" y2="180.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="100.0" x2="575.0" y2="210.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="100.0" x2="575.0" y2="250.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="100.0" x2="575.0" y2="300.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="100.0" x2="575.0" y2="360.0" style="SolidLine" lineWidth="0.5"/>
+            <line x1="5.0" y1="100.0" x2="575.0" y2="430.0" style="SolidLine" lineWidth="0.5"/>
+        </band>
+        <band height="100.0"> <!-- Rectagles and Ellipses -->
+            <!-- Rectangles -->
+            <rectangle xRadius="5.0" yRadius="5.0" left="10.0" top="10.0" width="250.0" height="60.0" lineWidth="1.0"/>
+            <rectangle xRadius="3.0" yRadius="3.0" left="25.0" top="20.0" width="220.0" height="40.0" lineWidth="1.0"/>
+            <rectangle left="40.0" top="30.0" width="190.0" height="20.0" lineWidth="1.0"/>
+            <!-- Rectangles and Ellipses -->
+            <rectangle left="300.0" top="10.0" width="260.0" height="60.0" lineWidth="0.5"/>
+            <ellipse left="300.0" top="10.0" width="260.0" height="60.0" lineWidth="0.5"/>
+            <rectangle left="350.0" top="20.0" width="160.0" height="40.0" lineWidth="0.5"/>
+            <ellipse left="350.0" top="20.0" width="160.0" height="40.0" lineWidth="0.5"/>
+            <rectangle left="400.0" top="30.0" width="60.0" height="20.0" lineWidth="0.5"/>
+            <ellipse left="400.0" top="30.0" width="60.0" height="20.0" lineWidth="0.5"/>
+        </band>
+        <band height="120.0"> <!-- Embedded image -->
+            <image left="0.0" top="0.0" width="90.0" height="90.0" aspectRatio="KeepAspectRatio" opacity="1.0">
         iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABHNCSVQICAgIfAhkiAAAAAlw
         SFlzAAAFMQAABTEBt+0oUgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoA
         AApISURBVHja1Zp7jB1Xfcc/vzOP+753H/Y+jF+xnZCHG4TlhDg0jU2kkrRRGxWCEOLVVqJp
@@ -1783,22 +1834,163 @@ if __name__ == "__main__":
         5Zvo6dta+FJ9srFBjB6JW/z9yAhHp1bT2LOfWGeN87S9u8TPxeRWd7G6MsinwLs2X86OnT5Z
         /8TLX+VXc9DnC5AyyL23EGZ8vHaCveubrPw/bojI3qsIymU8vwv3ep/x/7X90Ba5k+pnAAAA
         AElFTkSuQmCC</image>
-        <label left="0.0" top="45.0" width="575.0" height="15.0" textAlign="AlignLeft">* left aligned text</label>
-        <label left="0.0" top="45.0" width="575.0" height="15.0" textAlign="AlignRight">right aligned text *</label>
-        <label left="0.0" top="20.0" width="550.0" height="38.0" color="blue"
-        fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
-        textAlign="AlignHCenter">Example of a complete report</label>
-        <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="10.0" width="575.0" height="20.0" lineWidth="1.0"/>
-        <label left="5.0" top="60.0" width="585.0" height="15.0" fontSize="6">A complete report with 2 level of grouping, department and date, and aggregate functions</label>
-        <label left="5.0" top="75.0" width="100.0" height="15.0">Code</label>
-        <label left="100.0" top="75.0" width="240.0" height="15.0">Description</label>
-        <label left="340.0" top="75.0" width="100.0" height="15.0">Department</label>
-        <label left="440.0" top="75.0" width="15.0" height="15.0" textAlign="AlignHCenter">SC</label>
-        <label left="450.0" top="75.0" width="60.0" height="15.0" textAlign="AlignRight">Quantity</label>
-        <label left="510.0" top="75.0" width="65.0" height="15.0" textAlign="AlignRight">Date</label>
-        <line color="blue" x1="0.0" y1="3.0" x2="575.0" y2="3.0" lineWidth="1.0"/>
-        <line color="red" x1="0.0" y1="5.0" x2="570.0" y2="5.0" lineWidth="1.0"/>
-    </band>
+        <label left="150.0" top="40.0" width="400.0" height="30.0" fontSize="12">Embedded image resized to 90x90 pt</label>
+        </band>
+        <band height="320"> <!-- Special fields -->
+            <line x1="0.0" y1="0.0" x2="575.0" y2="0.0" style="SolidLine" lineWidth="0.5"/>
+            <label left="0.0" top="0.0" width="575" height="20" fontSize="12" fontWeight="Bold" textAlign="AlignHCenter">SPECIAL FIELDS</label>
+            <line x1="0.0" y1="20.0" x2="575.0" y2="20.0" style="SolidLine" lineWidth="0.5"/>
+            <label left="0.0" top="30.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Page number:</label>
+            <special left="290.0" top="30.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">pageNumber</special>
+            <label left="0.0" top="50.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Print date:</label>
+            <special left="290.0" top="50.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">printDate</special>
+            <label left="0.0" top="70.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Print date and time:</label>
+            <special left="290.0" top="70.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">printDateTime</special>
+            <label left="0.0" top="90.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Print time:</label>
+            <special left="290.0" top="90.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">printTime</special>
+            <label left="0.0" top="110.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Record number:</label>
+            <special left="290.0" top="110.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">recordNumber</special>
+            <label left="0.0" top="130.0" width="280" height="20" fontSize="10" textAlign="AlignRight">App name:</label>
+            <special left="290.0" top="130.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">appName</special>
+            <label left="0.0" top="150.0" width="280" height="20" fontSize="10" textAlign="AlignRight">App author:</label>
+            <special left="290.0" top="150.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">appAuthor</special>
+            <label left="0.0" top="170.0" width="280" height="20" fontSize="10" textAlign="AlignRight">App email:</label>
+            <special left="290.0" top="170.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">appEmail</special>
+            <label left="0.0" top="190.0" width="280" height="20" fontSize="10" textAlign="AlignRight">App organization:</label>
+            <special left="290.0" top="190.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">appOrganization</special>
+            <label left="0.0" top="210.0" width="280" height="20" fontSize="10" textAlign="AlignRight">App website:</label>
+            <special left="290.0" top="210.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">appWebsite</special>
+            <label left="0.0" top="230.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Company description:</label>
+            <special left="290.0" top="230.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">companyDescription</special>
+            <label left="0.0" top="250.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Company image:</label>
+            <special left="290.0" top="250.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">companyImage</special>
+            <label left="0.0" top="270.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Event description:</label>
+            <special left="290.0" top="270.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">eventDescription</special>
+            <label left="0.0" top="290.0" width="280" height="20" fontSize="10" textAlign="AlignRight">Event image:</label>
+            <special left="290.0" top="290.0" width="280" height="20" fontSize="10" textAlign="AlignLeft">eventImage</special>
+        </band>
+    </reportHeader>
+    <pageHeader>
+    </pageHeader>
+    <details>
+        <band height="0.0" isVisible="False">
+            <field left="10.0" top="0.0" width="100" height="15" textAlign="AlignLeft">code</field>
+            <field left="110.0" top="0.0" width="200" height="15" textAlign="AlignLeft" canGrow="True">description</field>
+            <field left="310.0" top="0.0" width="100" height="15" textAlign="AlignLeft">department</field>
+            <field left="410.0" top="0.0" width="50" height="15" textAlign="AlignHCenter">stock_control</field>
+            <field left="460.0" top="0.0" width="60" height="15" textAlign="AlignRight">quantity</field>
+            <field left="520.0" top="0.0" width="70" height="15" textAlign="AlignRight">date</field>
+        </band>
+    </details>
+</report>
+"""
+    
+    xml_string1 = """<?xml version="1.0" encoding="UTF-8"?>
+<report version="1.0">
+    <options>
+        <topMargin type="float">0.0</topMargin>
+        <bottomMargin type="float">0.0</bottomMargin>
+        <leftMargin type="float">0.0</leftMargin>
+        <rightMargin type="float">0.0</rightMargin>
+    </options>
+    <columns>
+        <fieldName>code</fieldName>
+        <fieldName>description</fieldName>
+        <fieldName>department</fieldName>
+        <fieldName>stock_control</fieldName>
+        <fieldName>quantity</fieldName>
+        <fieldName>date</fieldName>
+    </columns>
+    <pageBackground>
+        <rectangle color="red" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="5.0"/>
+        <ellipse color="lightgray" left="0.0" top="0.0" width="595.0" height="842.0" lineWidth="0.5"/>
+        <ellipse color="lightgray" left="48.0" top="171.0" width="500.0" height="500.0" lineWidth="0.5"/>
+        <ellipse color="lightgray" left="148.0" top="271.0" width="300.0" height="300.0" lineWidth="0.5"/>
+        <ellipse color="lightgray" left="198.0" top="321.0" width="200.0" height="200.0" lineWidth="0.5"/>
+        <line color="lightgray" x1="0.0" y1="0.0" x2="595.0" y2="842.0" lineWidth="0.5"/>
+        <line color="lightgray" x1="595.0" y1="0.0" x2="0.0" y2="842.0" lineWidth="0.5"/>
+    </pageBackground>
+    <pageHeader>
+        <band height="40">
+            <label left="0.0" top="0.0" width="595.0" height="40.0" color="blue"
+                fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
+                textAlign="AlignHCenter">*** REPORT EXAMPLE ***</label>
+        </band>
+        <band height="70.0">
+            <label left="0.0" top="0.0" width="595.0" height="15.0" textAlign="AlignHCenter">This is the page header</label>
+            <label left="0.0" top="15.0" width="595.0" height="15.0" textAlign="AlignHCenter">A page background draws rectangles, ellipses and lines</label>
+            <label left="0.0" top="30.0" width="595.0" height="15.0" textAlign="AlignHCenter">Page size is A4, no margins, page number on page footer</label>
+            <label left="0.0" top="45.0" width="595.0" height="15.0" textAlign="AlignHCenter" fontItalic="True">A detail header and detail recordset follows</label>
+        </band>
+        <band height="20.0">
+            <label left="10.0" top="0.0" width="100" height="15" fontWeight="Bold" textAlign="AlignLeft">Code</label>
+            <label left="110.0" top="0.0" width="200" height="15" fontWeight="Bold" textAlign="AlignLeft">Description</label>
+            <label left="310.0" top="0.0" width="100" height="15" fontWeight="Bold" textAlign="AlignLeft">Department</label>
+            <label left="410.0" top="0.0" width="50" height="15" fontWeight="Bold" textAlign="AlignHCenter">SC</label>
+            <label left="460.0" top="0.0" width="60" height="15" fontWeight="Bold" textAlign="AlignRight">Quantity</label>
+            <label left="520.0" top="0.0" width="65" height="15" fontWeight="Bold" textAlign="AlignRight">Date</label>
+            <line x1="10.0" y1="17.0" x2="585.0" y2="17.0" style="SolidLine" lineWidth="2.0" color="magenta"/>
+        </band>
+    </pageHeader>
+    <details>
+        <band height="20.0" canGrow="True">
+            <field left="10.0" top="0.0" width="100" height="15" textAlign="AlignLeft">code</field>
+            <field left="110.0" top="0.0" width="200" height="15" textAlign="AlignLeft" canGrow="True">description</field>
+            <field left="310.0" top="0.0" width="100" height="15" textAlign="AlignLeft">department</field>
+            <field left="410.0" top="0.0" width="50" height="15" textAlign="AlignHCenter">stock_control</field>
+            <field left="460.0" top="0.0" width="60" height="15" textAlign="AlignRight">quantity</field>
+            <field left="520.0" top="0.0" width="65" height="15" textAlign="AlignRight">date</field>
+        </band>
+    </details>
+    <pageFooter>
+        <band height="20.0">
+            <line x1="10.0" y1="5.0" x2="280.0" y2="5.0" style="SolidLine" lineWidth="1.0"/>
+            <special left="0.0" top="0.0" width="595.0" height="10.0" textAlign="AlignHCenter" fontWeight="Bold">pageNumber</special>
+            <line x1="310.0" y1="5.0" x2="585.0" y2="5.0" style="SolidLine" lineWidth="1.0"/>
+        </band>
+    </pageFooter>
+</report>
+"""
+    xml_string2 = """<?xml version="1.0" encoding="UTF-8"?>
+<report version="1.0">
+    <options>
+        <documentName type="str">Example of a complete report</documentName>
+        <orientation type="str">Portrait</orientation>
+        <pageSize type="str">A4</pageSize>
+        <topMargin type="float">20.0</topMargin>
+        <bottomMargin type="float">20.0</bottomMargin>
+        <leftMargin type="float">10.0</leftMargin>
+        <rightMargin type="float">10.0</rightMargin>
+        <fontFamily type="str">Arial</fontFamily>
+        <fontSize type="int">7</fontSize>
+    </options>
+    <columns>
+        <fieldName>code</fieldName>
+        <fieldName>description</fieldName>
+        <fieldName>department</fieldName>
+        <fieldName>stock_control</fieldName>
+        <fieldName>quantity</fieldName>
+        <fieldName>date</fieldName>
+    </columns>
+    <sorting>
+        <sort field="department" reverse="False"/>
+        <sort field="date" reverse="False"/>
+        <sort field="quantity" reverse="True"/>
+    </sorting>
+    <pageHeader>
+        <band height="100">
+            <label left="0.0" top="0.0" width="575.0" height="40.0" color="blue"
+                fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
+                textAlign="AlignHCenter">*** COMPLETE REPORT EXAMPLE ***</label>
+            <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="70.0" width="575.0" height="20.0" lineWidth="1.0" brushStyle="DiagCrossPattern" brushColor="lightgrey"/>
+            <label left="5.0" top="50.0" width="585.0" height="15.0" fontSize="6">A complete report with 2 level of grouping, department and date, and aggregate functions for quantity field</label>
+            <label left="5.0" top="75.0" width="100.0" height="15.0">Code</label>
+            <label left="100.0" top="75.0" width="240.0" height="15.0">Description</label>
+            <label left="340.0" top="75.0" width="100.0" height="15.0">Department</label>
+            <label left="440.0" top="75.0" width="15.0" height="15.0" textAlign="AlignHCenter">SC</label>
+            <label left="450.0" top="75.0" width="60.0" height="15.0" textAlign="AlignRight">Quantity</label>
+            <label left="510.0" top="75.0" width="60.0" height="15.0" textAlign="AlignRight">Date</label>
+        </band>
     </pageHeader>
     <groups>
         <!-- groups are nested -->
@@ -1807,13 +1999,13 @@ if __name__ == "__main__":
                 <band height="20.0">
                     <label left="5.0" top="0.0" width="100.0" height="18.0" fontWeight="Bold" color="darkblue">Department:</label>
                     <field left="100.0" top="0.0" width="80" height="18.0" fontWeight="Bold" color="darkblue">department</field>
-                    <line x1="5.0" y1="15.0" x2="250.0" y2="15.0" lineWidth="1.0" color="darkblue"/>
+                    <line x1="5.0" y1="15.0" x2="200.0" y2="15.0" lineWidth="1.0" color="darkblue"/>
                 </band>
             </groupHeader>
             <groupFooter>
                 <band height="30.0" newPageAfter="True">
-                    <label left="20.0" top="4.0" width="140.0" height="20" fontWeight="Bold" color="darkblue">Summary for:</label>
-                    <field left="120.0" top="4.0" width="80" height="20.0" fontWeight="Bold" color="darkblue">department</field>
+                    <label left="5.0" top="4.0" width="140.0" height="20" fontWeight="Bold" color="darkblue">Summary for:</label>
+                    <field left="100.0" top="4.0" width="80" height="20.0" fontWeight="Bold" color="darkblue">department</field>
                     <label left="200.0" top="4.0" width="30.0" height="20" color="darkblue">Sum:</label>
                     <summary function="sum" left="230.0" top="4.0" width="40.0" height="16" color="darkblue">quantity</summary>
                     <label left="280.0" top="4.0" width="35.0" height="20.0" color="darkblue">Cnt:</label>
@@ -1823,8 +2015,8 @@ if __name__ == "__main__":
                     <label left="410.0" top="4.0" width="30.0" height="20" color="darkblue">Max:</label>
                     <summary function="max" left="440.0" top="4.0" width="40" height="20" color="darkblue">quantity</summary>
                     <label left="480.0" top="4.0" width="30.0" height="20" color="darkblue">Avg:</label>
-                    <summary function="average" left="510.0" top="4.0" width="40" height="20" textAlign="AlignRight" format="{:06.2f}" color="darkblue">quantity</summary>
-                    <line x1="20.0" y1="3.0" x2="550.0" y2="3.0" width="1.0" color="darkblue"/>
+                    <summary function="average" left="510.0" top="4.0" width="40" height="20" textAlign="AlignRight" format="{:.2f}" color="darkblue">quantity</summary>
+                    <line x1="5.0" y1="3.0" x2="570.0" y2="3.0" width="1.0" color="darkblue"/>
                 </band>
             </groupFooter>
         </group>
@@ -1832,42 +2024,42 @@ if __name__ == "__main__":
             <groupHeader>
                 <band height="20">
                     <label left="5.0" top="0.0" width="200.0" height="18" color="darkgreen">Date:</label>
-                    <field left="60.0" top="0.0" width="80" height="18" color="darkgreen">date</field>
-                    <line x1="5.0" y1="15.0" x2="250.0" y2="15.0" lineWidth="1.0" color="darkgreen"/>
+                    <field left="100.0" top="0.0" width="80" height="18" color="darkgreen">date</field>
+                    <line x1="5.0" y1="15.0" x2="200.0" y2="15.0" lineWidth="1.0" color="darkgreen"/>
                 </band>
             </groupHeader>
             <groupFooter>
                 <band height="30" isVisible = "True">
-                    <label left="20.0" top="4.0" width="140.0" height="20" fontWeight="Bold" color="darkgreen">Summary for:</label>
-                    <field left="120.0" top="4.0" width="80" height="20.0" fontWeight="Bold" color="darkgreen">date</field>
-                    <label left="200.0" top="4.0" width="30.0" height="20" color="darkgreen">Sum:</label>
-                    <summary function="sum" left="230.0" top="4.0" width="40.0" height="16" color="darkgreen">quantity</summary>
-                    <label left="280.0" top="4.0" width="35.0" height="20.0" color="darkgreen">Cnt:</label>
-                    <summary function="count" left="315.0" top="4.0" width="35.0" height="20.0" color="darkgreen">quantity</summary>
+                    <label left="5.0" top="4.0" width="140.0" height="20" fontWeight="Bold" color="darkgreen">Summary for:</label>
+                    <field left="100.0" top="4.0" width="80" height="20.0" fontWeight="Bold" color="darkgreen">date</field>
+                    <label left="180.0" top="4.0" width="30.0" height="20" color="darkgreen">Sum:</label>
+                    <summary function="sum" left="210.0" top="4.0" width="40.0" height="16" color="darkgreen">quantity</summary>
+                    <label left="260.0" top="4.0" width="35.0" height="20.0" color="darkgreen">Cnt:</label>
+                    <summary function="count" left="295.0" top="4.0" width="35.0" height="20.0" color="darkgreen">quantity</summary>
                     <label left="350.0" top="4.0" width="35.0" height="20.0" color="darkgreen">Min:</label>
                     <summary function="min" left="385.0" top="4.0" width="35" height="20.0" color="darkgreen">quantity</summary>
                     <label left="410.0" top="4.0" width="30.0" height="20" color="darkgreen">Max:</label>
                     <summary function="max" left="440.0" top="4.0" width="40" height="20" color="darkgreen">quantity</summary>
                     <label left="480.0" top="4.0" width="30.0" height="20" color="darkgreen">Avg:</label>
-                    <summary function="average" left="510.0" top="4.0" width="40" height="20" textAlign="AlignRight" format="{:06.2f}" color="darkgreen">quantity</summary>
-                    <line x1="20.0" y1="3.0" x2="550.0" y2="3.0" width="1.0" color="darkgreen"/>
+                    <summary function="average" left="510.0" top="4.0" width="40" height="20" textAlign="AlignRight" format="{:.2f}" color="darkgreen">quantity</summary>
+                    <line x1="5.0" y1="3.0" x2="570.0" y2="3.0" width="1.0" color="darkgreen"/>
                 </band>
             </groupFooter>
         </group>
     </groups>
     <details>
-        <band height="20.0" canGrow="True">
-            <field left="5.0" top="3" width="100" height="20" fontFamily="Courier New" textAlign="AlignLeft">code</field>
-            <field left="100.0" top="3" width="240.0" height="20.0" canGrow="True">description</field>
-            <field left="340.0" top="3" width="100.0" height="20.0">department</field>
-            <field left="440.0" top="3" width="15.0" height="20.0" textAlign="AlignHCenter">stock_control</field>
-            <field left="450.0" top="3" width="60.0" height="20.0" textAlign="AlignRight">quantity</field>
-            <field left="510.0" top="3" width="65.0" height="20.0" format="dd.MM.yy" textAlign="AlignRight">date</field>
+        <band height="17.0" canGrow="True">
+            <field left="5.0" top="3" width="100" height="15" fontFamily="Courier New" textAlign="AlignLeft">code</field>
+            <field left="100.0" top="3" width="240.0" height="15.0" canGrow="True">description</field>
+            <field left="340.0" top="3" width="100.0" height="15.0">department</field>
+            <field left="440.0" top="3" width="15.0" height="15.0" textAlign="AlignHCenter">stock_control</field>
+            <field left="450.0" top="3" width="60.0" height="15.0" textAlign="AlignRight">quantity</field>
+            <field left="510.0" top="3" width="60.0" height="15.0" format="dd.MM.yy" textAlign="AlignRight">date</field>
         </band>
     </details>
     <reportFooter>
         <band height="60.0">
-            <rectangle xRadius="3.0" yRadius="3.0" color="red" left="15.0" top="0.0" width="540.0" height="60.0"
+            <rectangle xRadius="3.0" yRadius="3.0" left="15.0" top="0.0" width="540.0" height="60.0"
             lineWidth="2.0" brushStyle="DiagCrossPattern" brushColor="lightgrey"/>
             <label left="10.0" top="4.0" width="550.0" height="16" fontItalic="True"
             fontWeight="Bold" textAlign="AlignHCenter">Report summaries of quantity field</label>
@@ -1880,17 +2072,17 @@ if __name__ == "__main__":
             <label left="310.0" top="24.0" width="50.0" height="20" fontWeight="Bold">Max:</label>
             <summary function="max" left="360.0" top="24.0" width="50" height="20" fontWeight="Bold">quantity</summary>
             <label left="410.0" top="24.0" width="50.0" height="20" fontWeight="Bold">Average:</label>
-            <summary function="average" left="460.0" top="24.0" width="50" height="20" fontWeight="Bold" format="{:07.2f}">quantity</summary>
+            <summary function="average" left="460.0" top="24.0" width="50" height="20" fontWeight="Bold" format="{:.2f}">quantity</summary>
         </band>
     </reportFooter>
     <pageFooter>
         <band height="24.0">
-            <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="0.0" width="585.0" height="18.0" brushStyle="Dense3Pattern" brushColor="lightgrey"/>
+            <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="0.0" width="575.0" height="20.0" brushStyle="Dense3Pattern" brushColor="lightgrey"/>
             <label left="5.0" top="3.0" width="60.0" height="16.0" textAlign="AlignLeft">Print date:</label>
             <special left="60.0" top="3.0" width="70.0" height="16.0" textAlign="AlignLeft">printDate</special>
             <label left="5.0" top="3.0" width="585.0" height="16.0" textAlign="AlignHCenter">Example report</label>
             <label left="520.0" top="3.0" width="50.0" height="16.0" textAlign="AlignLeft">Page:</label>
-            <special left="570.0" top="3.0" width="10.0" height="16.0" textAlign="AlignLeft">pageNumber</special>
+            <special left="560.0" top="3.0" width="10.0" height="16.0" textAlign="AlignLeft">pageNumber</special>
         </band>
     </pageFooter>
 </report>
@@ -1898,7 +2090,7 @@ if __name__ == "__main__":
     xml_string3 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
-        <documentName type="str">Test report Barcode</documentName>
+        <documentName type="str">Report with Barcode</documentName>
         <orientation type="str">Portrait</orientation>
         <unit type="str">Point</unit>
         <pageSize type="str">A4</pageSize>
@@ -2024,16 +2216,17 @@ if __name__ == "__main__":
     xml_string4 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0">
     <options>
-        <documentName type="str">Test report in millimeters</documentName>
+        <!-- All mesure are in millimeters including font size and line width-->
+        <documentName type="str">Report example in millimeters</documentName>
         <orientation type="str">Portrait</orientation>
         <unit type="str">Millimeter</unit>
         <pageSize type="str">A4</pageSize>
-        <topMargin type="float">10.0</topMargin>
-        <bottomMargin type="float">10.0</bottomMargin>
-        <leftMargin type="float">10.0</leftMargin>
-        <rightMargin type="float">10.0</rightMargin>
+        <topMargin type="float">5.0</topMargin>
+        <bottomMargin type="float">5.0</bottomMargin>
+        <leftMargin type="float">5.0</leftMargin>
+        <rightMargin type="float">5.0</rightMargin>
         <fontFamily type="str">Arial</fontFamily>
-        <fontSize type="int">4</fontSize>
+        <fontSize type="int">5</fontSize>
     </options>
     <columns>
         <fieldName>code</fieldName>
@@ -2044,21 +2237,21 @@ if __name__ == "__main__":
         <fieldName>date</fieldName>
     </columns>
     <pageBackground>
-        <rectangle color="red" left="0" top="0" width="210" height="297" lineWidth="1"/>
+        <rectangle left="0.0" top="0.0" width="200.0" height="287.0" lineWidth="0.2"/>
     </pageBackground>
     <pageHeader>
         <band height="30">
-            <label left="0" top="0" width="210" height="20" color="blue"
-            fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="8"
-            textAlign="AlignHCenter">Test report in millimeters</label>
-            <label left="2" top="20" width="13" height="8" fontSize="4" fontWeight="Bold">R.N.</label>
-            <label left="15" top="20" width="30" height="8" fontSize="4" fontWeight="Bold">Code</label>
-            <label left="45" top="20" width="65" height="8" fontSize="4" fontWeight="Bold">Description</label>
-            <label left="110" top="20" width="30" height="8" fontSize="4" fontWeight="Bold">Department</label>
-            <label left="140" top="20" width="10" height="8" fontSize="4" textAlign="AlignHCenter" fontWeight="Bold">S.C.</label>
-            <label left="150" top="20" width="25" height="8" fontSize="4" textAlign="AlignRight" fontWeight="Bold">Quantity</label>
-            <label left="175" top="20" width="30" height="8" fontSize="4" textAlign="AlignRight" fontWeight="Bold">Date</label>
-            <line x1="0" y1="26" x2="210" y2="26" lineWidth="1.0"/> 
+            <label left="0.0" top="0.0" width="200.0" height="20.0" color="blue"
+            fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="7"
+            textAlign="AlignHCenter">Report example in millimeters</label>
+            <label left="2.0" top="20.0" width="13.0" height="8.0" fontSize="3" fontWeight="Bold">R.N.</label>
+            <label left="15.0" top="20.0" width="30.0" height="8.0" fontSize="3" fontWeight="Bold">Code</label>
+            <label left="45.0" top="20.0" width="65.0" height="8.0" fontSize="3" fontWeight="Bold">Description</label>
+            <label left="110.0" top="20.0" width="30.0" height="8.0" fontSize="3" fontWeight="Bold">Department</label>
+            <label left="140.0" top="20.0" width="10.0" height="8.0" fontSize="3" textAlign="AlignHCenter" fontWeight="Bold">S.C.</label>
+            <label left="145.0" top="20.0" width="20.0" height="8.0" fontSize="3" textAlign="AlignRight" fontWeight="Bold">Quantity</label>
+            <label left="165.0" top="20.0" width="33.0" height="8.0" fontSize="3" textAlign="AlignRight" fontWeight="Bold">Date</label>
+            <line x1="2.0" y1="26.0" x2="198.0" y2="26.0" lineWidth="0.5"/> 
         </band>
     </pageHeader>
     <details>
@@ -2068,24 +2261,24 @@ if __name__ == "__main__":
             <field left="45" top="2" width="65" height="6" fontSize="3" canGrow="True">description</field>
             <field left="110" top="2" width="30" height="6" fontSize="3">department</field>
             <field left="140" top="2" width="10" height="6" fontSize="3" textAlign="AlignHCenter">stock_control</field>
-            <field left="150" top="2" width="25" height="6" fontSize="3" format="" textAlign="AlignRight">quantity</field>
-            <field left="175" top="2" width="30" height="6" fontSize="3" format="" textAlign="AlignRight">date</field>
+            <field left="145" top="2" width="20" height="6" fontSize="3" format="" textAlign="AlignRight">quantity</field>
+            <field left="165" top="2" width="33" height="6" fontSize="3" format="" textAlign="AlignRight">date</field>
         </band>
     </details>
     <pageFooter>
-        <band height="20.0">
-            <line x1="0" y1="0" x2="210" y2="0" lineWidth="0.5" style="SolidLine"/>
-            <special left="0" top="4.0" width="210" height="20" textAlign="AlignHCenter">pageNumber</special>
+        <band height="8.0">
+            <line x1="2" y1="0" x2="198" y2="0" lineWidth="0.3" style="SolidLine"/>
+            <special left="0" top="2.0" width="200" height="5" textAlign="AlignHCenter" fontSize="3">pageNumber</special>
         </band>
     </pageFooter>
 </report>
 """
     for i in (
               xml_string0,
-              #xml_string1,
-              #xml_string2,
-              #xml_string3,
-              #xml_string4,
+              xml_string1,
+              xml_string2,
+              xml_string3,
+              xml_string4,
                  ):
         r = Report(i)
         r.setData([
