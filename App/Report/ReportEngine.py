@@ -979,7 +979,9 @@ class Report():
         self.sortings: list = [] # ordered sorting fields
         self.groups: list = []  # ordered grouping conditions
         self.group_headers: dict = {} # grouping field: [list of bands]
+        self.group_headers_repeat: dict = {} # grouping field: [list of bands]
         self.group_footers: dict = {} # grouping field: [list of bands]
+        self.current_group_index: int|None = None # current group index for render time optimization
         # self.group_summaries = {}  # grouping field: [list of summary function]
         self.details: list = [] # must be defined
         self.execute: str|None = None # report scripting before starting
@@ -1153,6 +1155,8 @@ class Report():
                 for child in group:
                     if child.tag == "groupHeader":
                         self.group_headers[field] = self.appendBands(child)
+                        oep = 'True' == child.attrib.get('onEveryPage', "False")
+                        self.group_headers_repeat[field] = oep
                     if child.tag == "groupFooter":
                         self.group_footers[field] = self.appendBands(child)
 
@@ -1207,7 +1211,6 @@ class Report():
         if self.painter.isActive():
             self.painter.end()
         page = QPicture()
-        #print("QPicture DPI", page.logicalDpiX(), page.logicalDpiY())
         self.painter.begin(page)
         self.pages.append(page)
         # set page margins left/top using clipping
@@ -1233,6 +1236,13 @@ class Report():
         if self.page_header:
             for b in self.page_header:
                 b.render(record)
+        # print group header if the page break is between groups
+        if self.current_group_index is not None:
+            for i in range(self.current_group_index + 1):
+                grp = self.groups[i]
+                if self.group_headers_repeat[grp]:
+                    for b in self.group_headers[grp]:
+                        b.render(record)
         # print page footer
         page_offset = self.offset # copy current page offset
         self.offset = self.page_height - self.footer_height # set footer offset
@@ -1250,6 +1260,9 @@ class Report():
             header_record = {k: sub_data[0][v] for k, v in self.column.items()} # first record of the group
             footer_record = {k: sub_data[-1][v] for k, v in self.column.items()} # last record of the group
             
+            # set current group index for render group headers on new page
+            self.current_group_index = group_index
+                    
             # group headers
             if self.groups:
                 if grp in self.group_headers:
@@ -1995,7 +2008,7 @@ if __name__ == "__main__":
     <groups>
         <!-- groups are nested -->
         <group field="department" reverse="False">
-            <groupHeader>
+            <groupHeader onEveryPage="True">
                 <band height="20.0">
                     <label left="5.0" top="0.0" width="100.0" height="18.0" fontWeight="Bold" color="darkblue">Department:</label>
                     <field left="100.0" top="0.0" width="80" height="18.0" fontWeight="Bold" color="darkblue">department</field>
@@ -2003,7 +2016,7 @@ if __name__ == "__main__":
                 </band>
             </groupHeader>
             <groupFooter>
-                <band height="30.0" newPageAfter="True">
+                <band height="30.0">
                     <label left="5.0" top="4.0" width="140.0" height="20" fontWeight="Bold" color="darkblue">Summary for:</label>
                     <field left="100.0" top="4.0" width="80" height="20.0" fontWeight="Bold" color="darkblue">department</field>
                     <label left="200.0" top="4.0" width="30.0" height="20" color="darkblue">Sum:</label>
@@ -2021,7 +2034,7 @@ if __name__ == "__main__":
             </groupFooter>
         </group>
         <group field="date" reverse="True">
-            <groupHeader>
+            <groupHeader onEveryPage="True">
                 <band height="20">
                     <label left="5.0" top="0.0" width="200.0" height="18" color="darkgreen">Date:</label>
                     <field left="100.0" top="0.0" width="80" height="18" color="darkgreen">date</field>
@@ -2048,7 +2061,7 @@ if __name__ == "__main__":
         </group>
     </groups>
     <details>
-        <band height="17.0" canGrow="True">
+        <band height="30.0" canGrow="True">
             <field left="5.0" top="3" width="100" height="15" fontFamily="Courier New" textAlign="AlignLeft">code</field>
             <field left="100.0" top="3" width="240.0" height="15.0" canGrow="True">description</field>
             <field left="340.0" top="3" width="100.0" height="15.0">department</field>
@@ -2274,11 +2287,11 @@ if __name__ == "__main__":
 </report>
 """
     for i in (
-              xml_string0,
-              xml_string1,
+              #xml_string0,
+              #xml_string1,
               xml_string2,
-              xml_string3,
-              xml_string4,
+              #xml_string3,
+              #xml_string4,
                  ):
         r = Report(i)
         r.setData([

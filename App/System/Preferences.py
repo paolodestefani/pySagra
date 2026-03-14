@@ -36,6 +36,7 @@ from PySide6.QtCore import QDirIterator
 from PySide6.QtCore import QSysInfo
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QIcon
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QToolBar
 from PySide6.QtWidgets import QDialog
@@ -244,7 +245,8 @@ def setIconTheme(theme: str) -> None: # used in login, currentIcon created befor
     while it.hasNext():
         it.next()
         if it.fileInfo().isFile(): # QDirIterator returns 'icons' directory too (probably current directory) that i don't use
-            currentIcon[it.fileName()] = QIcon(it.filePath())
+            pix = QPixmap(it.filePath())
+            currentIcon[it.fileName()] = QIcon(pix)
 
 def setIcon(theme: str) -> None:
     "Set action's icon"

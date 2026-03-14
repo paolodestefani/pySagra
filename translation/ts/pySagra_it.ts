@@ -1058,18 +1058,18 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1627"/>
-        <location filename="../../App/Widget/Dialog.py" line="1772"/>
+        <location filename="../../App/Widget/Dialog.py" line="1773"/>
         <source>File {} exists, overwrite ?</source>
         <translation>IL file {} è già presente, sovrascrivo ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1652"/>
-        <location filename="../../App/Widget/Dialog.py" line="1712"/>
+        <location filename="../../App/Widget/Dialog.py" line="1653"/>
+        <location filename="../../App/Widget/Dialog.py" line="1713"/>
         <source>Select export directory</source>
         <translation>Selezionare la directory di destinazione</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1806"/>
+        <location filename="../../App/Widget/Dialog.py" line="1807"/>
         <source>Select a date:</source>
         <translation>Selezionare una data:</translation>
     </message>
@@ -1079,13 +1079,13 @@ Proseguire ugualmente ?</translation>
         <translation>Anteprima di stampa</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1701"/>
+        <location filename="../../App/Widget/Dialog.py" line="1702"/>
         <source>Print current page ({})</source>
         <translation>Stampa la pagina corrente ({})</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="934"/>
-        <location filename="../../App/Widget/Dialog.py" line="1683"/>
+        <location filename="../../App/Widget/Dialog.py" line="1684"/>
         <source>Pdf 1.4</source>
         <translation>Pdf 1.4</translation>
     </message>
@@ -1101,18 +1101,18 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="935"/>
-        <location filename="../../App/Widget/Dialog.py" line="1684"/>
+        <location filename="../../App/Widget/Dialog.py" line="1685"/>
         <source>Pdf A-1b</source>
         <translation>Pdf A-1b</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="936"/>
-        <location filename="../../App/Widget/Dialog.py" line="1685"/>
+        <location filename="../../App/Widget/Dialog.py" line="1686"/>
         <source>Pdf 1.6</source>
         <translation>Pdf 1.6</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1647"/>
+        <location filename="../../App/Widget/Dialog.py" line="1648"/>
         <source>PDF file created</source>
         <translation>File PDF generato</translation>
     </message>
@@ -1126,7 +1126,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1577"/>
         <location filename="../../App/Widget/Dialog.py" line="1594"/>
         <location filename="../../App/Widget/Dialog.py" line="1606"/>
-        <location filename="../../App/Widget/Dialog.py" line="1638"/>
+        <location filename="../../App/Widget/Dialog.py" line="1639"/>
         <source>Critical</source>
         <translation>Errore critico</translation>
     </message>
@@ -1144,7 +1144,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Dialogs</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1751"/>
+        <location filename="../../App/Widget/Dialog.py" line="1752"/>
         <source>Export PDF</source>
         <translation>Esporta in PDF</translation>
     </message>
@@ -1485,7 +1485,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1161"/>
         <location filename="../../App/Widget/Dialog.py" line="1346"/>
         <location filename="../../App/Widget/Dialog.py" line="1547"/>
-        <location filename="../../App/Widget/Dialog.py" line="1646"/>
+        <location filename="../../App/Widget/Dialog.py" line="1647"/>
         <source>Information</source>
         <translation>Informazione</translation>
     </message>
@@ -1506,7 +1506,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Scripting.py" line="245"/>
         <location filename="../../App/System/User.py" line="244"/>
         <location filename="../../App/Widget/Dialog.py" line="1626"/>
-        <location filename="../../App/Widget/Dialog.py" line="1771"/>
+        <location filename="../../App/Widget/Dialog.py" line="1772"/>
         <location filename="../../App/Widget/Form.py" line="204"/>
         <location filename="../../App/Widget/Form.py" line="537"/>
         <source>Question</source>
