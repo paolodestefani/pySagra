@@ -48,16 +48,16 @@
     <file alias="system_kill">icon/oxygen/edit-bomb.svg</file>
     <file alias="file_event">icon/oxygen/view-pim-calendar.svg</file>
 	<file alias="file_printer">icon/oxygen/printer.svg</file>
-	<file alias="file_cash_desk">icon/oxygen/user-home.svg</file>
+	<file alias="file_cash_desk">icon/oxygen/accessories-calculator.svg</file>
     <file alias="file_department">icon/oxygen/folder-yellow.svg</file>
     <file alias="file_seat_map">icon/oxygen/folder-violet.svg</file>
-    <file alias="file_item">icon/oxygen/folder-red.svg</file>
-	<file alias="file_price_list">icon/oxygen/folder-grey.svg</file>
+    <file alias="file_item">icon/oxygen/folder-green.svg</file>
+	<file alias="file_price_list">icon/oxygen/folder-cyan.svg</file>
     <file alias="file_order">icon/oxygen/folder-documents.svg</file>
 	<file alias="file_update_web_order">icon/oxygen/akregator.svg</file>
 	<file alias="file_web_order">icon/oxygen/folder-remote.svg</file>
     <file alias="file_order_number">icon/oxygen/folder-development.svg</file>
-    <file alias="file_settings">icon/oxygen/preferences-system.svg</file>
+    <file alias="file_settings">icon/oxygen/hidef-preferences-system.svg</file>
     <file alias="edit_new">icon/oxygen/document-new.svg</file>
     <file alias="edit_save">icon/oxygen/document-save.svg</file>
     <file alias="edit_save_as">icon/oxygen/document-save-as.svg</file>
@@ -88,7 +88,7 @@
     <file alias="statistics_statistic">icon/oxygen/view-statistics.svg</file>
     <file alias="tools_tool">icon/oxygen/applications-development.svg</file>
     <file alias="help_content">icon/oxygen/help-contents.svg</file>
-    <file alias="help_faq">icon/oxygen/ktip.svg</file>
+    <file alias="help_faq">icon/oxygen/help-hint.svg</file>
     <file alias="help_system_info">icon/oxygen/dialog-information.svg</file>
     </qresource>
     <qresource prefix="/icon/tango">
