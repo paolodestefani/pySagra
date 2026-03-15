@@ -51,7 +51,7 @@
 	<file alias="file_cash_desk">icon/oxygen/accessories-calculator.png</file>
     <file alias="file_department">icon/oxygen/folder-yellow.png</file>
     <file alias="file_seat_map">icon/oxygen/folder-violet.png</file>
-    <file alias="file_item">icon/oxygen/folder-green.png</file>
+    <file alias="file_item">icon/oxygen/folder-red.png</file>
 	<file alias="file_price_list">icon/oxygen/folder-cyan.png</file>
     <file alias="file_order">icon/oxygen/folder-documents.png</file>
 	<file alias="file_update_web_order">icon/oxygen/akregator.png</file>
@@ -88,7 +88,7 @@
     <file alias="statistics_statistic">icon/oxygen/view-statistics.png</file>
     <file alias="tools_tool">icon/oxygen/applications-development.png</file>
     <file alias="help_content">icon/oxygen/help-contents.png</file>
-    <file alias="help_faq">icon/oxygen/help-hint.png</file>
+    <file alias="help_faq">icon/oxygen/ktip.png</file>
     <file alias="help_system_info">icon/oxygen/dialog-information.png</file>
     </qresource>
     <qresource prefix="/icon/tango">
