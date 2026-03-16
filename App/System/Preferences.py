@@ -53,6 +53,10 @@ from App import currentAction
 from App import actionDefinition
 from App import currentIcon
 from App.Core.L10n import _tr
+from App.Core.gui import color_scheme
+from App.Core.gui import setTheme
+from App.Core.gui import setColorScheme
+from App.Core.gui import setIcon
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences
@@ -61,12 +65,6 @@ from App.Ui.PreferencesDialog import Ui_PreferencesDialog
 # logger
 logger = logging.getLogger(__name__)
 
-
-# color scheme
-color_scheme = {
-    'L': Qt.ColorScheme.Light,
-    'D': Qt.ColorScheme.Dark,
-    'S': Qt.ColorScheme.Unknown} # system default
 
 # toolbutton style dictionary
 tool_button_style = {'I': Qt.ToolButtonIconOnly, # type: ignore[attr-defined]
@@ -225,46 +223,3 @@ class PreferencesDialog(QDialog):
         self.apply()
         QDialog.accept(self)
 
-def setTheme(theme: str) -> None:
-    "Set the application theme"
-    app = QApplication.instance()
-    if app is not None and isinstance(app, QApplication):
-        app.setStyle(QStyleFactory.create(theme))
-        app.processEvents()
-    
-def setColorScheme(color: str) -> None:
-    "Set the application color scheme"
-    QApplication.styleHints().setColorScheme(color_scheme.get(color, Qt.ColorScheme.Unknown))
-    
-def setIconTheme(theme: str) -> None: # used in login, currentIcon created before currentAction
-    "Fill currentIcon dictionary"
-    # application icon
-    currentIcon[APPNAME] = QIcon(f":/{APPNAME}")
-    it = QDirIterator(f":/icon/{theme or 'oxygen'}", QDirIterator.IteratorFlag.NoIteratorFlags)
-    # in resource.qrc an alias is mandatory, the it.fileName() is the alias
-    while it.hasNext():
-        it.next()
-        if it.fileInfo().isFile(): # QDirIterator returns 'icons' directory too (probably current directory) that i don't use
-            pix = QPixmap(it.filePath())
-            currentIcon[it.fileName()] = QIcon(pix)
-
-def setIcon(theme: str) -> None:
-    "Set action's icon"
-    currentIcon.clear()
-    setIconTheme(theme)
-    # updte current action's icons
-    for action in currentAction:
-        currentAction[action].setIcon(currentIcon[actionDefinition[action][3]])
-
-def setFont(ffamily: str|None = None, fsize: int = 10):
-    "Set font family and font size"
-    app = QApplication.instance()
-    if app is None or not isinstance(app, QApplication):
-        return
-    if ffamily is None:
-        font = QFont()
-    else:
-        font = QFont(ffamily,
-                     fsize,
-                     QFont.Weight.Normal)
-    app.setFont(font)
