@@ -70,10 +70,10 @@ from App.Database import ENACR # No access rights to required company
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
 from App.Core.L10n import _tr
-from App.Core.gui import setTheme
-from App.Core.gui import setColorScheme
-from App.Core.gui import setFont
-from App.Core.gui import setIconTheme
+from App.Core.Gui import setTheme
+from App.Core.Gui import setColorScheme
+from App.Core.Gui import setFont
+from App.Core.Gui import setIconTheme
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import PyAppDBConnectionError

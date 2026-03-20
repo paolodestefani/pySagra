@@ -53,10 +53,10 @@ from App import currentAction
 from App import actionDefinition
 from App import currentIcon
 from App.Core.L10n import _tr
-from App.Core.gui import color_scheme
-from App.Core.gui import setTheme
-from App.Core.gui import setColorScheme
-from App.Core.gui import setIcon
+from App.Core.Gui import color_scheme
+from App.Core.Gui import setTheme
+from App.Core.Gui import setColorScheme
+from App.Core.Gui import setIcon
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences
@@ -109,7 +109,6 @@ class PreferencesDialog(QDialog):
                                                  (None, _tr('Preferences', "System default"))])
         # icons - here for translation requirement (a QApplication is require for _tr() to work)
         self.ui.comboBoxIcons.setItemList([(None, _tr('Preferences', 'Oxygen')),
-                                          ('tango', _tr('Preferences', 'Tango')),
                                           ('crystal_clear', _tr('Preferences', 'Crystal Clear'))])
         # tool button style - here for translation requirement (a QApplication is require for _tr() to work)
         self.ui.comboBoxToolButtonStyle.setItemList([('I', _tr('Preferences', 'Icon only')),

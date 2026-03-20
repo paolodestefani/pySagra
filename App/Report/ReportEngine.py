@@ -356,7 +356,7 @@ class BaseRenderer():
     def __init__(self, options: dict, paramdict: dict) -> None:
         self.isVisible = 'True' == paramdict.get("isVisible", "True")
         self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
+        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
         self.report = options['reportInstance']
         self.fieldFormat = paramdict.get("format", "")
         self.left = float(paramdict.get("left", 0.0))
@@ -425,6 +425,8 @@ class BaseRenderer():
     
     def checkHeight(self, bandHeight: float) -> float:
         "Returns the new band height if band can grow"
+        if self.isVisibleParameter:
+            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
         if not self.isVisible:
             return bandHeight
         if not self.canGrow:
@@ -461,9 +463,7 @@ class BaseRenderer():
     def render(self, bandHeight:float) -> None:
         "Paint an image or text"
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter[self.isVisibleParameter]
-        if self.isNotVisibleParameter:
-            self.isVisible = not self.report.parameter[self.isNotVisibleParameter]
+            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
         if not self.isVisible:  
             return
         painter = self.report.painter
@@ -645,7 +645,7 @@ class Line():
     def __init__(self, options:dict, paramdict: dict, text: str = '') -> None:  # text is required for generic drawobj
         self.isVisible = True
         self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
+        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
         self.report = options['reportInstance']
         self.x1 = float(paramdict.get("x1", 0))
         self.y1 = float(paramdict.get("y1", 0))
@@ -658,9 +658,7 @@ class Line():
 
     def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter[self.isVisibleParameter]
-        if self.isNotVisibleParameter:
-            self.isVisible = not self.report.parameter[self.isNotVisibleParameter]
+            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -688,7 +686,7 @@ class Ellipse():
     def __init__(self, options: dict, paramdict: dict, text: str|None) -> None: # text is required for generic drawobj
         self.isVisible = True
         self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
+        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
         self.report = options['reportInstance']
         self.left = float(paramdict.get("left", 0.0))
         self.top = float(paramdict.get("top", 0.0))
@@ -703,9 +701,7 @@ class Ellipse():
 
     def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter[self.isVisibleParameter]
-        if self.isNotVisibleParameter:
-            self.isVisible = not self.report.parameter[self.isNotVisibleParameter]
+            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -741,7 +737,7 @@ class Rectangle():
     def __init__(self, options: dict, paramdict: dict, text: str|None) -> None: # text is required for generic drawobj
         self.isVisible = True
         self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
+        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
         self.report = options['reportInstance']
         self.left = float(paramdict.get("left", 0.0))
         self.top = float(paramdict.get("top", 0.0))
@@ -758,9 +754,7 @@ class Rectangle():
 
     def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter[self.isVisibleParameter]
-        if self.isNotVisibleParameter:
-            self.isVisible = not self.report.parameter[self.isNotVisibleParameter]
+            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -805,7 +799,7 @@ class Image():
     def __init__(self, options: dict, paramdict: dict, text: str = '') -> None: # text is required for generic drawobj
         self.isVisible = 'True' == paramdict.get("isVisible", "True")
         self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
+        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
         self.report = options['reportInstance']
         self.left = float(paramdict.get("left", 0.0)) + options['leftMargin']
         self.top = float(paramdict.get("top", 0.0)) + options['topMargin']
@@ -824,9 +818,7 @@ class Image():
     def render(self, bandHeight: float) -> None:
         "Draw image if necessary"
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter[self.isVisibleParameter]
-        if self.isNotVisibleParameter:
-            self.isVisible = not self.report.parameter[self.isNotVisibleParameter]
+            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -864,7 +856,7 @@ class Band(list):
         self.report = options['reportInstance']
         self.isVisible = 'True' == paramdict.get("isVisible", "True")
         self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.isNotVisibleParameter = paramdict.get("isNotVisibleParameter")
+        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
         self.isPageFooter = False
         self.height = float(paramdict.get("height", 0.0))
         self.canGrow = 'True' == paramdict.get("canGrow", "False")
@@ -890,9 +882,7 @@ class Band(list):
             exec(self.executeBefore, globalsParameters)
         # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter)
-        if self.isNotVisibleParameter:
-            self.isVisible = not self.report.parameter.get(self.isNotVisibleParameter)
+            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
         if not self.isVisible:
             return
 
@@ -1237,10 +1227,10 @@ class Report():
             for b in self.page_header:
                 b.render(record)
         # print group header if the page break is between groups
-        if self.current_group_index is not None:
+        if self.groups and self.current_group_index is not None:
             for i in range(self.current_group_index + 1):
                 grp = self.groups[i]
-                if self.group_headers_repeat[grp]:
+                if grp in self.group_headers_repeat and self.group_headers_repeat[grp]: # type: ignore
                     for b in self.group_headers[grp]:
                         b.render(record)
         # print page footer
@@ -1312,11 +1302,14 @@ class Report():
         "Generate report"
         if not self.data:  # no data to render
             raise ReportNoDataError
-        # clear first
+        
+        # clear everything first
         self.pages.clear()
         self.page_num = 0
+        self.current_group_index = 0
         for s in self.summaries:
             s.reset()
+            
         # Calculate the space available for details bands and all the other bands
         self.page_width = (self.pageLayout.fullRect(Unit[self.options["unit"]]).width() #type: ignore
                            - self.options['leftMargin'] #type: ignore
@@ -1390,51 +1383,6 @@ class Report():
     def reportName(self) -> str:
         return self.options['documentName']  #type: ignore
 
-    # def print(self, paintDevice: QPaintDevice) -> None:
-    #     "Print document from generated report"
-    #     if isinstance(paintDevice, QPrinter):
-    #         paintDevice.setDocName(self.options['documentName']) #type: ignore
-    #     elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
-    #         paintDevice.setTitle(self.options['documentName']) #type: ignore
-    #     # forse printer resolution to platform specific DPI avoiding scaling problems
-    #     #if isinstance(paintDevice, QPrinter):
-    #     #    if QOperatingSystemVersion.currentType() != QOperatingSystemVersion.OSType.MacOS:
-    #     #        paintDevice.setResolution(96)  # Windows and Linux use 96 DPI          
-    #     # force the printer page layout to the report settings
-    #     #if not paintDevice.setPageLayout(self.pageLayout): #type: ignore
-    #     #    w = self.pageLayout.fullRect().size().width()
-    #     #    h = self.pageLayout.fullRect().size().height()
-    #     #    u = list(Unit.keys())[list(Unit.values()).index(self.pageLayout.units())]
-    #     #    if not self.options['ignoreWarningOnSetPageLayout']:
-    #     #        raise ReportPrintError(f"Unable to set page layout ( {u} {w} x {h} ) to paint device")
-        
-    #     rect = self.pageLayout.fullRect(self.pageLayout.units()).toRect()
-    #     painter = QPainter(paintDevice)
-    #     scale_x = paintDevice.width() / rect.width() # required scale for fit the page layout into the paint device
-    #     scale_y = paintDevice.height() / rect.height()
-    #     painter.scale(scale_x, scale_y)
-    #     print("Scale X:", scale_x, "Scale Y:", scale_y)
-
-    #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    #     painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-    #     painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-        
-    #     if isinstance(paintDevice, QPrinter):
-    #         fromPage = paintDevice.fromPage() or 1
-    #         toPage = paintDevice.toPage() or len(self.pages)
-    #     elif isinstance(paintDevice, QPdfWriter): # for PDFWriter
-    #         fromPage = 1
-    #         toPage = len(self.pages)
-
-    #     for pn, page in enumerate(self.pages, 1):
-    #         if fromPage <= pn <= toPage:
-    #             painter.save() 
-    #             page.play(painter)
-    #             painter.restore() 
-    #             if pn != toPage: # newPage not on last page
-    #                 paintDevice.newPage() #type: ignore
-    #     painter.end()
-    
     def print(self, paintDevice: QPaintDevice) -> None:
         "Print document from generated report in the actual paint device"
         if isinstance(paintDevice, QPrinter):
@@ -1481,68 +1429,7 @@ class Report():
                     paintDevice.newPage() # type: ignore
         painter.end()
 
-    # def print(self, paintDevice: QPaintDevice) -> None:
-    #     "Print document from generated report in the actual paint device"
-    #     if isinstance(paintDevice, QPrinter):
-    #         paintDevice.setDocName(self.options['documentName']) #type: ignore
-    #     elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
-    #         paintDevice.setTitle(self.options['documentName']) #type: ignore
-        
-    #     target_dpi = paintDevice.logicalDpiX()
-    #     print("Target DPI:", target_dpi)
-    #     # 1. IDENTIFICA L'UNITÀ DI MISURA DEL REPORT
-    #     # Supponiamo che tu abbia una variabile self.report_unit ('mm', 'pt', etc.)
-    #     um = self.options.get('unit', 'Point')
-    #     match um:
-    #         case 'Millimeter':
-    #             # Se il report è in millimetri, lo scale deve essere Target_DPI / 25.4
-    #             # (Esempio: 144 / 25.4 = 5.66 pixel per ogni mm del tuo report)
-    #             scale_x = target_dpi / 25.4
-    #             scale_y = target_dpi / 25.4
-    #         case 'Point':
-    #             # Se il report è in PUNTI (1/72 di pollice)
-    #             # Lo scale deve essere Target_DPI / 72.0
-    #             # (Esempio: 144 / 72 = 2.0 pixel per ogni punto del tuo report)
-    #             scale_x = target_dpi / 72.0
-    #             scale_y = target_dpi / 72.0
-    #         case 'Inch'|'Pica'|'Didot'|'Cicero':
-    #             pass
-    #         case _:
-    #             # default is Point
-    #             scale_x = target_dpi / 72.0
-    #             scale_y = target_dpi / 72.0
-
-    #     painter = QPainter(paintDevice)
-        
-    #     # IMPORTANTE: Resetta ogni trasformazione High-DPI automatica di Qt
-    #     painter.setWorldTransform(QTransform())
-        
-    #     # Applica lo scaling fisico puro
-    #     painter.scale(scale_x, scale_y)
-            
-    #     # ... render hints ...
-    #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    #     painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-    #     painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-
-    #     if isinstance(paintDevice, QPrinter):
-    #         fromPage = paintDevice.fromPage() or 1
-    #         toPage = paintDevice.toPage() or len(self.pages)
-    #     elif isinstance(paintDevice, QPdfWriter): # for PDFWriter
-    #         fromPage = 1
-    #         toPage = len(self.pages)
-            
-    #     for pn, page in enumerate(self.pages, 1):
-    #         if fromPage <= pn <= toPage:
-    #             painter.save()
-    #             page.play(painter) 
-    #             painter.restore()
-    #             if pn != toPage:
-    #                 paintDevice.newPage() # type: ignore
-    #     painter.end()
-
-
-
+   
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     QLocale.setDefault(QLocale.Language.English)
@@ -1990,11 +1877,23 @@ if __name__ == "__main__":
         <sort field="date" reverse="False"/>
         <sort field="quantity" reverse="True"/>
     </sorting>
+    <parameters>
+        <parameter type="bool" id="printFooter" default="True">Print department footer</parameter>
+    </parameters>
     <pageHeader>
         <band height="100">
+            <execute trigger="Before">
+print('Parameter printFooter value:', report.parameter['printFooter'])
+if report.parameter['printFooter'] == False:
+	band[2].value = "False"
+else:
+	band[2].value = "True"
+			</execute>
             <label left="0.0" top="0.0" width="575.0" height="40.0" color="blue"
                 fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24"
                 textAlign="AlignHCenter">*** COMPLETE REPORT EXAMPLE ***</label>
+            <label left="430.0" top="50.0" width="100.0" height="15.0">Print Footer parameter:</label>
+            <label left="530.0" top="50.0" width="20.0" height="15.0">REPLACED TEXT</label>
             <rectangle xRadius="3.0" yRadius="3.0" left="0.0" top="70.0" width="575.0" height="20.0" lineWidth="1.0" brushStyle="DiagCrossPattern" brushColor="lightgrey"/>
             <label left="5.0" top="50.0" width="585.0" height="15.0" fontSize="6">A complete report with 2 level of grouping, department and date, and aggregate functions for quantity field</label>
             <label left="5.0" top="75.0" width="100.0" height="15.0">Code</label>
@@ -2009,14 +1908,14 @@ if __name__ == "__main__":
         <!-- groups are nested -->
         <group field="department" reverse="False">
             <groupHeader onEveryPage="True">
-                <band height="20.0">
+                <band height="20.0" >
                     <label left="5.0" top="0.0" width="100.0" height="18.0" fontWeight="Bold" color="darkblue">Department:</label>
                     <field left="100.0" top="0.0" width="80" height="18.0" fontWeight="Bold" color="darkblue">department</field>
                     <line x1="5.0" y1="15.0" x2="200.0" y2="15.0" lineWidth="1.0" color="darkblue"/>
                 </band>
             </groupHeader>
             <groupFooter>
-                <band height="30.0">
+                <band height="30.0" isVisibleParameter="printFooter">
                     <label left="5.0" top="4.0" width="140.0" height="20" fontWeight="Bold" color="darkblue">Summary for:</label>
                     <field left="100.0" top="4.0" width="80" height="20.0" fontWeight="Bold" color="darkblue">department</field>
                     <label left="200.0" top="4.0" width="30.0" height="20" color="darkblue">Sum:</label>

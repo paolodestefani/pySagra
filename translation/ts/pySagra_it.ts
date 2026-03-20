@@ -1651,82 +1651,77 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../App/System/Preferences.py" line="111"/>
+        <location filename="../../App/System/Preferences.py" line="109"/>
         <source>System default</source>
         <translation>Predefinito di sistema</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="109"/>
+        <location filename="../../App/System/Preferences.py" line="107"/>
         <source>Light</source>
         <translation>Chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="110"/>
+        <location filename="../../App/System/Preferences.py" line="108"/>
         <source>Dark</source>
         <translation>Scuro</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="113"/>
+        <location filename="../../App/System/Preferences.py" line="111"/>
         <source>Oxygen</source>
         <translation>Oxygen</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="114"/>
-        <source>Tango</source>
-        <translation>Tango</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Preferences.py" line="115"/>
+        <location filename="../../App/System/Preferences.py" line="112"/>
         <source>Crystal Clear</source>
         <translation>Crystal Clear</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="117"/>
+        <location filename="../../App/System/Preferences.py" line="114"/>
         <source>Icon only</source>
         <translation>Solo icone</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="118"/>
+        <location filename="../../App/System/Preferences.py" line="115"/>
         <source>Text only</source>
         <translation>Solo testo</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="119"/>
+        <location filename="../../App/System/Preferences.py" line="116"/>
         <source>Text beside icon</source>
         <translation>Testo sopra le icone</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="120"/>
+        <location filename="../../App/System/Preferences.py" line="117"/>
         <source>Text under icon</source>
         <translation>Testo sotto le icone</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="121"/>
+        <location filename="../../App/System/Preferences.py" line="118"/>
         <source>Follow style</source>
         <translation>Segue lo stile</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="123"/>
+        <location filename="../../App/System/Preferences.py" line="120"/>
         <source>Tabs above the pages</source>
         <translation>Linguette soprale pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="124"/>
+        <location filename="../../App/System/Preferences.py" line="121"/>
         <source>Tabs below the pages</source>
         <translation>Testo sotto le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="125"/>
+        <location filename="../../App/System/Preferences.py" line="122"/>
         <source>Tabs to the left of the pages</source>
         <translation>Testo a sinistra delle pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="126"/>
+        <location filename="../../App/System/Preferences.py" line="123"/>
         <source>Tabs to the right of the pages</source>
         <translation>Testo a destra delle pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="133"/>
+        <location filename="../../App/System/Preferences.py" line="130"/>
         <source>Error loading user preferences</source>
         <translation>Errore in caricamento delle preferenze utente</translation>
     </message>

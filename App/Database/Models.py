@@ -1263,7 +1263,7 @@ class OrderNumberingModel(TableModel):
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("numbering_id", _tr('Models', 'ID'), True, 'int'),
-                        ("event_id", _tr('Models', 'Event id'), False, 'int'),
+                        ("event_id", _tr('Models', 'Event'), False, 'int'),
                         ("event_date", _tr('Models', 'Event date'), False, 'date'),
                         ("day_part", _tr('Models', 'Day part'), False, 'str'),
                         ("current_value", _tr('Models', 'Current value'), False, 'int'),
