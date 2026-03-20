@@ -211,7 +211,7 @@ class ButtonList(QPushButton):
         # self.disabledPalette.setColor(self.backgroundRole(), QColor(setting['disabled_background_color']))
         # self.disabledPalette.setColor(self.foregroundRole(), QColor(setting['disabled_text_color']))
         # for variants indicator
-        self.variantIndicatorIcon = currentIcon['view_flag'].pixmap(25, 25)
+        self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25)
         ###
         #self.setPalette(self.normalPalette)
         ### must be after palette setting
@@ -283,9 +283,9 @@ class BaseOrderDialog(QDialog):
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.setWindowFlags(Qt.Dialog|Qt.WindowMinMaxButtonsHint|Qt.WindowCloseButtonHint)
         # dialog icons
-        self.ui.pushButtonTablesSwitch.setIcon(currentIcon['dialog_switch'])
-        self.ui.pushButtonConfirm.setIcon(currentIcon['dialog_ok'])
-        self.ui.pushButtonCancel.setIcon(currentIcon['dialog_cancel'])
+        self.ui.pushButtonTablesSwitch.setIcon(currentIcon['order_switch'])
+        self.ui.pushButtonConfirm.setIcon(currentIcon['order_ok'])
+        self.ui.pushButtonCancel.setIcon(currentIcon['order_cancel'])
         self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Order'))
         # idle time control
         if setting['check_inactivity']:
@@ -721,7 +721,7 @@ class BaseOrderDialog(QDialog):
         if ok:
             self.ui.depnote[bid] = text or None
         if self.ui.depnote.get(bid):
-            button.setIcon(currentIcon['view_note'])
+            button.setIcon(currentIcon['order_note'])
         else:
             button.setIcon(currentIcon['empty'])
 
