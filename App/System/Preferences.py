@@ -99,6 +99,7 @@ class PreferencesDialog(QDialog):
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         # setup widgets
         # themes - from platform available qt styles

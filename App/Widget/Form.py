@@ -105,11 +105,11 @@ class FormManager[T](QWidget):
         "Model representation"
         return self.repr
     
-    def setModel(self, model: TableModel) -> None:
+    def setModel(self, model: TableModel|QueryModel) -> None:
         "Set the main form model"
         self.model = model
         self.mapper.setModel(self.model) # main form model
-        # used for isDirty method, only for editable models
+        # only for editable models
         if self.model.isEditable:
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
@@ -182,8 +182,8 @@ class FormManager[T](QWidget):
             currentStatus = EDVIEW + nav + (True, True, True, True)
         # filter available status
         status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
-        # disable Delete and form if no record
-        if self.availableStatus[DELETE]:
+        # disable Delete if no record
+        if self.state != EDIT and self.availableStatus[DELETE]:
             if total == 0:
                 status[DELETE] = False
             else:
@@ -193,29 +193,6 @@ class FormManager[T](QWidget):
             for i in (NEW, SAVE, DELETE):
                 status[i] = False
         session['mainwin'].updateEditStatus(status, current, total)
-
-    def checkIfDirty(self) -> bool:
-        "Alert of unsaved changes if any"
-        if self.state == VIEW:
-            return True
-        row = self.mapper.currentIndex()
-        if self.model.isEditable and self.model.isDirty:
-            result = QMessageBox.question(self,
-                                          _tr("MessageDialog", "Question"),
-                                          _tr("Form", "The data has been modified, save ?"),
-                                          QMessageBox.StandardButton.Yes|
-                                          QMessageBox.StandardButton.No|
-                                          QMessageBox.StandardButton.Cancel)
-            if result == QMessageBox.StandardButton.Cancel:
-                return False
-            elif result == QMessageBox.StandardButton.Yes:
-                self.save()
-            else:
-                self.model.revert()
-                self.state = VIEW
-                self.updateEditStatus()
-        self.mapper.setCurrentIndex(row)
-        return True
 
     def toFirst(self) -> None:
         "To first"
@@ -448,6 +425,26 @@ class FormManager[T](QWidget):
                 self.ui.stackedWidget.setCurrentIndex(FORM)
                 # this works but don't enable navigation on tableview
                 #self.mapper.setCurrentModelIndex(self.widget.tableView.selectionModel().currentIndex())
+                
+    def close(self) -> bool:
+        "Close the form, ask confirmation if dirty"
+        if self.state == EDIT:
+            result = QMessageBox.question(self,
+                                          _tr("MessageDialog", "Question"),
+                                          _tr("Form", "The data has been modified, save ?"),
+                                          QMessageBox.StandardButton.Yes|
+                                          QMessageBox.StandardButton.No|
+                                          QMessageBox.StandardButton.Cancel)
+            if result == QMessageBox.StandardButton.Cancel:
+                return False
+            elif result == QMessageBox.StandardButton.Yes:
+                self.save()
+            else:
+                self.model.revert()
+                self.state = VIEW
+                self.updateEditStatus()
+        super().close()
+        return True
 
 
 class FormViewManager[T](QWidget):
@@ -515,8 +512,8 @@ class FormViewManager[T](QWidget):
         # filter available status
         status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
         # disable Delete and form if no record
-        if self.availableStatus[DELETE]:
-            if self.model.rowCount() == 0:
+        if self.state != EDIT and self.availableStatus[DELETE]:
+            if total == 0:
                 status[DELETE] = False
             else:
                 status[DELETE] = True
@@ -526,38 +523,15 @@ class FormViewManager[T](QWidget):
                 status[i] = False
         session['mainwin'].updateEditStatus(status, current, total)
 
-    def checkIfDirty(self) -> bool:
-        "Alert of unsaved changes if any"
-        if not self.model or isinstance(self.model, QueryModel):
-            return False
-        if self.state == VIEW:
-            return True
-        if self.model.isEditable and self.model.isDirty:
-            result = QMessageBox.question(self,
-                                          _tr("MessageDialog", "Question"),
-                                          _tr("Form", "The data has been modified, save ?"),
-                                          QMessageBox.StandardButton.Yes|
-                                          QMessageBox.StandardButton.No|
-                                          QMessageBox.StandardButton.Cancel)
-            if result == QMessageBox.StandardButton.Cancel:
-                return False
-            elif result == QMessageBox.StandardButton.Yes:
-                self.save()
-            else:
-                self.model.revert()
-                self.state = VIEW
-                self.updateEditStatus()
-        return True
-
-    def currentPrimaryKey(self) -> list|None:
-        if not self.model or isinstance(self.model, QueryModel):
-            return None
-        if not self.view:
-            return None
-        if self.view.selectionModel().currentIndex():
-            if self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()):
-                return list(self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()).values())[0]
-        return None
+    # def currentPrimaryKey(self) -> list|None:
+    #     if not self.model or isinstance(self.model, QueryModel):
+    #         return None
+    #     if not self.view:
+    #         return None
+    #     if self.view.selectionModel().currentIndex():
+    #         if self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()):
+    #             return list(self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()).values())[0]
+    #     return None
 
     def new(self) -> None:
         "Create a new record on model"
@@ -646,8 +620,9 @@ class FormViewManager[T](QWidget):
         "Undo pending changes and Reload data from db"
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        if hasattr(self. model, 'submitAll'):
-            self.model.revertAll() # also do a select()
+        if self.model and self.model.isEditable:
+            if hasattr(self.model, 'submitAll'):
+                self.model.revertAll() # also do a select()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
         self.state = VIEW
@@ -688,6 +663,27 @@ class FormViewManager[T](QWidget):
             return None
         if self.model:
             self.view.selectRow(self.model.rowCount() - 1)
+            
+    def close(self) -> bool:
+        "Close the form, ask confirmation if dirty"
+        if self.state == EDIT:
+            result = QMessageBox.question(self,
+                                          _tr("MessageDialog", "Question"),
+                                          _tr("Form", "The data has been modified, save ?"),
+                                          QMessageBox.StandardButton.Yes|
+                                          QMessageBox.StandardButton.No|
+                                          QMessageBox.StandardButton.Cancel)
+            if result == QMessageBox.StandardButton.Cancel:
+                return False
+            elif result == QMessageBox.StandardButton.Yes:
+                self.save()
+            else:
+                if self.model and self.model.isEditable:
+                    self.model.revert()
+                self.state = VIEW
+                self.updateEditStatus()
+        super().close()
+        return True
 
 
 class FormIndexManager[T](QWidget):
@@ -834,25 +830,6 @@ class FormIndexManager[T](QWidget):
                 status[i] = False
         session['mainwin'].updateEditStatus(status, current, total, self.indexModel.limitCondition)
 
-    # def checkIfDirty(self):
-    #     "Alert of unsaved changes if any"
-    #     if self.state == VIEW:
-    #         return True
-    #     if self.model.isEditable and self._model.isDirty:
-    #         result = QMessageBox.question(self,
-    #                                       _tr("MessageDialog", "Question"),
-    #                                       _tr("Form", "The data has been modified, save ?"),
-    #                                       QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-    #         if result == QMessageBox.Cancel:
-    #             return False
-    #         elif result == QMessageBox.Yes:
-    #             self.save()
-    #         else:
-    #             self.model.revert()
-    #             self.state = VIEW
-    #             self.updateEditStatus()
-    #     return True
-
     def toFirst(self) -> None:
         "To first"
         self.indexMapper.toFirst()
@@ -882,7 +859,7 @@ class FormIndexManager[T](QWidget):
         if hasattr(self.model, 'clearData'):
             self.model.clearData() # delete current data if any
         if not self.model.insertRow(0):
-            QMessageBoxCritical(self,
+            MessageBoxCritical(self,
                                 _tr("MessageDialog", "Critical"),
                                 _tr("Form", "Error inserting a new row"))
         self.state = EDIT
@@ -1003,7 +980,7 @@ class FormIndexManager[T](QWidget):
         try:
             self.model.removeRow(0)
         except PyAppDBError as er:
-            QMessageBoxCritical(self,
+            MessageBoxCritical(self,
                                 _tr("MessageDialog", "Critical"),
                                 msg,
                                 er.message)
@@ -1085,3 +1062,24 @@ class FormIndexManager[T](QWidget):
             self.ui.stackedWidget.setCurrentIndex(GRID)
         else:
             self.ui.stackedWidget.setCurrentIndex(FORM)
+            
+    def close(self) -> bool:
+        "Close the form, ask confirmation if dirty"
+        if self.state == EDIT:
+            result = QMessageBox.question(self,
+                                          _tr("MessageDialog", "Question"),
+                                          _tr("Form", "The data has been modified, save ?"),
+                                          QMessageBox.StandardButton.Yes|
+                                          QMessageBox.StandardButton.No|
+                                          QMessageBox.StandardButton.Cancel)
+            if result == QMessageBox.StandardButton.Cancel:
+                return False
+            elif result == QMessageBox.StandardButton.Yes:
+                self.save()
+            else:
+                if self.model and self.model.isEditable:
+                    self.model.revert()
+                self.state = VIEW
+                self.updateEditStatus()
+        super().close()
+        return True

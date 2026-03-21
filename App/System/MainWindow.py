@@ -55,6 +55,7 @@ from PySide6.QtWidgets import QToolBar
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDialog
+#from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QMenuBar
 from PySide6.QtWidgets import QTabWidget
 
@@ -196,39 +197,23 @@ class TabWidget(QTabWidget):
     def __init__(self, mainWin: QMainWindow) -> None:
         super().__init__(mainWin)
         self.appimage = QPixmap(f":/{APPNAME}")
-        # set the font size of the tabbar at 120% of the application font
-        #font = QFont()
-        #font.setPointSize(int(font.pointSize() * 1.2))
-        #font.setWeight(QFont.Bold)
-        #self.tabBar().setFont(font)
-        #self.tabBar().tabCloseRequested.connect(self.removeTabbar)
-        #self.tabCloseRequested.connect(self.removeTab)
-        # tabwidget context menu action, after 'connect' for translation pourpose
-        # show/hide tabbar
-        cms = QAction(_tr('MainWindow', "Show tabbar"), self)
-        cms.setCheckable(True)
-        cms.setChecked(True)
-        cms.triggered.connect(mainWin.hideTabBar)
-        self.addAction(cms)
-        # tabwidget context menu action
         # close current tab
-        cmc = QAction(_tr('MainWindow', "Close current tab"), self)
-        cmc.setCheckable(True)
-        cmc.setChecked(True)
-        cmc.setShortcut("Ctrl+K")
-        cmc.triggered.connect(mainWin.closeTab)
-        self.addAction(cmc)
-        self.setStyleSheet(None)
-
-    def removeTab(self, index: int) -> None:
-        #print("Tab widget", index)
-        #QTabWidget.removeTab(self, index)
-        self.widget(index).show() # page wodget is hidden in this point...
-        if hasattr(self.widget(index), 'checkIfDirty'):
-            if not self.widget(index).checkIfDirty():
-                return
-        self.widget(index).close()
-        QTabWidget.removeTab(self, index)
+        #act = QAction(_tr('MainWindow', "Close current tab"), self)
+        #act.setShortcut("Ctrl+K")
+        #act.triggered.connect(mainWin.closeTab)
+        #self.addAction(act)
+        # close all tabs
+        aca = QAction(_tr('MainWindow', "Close all tabs"), self)
+        aca.setShortcut("Ctrl+Shift+K")
+        aca.triggered.connect(mainWin.closeAllTabs)
+        self.addAction(aca)
+        # show/hide tabbar
+        ast = QAction(_tr('MainWindow', "Show tabbar"), self)
+        ast.setCheckable(True)
+        ast.setChecked(True)
+        ast.triggered.connect(mainWin.hideTabBar)
+        self.addAction(ast)
+        #self.setStyleSheet(None)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         super().paintEvent(event)
@@ -434,23 +419,28 @@ class MainWindow(QMainWindow):
         t = self.tabWidget.addTab(widget, tabname)
         self.tabWidget.setCurrentIndex(t)
 
-    def closeTab(self, index: int) -> None:
+    def closeTab(self, index: int) -> bool:
         "Close current tab"
         if not self.tabWidget.widget(index):
-            return
-        self.tabWidget.widget(index).close()
-        self.tabWidget.removeTab(index)
-        # empty tab widget
-        if self.tabWidget.count() == 0:
-            self.updateEditStatus(NSEMPTY, -1, -1)
+            return False
+        if self.tabWidget.widget(index).close():
+            self.tabWidget.removeTab(index)
+            # empty tab widget
+            if self.tabWidget.count() == 0:
+                self.updateEditStatus(NSEMPTY, -1, -1)
+            return True
+        return False
 
     def closeAllTabs(self) -> None:
         "Close all tabs"
         while self.tabWidget.count():
-            self.tabWidget.currentWidget().close()
-            self.tabWidget.removeTab(self.tabWidget.currentIndex())
-        # self.tabWidget.clear() don't close the widget pages
-        self.updateEditStatus(NSEMPTY, -1, -1)
+            if not self.closeTab(self.tabWidget.currentIndex()):
+                break
+        # while self.tabWidget.count():
+        #     self.tabWidget.currentWidget().close()
+        #     self.tabWidget.removeTab(self.tabWidget.currentIndex())
+        # # self.tabWidget.clear() don't close the widget pages
+        # self.updateEditStatus(NSEMPTY, -1, -1)
 
     def hideTabBar(self) -> None:
         "Hide tabbar"

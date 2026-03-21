@@ -87,6 +87,7 @@ class SettingsDialog(QDialog):
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.setting = Setting()
         self.ui.spinBoxLunch.setValue(self.setting['lunch_start_time'])
         self.ui.horizontalSliderLunch.setValue(self.setting['lunch_start_time']) # initially slider/spinbox are not connected

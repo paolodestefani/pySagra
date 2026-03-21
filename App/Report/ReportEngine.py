@@ -1140,7 +1140,7 @@ class Report():
         if groups is not None:
             for group in groups.findall('group'):
                 field = group.attrib.get('field')
-                reverse = bool(group.attrib.get('reverse'))
+                reverse = 'True' == group.attrib.get('reverse', 'False')
                 self.groups.append(Sort(field, reverse))
                 for child in group:
                     if child.tag == "groupHeader":
@@ -1227,7 +1227,7 @@ class Report():
             for b in self.page_header:
                 b.render(record)
         # print group header if the page break is between groups
-        if self.groups and self.current_group_index is not None:
+        if self.page_num > 1 and self.groups and self.current_group_index is not None:
             for i in range(self.current_group_index + 1):
                 grp = self.groups[i]
                 if grp in self.group_headers_repeat and self.group_headers_repeat[grp]: # type: ignore
@@ -1336,7 +1336,7 @@ class Report():
                 except TypeError:
                     # sort with None values and numbers
                     self.data.sort(key= lambda i: 0 if not i[col] else i[col], reverse=rev) #type: ignore
-                    
+      
         # sort for grouping
         for col, rev in [(self.column[i], i.reverse) for i in reversed(self.groups)]:
             try:
@@ -1348,7 +1348,7 @@ class Report():
                 except TypeError:
                     # sort with None values and numbers
                     self.data.sort(key= lambda i: 0 if not i[col] else i[col], reverse=rev) #type: ignore
-
+                    
         self.rn = 1 # record number, start from 1 for compatibility with report definition functions
         self.last_record_num = len(self.data) # reference for bands
 
@@ -1905,7 +1905,6 @@ else:
         </band>
     </pageHeader>
     <groups>
-        <!-- groups are nested -->
         <group field="department" reverse="False">
             <groupHeader onEveryPage="True">
                 <band height="20.0" >
@@ -1932,7 +1931,7 @@ else:
                 </band>
             </groupFooter>
         </group>
-        <group field="date" reverse="True">
+        <group field="date" reverse="False">
             <groupHeader onEveryPage="True">
                 <band height="20">
                     <label left="5.0" top="0.0" width="200.0" height="18" color="darkgreen">Date:</label>
@@ -2186,11 +2185,11 @@ else:
 </report>
 """
     for i in (
-              #xml_string0,
-              #xml_string1,
+              xml_string0,
+              xml_string1,
               xml_string2,
-              #xml_string3,
-              #xml_string4,
+              xml_string3,
+              xml_string4,
                  ):
         r = Report(i)
         r.setData([

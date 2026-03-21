@@ -132,17 +132,18 @@ class Ui_SystemInfoDialog(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout)
 
-        self.button_box = QDialogButtonBox(SystemInfoDialog)
-        self.button_box.setObjectName(u"button_box")
-        self.button_box.setOrientation(Qt.Orientation.Horizontal)
-        self.button_box.setStandardButtons(QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox = QDialogButtonBox(SystemInfoDialog)
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setCenterButtons(True)
 
-        self.verticalLayout_3.addWidget(self.button_box)
+        self.verticalLayout_3.addWidget(self.buttonBox)
 
 
         self.retranslateUi(SystemInfoDialog)
-        self.button_box.accepted.connect(SystemInfoDialog.accept)
-        self.button_box.rejected.connect(SystemInfoDialog.reject)
+        self.buttonBox.accepted.connect(SystemInfoDialog.accept)
+        self.buttonBox.rejected.connect(SystemInfoDialog.reject)
 
         QMetaObject.connectSlotsByName(SystemInfoDialog)
     # setupUi

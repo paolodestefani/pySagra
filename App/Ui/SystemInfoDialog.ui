@@ -181,12 +181,15 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="button_box">
+    <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::StandardButton::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -197,7 +200,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>button_box</sender>
+   <sender>buttonBox</sender>
    <signal>accepted()</signal>
    <receiver>SystemInfoDialog</receiver>
    <slot>accept()</slot>
@@ -213,7 +216,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>button_box</sender>
+   <sender>buttonBox</sender>
    <signal>rejected()</signal>
    <receiver>SystemInfoDialog</receiver>
    <slot>reject()</slot>

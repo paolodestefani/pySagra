@@ -156,7 +156,7 @@ class CompanyForm(FormIndexManager):
         path = st.value("PathImagesCompanies", QDir.current().path())
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr('Company', "Select the image to upload"),
-                                           path,
+                                           str(path),
                                            _tr('Company', "Portable Network Graphics (*.png);;All files (*.*)"))
 
         if f == "":
@@ -172,9 +172,11 @@ class CompanyForm(FormIndexManager):
         else:
             self.ui.labelCompanyImage.setPixmap(pix)
         st.setValue("PathImagesCompanies", QFileInfo(f).path())
-        self.model.isDirty = True
-        self.model.userDataChanged.emit()
-        
+        if hasattr(self.model, 'isDirty'):
+            self.model.isDirty = True
+        if hasattr(self.model, 'userDataChanged'):
+            self.model.userDataChanged.emit()
+
     def download(self, checked: bool) -> None:
         "Download company image to file"
         if not self.ui.labelCompanyImage.pixmap():
@@ -183,7 +185,7 @@ class CompanyForm(FormIndexManager):
         path = st.value("PathImagesCompanies", QDir.current().path())
         f, t = QFileDialog.getSaveFileName(self,
                                            _tr('Company', "Select the destination file name"),
-                                           path,
+                                           str(path),
                                            _tr('Company', "Portable Network Graphics (*.png);;All files (*.*)"))
         if f == "":
             return
@@ -201,8 +203,10 @@ class CompanyForm(FormIndexManager):
         "Remove company image"
         self.ui.labelCompanyImage.clear()
         self.ui.labelCompanyImage.setText(_tr('Company', "NO IMAGE"))
-        self.model.isDirty = True
-        self.model.userDataChanged.emit()
+        if hasattr(self.model, 'isDirty'):
+            self.model.isDirty = True
+        if hasattr(self.model, 'userDataChanged'):
+            self.model.userDataChanged.emit()
 
     def new(self) -> None:
         dlg = NewCompanyDialog(self)
@@ -272,7 +276,7 @@ class NewCompanyDialog(QDialog):
         path = st.value("PathImages", QDir.current().path())
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr('Company', "Select the image file to upload"),
-                                           path,
+                                           str(path),
                                            _tr('Company', "Portable Network "
                                                "Graphics (*.png);;All files (*.*)"))
         if f == "":
@@ -310,8 +314,9 @@ class NewCompanyDialog(QDialog):
             buffer = QBuffer(companyImage)
             buffer.open(QIODevice.OpenModeFlag.WriteOnly)
             pixmap.save(buffer, "PNG")
+            image = companyImage.data()
         else:
-            companyImage = None
+            image = None
         userProfile = self.ui.comboBoxProfile.currentData()
         userMenu = self.ui.comboBoxMenu.currentData()
         userToolbar = self.ui.comboBoxToolbar.currentData()
@@ -319,18 +324,14 @@ class NewCompanyDialog(QDialog):
         try:
             create_company(companyCode,
                            companyDescription,
-                           companyImage)
+                           image)
             set_company_access(companyCode,
                                session['app_user_code'],
                                userProfile,
                                userMenu,
                                userToolbar)
         except PyAppDBError as er:
-            if er.code == EDSAE:
-                msg = _tr("Company", "Database schema already exists. "
-                                 "Try to set a different name for the new "
-                                 "database schema")
-            elif er.code == ECIAE:
+            if er.code == ECIAE:
                 msg = _tr("Company", "Company ID already exists. "
                                  "Try to set a different company ID for the new "
                                  "company")

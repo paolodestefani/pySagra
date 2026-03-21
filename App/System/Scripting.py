@@ -175,7 +175,6 @@ class ScriptingForm(FormIndexManager):
         # fill classcombobox, methodcombobox and companycombobox
         self.ui.comboBoxClass.currentIndexChanged.connect(self.fillMethods)
         self.ui.comboBoxClass.addItems(list(SCRIPTABLE.keys()))
-        print(company_list())
         self.ui.comboBoxCompany.setItemList(company_list() + [(None, _tr('script', 'All'))])
         # field mapping
         self.mapper.addMapping(self.ui.comboBoxClass, CLASS)

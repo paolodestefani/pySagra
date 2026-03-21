@@ -326,7 +326,7 @@ class EnhancedTableView(QTableView):
     def setStoredLayout(self, action: QAction) -> None:
         if not action: # no customization available
             return
-        print(f"DEBUG: Header count is {self.horizontalHeader().count()}")
+        #print(f"DEBUG: Header count is {self.horizontalHeader().count()}")
         viewId = int(action.data())
         # reset layout first (first time store the state)
         if self.horizontalHeaderState:

@@ -52,6 +52,7 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QStyledItemDelegate
+from PySide6.QtWidgets import QDialogButtonBox
 
 # application modules
 from App import session
@@ -100,42 +101,45 @@ def statisticsExport():
     logging.info('Statistics  export dialog shown')
 
 
-class StatisticsExportDialog(QDialog, Ui_StatisticsExportDialog):
+class StatisticsExportDialog(QDialog):
 
     def __init__(self, parent, title, icon, auth):
         super().__init__(parent)
-        self.setupUi(self)
+        self.ui = Ui_StatisticsExportDialog()
+        self.ui.setupUi(self)
         self.setWindowTitle(title)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+
         for i, d in event_cdl():
-            self.comboBoxFromEvent.addItem(d, i)
-            self.comboBoxToEvent.addItem(d, i)
+            self.ui.comboBoxFromEvent.addItem(d, i)
+            self.ui.comboBoxToEvent.addItem(d, i)
         # restore settings
         st = QSettings(self)
         if st.value("StatisticsExport/Geometry"):
             self.restoreGeometry(st.value("StatisticsExport/Geometry"))
-        self.lineEditHeadersFileName.setText(st.value("StatisticsExport/HeadersFileName", ""))
-        self.lineEditDetailsFileName.setText(st.value("StatisticsExport/DetailsFileName", ""))
-        self.checkBoxIncludeAll.setChecked(st.value("StatisticsExport/IncludeAll", 'false') == 'true')
-        self.comboBoxFromEvent.setCurrentIndex(int(st.value("StatisticsExport/FromEvent", '1')))
-        self.comboBoxToEvent.setCurrentIndex(int(st.value("StatisticsExport/ToEvent", '1')))
+        self.ui.lineEditHeadersFileName.setText(st.value("StatisticsExport/HeadersFileName", ""))
+        self.ui.lineEditDetailsFileName.setText(st.value("StatisticsExport/DetailsFileName", ""))
+        self.ui.checkBoxIncludeAll.setChecked(st.value("StatisticsExport/IncludeAll", 'false') == 'true')
+        self.ui.comboBoxFromEvent.setCurrentIndex(int(st.value("StatisticsExport/FromEvent", '1')))
+        self.ui.comboBoxToEvent.setCurrentIndex(int(st.value("StatisticsExport/ToEvent", '1')))
         # signal slot connections
-        self.checkBoxIncludeAll.toggled.connect(self.includeAllEvents)
-        self.pushButtonSelectHeaders.clicked.connect(self.selectHeadersClicked)
-        self.pushButtonSelectDetails.clicked.connect(self.selectDetailsClicked)
+        self.ui.checkBoxIncludeAll.toggled.connect(self.includeAllEvents)
+        self.ui.pushButtonSelectHeaders.clicked.connect(self.selectHeadersClicked)
+        self.ui.pushButtonSelectDetails.clicked.connect(self.selectDetailsClicked)
 
     def includeAllEvents(self, checked):
         if checked:
-            self.comboBoxFromEvent.setCurrentIndex(-1)
-            self.groupBoxFromEvent.setDisabled(True)
-            self.comboBoxToEvent.setCurrentIndex(-1)
-            self.groupBoxToEvent.setDisabled(True)
+            self.ui.comboBoxFromEvent.setCurrentIndex(-1)
+            self.ui.groupBoxFromEvent.setDisabled(True)
+            self.ui.comboBoxToEvent.setCurrentIndex(-1)
+            self.ui.groupBoxToEvent.setDisabled(True)
         else:
-            self.groupBoxFromEvent.setEnabled(True)
-            self.groupBoxToEvent.setEnabled(True)
+            self.ui.groupBoxFromEvent.setEnabled(True)
+            self.ui.groupBoxToEvent.setEnabled(True)
 
     def selectHeadersClicked(self):
-        if self.lineEditHeadersFileName.text():
-            path = self.lineEditHeadersFileName.text()
+        if self.ui.lineEditHeadersFileName.text():
+            path = self.ui.lineEditHeadersFileName.text()
         else:
             path = QDir.currentPath()
         fname, t = QFileDialog.getSaveFileName(self,
@@ -144,14 +148,14 @@ class StatisticsExportDialog(QDialog, Ui_StatisticsExportDialog):
                                                _tr("View", "Comma separated values (*.csv);;All files (*.*)"))
         if not fname: # clicked cancel
             return
-        self.lineEditHeadersFileName.setText(fname)
+        self.ui.lineEditHeadersFileName.setText(fname)
         # save export path
         st = QSettings()
         st.setValue("StatisticsExport/HeadersFileName", fname)
 
     def selectDetailsClicked(self):
-        if self.lineEditDetailsFileName.text():
-            path = self.lineEditDetailsFileName.text()
+        if self.ui.lineEditDetailsFileName.text():
+            path = self.ui.lineEditDetailsFileName.text()
         else:
             path = QDir.currentPath()
         fname, t = QFileDialog.getSaveFileName(self,
@@ -160,21 +164,21 @@ class StatisticsExportDialog(QDialog, Ui_StatisticsExportDialog):
                                                _tr("View", "Comma separated values (*.csv);;All files (*.*)"))
         if not fname: # clicked cancel
             return
-        self.lineEditDetailsFileName.setText(fname)
+        self.ui.lineEditDetailsFileName.setText(fname)
         # save export path
         st = QSettings()
         st.setValue("StatisticsExport/DetailsFileName", fname)
 
     def accept(self):
         "Proceed on export data"
-        if self.checkBoxIncludeAll.isChecked():
+        if self.ui.checkBoxIncludeAll.isChecked():
             fromEvent = 1
             toEvent = 999999
         else:
-            fromEvent = int(self.comboBoxFromEvent.currentData())
-            toEvent = int(self.comboBoxToEvent.currentData())
-        fnameh = self.lineEditHeadersFileName.text()
-        fnamed = self.lineEditDetailsFileName.text()
+            fromEvent = int(self.ui.comboBoxFromEvent.currentData())
+            toEvent = int(self.ui.comboBoxToEvent.currentData())
+        fnameh = self.ui.lineEditHeadersFileName.text()
+        fnamed = self.ui.lineEditDetailsFileName.text()
         try:
             for view, fn in (('bi_order_header', fnameh), ('bi_order_detail', fnamed)):
                 # write to csv file

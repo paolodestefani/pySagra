@@ -43,6 +43,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QDialogButtonBox
 
 # application modules
 from App import session
@@ -94,6 +95,7 @@ class CustomizationsDialog(QDialog):
         self.ui = Ui_CustomizationsDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         # signal/slot
         self.ui.pushButtonExport.clicked.connect(self.exportCustomization)

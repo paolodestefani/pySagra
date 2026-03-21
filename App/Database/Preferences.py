@@ -61,7 +61,7 @@ def save_preferences(user_code: str,
                      style: str,
                      color: str,
                      icon: str,
-                     ffamily: str,
+                     ffamily: str|None,
                      fsize: int,
                      tbstyle: str,
                      tabposition: str

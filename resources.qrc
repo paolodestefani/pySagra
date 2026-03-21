@@ -77,7 +77,7 @@
     <file alias="activities_inventory">icon/oxygen/document-preview-archive.png</file>
 	<file alias="activities_order_progress">icon/oxygen/user-away-extended.png</file>
     <file alias="activities_ordered_delivered">icon/oxygen/document-preview.png</file>
-    <file alias="activities_sales_summary">icon/oxygen/tool-animator.png</file>
+    <file alias="activities_sales_summary">icon/oxygen/office-chart-pie.png</file>
     <file alias="statistics_statistic">icon/oxygen/view-statistics.png</file>
     <file alias="tools_tool">icon/oxygen/applications-development.png</file>
     <file alias="help_content">icon/oxygen/help-contents.png</file>
@@ -93,7 +93,7 @@
     <file alias="print_pdf">icon/crystal_clear/postscript.png</file>
     <file alias="system_change_company">icon/crystal_clear/folder-grey-open.png</file>
     <file alias="system_password">icon/crystal_clear/password.png</file>
-    <file alias="system_preferences">icon/crystal_clear/ksame-game.png</file>
+    <file alias="system_preferences">icon/crystal_clear/core-bomb.png</file>
     <file alias="system_connections">icon/crystal_clear/browser.png</file>
     <file alias="system_connections_history">icon/crystal_clear/package-network.png</file>
     <file alias="system_company">icon/crystal_clear/home.png</file>
@@ -101,7 +101,7 @@
     <file alias="system_user">icon/crystal_clear/login-manager.png</file>
     <file alias="system_menu">icon/crystal_clear/kservices.png</file>
     <file alias="system_toolbar">icon/crystal_clear/kservices.png</file>
-    <file alias="system_report">icon/crystal_clear/ksirtet.png</file>
+    <file alias="system_report">icon/crystal_clear/database.png</file>
 	<file alias="system_scripting">icon/crystal_clear/python-logo.png</file>
 	<file alias="system_customization">icon/crystal_clear/warehause.png</file>
     <file alias="system_quit">icon/crystal_clear/shutdown.png</file>
@@ -133,7 +133,7 @@
     <file alias="edit_filter">icon/crystal_clear/xmag-search.png</file>
     <file alias="edit_print">icon/crystal_clear/file-print.png</file>
     <file alias="edit_export">icon/crystal_clear/spreadsheet.png</file>
-    <file alias="edit_change">icon/crystal_clear/Quick-restart.png</file>
+    <file alias="edit_change">icon/crystal_clear/pysol.png</file>
     <file alias="order_switch">icon/crystal_clear/randr.png</file>
     <file alias="order_ok">icon/crystal_clear/ok.png</file>
     <file alias="order_cancel">icon/crystal_clear/delete.png</file>
@@ -142,8 +142,8 @@
     <file alias="activities_order">icon/crystal_clear/edit.png</file>
     <file alias="activities_inventory">icon/crystal_clear/ark.png</file>
 	<file alias="activities_order_progress">icon/crystal_clear/clock.png</file>
-    <file alias="activities_ordered_delivered">icon/crystal_clear/dvi.png</file>
-    <file alias="activities_sales_summary">icon/crystal_clear/appfinder.png</file>
+    <file alias="activities_ordered_delivered">icon/crystal_clear/appfinder.png</file>
+    <file alias="activities_sales_summary">icon/crystal_clear/picture-view.png</file>
     <file alias="statistics_statistic">icon/crystal_clear/volume-manager.png</file>
     <file alias="tools_tool">icon/crystal_clear/configure.png</file>
     <file alias="help_content">icon/crystal_clear/help-index.png</file>
