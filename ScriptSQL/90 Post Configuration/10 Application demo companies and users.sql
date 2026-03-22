@@ -82,7 +82,6 @@ VALUES
 ('cashier', 'about_qt', 'X'),
 ('cashier', 'about_system_info', 'X'),
 ('cashier', 'app_file_cash_desk', 'R'),
-('cashier', 'app_file_web_order', 'X'),
 ('cashier', 'app_file_order', 'X'),
 ('cashier', 'app_activity_order_entry', 'X'),
 ('cashier', 'app_activity_stock_inventory', 'R'),
@@ -122,8 +121,7 @@ VALUES
 ('ch', 'chqt', Null, 7, 'A', 'about_qt'),
 -- file menu
 ('cfi', 'cficdk', Null, 1, 'A', 'app_file_cash_desk'),
-('cfi', 'cfiwor', Null, 2, 'A', 'app_file_web_order'),
-('cfi', 'cfiord', Null, 3, 'A', 'app_file_order'),
+('cfi', 'cfiord', Null, 2, 'A', 'app_file_order'),
 -- activities menu
 ('cac', 'cacord', Null, 1, 'A', 'app_activity_order_entry'),
 ('cac', 'cacsp1', Null, 2, 'S', Null),
@@ -210,8 +208,7 @@ VALUES
 ('ph', 'phqt', Null, 7, 'A', 'about_qt'),
 -- file menu
 ('pfi', 'pficdk', Null, 1, 'A', 'app_file_cash_desk'),
-('pfi', 'pfiwor', Null, 2, 'A', 'app_file_web_order'),
-('pfi', 'pfiord', Null, 3, 'A', 'app_file_order'),
+('pfi', 'pfiord', Null, 2, 'A', 'app_file_order'),
 -- activities menu
 ('pac', 'pacord', Null, 1, 'A', 'app_activity_order_progress');
 

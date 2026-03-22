@@ -178,7 +178,8 @@ BEGIN
 		['company.cash_desk', 'cash_desk_id'],
 		['company.department', 'department_id'],
 		['company.event', 'event_id'],
-		['company.item', 'item_id'],
+		['company.inventory', 'inventory_id'],
+        ['company.item', 'item_id'],
 		['company.item_part', 'item_part_id'],
 		['company.item_variant', 'item_variant_id'],
 		['company.numbering', 'numbering_id'],
@@ -186,15 +187,12 @@ BEGIN
 		['company.order_header_department', 'order_header_department_id'],
 		['company.order_line', 'order_line_id'],
 		['company.order_line_department', 'order_line_department_id'],
+        ['company.ordered_delivered', 'ordered_delivered_id'],
 		['company.price_list', 'price_list_id'],
 		['company.price_list_item', 'price_list_item_id'],
 		['company.printer_class', 'printer_class_id'],
 		['company.printer_class_printer', 'printer_class_printer_id'],
-		['company.seat_map', 'seat_map_id'],
-		['company.inventory', 'inventory_id'],
-		['company.ordered_delivered', 'ordered_delivered_id'],
-		['company.web_order_header', 'web_order_header_id'],
-		['company.web_order_line', 'web_order_line_id']
+		['company.seat_map', 'seat_map_id']
 		] LOOP
 		EXECUTE format('SELECT coalesce(max(%s), 0) + 1 FROM %s', tt[2], tt[1]) INTO i;
 		EXECUTE format('ALTER TABLE %s ALTER COLUMN %s RESTART WITH %s', tt[1], tt[2], i) ;

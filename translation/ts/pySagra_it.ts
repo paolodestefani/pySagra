@@ -505,132 +505,124 @@
     <message>
         <location filename="../../App/System/Action.py" line="558"/>
         <location filename="../../App/System/Action.py" line="563"/>
-        <location filename="../../App/System/Action.py" line="564"/>
         <location filename="../../App/System/Action.py" line="565"/>
-        <source>Web orders</source>
-        <translation>Ordini web</translation>
+        <source>Order numbers</source>
+        <translation>Progressivi ordini</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Action.py" line="564"/>
+        <source>Manage order number current values</source>
+        <translation>Gestione dei numeri degli ordini</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="569"/>
         <location filename="../../App/System/Action.py" line="574"/>
         <location filename="../../App/System/Action.py" line="576"/>
-        <source>Order numbers</source>
-        <translation>Progressivi ordini</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Action.py" line="575"/>
-        <source>Manage order number current values</source>
-        <translation>Gestione dei numeri degli ordini</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Action.py" line="580"/>
-        <location filename="../../App/System/Action.py" line="585"/>
-        <location filename="../../App/System/Action.py" line="587"/>
         <source>Settings</source>
         <translation>Impostazioni</translation>
     </message>
     <message>
-        <location filename="../../App/System/Action.py" line="586"/>
+        <location filename="../../App/System/Action.py" line="575"/>
         <source>View/Modify application settings</source>
         <translation>Visualizzza/Modifica le impostazioni dell&apos;applicazione</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Action.py" line="581"/>
+        <location filename="../../App/System/Action.py" line="586"/>
+        <location filename="../../App/System/Action.py" line="587"/>
+        <location filename="../../App/System/Action.py" line="588"/>
+        <source>Order entry</source>
+        <translation>Inserimento ordini</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="592"/>
         <location filename="../../App/System/Action.py" line="597"/>
         <location filename="../../App/System/Action.py" line="598"/>
         <location filename="../../App/System/Action.py" line="599"/>
-        <source>Order entry</source>
-        <translation>Inserimento ordini</translation>
+        <source>Inventory</source>
+        <translation>Inventario</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="603"/>
         <location filename="../../App/System/Action.py" line="608"/>
         <location filename="../../App/System/Action.py" line="609"/>
         <location filename="../../App/System/Action.py" line="610"/>
-        <source>Inventory</source>
-        <translation>Inventario</translation>
+        <source>Order progress</source>
+        <translation>Avanzamento ordini</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="614"/>
         <location filename="../../App/System/Action.py" line="619"/>
         <location filename="../../App/System/Action.py" line="620"/>
         <location filename="../../App/System/Action.py" line="621"/>
-        <source>Order progress</source>
-        <translation>Avanzamento ordini</translation>
+        <source>Ordered delivered</source>
+        <translation>Ordinato consegnato</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="625"/>
         <location filename="../../App/System/Action.py" line="630"/>
         <location filename="../../App/System/Action.py" line="631"/>
         <location filename="../../App/System/Action.py" line="632"/>
-        <source>Ordered delivered</source>
-        <translation>Ordinato consegnato</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Action.py" line="636"/>
-        <location filename="../../App/System/Action.py" line="641"/>
-        <location filename="../../App/System/Action.py" line="642"/>
-        <location filename="../../App/System/Action.py" line="643"/>
         <source>Sales summary</source>
         <translation>Riepilogo delle vendite</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Action.py" line="637"/>
+        <location filename="../../App/System/Action.py" line="642"/>
+        <location filename="../../App/System/Action.py" line="643"/>
+        <location filename="../../App/System/Action.py" line="644"/>
+        <source>Pivot table analysis</source>
+        <translation>Analisi su tabella pivot</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="648"/>
         <location filename="../../App/System/Action.py" line="653"/>
         <location filename="../../App/System/Action.py" line="654"/>
         <location filename="../../App/System/Action.py" line="655"/>
-        <source>Pivot table analysis</source>
-        <translation>Analisi su tabella pivot</translation>
+        <source>Print statistics</source>
+        <translation>Stampa statistiche</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="659"/>
         <location filename="../../App/System/Action.py" line="664"/>
         <location filename="../../App/System/Action.py" line="665"/>
         <location filename="../../App/System/Action.py" line="666"/>
-        <source>Print statistics</source>
-        <translation>Stampa statistiche</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Action.py" line="670"/>
-        <location filename="../../App/System/Action.py" line="675"/>
-        <location filename="../../App/System/Action.py" line="676"/>
-        <location filename="../../App/System/Action.py" line="677"/>
         <source>Export statistic data</source>
         <translation>Esporta dati statistici</translation>
     </message>
     <message>
-        <location filename="../../App/System/Action.py" line="682"/>
+        <location filename="../../App/System/Action.py" line="671"/>
         <source>Application event based tool</source>
         <translation>Strumenti basati sugli eventi</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Action.py" line="676"/>
+        <location filename="../../App/System/Action.py" line="677"/>
+        <location filename="../../App/System/Action.py" line="678"/>
+        <source>Application event based utilities</source>
+        <translation>Utility basate sugli eventi</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Action.py" line="682"/>
+        <source>Delete tool</source>
+        <translation>Strumento di cancellazione</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="687"/>
         <location filename="../../App/System/Action.py" line="688"/>
         <location filename="../../App/System/Action.py" line="689"/>
-        <source>Application event based utilities</source>
-        <translation>Utility basate sugli eventi</translation>
+        <source>Delete company data</source>
+        <translation>Cancellazione dei dati dell&apos;azienda</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="693"/>
-        <source>Delete tool</source>
-        <translation>Strumento di cancellazione</translation>
+        <source>Copy tool</source>
+        <translation>Strumento di copia</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="698"/>
         <location filename="../../App/System/Action.py" line="699"/>
         <location filename="../../App/System/Action.py" line="700"/>
-        <source>Delete company data</source>
-        <translation>Cancellazione dei dati dell&apos;azienda</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Action.py" line="704"/>
-        <source>Copy tool</source>
-        <translation>Strumento di copia</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Action.py" line="709"/>
-        <location filename="../../App/System/Action.py" line="710"/>
-        <location filename="../../App/System/Action.py" line="711"/>
         <source>Copy data from another company</source>
         <translation>Copia dati tra aziende</translation>
     </message>

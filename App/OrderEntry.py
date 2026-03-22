@@ -197,25 +197,8 @@ class ButtonList(QPushButton):
         #####
         # for colors use stylesheet to avoid problem with platform themes
         #####
-        # color palettes
-        # self.normalPalette = self.palette()
-        # self.normalPalette.setColor(self.backgroundRole(), QColor(self.backgroundColor))
-        # self.normalPalette.setColor(self.foregroundRole(), QColor(self.textColor))
-        # self.warningPalette = self.palette()
-        # self.warningPalette.setColor(self.backgroundRole(), QColor(setting['warning_background_color'])) 
-        # self.warningPalette.setColor(self.foregroundRole(), QColor(setting['warning_text_color']))   
-        # self.criticalPalette = self.palette()
-        # self.criticalPalette.setColor(self.backgroundRole(), QColor(setting['critical_background_color'])) 
-        # self.criticalPalette.setColor(self.foregroundRole(), QColor(setting['critical_text_color'])) 
-        # self.disabledPalette = self.palette()
-        # self.disabledPalette.setColor(self.backgroundRole(), QColor(setting['disabled_background_color']))
-        # self.disabledPalette.setColor(self.foregroundRole(), QColor(setting['disabled_text_color']))
         # for variants indicator
         self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25)
-        ###
-        #self.setPalette(self.normalPalette)
-        ### must be after palette setting
-        #self.level = None
         
     def __setattr__(self, name, value):
         super().__setattr__(name, value)
@@ -280,7 +263,7 @@ class BaseOrderDialog(QDialog):
         if st.value("OrderDialogGeometry"):
             self.restoreGeometry(st.value("OrderDialogGeometry"))
         # window flags
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setWindowFlags(Qt.Dialog|Qt.WindowMinMaxButtonsHint|Qt.WindowCloseButtonHint)
         # dialog icons
         self.ui.pushButtonTablesSwitch.setIcon(currentIcon['order_switch'])
@@ -301,10 +284,10 @@ class BaseOrderDialog(QDialog):
         for i in (self.ui.radioButton1, self.ui.radioButton5, self.ui.radioButton10):
             self.ui.buttonGroupQuantity.addButton(i)
         # set departments tab position
-        self.ui.tabWidgetList.setTabPosition({'N': QTabWidget.North,
-                                              'S': QTabWidget.South,
-                                              'E': QTabWidget.East,
-                                              'W': QTabWidget.West}[setting['order_list_tab_position']])
+        self.ui.tabWidgetList.setTabPosition({'N': QTabWidget.TabPosition.North,
+                                              'S': QTabWidget.TabPosition.South,
+                                              'E': QTabWidget.TabPosition.East,
+                                              'W': QTabWidget.TabPosition.West}[setting['order_list_tab_position']])
         # order list tablewidget
         self.ui.list_rows = setting['order_list_rows']
         self.ui.list_columns = setting['order_list_columns']
@@ -319,7 +302,7 @@ class BaseOrderDialog(QDialog):
         self.ui.tabWidgetOrder.setColumnCount(len(self.ui.twheader))
         self.ui.tabWidgetOrder.setSortingEnabled(False)
         self.ui.tabWidgetOrder.setHorizontalHeaderLabels(self.ui.twheader)
-        self.ui.tabWidgetOrder.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
+        self.ui.tabWidgetOrder.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft)
         self.ui.tabWidgetOrder.hideColumn(ID)
         self.ui.tabWidgetOrder.hideColumn(VARIANTS)
         self.ui.tabWidgetOrder.setColumnWidth(DESC, 250)
@@ -351,7 +334,7 @@ class BaseOrderDialog(QDialog):
             b.setStyleSheet(f"color: {ttc}; background-color: {tbc};")
             b.setMinimumWidth(50)
             b.setMinimumHeight(40)
-            b.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            b.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
             self.ui.bgt.addButton(b)
             gl.addWidget(b, tr, tc)
         # fill the remaining cells of gl with an empty button
@@ -360,7 +343,7 @@ class BaseOrderDialog(QDialog):
                 if gl.itemAtPosition(r, c) is None:
                     w = QWidget(self)
                     #w.setMinimumWidth(5)
-                    w.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+                    w.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
                     gl.addWidget(w, r, c)
         self.ui.frameTables.setLayout(gl)
         # list button group
@@ -743,149 +726,87 @@ class BaseOrderDialog(QDialog):
             value = self.ui.lineEditBarCode.text()
             if not value:  # can happend when loosing focus without insert enything
                 return
-            # if not a number try with QRC data
-            if not value.isdigit():
-                #****************************
-                # manage weborder QR Code
-                # start resetting the dialog
-                self.resetDialog()
-                # parse QRC data
-                try:
-                    
-                    qtype, qdelivery, qtable, qname, qcovers, qemail = value.split(';')[:6]
-                    itm = value.split(";")[6:][0::4] 
-                    var = value.split(";")[6:][1::4] 
-                    prd = value.split(";")[6:][2::4]
-                    qty = value.split(";")[6:][3::4]
-                except Exception as er:
-                    msg = _tr('OrderDialog', f"Unrecognized QRC structure:") + f"\n{str(er)}"
-                    QMessageBox.critical(self,
-                                        _tr("MessageDialog", "Critical"),
-                                        _tr('OrderDialog', msg))
-                    self.ui.lineEditBarCode.clear()
-                    return
-                # sanity checkes
-                err = []
-                if qtype != 'PSQRC':
-                    err.append(_tr('OrderDialog', f'Unrecognized QRC format:') + f" {qtype}")
-                if qdelivery not in ('T', 'A'):
-                    err.append(_tr('OrderDialog', f'Unrecognized delivery option:') + f" {qdelivery}")
-                if qcovers:
-                    if not qcovers.isdigit():
-                        err.append(_tr('OrderDialog', f'Unrecognized covers number:') + f" {qcovers}")
-                if err:
-                    msg = _tr('OrderDialog', f'Unrecognized parameters:') + f"\n{'\n'.join(err)}"
-                    QMessageBox.critical(self,
-                                        _tr("MessageDialog", "Critical"),
-                                        _tr('OrderDialog', msg))
-                    return           
-                # move to order widget
-                self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
-                self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Tables'))
-                if qdelivery == 'T':
-                    self.ui.radioButtonTable.setChecked(True)
-                else:
-                    self.ui.radioButtonTakeAway.setChecked(True)
-                self.ui.lineEditTable.setText(qtable or '')
-                self.ui.lineEditCustomerName.setText(qname or '')
-                self.ui.spinBoxCovers.setValue(int(qcovers or 0))
-                self.ui.lineEditCustomerContact.setText(qemail or '')
-                unavailable = dict()
-            
-                for i, v, p, q in zip(itm, var, prd, qty):
-                    # order line sanity checks
-                    if not i.isdigit():
-                        msg = _tr('OrderDialog', f'Unrecognized item id:') + f" {i}"
-                        QMessageBox.critical(self,
-                                        _tr("MessageDialog", "Critical"),
-                                        _tr('OrderDialog', msg))
-                        return
-                    if not q.isdigit():   
-                        msg = _tr('OrderDialog', f"Unrecognized quantity:") + f" {q}"
-                        QMessageBox.critical(self,
-                                        _tr("MessageDialog", "Critical"),
-                                        _tr('OrderDialog', msg))
-                        return        
-                    for j in range(int(q)): # repeat until quantity reached
-                        b = self.ui.bgi.button(int(i)) # Returns the button with the specified id
-                        if b is None:
-                            QMessageBox.critical(self,
-                                                _tr("MessageDialog", "Critical"),
-                                                _tr('OrderDialog', "Item NOT available in buttons' grid, web order skipped"))
-                            return
-                        if b.isEnabled():
-                            self.buttonClicked(b, v, decimal.Decimal(p))
-                        else:
-                            unavailable[b.text()] = unavailable.get(b.text(), 0) + 1
-                # warn of anavailable items
-                if unavailable:
-                    msg = _tr("OrderDialog", "These items are not available and not "
-                            "included in the order:\n")
-                    msg += "\n".join(["{:>2}  {:<20}".format(q, i).replace('\n', ' ')
-                                    for i, q in unavailable.items()])
-                    QMessageBox.warning(self,
-                                        _tr("MessageDialog", "Warning"),
-                                        msg)
+            #****************************
+            # manage weborder QR Code
+            # start resetting the dialog
+            self.resetDialog()
+            # parse QRC data
+            try:
+                
+                qtype, qdelivery, qtable, qname, qcovers, qemail = value.split(';')[:6]
+                itm = value.split(";")[6:][0::4] 
+                var = value.split(";")[6:][1::4] 
+                prd = value.split(";")[6:][2::4]
+                qty = value.split(";")[6:][3::4]
+            except Exception as er:
+                msg = _tr('OrderDialog', f"Unrecognized QRC structure:") + f"\n{str(er)}"
+                QMessageBox.critical(self,
+                                    _tr("MessageDialog", "Critical"),
+                                    _tr('OrderDialog', msg))
+                self.ui.lineEditBarCode.clear()
+                return
+            # sanity checkes
+            err = []
+            if qtype != 'PSQRC':
+                err.append(_tr('OrderDialog', f'Unrecognized QRC format:') + f" {qtype}")
+            if qdelivery not in ('T', 'A'):
+                err.append(_tr('OrderDialog', f'Unrecognized delivery option:') + f" {qdelivery}")
+            if qcovers:
+                if not qcovers.isdigit():
+                    err.append(_tr('OrderDialog', f'Unrecognized covers number:') + f" {qcovers}")
+            if err:
+                msg = _tr('OrderDialog', f'Unrecognized parameters:') + f"\n{'\n'.join(err)}"
+                QMessageBox.critical(self,
+                                    _tr("MessageDialog", "Critical"),
+                                    _tr('OrderDialog', msg))
+                return           
+            # move to order widget
+            self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
+            self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Tables'))
+            if qdelivery == 'T':
+                self.ui.radioButtonTable.setChecked(True)
             else:
-                # manage web order stored in db
-                # convert to int
-                try:
-                    orderId = int(value)
-                except ValueError:
+                self.ui.radioButtonTakeAway.setChecked(True)
+            self.ui.lineEditTable.setText(qtable or '')
+            self.ui.lineEditCustomerName.setText(qname or '')
+            self.ui.spinBoxCovers.setValue(int(qcovers or 0))
+            self.ui.lineEditCustomerContact.setText(qemail or '')
+            unavailable = dict()
+        
+            for i, v, p, q in zip(itm, var, prd, qty):
+                # order line sanity checks
+                if not i.isdigit():
+                    msg = _tr('OrderDialog', f'Unrecognized item id:') + f" {i}"
                     QMessageBox.critical(self,
-                                        _tr('MessageDialog', 'Critical'),
-                                        _tr('OrderDialog', 'Unable to convert barcode string to number'))
+                                    _tr("MessageDialog", "Critical"),
+                                    _tr('OrderDialog', msg))
                     return
-                # look for order details
-                header = get_web_order_header(orderId)
-                if not header:
-                    QMessageBox.warning(self,
-                                        _tr('MessageDialog', 'Warning'),
-                                        _tr('OrderDialog', 'Web order not found'))
-                    return
-                # move to order widget
-                self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
-                self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Tables'))
-                # fill data
-                delivery, table, customer, covers, amount, processed = header
-                # if web order already processed ask for import again
-                if processed:
-                    if QMessageBox.question(self,
-                                            _tr("MessageDialog", "Question"),
-                                            _tr('OrderDialog', "Web order already processed, import again ?"),
-                                            QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+                if not q.isdigit():   
+                    msg = _tr('OrderDialog', f"Unrecognized quantity:") + f" {q}"
+                    QMessageBox.critical(self,
+                                    _tr("MessageDialog", "Critical"),
+                                    _tr('OrderDialog', msg))
+                    return        
+                for j in range(int(q)): # repeat until quantity reached
+                    b = self.ui.bgi.button(int(i)) # Returns the button with the specified id
+                    if b is None:
+                        QMessageBox.critical(self,
+                                            _tr("MessageDialog", "Critical"),
+                                            _tr('OrderDialog', "Item NOT available in buttons' grid, web order skipped"))
                         return
-                if delivery == 'T':
-                    self.ui.radioButtonTable.setChecked(True)
-                else:
-                    self.ui.radioButtonTakeAway.setChecked(True)
-                self.ui.lineEditTable.setText(table or '')
-                self.ui.lineEditCustomerName.setText(customer or '')
-                self.ui.spinBoxCovers.setValue(covers or 0)
-                unavailable = dict()
-                for i, q in get_web_order_details(orderId):
-                    for j in range(int(q)):
-                        b = self.ui.bgi.button(i)
-                        if b is None:
-                            QMessageBox.critical(self,
-                                                _tr("MessageDialog", "Critical"),
-                                                _tr('OrderDialog', "Item NOT available in buttons' grid, web order skipped"))
-                            return
-                        if b.isEnabled():
-                            self.buttonClicked(b)
-                        else:
-                            unavailable[b.text()] = unavailable.get(b.text(), 0) + 1
-                # warn of anavailable items
-                if unavailable:
-                    msg = _tr("OrderDialog", "These items are not available and not "
-                            "included in the order:\n")
-                    msg += "\n".join(["{:>2}  {:<20}".format(q, i).replace('\n', ' ')
-                                    for i, q in unavailable.items()])
-                    QMessageBox.warning(self,
-                                        _tr("MessageDialog", "Warning"),
-                                        msg)
-                # set weborder as processed
-                set_web_order_processed(orderId)
+                    if b.isEnabled():
+                        self.buttonClicked(b, v, decimal.Decimal(p))
+                    else:
+                        unavailable[b.text()] = unavailable.get(b.text(), 0) + 1
+            # warn of anavailable items
+            if unavailable:
+                msg = _tr("OrderDialog", "These items are not available and not "
+                        "included in the order:\n")
+                msg += "\n".join(["{:>2}  {:<20}".format(q, i).replace('\n', ' ')
+                                for i, q in unavailable.items()])
+                QMessageBox.warning(self,
+                                    _tr("MessageDialog", "Warning"),
+                                    msg)
         finally:
             # clear barcode line edit
             self.ui.lineEditBarCode.clear()

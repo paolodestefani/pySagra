@@ -47,7 +47,6 @@
 	<file alias="file_price_list">icon/oxygen/folder-cyan.png</file>
 	<file alias="file_event">icon/oxygen/view-pim-calendar.png</file>
 	<file alias="file_update_web_order">icon/oxygen/akregator.png</file>
-	<file alias="file_web_order">icon/oxygen/folder-remote.png</file>
 	<file alias="file_order">icon/oxygen/folder-documents.png</file>
     <file alias="file_order_number">icon/oxygen/folder-development.png</file>
     <file alias="file_settings">icon/oxygen/preferences-system.png</file>
@@ -113,7 +112,6 @@
 	<file alias="file_price_list">icon/crystal_clear/folder-yellow.png</file>
 	<file alias="file_event">icon/crystal_clear/date.png</file>
 	<file alias="file_update_web_order">icon/crystal_clear/network-settings.png</file>
-	<file alias="file_web_order">icon/crystal_clear/bookmark-silver.png</file>
 	<file alias="file_order">icon/crystal_clear/bookmark.png</file>
     <file alias="file_order_number">icon/crystal_clear/run.png</file>
     <file alias="file_settings">icon/crystal_clear/package-settings.png</file>

@@ -426,7 +426,10 @@ class BaseRenderer():
     def checkHeight(self, bandHeight: float) -> float:
         "Returns the new band height if band can grow"
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
+            if self.parameterNegated:
+                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
+            else:
+                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
         if not self.isVisible:
             return bandHeight
         if not self.canGrow:
@@ -463,8 +466,11 @@ class BaseRenderer():
     def render(self, bandHeight:float) -> None:
         "Paint an image or text"
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
-        if not self.isVisible:  
+            if self.parameterNegated:
+                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
+            else:
+                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
+        if not self.isVisible:
             return
         painter = self.report.painter
         painter.save()
@@ -658,7 +664,10 @@ class Line():
 
     def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
+            if self.parameterNegated:
+                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
+            else:
+                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -701,7 +710,10 @@ class Ellipse():
 
     def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
+            if self.parameterNegated:
+                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
+            else:
+                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -754,7 +766,10 @@ class Rectangle():
 
     def render(self, bandHeight: float) -> None:
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
+            if self.parameterNegated:
+                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
+            else:
+                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -818,7 +833,10 @@ class Image():
     def render(self, bandHeight: float) -> None:
         "Draw image if necessary"
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
+            if self.parameterNegated:
+                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
+            else:
+                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -855,8 +873,8 @@ class Band(list):
         "Every band must have a height"
         self.report = options['reportInstance']
         self.isVisible = 'True' == paramdict.get("isVisible", "True")
-        self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
+        self.isVisibleParameter = None
+        self.parameterNegated = False
         self.isPageFooter = False
         self.height = float(paramdict.get("height", 0.0))
         self.canGrow = 'True' == paramdict.get("canGrow", "False")
@@ -864,6 +882,14 @@ class Band(list):
         self.restartPageNumber = 'True' == paramdict.get("restartPageNumber", "False") # only on new page
         self.executeBefore: str|None = None
         self.executeAfter: str|None = None
+        if paramdict.get("isVisibleParameter"):
+            t = paramdict.get("isVisibleParameter", "").split(' ')
+            if t[0] == "Not":
+                self.parameterNegated = True
+                self.isVisibleParameter = t[1]
+            else:
+                self.parameterNegated = False
+                self.isVisibleParameter = t[0]
 
     def render(self, record: dict, prev_record: dict|None = None) -> None:
         "Render the contained objects after setting record value"
@@ -882,7 +908,7 @@ class Band(list):
             exec(self.executeBefore, globalsParameters)
         # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            self.isVisible = self.report.parameter.get(self.isVisibleParameter) and not self.parameterNegated
+            self.isVisible = not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated else self.report.parameter.get(self.isVisibleParameter)
         if not self.isVisible:
             return
 
@@ -1883,7 +1909,6 @@ if __name__ == "__main__":
     <pageHeader>
         <band height="100">
             <execute trigger="Before">
-print('Parameter printFooter value:', report.parameter['printFooter'])
 if report.parameter['printFooter'] == False:
 	band[2].value = "False"
 else:
@@ -2193,7 +2218,7 @@ else:
                  ):
         r = Report(i)
         r.setData([
-                ('AAAAA', 'description 1 that is very long so it could be wrapped', 'Research', True, 22, QDate(2018, 1, 1)),
+                ('AAAAA', 'description 1 that is very long so it should continue on the next line', 'Research', True, 22, QDate(2018, 1, 1)),
                 ('BBBBB', 'description 2', 'Production', True, 25, QDate(2018, 2, 2)),
                 ('CCCCC', 'description 3', 'Accounting', False, 1, QDate(2018, 3, 3)),
                 ('DDDDD', 'description 4', 'Research', False, 23, QDate(2018, 1, 2)),

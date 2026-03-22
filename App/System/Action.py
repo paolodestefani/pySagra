@@ -64,7 +64,6 @@ from App.Item import item
 from App.PriceList import priceList
 from App.Event import event
 from App.UpdateWebOrderServer import updateWebOrderServer
-from App.WebOrder import webOrder
 from App.OrderArchive import orderArchive
 from App.OrderNumbering import orderNumbering
 from App.Settings import settings
@@ -552,17 +551,6 @@ def createActionDictionary(mw) -> None:
         _tr("Action", 'Orders'),
         _tr("Action", 'Orders'),
         _tr("Action", 'Orders'),
-        QAction.MenuRole.TextHeuristicRole)
-
-    actionDefinition['app_file_web_order'] = (
-        _tr("Action", 'Web orders'),
-        webOrder,
-        False,
-        'file_web_order',
-        None,
-        _tr("Action", 'Web orders'),
-        _tr("Action", 'Web orders'),
-        _tr("Action", 'Web orders'),
         QAction.MenuRole.TextHeuristicRole)
     
     actionDefinition['app_file_order_number'] = (
