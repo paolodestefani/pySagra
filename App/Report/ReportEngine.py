@@ -355,8 +355,8 @@ class BaseRenderer():
 
     def __init__(self, options: dict, paramdict: dict) -> None:
         self.isVisible = 'True' == paramdict.get("isVisible", "True")
-        self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
+        self.isVisibleParameter = None
+        self.parameterNegated = False
         self.report = options['reportInstance']
         self.fieldFormat = paramdict.get("format", "")
         self.left = float(paramdict.get("left", 0.0))
@@ -373,6 +373,7 @@ class BaseRenderer():
         self.textAlign = TextAlign[paramdict.get("textAlign", options['textAlign'])]
         self.color = paramdict.get("color", options['color'])
         self.opacity = float(paramdict.get("opacity", options['opacity']))
+        self.aspectRatio = AspectRatio[paramdict.get("aspectRatio", options['aspectRatio'])]
         # macOS dark mode and color scheme conflicts workaround
         if self.color in ('black', '#000000'):
             self.color = '???' # an invalid color that Qt interpret as black on any platforms
@@ -382,6 +383,14 @@ class BaseRenderer():
         self.trueSymbol = paramdict.get("trueSymbol", options['trueSymbol'])
         self.falseSymbol = paramdict.get("falseSymbol", options['falseSymbol'])
         self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # default value
+        if paramdict.get("isVisibleParameter"):
+            t = paramdict.get("isVisibleParameter", "").split(' ')
+            if t[0] == "Not":
+                self.parameterNegated = True
+                self.isVisibleParameter = t[1]
+            else:
+                self.parameterNegated = False
+                self.isVisibleParameter = t[0]
 
     def textFormat(self) -> str|None:
         "Format text for check height and painting"
@@ -420,16 +429,15 @@ class BaseRenderer():
             case str() if self.barcode == 'Code128':
                 text = code128encode(self.value) # None value, not an empty string, for barcode for print nothing               
             case _:
-                text = str(self.value or '') # None for string print empty string    
+                text = str(self.value or '') # None for string print empty string   
         return text
     
     def checkHeight(self, bandHeight: float) -> float:
         "Returns the new band height if band can grow"
+        # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            if self.parameterNegated:
-                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
-            else:
-                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
+            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
+                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return bandHeight
         if not self.canGrow:
@@ -465,11 +473,10 @@ class BaseRenderer():
 
     def render(self, bandHeight:float) -> None:
         "Paint an image or text"
+        # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            if self.parameterNegated:
-                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
-            else:
-                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
+            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
+                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -495,8 +502,12 @@ class BaseRenderer():
             target_rect.setHeight(max(self.height, bandHeight - self.top))
         
         if isinstance(self.value, QImage):
+            img = self.value.scaled(int(target_rect.width()),
+                                    int(target_rect.height()),
+                                    self.aspectRatio,
+                                    Qt.TransformationMode.SmoothTransformation)
             painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-            painter.drawImage(target_rect, self.value)
+            painter.drawImage(target_rect, img)
         else:
             text = self.textFormat()
             if text:
@@ -524,7 +535,7 @@ class Field(BaseRenderer):
         self.value = None
         self.fieldName = fieldName
         self.aspectRatio = AspectRatio[paramdict.get("aspectRatio", options['aspectRatio'])]
-        self.hideIfRepeat = 'True' == paramdict.get("hideIfRepeat", "False") 
+        self.hideIfRepeated = 'True' == paramdict.get("hideIfRepeated", "False") 
 
     def setValue(self, value: str|int|float|decimal.Decimal|QByteArray) -> None:
         if isinstance(value, QByteArray):
@@ -650,8 +661,8 @@ class Line():
 
     def __init__(self, options:dict, paramdict: dict, text: str = '') -> None:  # text is required for generic drawobj
         self.isVisible = True
-        self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
+        self.isVisibleParameter = None
+        self.parameterNegated = False
         self.report = options['reportInstance']
         self.x1 = float(paramdict.get("x1", 0))
         self.y1 = float(paramdict.get("y1", 0))
@@ -661,13 +672,20 @@ class Line():
         self.opacity = float(paramdict.get("opacity", options['opacity']))
         self.lineWidth = float(paramdict.get("lineWidth", options['lineWidth']))
         self.style = PenStyle[paramdict.get("style", options['lineStyle'])]
+        if paramdict.get("isVisibleParameter"):
+            t = paramdict.get("isVisibleParameter", "").split(' ')
+            if t[0] == "Not":
+                self.parameterNegated = True
+                self.isVisibleParameter = t[1]
+            else:
+                self.parameterNegated = False
+                self.isVisibleParameter = t[0]
 
     def render(self, bandHeight: float) -> None:
+        # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            if self.parameterNegated:
-                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
-            else:
-                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
+            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
+                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -694,8 +712,8 @@ class Ellipse():
 
     def __init__(self, options: dict, paramdict: dict, text: str|None) -> None: # text is required for generic drawobj
         self.isVisible = True
-        self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
+        self.isVisibleParameter = None
+        self.parameterNegated = False
         self.report = options['reportInstance']
         self.left = float(paramdict.get("left", 0.0))
         self.top = float(paramdict.get("top", 0.0))
@@ -707,13 +725,20 @@ class Ellipse():
         self.brushColor = QColor(paramdict.get("brushColor", options['color']))
         self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
         self.opacity = float(paramdict.get("opacity", options['opacity']))
+        if paramdict.get("isVisibleParameter"):
+            t = paramdict.get("isVisibleParameter", "").split(' ')
+            if t[0] == "Not":
+                self.parameterNegated = True
+                self.isVisibleParameter = t[1]
+            else:
+                self.parameterNegated = False
+                self.isVisibleParameter = t[0]
 
     def render(self, bandHeight: float) -> None:
+        # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            if self.parameterNegated:
-                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
-            else:
-                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
+            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
+                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -748,8 +773,8 @@ class Rectangle():
 
     def __init__(self, options: dict, paramdict: dict, text: str|None) -> None: # text is required for generic drawobj
         self.isVisible = True
-        self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
+        self.isVisibleParameter = None
+        self.parameterNegated = False
         self.report = options['reportInstance']
         self.left = float(paramdict.get("left", 0.0))
         self.top = float(paramdict.get("top", 0.0))
@@ -763,13 +788,20 @@ class Rectangle():
         self.brushColor = QColor(paramdict.get("brushColor", options['color']))
         self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
         self.opacity = float(paramdict.get("opacity", options['opacity']))
+        if paramdict.get("isVisibleParameter"):
+            t = paramdict.get("isVisibleParameter", "").split(' ')
+            if t[0] == "Not":
+                self.parameterNegated = True
+                self.isVisibleParameter = t[1]
+            else:
+                self.parameterNegated = False
+                self.isVisibleParameter = t[0]
 
     def render(self, bandHeight: float) -> None:
+        # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            if self.parameterNegated:
-                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
-            else:
-                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
+            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
+                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -813,8 +845,8 @@ class Image():
 
     def __init__(self, options: dict, paramdict: dict, text: str = '') -> None: # text is required for generic drawobj
         self.isVisible = 'True' == paramdict.get("isVisible", "True")
-        self.isVisibleParameter = paramdict.get("isVisibleParameter")
-        self.parameterNegated = 'True' == paramdict.get("parameterNegated", "False")
+        self.isVisibleParameter = None
+        self.parameterNegated = False
         self.report = options['reportInstance']
         self.left = float(paramdict.get("left", 0.0)) + options['leftMargin']
         self.top = float(paramdict.get("top", 0.0)) + options['topMargin']
@@ -829,14 +861,21 @@ class Image():
         if self.fromResource:
             image.load(f":/{self.fromResource}")  # from resource
         self.image = image.scaled(int(self.width), int(self.height), self.aspectRatio, Qt.TransformationMode.SmoothTransformation)
-
+        if paramdict.get("isVisibleParameter"):
+            t = paramdict.get("isVisibleParameter", "").split(' ')
+            if t[0] == "Not":
+                self.parameterNegated = True
+                self.isVisibleParameter = t[1]
+            else:
+                self.parameterNegated = False
+                self.isVisibleParameter = t[0]
+                
     def render(self, bandHeight: float) -> None:
         "Draw image if necessary"
+        # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            if self.parameterNegated:
-                self.isVisible = not self.report.parameter.get(self.isVisibleParameter)
-            else:
-                self.isVisible = self.report.parameter.get(self.isVisibleParameter)
+            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
+                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
         painter = self.report.painter
@@ -908,7 +947,8 @@ class Band(list):
             exec(self.executeBefore, globalsParameters)
         # do nothing (but script) if not visible
         if self.isVisibleParameter:
-            self.isVisible = not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated else self.report.parameter.get(self.isVisibleParameter)
+            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
+                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
 
@@ -931,7 +971,7 @@ class Band(list):
         # draw band's elements
         for element in self:
             if isinstance(element, Field):
-                if element.hideIfRepeat: 
+                if element.hideIfRepeated: 
                     if prev_record:
                         if record[element.fieldName] == prev_record[element.fieldName]:
                             continue 
@@ -2193,7 +2233,7 @@ else:
     <details>
         <band height="8" canGrow="True">
             <special left="2" top="2" width="13" height="6" fontSize="3" textAlign="AlignLeft" color="green" format="{:0>3d}">recordNumber</special>
-            <field left="15" top="2" width="30" height="6" fontSize="3" textAlign="AlignLeft" hideIfRepeat="True">code</field>
+            <field left="15" top="2" width="30" height="6" fontSize="3" textAlign="AlignLeft" hideIfRepeated="True">code</field>
             <field left="45" top="2" width="65" height="6" fontSize="3" canGrow="True">description</field>
             <field left="110" top="2" width="30" height="6" fontSize="3">department</field>
             <field left="140" top="2" width="10" height="6" fontSize="3" textAlign="AlignHCenter">stock_control</field>

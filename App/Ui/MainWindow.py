@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'MainWindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.2
+## Created by: Qt User Interface Compiler version 6.11.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -187,20 +187,20 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(13, QCoreApplication.translate("MainWindow", u"Inserisci dati", None))
 
         ___qtreewidgetitem = self.treeWidget.headerItem()
-        ___qtreewidgetitem.setText(0, QCoreApplication.translate("MainWindow", u"1", None));
+        ___qtreewidgetitem.setText(0, QCoreApplication.translate("MainWindow", u"1", None))
 
         __sortingEnabled = self.treeWidget.isSortingEnabled()
         self.treeWidget.setSortingEnabled(False)
         ___qtreewidgetitem1 = self.treeWidget.topLevelItem(0)
-        ___qtreewidgetitem1.setText(0, QCoreApplication.translate("MainWindow", u"A", None));
+        ___qtreewidgetitem1.setText(0, QCoreApplication.translate("MainWindow", u"A", None))
         ___qtreewidgetitem2 = ___qtreewidgetitem1.child(0)
-        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("MainWindow", u"D", None));
+        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("MainWindow", u"D", None))
         ___qtreewidgetitem3 = ___qtreewidgetitem1.child(1)
-        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("MainWindow", u"E", None));
+        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("MainWindow", u"E", None))
         ___qtreewidgetitem4 = self.treeWidget.topLevelItem(1)
-        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("MainWindow", u"B", None));
+        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("MainWindow", u"B", None))
         ___qtreewidgetitem5 = self.treeWidget.topLevelItem(2)
-        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("MainWindow", u"C", None));
+        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("MainWindow", u"C", None))
         self.treeWidget.setSortingEnabled(__sortingEnabled)
 
     # retranslateUi

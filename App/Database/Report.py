@@ -33,6 +33,7 @@ from typing import Callable
 import psycopg
 
 # application modules
+from App.Report import REPORT_CLASSES
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 from App.Report.ReportEngine import Report
@@ -88,7 +89,7 @@ VALUES (%s, %s, %s, %s, %s, %s)
 
 def list_all_reports() -> list:
     "List all reports from system.report for exporting purposes"
-    script = """
+    script = f"""
 SELECT
     r.report_code,
     r.l10n,
@@ -101,25 +102,11 @@ FROM system.report r
 LEFT JOIN (
 	SELECT v.i, v.c
 	FROM (VALUES 
-		(1, 'COMPANY'), 
-		(2, 'PROFILE'),
-		(3, 'USER'), 
-		(4, 'PRINTER'),
-        (5, 'TABLE'),
-		(6, 'EVENT'),
-		(7, 'ITEM'),
-		(8, 'PRICE_LIST'),
-		(9, 'ORDER_CUSTOMER'),
-		(10, 'ORDER_DEPARTMENT'), 
-		(11, 'ORDER_COVER'),
-		(12, 'ORDER_LIST'), 
-		(13, 'STOCK_UNLOAD'),
-		(14, 'CASH_SUMMARY'), 
-		(15, 'STATISTICS'),
-		(16, 'STATSVIEW')
-		) v(i, c)) v 
+{", \n".join([f"({i}, '{j}')" for i, j in enumerate(REPORT_CLASSES, start=1)])}
+	    ) v(i, c)) v 
 	ON r.report_class = v.c 
 ORDER BY v.i, report_code, l10n;"""
+    #print(script)
     try:
         with appconn.cursor() as cur:
             cur.execute(script)

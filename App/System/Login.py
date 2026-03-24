@@ -212,7 +212,6 @@ class LoginDialog(QDialog):
         if session['l10n']:
             logger.info("Setting user l10n to %s", session['l10n'])
             session['qlocale'] = QLocale(session['l10n'])
-            #print(session['qlocale'])    
             QLocale.setDefault(session['qlocale'])
         else:
             logger.info("Localization set to system default %s", QLocale.system().name())

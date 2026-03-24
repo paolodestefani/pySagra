@@ -287,7 +287,7 @@ class ReportForm(FormIndexManager):
     def downloadAll(self) -> None:
         "Save all report definition to a directory, one file per report"
         st = QSettings()
-        path = st.value("PathReports", QDir.current().path())
+        path = str(st.value("PathReports", QDir.current().path()))
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Report', "Select the directory"),
                                                      path)

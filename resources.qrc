@@ -30,12 +30,12 @@
     <file alias="system_preferences">icon/oxygen/fill-color.png</file>
     <file alias="system_connections">icon/oxygen/network-connect.png</file>
     <file alias="system_connections_history">icon/oxygen/network-disconnect.png</file>
-    <file alias="system_company">icon/oxygen/user-home.png</file>
+    <file alias="system_company">icon/oxygen/server-database.png</file>
     <file alias="system_profile">icon/oxygen/system-users.png</file>
     <file alias="system_user">icon/oxygen/user-identity.png</file>
-    <file alias="system_menu">icon/oxygen/configure.png</file>
+    <file alias="system_menu">icon/oxygen/preferences-other.png</file>
     <file alias="system_toolbar">icon/oxygen/configure-toolbars.png</file>
-    <file alias="system_report">icon/oxygen/folder-image.png</file>
+    <file alias="system_report">icon/oxygen/animator.png</file>
 	<file alias="system_scripting">icon/oxygen/python-logo.png</file>
 	<file alias="system_customization">icon/oxygen/dashboard-show.png</file>
     <file alias="system_quit">icon/oxygen/system-shutdown.png</file>
