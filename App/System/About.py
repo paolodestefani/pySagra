@@ -20,7 +20,7 @@ import platform
 import psycopg
 
 # PySide6
-from PySide6.QtCore import __version__ as PySide6_version
+from PySide6 import __version__ as PySide6_version
 from PySide6.QtCore import qVersion
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QSize
