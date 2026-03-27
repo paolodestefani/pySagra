@@ -104,7 +104,7 @@
 	<file alias="system_scripting">icon/crystal_clear/python-logo.png</file>
 	<file alias="system_customization">icon/crystal_clear/warehause.png</file>
     <file alias="system_quit">icon/crystal_clear/shutdown.png</file>
-    <file alias="file_cash_desk">icon/crystal_clear/business.png</file>
+    <file alias="file_cash_desk">icon/crystal_clear/wordprocessing.png</file>
 	<file alias="file_printer">icon/crystal_clear/file-print.png</file>
     <file alias="file_department">icon/crystal_clear/folder-green.png</file>
     <file alias="file_seat_map">icon/crystal_clear/folder-blue.png</file>

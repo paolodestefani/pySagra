@@ -204,6 +204,10 @@ if __name__ == "__main__":
         if t.load(i + '_' + lang, ":/"):
             if app.installTranslator(t):
                 session[i + '_translator'] = t
+            else:
+                logger.warning('Unable to install translator for %s', i)
+        else:
+            logger.warning('Unable to load translator for %s', i)
     # set basic parameters
     logger.info('Setting QApplication name, version, domain and icon')
     app.setApplicationName(APPNAME)
