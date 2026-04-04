@@ -218,7 +218,7 @@ UPDATE SET
                                      cmb1,
                                      neg,
                                      cmb2,
-                                     widget,
+                                     wv,
                                      cmb1,
                                      neg,
                                      cmb2,

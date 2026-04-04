@@ -103,7 +103,7 @@ class CustomizationsDialog(QDialog):
         self.ui.pushButtonClear.clicked.connect(self.clearCustomization)
 
     def exportCustomization(self) -> None:
-        "Export customizations to CSV file"
+        "Export customizations to zipped CSV files"
         st = QSettings()
         path = st.value("PathExportCustomizations", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
@@ -118,11 +118,11 @@ class CustomizationsDialog(QDialog):
                 with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                     string_buffer = io.StringIO()
                     writer = csv.writer(string_buffer)
-                    writer.writerows(get_itemview_customization())
+                    writer.writerows(get_itemview_adapt())
                     zf.writestr('itemview', string_buffer.getvalue())
                     string_buffer = io.StringIO()
                     writer = csv.writer(string_buffer)
-                    writer.writerows(get_itemview_customization(True))
+                    writer.writerows(get_itemview_adapt(True))
                     zf.writestr('itemviewsetting', string_buffer.getvalue())
             if self.ui.checkBoxSortFilter.isChecked():
                 # looks like zipfile accept qt file path with / so no need to use os.path.join
@@ -130,11 +130,11 @@ class CustomizationsDialog(QDialog):
                 with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                     string_buffer = io.StringIO()
                     writer = csv.writer(string_buffer)
-                    writer.writerows(get_sortfilter_customization())
+                    writer.writerows(get_sortfilter_adapt())
                     zf.writestr('sortfilter', string_buffer.getvalue())
                     string_buffer = io.StringIO()
                     writer = csv.writer(string_buffer)
-                    writer.writerows(get_sortfilter_customization(True))
+                    writer.writerows(get_sortfilter_adapt(True))
                     zf.writestr('sortfiltersetting', string_buffer.getvalue())
             if self.ui.checkBoxReport.isChecked():
                 # looks like zipfile accept qt file path with / so no need to use os.path.join
@@ -142,11 +142,11 @@ class CustomizationsDialog(QDialog):
                 with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                     string_buffer = io.StringIO()
                     writer = csv.writer(string_buffer)
-                    writer.writerows(get_report_customization())
+                    writer.writerows(get_report_adapt())
                     zf.writestr('report', string_buffer.getvalue())
                     string_buffer = io.StringIO()
                     writer = csv.writer(string_buffer)
-                    writer.writerows(get_report_customization(True))
+                    writer.writerows(get_report_adapt(True))
                     zf.writestr('reportsetting', string_buffer.getvalue())
         except Exception as er:
             msg = _tr('Customizations', "Error on saving customizations to file")
@@ -159,7 +159,7 @@ class CustomizationsDialog(QDialog):
                                     _tr('Customizations', 'Export completed successfully'))
 
     def importCustomization(self) -> None:
-        "Import customizations from CSV file"
+        "Import customizations from zipped CSV files"
         st = QSettings()
         path = st.value("PathExportCustomizations", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
@@ -174,33 +174,48 @@ class CustomizationsDialog(QDialog):
                 string_buffer = io.StringIO(zf.read('itemview').decode('utf-8'))
                 reader = csv.reader(string_buffer)
                 for row in reader:
-                    set_itemview_customize(row[0], row[1], row[2], row[3])
+                    set_itemview_adapt(int(row[0]),
+                                       row[1],
+                                       row[2],
+                                       True if row[3] == 'True' else False)
                 string_buffer = io.StringIO(zf.read('itemviewsetting').decode('utf-8'))
                 reader = csv.reader(string_buffer)
                 for row in reader:
-                    set_itemview_customize_setting(row[0], row[1], row[2], row[3], row[4])
+                    set_itemview_adapt_setting(int(row[0]),
+                                               int(row[1]),
+                                               row[2],
+                                               True if row[3] == 'True' else False,
+                                               int(row[4]))
         if self.ui.checkBoxSortFilter.isChecked():
             fileName = f"{directory}/sortfilter.ctm.zip"
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                 string_buffer = io.StringIO(zf.read('sortfilter').decode('utf-8'))
                 reader = csv.reader(string_buffer)
                 for row in reader:
-                    set_sortfilter_customize(row[0], row[1], row[2], row[3])
+                    set_sortfilter_adapt(int(row[0]),
+                                         row[1],
+                                         row[2],
+                                         True if row[3] == 'True' else False)
                 string_buffer = io.StringIO(zf.read('sortfiltersetting').decode('utf-8'))
                 reader = csv.reader(string_buffer)
                 for row in reader:
-                    set_sortfilter_customize_setting(row[0], row[1], row[2], row[3], row[4], row[5])
+                    set_sortfilter_adapt_setting(int(row[0]), 
+                                                 row[1], 
+                                                 int(row[2]), 
+                                                 int(row[3]), 
+                                                 True if row[4] == 'True' else False,
+                                                 int(row[5]),
+                                                 row[6])
         if self.ui.checkBoxReport.isChecked():
             fileName = f"{directory}/report.ctm.zip"
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                 string_buffer = io.StringIO(zf.read('report').decode('utf-8'))
                 reader = csv.reader(string_buffer)
                 for row in reader:
-                    rid = int(row[0])
-                    report_code = row[1]
-                    description = row[2]
-                    class_sorting = int(row[3])
-                    set_report_customize(rid, report_code, description, class_sorting)
+                    set_report_adapt(int(row[0]),
+                                     int(row[1]),
+                                     row[2],
+                                     bool(int(row[3])))
                 string_buffer = io.StringIO(zf.read('reportsetting').decode('utf-8'))
                 reader = csv.reader(string_buffer)
                 for row in reader:
@@ -216,12 +231,12 @@ class CustomizationsDialog(QDialog):
                     else:
                         combo2_index = None
                     widget_value = row[5]
-                    set_report_customize_setting(customize_id,
-                                                 customize_type,
-                                                 layout_row,
-                                                 combo1_index,
-                                                 combo2_index,
-                                                 widget_value)
+                    set_report_adapt_setting(customize_id,
+                                             customize_type,
+                                             layout_row,
+                                             combo1_index,
+                                             combo2_index,
+                                             widget_value)
         # update identity on all tables
         update_identity()
         # everything is ok
@@ -239,11 +254,11 @@ class CustomizationsDialog(QDialog):
                                 ) == QMessageBox.StandardButton.No:
             return
         if self.ui.checkBoxItemView.isChecked():
-            clear_customization('I')
+            clear_adapt('I')
         if self.ui.checkBoxSortFilter.isChecked():
-            clear_customization('S')
+            clear_adapt('S')
         if self.ui.checkBoxReport.isChecked():
-            clear_customization('R')
+            clear_adapt('R')
         # completed
         QMessageBox.information(self,
                                 _tr('MessageDialog', 'Information'),

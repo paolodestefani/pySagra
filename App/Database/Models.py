@@ -1602,10 +1602,10 @@ SELECT
     updated_at
 FROM company.order_header;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, time, None = no filter
         self.columns = (("order_header_id", _tr('Models', 'ID'), True, 'int'),
                         ("event_id", _tr('Models', 'Event'), True, 'int'),
-                        ("date_time", _tr('Models', 'Order date/time'), True, 'date'),
+                        ("date_time", _tr('Models', 'Order date/time'), True, 'datetime'),
                         ("order_number", _tr('Models', 'Order number'), True, 'int'),
                         ("order_date", _tr('Models', 'Order date'), True, 'date'),
                         ("order_time", _tr('Models', 'Order time'), True, 'time'),
@@ -1617,10 +1617,10 @@ FROM company.order_header;"""
                         ("table_num", _tr('Models', 'Table'), True, 'str'),
                         ("customer_name", _tr('Models', 'Customer name'), True, 'str'),
                         ("covers", _tr('Models', 'Covers'), True, 'int'),
-                        ("total_amount", _tr('Models', 'Total amount'), True, 'decimal2'),
-                        ("discount", _tr('Models', 'Discount'), True, 'decimal2'),
-                        ("cash", _tr('Models', 'Cash'), True, 'decimal2'),
-                        ("change", _tr('Models', 'Change'), True, 'decimal2'),
+                        ("total_amount", _tr('Models', 'Total amount'), True, 'decimal'),
+                        ("discount", _tr('Models', 'Discount'), True, 'decimal'),
+                        ("cash", _tr('Models', 'Cash'), True, 'decimal'),
+                        ("change", _tr('Models', 'Change'), True, 'decimal'),
                         ("status", _tr('Models', 'Status'), True, 'str'),
                         ("fullfillment_date", _tr('Models', 'Fullfillment date'), True, 'date'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -1631,9 +1631,6 @@ FROM company.order_header;"""
         self.isCompanyTable = True
         # class representation
         self.repr = 'Order header index query model'
-        # primary key fields, tuple or list
-        self.primaryKey = ("order_header_id",)
-        self.automaticPKey = True
         # limit number of rows fetched
         self.addLimit(10_000)
         # sql order by clause, plain sql string without ORDER BY

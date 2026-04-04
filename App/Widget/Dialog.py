@@ -31,13 +31,7 @@ This module contains general custom dialogs
 # standard library
 import os
 from typing import cast, Any
-#import time
 import logging
-#from email.message import EmailMessage
-#import smtplib
-#import ssl
-
-#from cryptography.fernet import InvalidToken
 
 # PySide6
 from PySide6.QtCore import QCoreApplication
@@ -53,6 +47,7 @@ from PySide6.QtCore import QIODevice
 from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
+from PySide6.QtCore import QTime
 from PySide6.QtCore import QTemporaryFile
 from PySide6.QtCore import QAbstractItemModel
 
@@ -72,7 +67,6 @@ from PySide6.QtGui import QPdfWriter
 from PySide6.QtGui import QPagedPaintDevice
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QStyle
-#from PySide6.QtWidgets import qApp
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QDialog
@@ -87,6 +81,7 @@ from PySide6.QtWidgets import QDoubleSpinBox
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QDateEdit
 from PySide6.QtWidgets import QDateTimeEdit
+from PySide6.QtWidgets import QTimeEdit
 from PySide6.QtWidgets import QComboBox
 from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QApplication
@@ -107,7 +102,6 @@ from App.Ui.PrintPDFDialog import Ui_PrintPDFDialog
 from App.Ui.DateTimeInputDialog import Ui_DateTimeInputDialog
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
-#from App.Ui.PrintEmailDialog import Ui_PrintEmailDialog
 from App.Database.Report import report_class_adapt_list
 from App.Database.Report import get_report_list
 from App.Database.Report import get_report_id
@@ -122,16 +116,12 @@ from App.Database.Report import create_new_adapt
 from App.Database.Report import report_adapt_sorting
 from App.Database.Report import set_report_adapt_sorting
 from App.Database.Report import report_description
-#from App.Database.User import user_email_list
-# from App.Database.User import user_email_details
-#from App.Database.User import user_email_signature
-#from App.Database.CodeDescriptionList import userEmailList
 from App.Database.CodeDescriptionList import event_cdl
 from App.Database.CodeDescriptionList import item_cdl
+from App.Database.CodeDescriptionList import get_list
 from App.Database.Sortfilter import create_sortfilter
 from App.Database.Sortfilter import delete_sortfilter
 from App.Database.Sortfilter import list_sortfilter
-#from App.Database.Sortfilter import list_sortfilter_model
 from App.Database.Sortfilter import clear_sortfilter_setting
 from App.Database.Sortfilter import get_sortfilter_limit
 from App.Database.Sortfilter import set_sortfilter_limit
@@ -144,8 +134,6 @@ from App.Report.ReportEngine import Report
 from App.Report.ReportEngine import ReportException, ReportPrintError
 from App.Widget.Control import RelationalComboBox
 from App.Widget.Control import CheckableComboBox
-#from App.Other.Email import sendEmail
-#from App.Other.Email import EmailException
 
 
 FILTER_ROWS = 30
@@ -186,20 +174,20 @@ def MessageBoxCritical(parent,
     dlg.exec()
 
 
-class SelectImageDialog(QDialog, Ui_SelectImageDialog):
+class SelectImageDialog(QDialog):
     "Select Image Dialog"
 
     def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
-        self.setupUi(self)
+        self.ui = Ui_SelectImageDialog()
+        self.ui.setupUi(self)
         self.image: QPixmap|None = None
         # actions
-        self.pushButtonUpload.clicked.connect(self.upload)
-        self.pushButtonDownload.clicked.connect(self.download)
+        self.ui.pushButtonUpload.clicked.connect(self.upload)
+        self.ui.pushButtonDownload.clicked.connect(self.download)
 
     def upload(self) -> None:
         "Upload an image file"
-        #path = os.path.dirname(os.path.curdir)
         path = QDir.currentPath()
         f, fi = QFileDialog.getOpenFileName(self,
                                             _tr('Dialog', "Select the image file to upload"),
@@ -209,19 +197,19 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
             return
         pix = QPixmap()
         if not pix.load(f):
-            QMessageBox.critical(self,
+            MessageBoxCritical(self,
                                  _tr("MessageDialog", "Critical"),
                                  _tr("Dialog", "Unable to load the file {}").format(f))
             return
         db = QMimeDatabase()
         ft = db.mimeTypeForFile(f).name()
-        self.lineEditImageFormat.setEnabled(True)
-        self.lineEditImageFormat.setText(ft)
+        self.ui.lineEditImageFormat.setEnabled(True)
+        self.ui.lineEditImageFormat.setText(ft)
         self.setImage(pix)
 
     def download(self) -> None:
         "Save an image to a file"
-        path = os.path.dirname(os.path.curdir)
+        path = QDir.currentPath()
         f, fi = QFileDialog.getSaveFileName(self,
                                             "Seleziona il nome file dell'Immagine",
                                             path,
@@ -237,24 +225,76 @@ class SelectImageDialog(QDialog, Ui_SelectImageDialog):
         # preview
         if pix.width() > 200 or pix.height() > 200:
             pix = pix.scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio)
-        self.labelImage.setPixmap(pix)
-        self.pushButtonDownload.setEnabled(True)
+        self.ui.labelImage.setPixmap(pix)
+        self.ui.pushButtonDownload.setEnabled(True)
         # pixmap information
-        self.lineEditWidth.setEnabled(True)
-        self.lineEditWidth.setText(str(self.image.width()))
-        self.lineEditHeight.setEnabled(True)
-        self.lineEditHeight.setText(str(self.image.height()))
+        self.ui.lineEditWidth.setEnabled(True)
+        self.ui.lineEditWidth.setText(str(self.image.width()))
+        self.ui.lineEditHeight.setEnabled(True)
+        self.ui.lineEditHeight.setText(str(self.image.height()))
         ba = QByteArray()
         buf = QBuffer(ba)
         buf.open(QIODevice.OpenModeFlag.WriteOnly)
         self.image.save(buf, "PNG")
-        self.spinBoxPixmapSize.setEnabled(True)
-        self.spinBoxPixmapSize.setValue(ba.size()/1024)
+        self.ui.spinBoxPixmapSize.setEnabled(True)
+        self.ui.spinBoxPixmapSize.setValue(ba.size()/1024)
 
     def accept(self) -> None:
         "Accept"
         QDialog.accept(self)
 
+
+class RowComboBox(QComboBox):
+    "Custom combo box for storeing row number"
+
+    def __init__(self, parent: QWidget|None = None) -> None:
+        super().__init__(parent)
+        self.row: int|None = None
+        
+        
+class RowCheckBox(QCheckBox):
+    "Custom checkbox for storeing row number"
+
+    def __init__(self, parent: QWidget|None = None) -> None:
+        super().__init__(parent)
+        self.row: int|None = None
+        
+        
+class SpacerWidget(QWidget):
+    "Custom widget for storeing field type"
+
+
+class LineEditStrings(QLineEdit):
+    "Custom line edit for list of values separated by comma"
+
+    def __init__(self, parent: QWidget|None = None) -> None:
+        super().__init__(parent)
+
+    def value(self) -> list:
+        "Return the list of values separated by comma for ues in SQL ILIKE ANY(%s) operator"
+        return [f'%{v.strip()}%' for v in self.text().split(',') if v.strip()]
+    
+    
+class LineEditInts(QLineEdit):
+    "Custom line edit for list of values separated by comma"
+
+    def __init__(self, parent: QWidget|None = None) -> None:
+        super().__init__(parent)
+
+    def value(self) -> list:
+        "Return the list of values separated by comma"
+        return [int(v.strip()) for v in self.text().split(',') if v.strip()]
+    
+class LineEditDecimals(QLineEdit):
+    "Custom line edit for list of values separated by comma"
+
+    def __init__(self, parent: QWidget|None = None) -> None:
+        super().__init__(parent)
+
+    def value(self) -> list:
+        "Return the list of values separated by comma"
+        return [float(v.strip()) for v in self.text().split(',') if v.strip()]
+    
 
 class SortFilterDialog(QDialog):
     "Sort and filter Dialog for Forms"
@@ -270,10 +310,10 @@ class SortFilterDialog(QDialog):
         # can't be class variables for translation requirements
         # object type (operator, operator description, format, widget)
         # format:
-        # 0=require operand argument (field operator %s - args)
-        # 1=no require operand (field operator)
-        # 2=operand included in operator with argument as list (field operator - args)
-        # 3=operand included in operator with argument literal
+        # 0 = require operand argument (field operator %s - args)
+        # 1 = no require operand (field operator)
+        # 2 = operand included in operator with argument as list (field operator - args)
+        # 3 = operand included in operator with argument literal
         self.FILTERING = {
             # integer
             'int': [('', '', 0, None),  # first row means no data
@@ -282,9 +322,9 @@ class SortFilterDialog(QDialog):
                   ('<=', _tr('Operator', '<='), 0, 'SB'),
                   ('>', _tr('Operator', '>'), 0, 'SB'),
                   ('>=', _tr('Operator', '>='), 0, 'SB'),
-                  ('IN', _tr('Operator', 'In'), 0, 'LE'),
+                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
                   ('IS NULL', _tr('Operator', 'Is Null'), 1, None),
-                  ('=', _tr('Operator', 'From list'), 0, 'LIST')],
+                  ('=', _tr('Operator', 'From list'), 0, 'LIST')], # list of reference values
             # decimal number
             'decimal': [('', '', 0, None),  # first row means no data
                   ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
@@ -292,7 +332,7 @@ class SortFilterDialog(QDialog):
                   ('<=', _tr('Operator', '<='), 0, 'DSB'),
                   ('>', _tr('Operator', '>'), 0, 'DSB'),
                   ('>=', _tr('Operator', '>='), 0, 'DSB'),
-                  ('IN', _tr('Operator', 'In'), 0, 'LE'),
+                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
                   ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
             # boolean
             'bool': [('', '', 0, None),  # first row means no data
@@ -304,7 +344,7 @@ class SortFilterDialog(QDialog):
                   ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
                   ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
                   ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
-                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LE'),
+                  ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
                   ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
             # date
             'date': [('', '', 0, None),  # first row means no data
@@ -322,6 +362,14 @@ class SortFilterDialog(QDialog):
                   ('>', _tr('Operator', '>'), 0, 'DTE'),
                   ('>=', _tr('Operator', '>='), 0, 'DTE'),
                   ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+             # time
+            'time': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
+                  ('<', _tr('Operator', '<'), 0, 'TE'),
+                  ('<=', _tr('Operator', '<='), 0, 'TE'),
+                  ('>', _tr('Operator', '>'), 0, 'TE'),
+                  ('>=', _tr('Operator', '>='), 0, 'TE'),
+                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
             # reference field / list
             'refstr': [('', '', 0, None),  # first row means no data
                   ('=', _tr('Operator', '='), 0, 'SCB'), # standard combo box
@@ -334,8 +382,7 @@ class SortFilterDialog(QDialog):
         self.sortfilterClass = sortfilterClass
         self.modelId = None
         self.ui.lineEditSortFilterClass.setText(sortfilterClass)
-        self.model: QueryModel|TableModel|None = model # set also on sortfiltercustomization selection
-        #self.parentW: QWidget = parent  # used for apply sortings/filters
+        self.model: QueryModel|TableModel = model # set also on sortfiltercustomization selection
         # restore settings
         st = QSettings(self)
         if st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"):
@@ -347,6 +394,53 @@ class SortFilterDialog(QDialog):
         self.ui.pushButtonUpdate.clicked.connect(self.updateSettings)
         self.ui.pushButtonSetSorting.clicked.connect(self.setCustomizationSorting)
         self.ui.buttonBox.clicked.connect(self.clicked)
+        # create filter and sorting comboboxes
+        # filters comboboxes
+        for row in range(FILTER_ROWS):
+            field = RowComboBox(self)
+            field.addItem('', None) # item 0 for clear/reset
+            for f, d, r, t in self.model.columns:
+                if t: # except None fields
+                    field.addItem(d, f)
+            field.row = row
+            field.currentIndexChanged.connect(self.condIndexChanged)
+            neg = RowCheckBox(self)
+            neg.row = row
+            neg.setToolTip(_tr('SoftFilterDialog','Not'))
+            oper = RowComboBox(self)
+            oper.row = row
+            oper.currentIndexChanged.connect(self.operIndexChanged)
+            self.ui.layoutFilters.addWidget(field, row, FIELD)
+            self.ui.layoutFilters.addWidget(neg, row, NEGATE)
+            self.ui.layoutFilters.addWidget(oper, row, OPERATOR)
+            sw = SpacerWidget(self)
+            self.ui.layoutFilters.addWidget(sw, row, OPERAND) # position widget only
+        if self.model.limitCondition:
+            self.ui.checkBoxMaxRows.setChecked(True)
+            self.ui.spinBoxMaxRows.setValue(self.model.limitCondition)
+        else:
+            self.ui.checkBoxMaxRows.setChecked(False)
+        # set layout stretch
+        self.ui.layoutFilters.setColumnStretch(FIELD, 2)
+        self.ui.layoutFilters.setColumnStretch(NEGATE, 0)
+        self.ui.layoutFilters.setColumnStretch(OPERATOR, 1)
+        self.ui.layoutFilters.setColumnStretch(OPERAND, 1)
+        self.ui.layoutFilters.setRowStretch(row + 1, 1)
+        # sorting comboboxes
+        for row in range(len(self.model.columns)):
+            field = RowComboBox(self)
+            field.addItem('', None) # item 0
+            for f, d, r, t in self.model.columns:
+                field.addItem(d, f)
+            field.row = row
+            field.currentIndexChanged.connect(self.sortIndexChanged)
+            order = QComboBox(self)
+            self.ui.layoutSorting.addWidget(field, row, SORTFIELD)
+            self.ui.layoutSorting.addWidget(order, row, SORTORDER)
+        # set layout stretch
+        self.ui.layoutSorting.setColumnStretch(SORTFIELD, 2)
+        self.ui.layoutSorting.setColumnStretch(SORTORDER, 1)
+        self.ui.layoutSorting.setRowStretch(row + 1, 1)
         # get available customizations
         self.availableCustomizations()
         # check authorization
@@ -370,90 +464,29 @@ class SortFilterDialog(QDialog):
         # fill the combobox
         for i, d in result:
             self.ui.comboBoxSetting.addItem(d, i)
-        # rienable signal
+        # ri-enable signal
         self.ui.comboBoxSetting.currentIndexChanged.connect(self.fillCustomizations)
         # disable unavailable options
         if self.ui.comboBoxSetting.count() == 0:
             self.ui.groupBoxCurrent.setDisabled(True)
         else:  # if previously was disabled
             self.ui.groupBoxCurrent.setEnabled(True)
-        # get model list
-        # try:
-        #     result = list_sortfilter_model(self.sortfilterClass)
-        # except PyAppDBError as er:
-        #     QMessageBox.critical(self,
-        #                          _tr("MessageDialog", "Critical"),
-        #                          f"Database error: {er.code}\n{er.message}")
-        #     return
+        # set model for current customization
         result = [(1, self.model.__class__.__name__)]  # only current model
         # fill the combobox
         for i, d in result:
             self.ui.comboBoxModel.addItem(d, i)
+        self.fieldType = {f: t for f, d, r, t in self.model.columns}
         # initial settings
-        self.fillCustomizations(0)
+        self.fillCustomizations()
 
-    def fillCustomizations(self, index: int) -> None:
+    def fillCustomizations(self) -> None:
         "Sets filters and sorting based on current customization"
         if not self.model:
             return
-        sortFilterId = index
-        # if self.ui.comboBoxSetting.count() != 0: # have any custonization...
-        #     sortFilterId = int(self.ui.comboBoxSetting.currentData())
-        #     mid = get_sortfilter_model(sortFilterId)
-        #     if mid:
-        #         self.model = item_model_factory(mid)
-        self.fieldType = {f: t for f, d, r, t in self.model.columns}
-        #if hasattr(self.parentWidget, 'setIndexModel'):
-        #    self.parentWidget.setIndexModel(self.model) # set index model on form
-        # create sort/filter options
-        # filters comboboxes
-        for row in range(FILTER_ROWS):
-            cond = QComboBox(self)
-            cond.addItem('', None) # item 0 for clear/reset
-            for f, d, r, t in self.model.columns:
-                if t: # except None fields
-                    cond.addItem(d, f)
-            cond.row = row # type: ignore[attr-defined]
-            cond.currentIndexChanged.connect(self.condIndexChanged)
-            oper = QComboBox(self)
-            neg = QCheckBox(self)
-            neg.row = row # type: ignore[attr-defined]
-            neg.setToolTip(_tr('SoftFilterDialog','Not'))
-            oper.row = row # type: ignore[attr-defined]
-            oper.currentIndexChanged.connect(self.operIndexChanged)
-            self.ui.layoutFilters.addWidget(cond, row, FIELD)
-            self.ui.layoutFilters.addWidget(neg, row, NEGATE)
-            self.ui.layoutFilters.addWidget(oper, row, OPERATOR)
-            sw = QWidget(self) # spacer widget
-            sw.wt = 'spacer' # type: ignore[attr-defined] # widget type
-            self.ui.layoutFilters.addWidget(sw, row, OPERAND) # position widget only
-        if self.model.limitCondition:
-            self.ui.checkBoxMaxRows.setChecked(True)
-            self.ui.spinBoxMaxRows.setValue(self.model.limitCondition)
-        else:
-            self.ui.checkBoxMaxRows.setChecked(False)
-        #
-        #print("Has ATT", hasattr(self.ui.layoutFilters.itemAtPosition(0, OPERAND).widget(), 'wt'))
-        #
-        self.ui.layoutFilters.setColumnStretch(0, 2)
-        self.ui.layoutFilters.setColumnStretch(1, 0)
-        self.ui.layoutFilters.setColumnStretch(2, 1)
-        self.ui.layoutFilters.setColumnStretch(3, 1)
-        self.ui.layoutFilters.setRowStretch(row + 1, 1)
-        # sorting comboboxes
-        for row in range(len(self.model.columns)):
-            sort = QComboBox(self)
-            sort.addItem('', None) # item 0
-            for f, d, r, t in self.model.columns:
-                sort.addItem(d, f)
-            sort.row = row # type: ignore[attr-defined]
-            sort.currentIndexChanged.connect(self.sortIndexChanged)
-            order = QComboBox(self)
-            self.ui.layoutSorting.addWidget(sort, row, SORTFIELD)
-            self.ui.layoutSorting.addWidget(order, row, SORTORDER)
-        self.ui.layoutSorting.setColumnStretch(0, 2)
-        self.ui.layoutSorting.setColumnStretch(1, 1)
-        self.ui.layoutSorting.setRowStretch(row + 1, 1)
+        sortFilterId = self.ui.comboBoxSetting.currentData()
+        if sortFilterId is None:
+            return
         # initial reset
         # filters
         for row in range(FILTER_ROWS):
@@ -478,23 +511,28 @@ class SortFilterDialog(QDialog):
             self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(neg)
             self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(cmb2)
             widget = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
-            if isinstance(widget, QComboBox):
-                widget.setCurrentIndex(int(wv))
-            elif isinstance(widget, QLineEdit):
-                widget.setText(wv)
-            elif isinstance(widget, QSpinBox):
-                widget.setValue(int(wv or 0))
-            elif isinstance(widget, QDoubleSpinBox):
-                widget.setValue(float(wv or 0.0))
-            elif isinstance(widget, QDateEdit):
-                widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
-            elif isinstance(widget, QDateTimeEdit):
-                widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
-            elif isinstance(widget, QCheckBox):
-                if wv == 'True':
-                    widget.setChecked(True)
-                else:
-                    widget.setChecked(False)
+            match widget:
+                case QComboBox():
+                    widget.setCurrentIndex(int(wv))
+                case QLineEdit():
+                    widget.setText(wv)
+                case QSpinBox():
+                    widget.setValue(int(wv or 0))
+                case QDoubleSpinBox():
+                    widget.setValue(float(wv or 0.0))
+                case QDateEdit():
+                    widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
+                case QDateTimeEdit():
+                    widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
+                case QTimeEdit():
+                    widget.setTime(QTime.fromString(wv, Qt.DateFormat.ISODate))
+                case QCheckBox():
+                    if wv == 'True':
+                        widget.setChecked(True)
+                    else:
+                        widget.setChecked(False)
+                case _:
+                    pass
         # limit
         try:
             result = get_sortfilter_limit(sortFilterId)
@@ -507,7 +545,6 @@ class SortFilterDialog(QDialog):
             self.ui.spinBoxMaxRows.setValue(result)
         else:
             self.ui.checkBoxMaxRows.setChecked(False)
-        
         # set sorting settings
         for t, row, cmb1, neg, cmb2, wv in sortings:
             self.ui.layoutSorting.itemAtPosition(row, SORTFIELD).widget().setCurrentIndex(cmb1)
@@ -530,23 +567,26 @@ class SortFilterDialog(QDialog):
                 cmb2 = self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().currentIndex()
                 widget = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
                 wv: str|float|bool|None = None
-                if isinstance(widget, QComboBox):
-                    wv = str(widget.currentIndex())
-                elif isinstance(widget, QLineEdit):
-                    wv = widget.text()
-                elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
-                    wv = widget.value()
-                elif isinstance(widget, QDateEdit):
-                    wv = widget.date().toString(Qt.DateFormat.ISODate)
-                elif isinstance(widget, QDateTimeEdit):
-                    wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
-                elif isinstance(widget, QCheckBox):
-                    if widget.checkState() == Qt.CheckState.Checked:
-                        wv = True
-                    else:
-                        wv = False
-                else:
-                    wv = None
+                match widget:
+                    case QComboBox():
+                        wv = str(widget.currentIndex())
+                    case QLineEdit():
+                        wv = widget.text()
+                    case (QSpinBox()|QDoubleSpinBox()):
+                        wv = widget.value()
+                    case QDateEdit():
+                        wv = widget.date().toString(Qt.DateFormat.ISODate)
+                    case QDateTimeEdit():
+                        wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
+                    case QTimeEdit():
+                        wv = widget.time().toString(Qt.DateFormat.ISODate)
+                    case QCheckBox():
+                        if widget.checkState() == Qt.CheckState.Checked:
+                            wv = True
+                        else:
+                            wv = False
+                    case _:
+                        wv = None
                 try:
                     set_sortfilter_setting(cid, 'F', row, cmb1, neg, cmb2, str(wv))
                 except PyAppDBError as er:
@@ -584,35 +624,42 @@ class SortFilterDialog(QDialog):
 
     def condIndexChanged(self, index: int) -> None:
         "Set combobox items (operator) and operand QWidget"
-        if not self.model or index <= 0:
+        if not self.model or index < 0:
             return
         # get current row number
-        row = self.sender().row # type: ignore[attr-defined]
+        s = self.sender()
+        if not isinstance(s, RowComboBox):
+            return
+        row = s.row
         # reset negate
         self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)
+        # if index is zero reset everythingall the row
+        if index == 0:
+            # reset operator
+            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(0)
+            return
         # get field type
         field = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentData()
-        ftype = self.fieldType[field]
+        ftype = self.fieldType.get(field)
+        if not ftype:
+            return
         # set operator alternatives
         self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
         for o, d, r, w in self.FILTERING[ftype]:
-            if hasattr(self.model, 'reference'):
-                if field not in self.model.reference and o == 'LIST': # skip list if not required
+            if hasattr(self.model, 'reference') and w == 'LIST':
+                if field not in self.model.reference: # skip list if not required
                     continue
             self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
-        # add choose from list
-        # if hasattr(self.model, 'reference'):
-        #     if field in self.model.reference:
-        #         self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem('From list', 'LIST')
 
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
         if not self.model or index < 0:
             return
         # get current row number
-        row = self.sender().row # type: ignore[attr-defined]
-        # reset negate
-        #self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)    
+        s = self.sender()        
+        if not isinstance(s, RowComboBox):
+            return
+        row = s.row  
         # clear if index is zero
         if index == 0:
             # delete previous widget (MANDATORY)
@@ -620,8 +667,8 @@ class SortFilterDialog(QDialog):
             self.ui.layoutFilters.removeWidget(w)
             w.deleteLater()
             # add spacer
-            sw = QWidget(self) # spacer widget
-            sw.wt = 'spacer' # type: ignore[attr-defined] # widget type
+            sw = SpacerWidget(self) # spacer widget
+            #sw.wt = 'spacer'
             self.ui.layoutFilters.addWidget(sw, row, OPERAND)
             return
         # get field type
@@ -629,67 +676,59 @@ class SortFilterDialog(QDialog):
         fi = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex() -1
         ftype = self.fieldType[field]
         w = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
-        wt = w.wt
-        # if hasattr(self.model, 'reference'):
-        #     if field in self.model.reference:
-        #         nwt = 'LIST'
-        # else:
         nwt = self.FILTERING[ftype][index][3]
-        # change widget only when different from before
-        if wt == nwt:
-            return
         # insert new operand widget
         widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
         match nwt:
             case 'SB': # spinbox
                 widget = QSpinBox(self)
-                widget.wt = 'SB' # type: ignore[attr-defined]
                 widget.setRange(0, 2147483647)
             case 'DSB': # double spinbox
                 widget = QDoubleSpinBox(self)
-                widget.wt = 'DSB' # type: ignore[attr-defined]
                 widget.setDecimals(2)
                 widget.setMaximum(99999999.99)
             case 'CB': # check box
                 widget = QCheckBox(self)
-                widget.wt = 'CB' # type: ignore[attr-defined]
             case 'DE': # date edit
                 widget = QDateEdit(QDate.currentDate(), self)
-                widget.wt = 'DE' # type: ignore[attr-defined]
                 widget.setCalendarPopup(True)
                 widget.setMinimumDate(QDate(1800, 1, 1))
                 widget.setMaximumDate(QDate(3000, 12, 31))
-                #widget.setSpecialValueText(_tr('dialog', 'Not set'))
                 widget.setDate(QDate.currentDate())
             case 'DTE': # date time edit
                 widget = QDateTimeEdit(self)
-                widget.wt = 'DTE' # type: ignore[attr-defined]
                 widget.setCalendarPopup(True)
                 widget.setMinimumDate(QDate(1800, 1, 1))
                 widget.setMaximumDate(QDate(3000, 12, 31))
-                #widget.setSpecialValueText(_tr('dialog', 'Not set'))
                 widget.setDate(QDate.currentDate())
+            case 'TE': # time edit
+                widget = QTimeEdit(QTime.currentTime(), self)
+                #widget.setTime(QTime.currentTime())
             case 'LE': # line edit
                 widget = QLineEdit(self)
-                widget.wt = 'LE' # type: ignore[attr-defined]
+            case 'LES': # line edit string list
+                widget = LineEditStrings(self)
+            case 'LEI': # line edit int list
+                widget = LineEditInts(self)
+            case 'LED': # line edit decimal list
+                widget = LineEditDecimals(self)
             case 'SCB': # standard combo box
                 widget = QComboBox(self)
-                widget.wt = 'SCB' # type: ignore[attr-defined]
                 for k, v in get_list(self.model.columns[fi][6]):
                     widget.addItem(v, k)
             case 'CCB': # chackable combo box
                 widget = CheckableComboBox(self)
-                widget.wt = 'CCB' # type: ignore[attr-defined]
                 for k, v in get_list(self.model.columns[fi][6]):
                     widget.addItem(v, k)
             case 'LIST':
-                widget = QComboBox(self)
                 if hasattr(self.model, 'reference'):
+                    widget = QComboBox(self)
                     for k, v in self.model.reference[field]():
                         widget.addItem(v, k)
+                else:
+                    widget = SpacerWidget(self)
             case _: # no widget required (is null/is not null)
-                widget = QWidget(self)
-                widget.wt = 'spacer'  # type: ignore[attr-defined] # widget type
+                widget = SpacerWidget(self)
         self.ui.layoutFilters.removeWidget(w)
         w.deleteLater()
         # new widget
@@ -697,7 +736,11 @@ class SortFilterDialog(QDialog):
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter qwidget"
-        row = self.sender().row # type: ignore[attr-defined]
+        # get current row number
+        s = self.sender()        
+        if not isinstance(s, RowComboBox):
+            return
+        row = s.row
         # clear first
         self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().clear()
         if index != 0:
@@ -710,15 +753,15 @@ class SortFilterDialog(QDialog):
         try:
             cid = create_sortfilter(self.sortfilterClass, name)
         except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            MessageBoxCritical(self,
+                                _tr("MessageDialog", "Critical"),
+                                f"Database error: {er.code}\n{er.message}")
         else:
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),
                                     _tr("Dialog", "New customization saved"))
             self.ui.lineEditNewName.clear()
-            self.availableCustomizations()
+            self.availableCustomizations() # reload all customizations including new one
 
     def deleteCurrent(self) -> None:
         "Remove current customization from database"
@@ -726,9 +769,9 @@ class SortFilterDialog(QDialog):
         try:
             delete_sortfilter(cid)
         except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            MessageBoxCritical(self,
+                                _tr("MessageDialog", "Critical"),
+                                f"Database error: {er.code}\n{er.message}")
         else:
             self.availableCustomizations()
             QMessageBox.information(self,
@@ -772,7 +815,7 @@ class SortFilterDialog(QDialog):
             return
         # get filters
         self.model.whereCondition.clear()
-        v: list|str|int|float|QDate|QDateTime|bool|None
+        v: list|str|int|float|QDate|QDateTime|QTime|bool|None
         for r in range(FILTER_ROWS):
             if (self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() != 0 and # field
                 self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex() != 0): # operator
@@ -782,26 +825,30 @@ class SortFilterDialog(QDialog):
                 op = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentData()
                 oi = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex()
                 wd = self.ui.layoutFilters.itemAtPosition(r, OPERAND).widget()
-                if wd:
-                    if isinstance(wd, CheckableComboBox):
+                match wd:
+                    case CheckableComboBox():
                         v = wd.currentData() # list
-                    if isinstance(wd, QComboBox):
+                    case QComboBox():
                         v = wd.currentData()
-                    elif isinstance(wd, QLineEdit):
-                        v = wd.text()
-                    elif isinstance(wd, (QSpinBox, QDoubleSpinBox)):
+                    case LineEditStrings()|LineEditInts()|LineEditDecimals(): # lists
                         v = wd.value()
-                    elif isinstance(wd, QDateEdit):
+                    case QLineEdit(): # must be after list edit because is subclass of QLineEdit
+                        v = wd.text()
+                    case (QSpinBox()|QDoubleSpinBox()):
+                        v = wd.value()
+                    case QDateEdit():
                         v = wd.date()
-                    elif isinstance(wd, QDateTimeEdit):
+                    case QTimeEdit(): # time before datetime because is subclass of QDateTimeEdit
+                        v = wd.time()
+                    case QDateTimeEdit():
                         v = wd.dateTime()
-                    elif isinstance(wd, QCheckBox):
+                    case QCheckBox():
                         if wd.checkState() == Qt.CheckState.Checked:
                             v = True
-                        else:
+                        else:                            
                             v = False
-                else:
-                    v = None
+                    case _:
+                        v = None
                 arg: Any
                 match self.FILTERING[ty][oi][2]:
                     case 0:
@@ -837,12 +884,10 @@ class SortFilterDialog(QDialog):
         for i in sorting:
             self.model.addOrderBy(i)
         # update model and form
-        #self.model.select()
         if hasattr(self.parent(), 'setIndexModel'):
             self.parent().setIndexModel(self.model) # type: ignore
         if hasattr(self.parent(), 'reload'):
             self.parent().reload()  # type: ignore
-        #self.parentWidget.ui.tableView.selectRow(0) 
         super().accept()
 
     def done(self, r: int) -> None:
@@ -1005,9 +1050,9 @@ class PrintDialog(QDialog):
         if self.ui.comboBoxReportList.count() != 0:
             super().show()
         else:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 _tr('Dialog', 'No report available'))
+            MessageBoxCritical(self,
+                               _tr('MessageDialog', 'Critical'),
+                               _tr('Dialog', 'No report available'))
 
     def reportCustomizationList(self) -> None:
         # disable signal first
@@ -1038,23 +1083,24 @@ class PrintDialog(QDialog):
                 continue
             widget = self.ui.layoutParameters.itemAtPosition(row, 1).widget()
             wv: int|str|float|QDate|QDateTime|bool
-            if isinstance(widget, QComboBox):
-                wv = widget.currentIndex()
-            elif isinstance(widget, QLineEdit):
-                wv = widget.text()
-            elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
-                wv = widget.value()
-            elif isinstance(widget, QDateEdit):
-                wv = widget.date().toString(Qt.DateFormat.ISODate)
-            elif isinstance(widget, QDateTimeEdit):
-                wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
-            elif isinstance(widget, QCheckBox):
-                if widget.checkState() == Qt.CheckState.Checked:
-                    wv = True
-                else:
-                    wv = False
-            else:
-                raise ReportPrintError("Unable to identify parameter type")
+            match widget:
+                case QComboBox():
+                    wv = widget.currentIndex()
+                case QLineEdit():
+                    wv = widget.text()
+                case (QSpinBox()|QDoubleSpinBox()):
+                    wv = widget.value()
+                case QDateEdit():
+                    wv = widget.date().toString(Qt.DateFormat.ISODate)
+                case QDateTimeEdit():
+                    wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
+                case QCheckBox():
+                    if widget.checkState() == Qt.CheckState.Checked:
+                        wv = True
+                    else:
+                        wv = False
+                case _:
+                    raise ReportPrintError("Unable to identify parameter type")
             try:
                 set_report_adapt(customizationId,
                                  'P',
@@ -1063,33 +1109,37 @@ class PrintDialog(QDialog):
                                  None,
                                  str(wv))
             except PyAppDBError as er:
-                QMessageBox.critical(self,
-                                     _tr("MessageDialog", "Critical"),
-                                     f"Database error: {er.code}\n{er.message}")
+                MessageBoxCritical(self,
+                                   _tr("MessageDialog", "Critical"),
+                                   f"Database error: {er.code}\n{er.message}")
         # filters
-        # for row in range(self.layoutFilters.rowCount() - 1):
         for row in range(FILTER_ROWS):
             if self.ui.layoutFilters.itemAtPosition(row, 0).widget().currentIndex() != 0:
                 cmb1 = self.ui.layoutFilters.itemAtPosition(row, 0).widget().currentIndex()
                 cmb2 = self.ui.layoutFilters.itemAtPosition(row, 1).widget().currentIndex()
                 widget = self.ui.layoutFilters.itemAtPosition(row, 2).widget()
-                if isinstance(widget, QComboBox):
-                    wv = widget.currentData()
-                elif isinstance(widget, QLineEdit):
-                    wv = widget.text()
-                elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
-                    wv = widget.value()
-                elif isinstance(widget, QDateEdit):
-                    wv = widget.date().toString(Qt.DateFormat.ISODate)
-                elif isinstance(widget, QDateTimeEdit):
-                    wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
-                elif isinstance(widget, QCheckBox):
-                    if widget.checkState() == Qt.CheckState.Checked:
-                        wv = True
-                    else:
-                        wv = False
-                else:
-                    raise ReportPrintError("Unable to identify parameter type")
+                match widget:
+                    case CheckableComboBox():
+                        wv = widget.currentData() # list
+                    case QComboBox():
+                        wv = widget.currentData()
+                    case QLineEdit():
+                        wv = widget.text()
+                    case QSpinBox():
+                        wv = widget.value()
+                    case QDoubleSpinBox():
+                        wv = widget.value()
+                    case QDateEdit():
+                        wv = widget.date().toString(Qt.DateFormat.ISODate)
+                    case QDateTimeEdit():
+                        wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
+                    case QCheckBox():
+                        if widget.checkState() == Qt.CheckState.Checked:
+                            wv = True
+                        else:
+                            wv = False
+                    case _:
+                        raise ReportPrintError("Unable to identify parameter type")
                 try:
                     set_report_adapt(customizationId,
                                          'F',
@@ -1118,22 +1168,20 @@ class PrintDialog(QDialog):
                     QMessageBox.critical(self,
                                          _tr("MessageDialog", "Critical"),
                                          f"Database error: {er.code}\n{er.message}")
-
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
                                 _tr("Dialog", "Customization saved"))
 
     def deleteReportCustomization(self) -> None:
         "Delete current report customization"
-        customizationId = self.ui.comboBoxReportCustomizations.currentData()
+        custId = self.ui.comboBoxReportCustomizations.currentData()
         try:
-            delete_report_adapt(customizationId)
+            delete_report_adapt(custId)
         except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            MessageBoxCritical(self,
+                               _tr("MessageDialog", "Critical"),
+                               f"Database error: {er.code}\n{er.message}")
         else:
-            #self.setReportCustomization()
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),
                                     _tr("Dialog", "Customization deleted"))
@@ -1142,20 +1190,19 @@ class PrintDialog(QDialog):
 
     def saveNewCustomizationAs(self) -> None:
         "Create a new customization"
-        #report_class = self.lineEditReportClass.text()
         report_id = self.ui.comboBoxReportList.currentData()
         description = self.ui.lineEditNewName.text()
         if not report_id or not description:
-            QMessageBox.critical(self,
-                                _tr("MessageDialog", "Critical"),
-                                _tr("Dialog", "You must fill all the parameters of a new customization"))
+            MessageBoxCritical(self,
+                               _tr("MessageDialog", "Critical"),
+                               _tr("Dialog", "You must fill all the parameters of a new customization"))
             return
         try:
             create_new_adapt(report_id, description)
         except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            MessageBoxCritical(self,
+                               _tr("MessageDialog", "Critical"),
+                               f"Database error: {er.code}\n{er.message}")
         else:
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),
@@ -1166,9 +1213,9 @@ class PrintDialog(QDialog):
 
     def setCustomizationSetting(self) -> None:
         "Restore saved customization settings"
-        customizationId = self.ui.comboBoxReportCustomizations.currentData()
+        custId = self.ui.comboBoxReportCustomizations.currentData()
         try:
-            params, filters, sorting = get_report_adapt_setting(customizationId)
+            params, filters, sorting = get_report_adapt_setting(custId)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -1179,56 +1226,59 @@ class PrintDialog(QDialog):
             if not wv:  # this happens on report modification, old customization could refer to deleted objects
                 continue
             widget = self.ui.layoutParameters.itemAtPosition(row, 1).widget()
-            if isinstance(widget, QLineEdit):
-                widget.setText(wv)
-            elif isinstance(widget, QSpinBox):
-                widget.setValue(int(wv or 0))
-            elif isinstance(widget, QDoubleSpinBox):
-                widget.setValue(float(wv or 0.0))
-            elif isinstance(widget, QDateEdit):
-                widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
-            elif isinstance(widget, QDateTimeEdit):
-                widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
-            elif isinstance(widget, QCheckBox):
-                if wv == 'True':
-                    widget.setChecked(True)
-                else:
-                    widget.setChecked(False)
+            match widget:
+                case QLineEdit():
+                    widget.setText(wv)
+                case QSpinBox():
+                    widget.setValue(int(wv or 0))
+                case QDoubleSpinBox():
+                    widget.setValue(float(wv or 0.0))
+                case QDateEdit():
+                    widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
+                case QDateTimeEdit():
+                    widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
+                case QCheckBox():
+                    if wv == 'True':
+                        widget.setChecked(True)
+                    else:
+                        widget.setChecked(False)
         # filters
         for t, row, cmb1, cmb2, wv in filters:
             self.ui.layoutFilters.itemAtPosition(row, 0).widget().setCurrentIndex(cmb1)
             self.ui.layoutFilters.itemAtPosition(row, 1).widget().setCurrentIndex(cmb2)
             widget = self.ui.layoutFilters.itemAtPosition(row, 2).widget()
-            if isinstance(widget, QLineEdit):
-                widget.setText(wv)
-            elif isinstance(widget, QSpinBox):
-                widget.setValue(int(wv or 0))
-            elif isinstance(widget, QDoubleSpinBox):
-                widget.setValue(float(wv or 0.0))
-            elif isinstance(widget, QDateEdit):
-                widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
-            elif isinstance(widget, QDateTimeEdit):
-                widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
-            elif isinstance(widget, QCheckBox):
-                if wv == 'True':
-                    widget.setChecked(True)
-                else:
-                    widget.setChecked(False)
+            match widget:
+                case QLineEdit():
+                    widget.setText(wv)
+                case QSpinBox():
+                    widget.setValue(int(wv or 0))
+                case QDoubleSpinBox():
+                    widget.setValue(float(wv or 0.0))
+                case QDateEdit():
+                    widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
+                case QDateTimeEdit():
+                    widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
+                case QCheckBox():
+                    if wv == 'True':
+                        widget.setChecked(True)
+                    else:                        
+                        widget.setChecked(False)
+                case _:
+                    pass
         # sorting
         for t, row, cmb1, cmb2, wv in sorting:
             self.ui.layoutSorting.itemAtPosition(row, 0).widget().setCurrentIndex(cmb1)
             self.ui.layoutSorting.itemAtPosition(row, 1).widget().setCurrentIndex(cmb2)
         # set pdf file name if a report exists
-        if customizationId:
+        if custId:
             self.ui.lineEditFileName.setText(self.report.options.get('documentName'))
-            #self.ui.lineEditAttachment.setText(self.report.options.get('documentName'))
 
     def setReportCustomization(self, index: int) -> None:
         "Set report definition from customization and create widgets"
-        customizationId = self.ui.comboBoxReportCustomizations.currentData()
-        if customizationId:
+        custId = self.ui.comboBoxReportCustomizations.currentData()
+        if custId:
             # create a report instance for current report id and l10n
-            report_id, cd, cl, report_desc, l10n = get_report_from_adapt(customizationId)
+            report_id, cd, cl, report_desc, l10n = get_report_from_adapt(custId)
             self.ui.comboBoxReportList.setCurrentText((report_desc))
         else:
             # no customizations, use the current report
@@ -1240,7 +1290,6 @@ class PrintDialog(QDialog):
         self.query = self.report.query
         self.conditions = self.report.conditions
         # delete everythings before updating
-        #self.widgetParams.clear()
         for lo in (self.ui.layoutParameters, self.ui.layoutFilters, self.ui.layoutSorting):
             for row in range(lo.rowCount()):
                 for c in range(3):
@@ -1285,7 +1334,6 @@ class PrintDialog(QDialog):
                     widget.setFunction(referenceList[self.report.parameter[par].referenceList])
                 case _:
                     raise ReportPrintError("Unable to identify parameter type")
-            #self.widgetParams[par] = widget
             widget.param = par # type: ignore[attr-defined]
             self.ui.layoutParameters.addWidget(label, row, 0)
             self.ui.layoutParameters.addWidget(widget, row, 1)
@@ -1294,16 +1342,16 @@ class PrintDialog(QDialog):
             self.ui.layoutParameters.setRowStretch(row + 1, 1)
         # filters
         for row in range(FILTER_ROWS):
-            cond = QComboBox(self)
-            cond.addItem('', None)
+            field = RowComboBox(self)
+            field.addItem('', None)
             for k, v in self.report.conditions.items():
-                cond.addItem(v.description, k)
-            cond.row = row # type: ignore[attr-defined]
-            cond.currentIndexChanged.connect(self.condIndexChanged)
-            oper = QComboBox(self)
-            oper.row = row # type: ignore[attr-defined]
+                field.addItem(v.description, k)
+            field.row = row
+            field.currentIndexChanged.connect(self.condIndexChanged)
+            oper = RowComboBox(self)
+            oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
-            self.ui.layoutFilters.addWidget(cond, row, 0)
+            self.ui.layoutFilters.addWidget(field, row, 0)
             self.ui.layoutFilters.addWidget(oper, row, 1)
             self.ui.layoutFilters.addWidget(QWidget(self), row, 2)
         self.ui.layoutFilters.setColumnStretch(0, 2)
@@ -1312,20 +1360,20 @@ class PrintDialog(QDialog):
         self.ui.layoutFilters.setRowStretch(row + 1, 1)
         # sorting
         for row, f in enumerate(self.report.conditions):
-            sort = QComboBox(self)
-            sort.addItem('', None)
+            field = RowComboBox(self)
+            field.addItem('', None)
             for i in self.report.conditions:
-                sort.addItem(self.report.conditions[i].description, i)
-            sort.row = row # type: ignore[attr-defined]
-            sort.currentIndexChanged.connect(self.sortIndexChanged)
+                field.addItem(self.report.conditions[i].description, i)
+            field.row = row
+            field.currentIndexChanged.connect(self.sortIndexChanged)
             order = QComboBox(self)
-            self.ui.layoutSorting.addWidget(sort, row, 0)
+            self.ui.layoutSorting.addWidget(field, row, 0)
             self.ui.layoutSorting.addWidget(order, row, 1)
         self.ui.layoutSorting.setColumnStretch(0, 2)
         self.ui.layoutSorting.setColumnStretch(1, 1)
         self.ui.layoutSorting.setRowStretch(row + 1, 1)
         # report class sorting
-        self.ui.spinBoxClassSorting.setValue(report_adapt_sorting(customizationId))
+        self.ui.spinBoxClassSorting.setValue(report_adapt_sorting(custId))
         # restore customizations
         self.setCustomizationSetting()
 
@@ -1333,9 +1381,9 @@ class PrintDialog(QDialog):
         "Set current report sorting for report class"
         if self.ui.comboBoxReportCustomizations.count() == 0:
             return
-        customizationId = self.ui.comboBoxReportCustomizations.currentData()
+        custId = self.ui.comboBoxReportCustomizations.currentData()
         try:
-            set_report_adapt_sorting(customizationId,
+            set_report_adapt_sorting(custId,
                                      self.ui.spinBoxClassSorting.value())
         except PyAppDBError as er:
             QMessageBox.critical(self,
@@ -1353,7 +1401,11 @@ class PrintDialog(QDialog):
         "Set combobox items and parameter QWidget"
         if index < 0:
             return
-        row = self.sender().row # type: ignore[attr-defined]
+        # get current row number
+        s = self.sender()        
+        if not isinstance(s, RowComboBox):
+            return
+        row = s.row
         # clear if index is zero
         if index == 0:
             self.ui.layoutFilters.itemAtPosition(row, 1).widget().clear()
@@ -1420,7 +1472,11 @@ class PrintDialog(QDialog):
 
     def operIndexChanged(self, index: int) -> None:
         "Disable widget if operand is not required"
-        row = self.sender().row # type: ignore[attr-defined]
+        # get current row number
+        s = self.sender()        
+        if not isinstance(s, RowComboBox):
+            return
+        row = s.row
         if self.ui.layoutFilters.itemAtPosition(row, 1):
             i = self.ui.layoutFilters.itemAtPosition(row, 1).widget().count()
             if  self.ui.layoutFilters.itemAtPosition(row, 1).widget().currentIndex() in (i - 1, i - 2):
@@ -1430,7 +1486,11 @@ class PrintDialog(QDialog):
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter widget"
-        row = self.sender().row # type: ignore[attr-defined]
+        # get current row number
+        s = self.sender()        
+        if not isinstance(s, RowComboBox):
+            return
+        row = s.row
         # clear first
         self.ui.layoutSorting.itemAtPosition(row, 1).widget().clear()
         if index != 0:
@@ -1538,10 +1598,6 @@ class PrintDialog(QDialog):
             data = [[self.model.data(self.model.index(i, j)) for j in range(self.model.columnCount())]
                     for i in range(self.model.rowCount() - self.model.hasTotalsRow)]
             self.report.data = data
-            #data = []
-            #for i in range(self.model.rowCount() - self.model.hasTotalsRow):
-                #data.append([self.model.data(self.model.index(i, j)) for j in range(self.model.columnCount())])
-            #self.report.data = data
         if not self.report.data:
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
@@ -1611,14 +1667,14 @@ class PrintDialog(QDialog):
         if not self.generateReport():
             return
         if self.ui.lineEditDirectory.text() == "":
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 _tr('Dialog', "Export directory not set"))
+            MessageBoxCritical(self,
+                               _tr('MessageDialog', 'Critical'),
+                               _tr('Dialog', "Export directory not set"))
             return
         if self.ui.lineEditFileName.text() == "":
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 _tr('Dialog', "File name not set"))
+            MessageBoxCritical(self,
+                               _tr('MessageDialog', 'Critical'),
+                               _tr('Dialog', "File name not set"))
             return
         file_name = self.ui.lineEditDirectory.text() + "/" + self.ui.lineEditFileName.text() + ".pdf"
         if QFile(file_name).exists():

@@ -82,8 +82,9 @@ def set_itemview_adapt(vid: int,
                        vdef: bool
                        ) -> None:
     "Set all the item views customizations"
-    script = """
-DELETE FROM system.itemview_adapt WHERE itemview_adapt_id = %s;
+    script1 = """
+DELETE FROM system.itemview_adapt WHERE itemview_adapt_id = %s;"""
+    script2 = """
 INSERT INTO system.itemview_adapt (
         itemview_adapt_id,
         description,
@@ -93,7 +94,8 @@ VALUES (%s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (vid, vid, vdes, vclass, vdef))
+                cur.execute(script1, (vid,))
+                cur.execute(script2, (vid, vdes, vclass, vdef))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -167,8 +169,9 @@ def set_sortfilter_adapt(sid: int,
                          sdef: bool
                          ) -> None:
     "Set all the item views customizations"
-    script = """
-DELETE FROM system.sortfilter_adapt WHERE sortfilter_adapt_id = %s;
+    script1 = """
+DELETE FROM system.sortfilter_adapt WHERE sortfilter_adapt_id = %s;"""
+    script2 = """
 INSERT INTO system.sortfilter_adapt (
     sortfilter_adapt_id,
     description,
@@ -178,7 +181,8 @@ VALUES (%s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (sid, sid, sdes, sclass, sdef))
+                cur.execute(script1, (sid,))
+                cur.execute(script2, (sid, sdes, sclass, sdef))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -204,7 +208,7 @@ VALUES (%s, %s, %s, %s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (sid, selem, slrow, scmb1, scmb2, svv))
+                cur.execute(script, (sid, selem, slrow, scmb1, sneg, scmb2, svv))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -273,8 +277,8 @@ VALUES (%s, %s, %s, %s);"""
 def set_report_adapt_setting(raid: int,
                              ratyp: str,
                              rlrow: int,
-                             rcmb1: int,
-                             rcmb2: int,
+                             rcmb1: int|None,
+                             rcmb2: int|None,
                              rvv: str
                              ) -> None:
     "Set all the item views customizations settings"
@@ -298,13 +302,13 @@ def clear_adapt(adapttype: str) -> None:
     "Clear customizations"
     scriptS = """
 DELETE FROM system.sortfilter_adapt;
-ALTER TABLE system.sortfilter_adapt ALTER COLUMN id RESTART WITH 1;"""
+ALTER TABLE system.sortfilter_adapt ALTER COLUMN sortfilter_adapt_id RESTART WITH 1;"""
     scriptI = """
 DELETE FROM system.itemview_adapt;
-ALTER TABLE system.itemview_adapt ALTER COLUMN id RESTART WITH 1;"""
+ALTER TABLE system.itemview_adapt ALTER COLUMN itemview_adapt_id RESTART WITH 1;"""
     scriptR = """
 DELETE FROM system.report_adapt;
-ALTER TABLE system.report_adapt ALTER COLUMN id RESTART WITH 1;"""
+ALTER TABLE system.report_adapt ALTER COLUMN report_adapt_id RESTART WITH 1;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():

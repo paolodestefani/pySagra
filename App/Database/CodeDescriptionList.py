@@ -40,6 +40,21 @@ from App.Database.Connect import appconn
 from App.Database.Report import get_report_list
 
 
+def get_list(query):
+    "A select query that returns code + description list of values"
+    if query.startswith('LIST:'):
+        data = query.split(':')[1]
+        return [(i.split('=')) for i in data.split(',')]
+    try:
+        with appconn.transaction():
+            with appconn.cursor() as cur:
+                cur.execute(query)
+                records = cur.fetchall()
+                return records
+    except psycopg.Error as er:
+        raise PyAppDBError(er.diag.sqlstate, str(er))
+
+
 def generic_cdl(code: str, description: str, table: str, condition=[], order_by=[], null=False) -> list[tuple]:
     "Get a list of code, description values from a table"
     script = f"SELECT {code}, {description} FROM {table}"

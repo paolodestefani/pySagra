@@ -48,6 +48,7 @@ from App.Core.L10n import _tr
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import TableModel, QueryModel
+from App.Database.AbstractModels.TreeModel import TreeQueryModel
 #from App.Widget.Delegate import mapperItemDelegate
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
@@ -712,7 +713,7 @@ class FormIndexManager[T](QWidget):
         self.state = VIEW # initial state
         self.auth = auth
         self.detailRelations: list = []  # detail relation list
-        self.model: QueryModel|TableModel = TableModel()
+        self.model: QueryModel|TableModel|TreeQueryModel = TableModel()
         self.indexModel = QueryModel()
         self.ui: T # The type will be decided by the subclass
         # index mapper
@@ -724,7 +725,7 @@ class FormIndexManager[T](QWidget):
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
         #self.mapper.setItemDelegate(mapperItemDelegate(self))
 
-    def setModel(self, model: QueryModel|TableModel, indexModel: QueryModel) -> None:
+    def setModel(self, model: QueryModel|TableModel|TreeQueryModel, indexModel: QueryModel) -> None:
         "Set the main form model and index model, index model can change from filter dialog"
         self.model = model
         self.indexModel = indexModel
@@ -749,7 +750,7 @@ class FormIndexManager[T](QWidget):
         self.indexView.horizontalHeader().setSectionsMovable(True)
 
     def addDetailRelation(self, 
-                          relation: QueryModel|TableModel,
+                          relation: QueryModel|TableModel|TreeQueryModel,
                           masterColumn: int,
                           detailColumn: int
                           ) -> None:

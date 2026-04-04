@@ -126,6 +126,7 @@ CREATE TABLE report_adapt_setting (
     adapt_type              char NOT NULL,
     layout_row              integer NOT NULL,
     combo1_index            integer,
+    negate_state            boolean NULL,
     combo2_index            integer,
 	widget_value            text,
 	--
