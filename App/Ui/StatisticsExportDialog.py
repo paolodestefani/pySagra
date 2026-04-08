@@ -24,8 +24,26 @@ class Ui_StatisticsExportDialog(object):
     def setupUi(self, StatisticsExportDialog):
         if not StatisticsExportDialog.objectName():
             StatisticsExportDialog.setObjectName(u"StatisticsExportDialog")
-        StatisticsExportDialog.resize(512, 240)
-        self.verticalLayout = QVBoxLayout(StatisticsExportDialog)
+        StatisticsExportDialog.resize(459, 268)
+        self.verticalLayout_3 = QVBoxLayout(StatisticsExportDialog)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.labelIcon = QLabel(StatisticsExportDialog)
+        self.labelIcon.setObjectName(u"labelIcon")
+
+        self.verticalLayout_2.addWidget(self.labelIcon)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer_2)
+
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout_2)
+
+        self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
@@ -96,17 +114,23 @@ class Ui_StatisticsExportDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.verticalSpacer = QSpacerItem(20, 36, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout.addItem(self.verticalSpacer)
+        self.horizontalLayout_2.addLayout(self.verticalLayout)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+
+        self.verticalSpacer = QSpacerItem(17, 11, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_3.addItem(self.verticalSpacer)
 
         self.buttonBox = QDialogButtonBox(StatisticsExportDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
-        self.verticalLayout.addWidget(self.buttonBox)
+        self.verticalLayout_3.addWidget(self.buttonBox)
 
         QWidget.setTabOrder(self.lineEditHeadersFileName, self.pushButtonSelectHeaders)
         QWidget.setTabOrder(self.pushButtonSelectHeaders, self.lineEditDetailsFileName)
@@ -124,6 +148,7 @@ class Ui_StatisticsExportDialog(object):
 
     def retranslateUi(self, StatisticsExportDialog):
         StatisticsExportDialog.setWindowTitle(QCoreApplication.translate("StatisticsExportDialog", u"Statistics export", None))
+        self.labelIcon.setText(QCoreApplication.translate("StatisticsExportDialog", u"Icon", None))
         self.label.setText(QCoreApplication.translate("StatisticsExportDialog", u"Headers file", None))
         self.pushButtonSelectHeaders.setText(QCoreApplication.translate("StatisticsExportDialog", u"Select ...", None))
         self.label_4.setText(QCoreApplication.translate("StatisticsExportDialog", u"Details file", None))

@@ -108,6 +108,7 @@ class StatisticsExportDialog(QDialog):
         self.ui = Ui_StatisticsExportDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
+        self.ui.labelIcon.setPixmap(icon.pixmap(100))
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
 
         for i, d in event_cdl():

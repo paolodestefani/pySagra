@@ -1676,52 +1676,57 @@ Proseguire ugualmente ?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="116"/>
+        <location filename="../../App/System/Preferences.py" line="115"/>
+        <source>Flatwoken</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Preferences.py" line="117"/>
         <source>Icon only</source>
         <translation>Solo icone</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="117"/>
+        <location filename="../../App/System/Preferences.py" line="118"/>
         <source>Text only</source>
         <translation>Solo testo</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="118"/>
+        <location filename="../../App/System/Preferences.py" line="119"/>
         <source>Text beside icon</source>
         <translation>Testo sopra le icone</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="119"/>
+        <location filename="../../App/System/Preferences.py" line="120"/>
         <source>Text under icon</source>
         <translation>Testo sotto le icone</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="120"/>
+        <location filename="../../App/System/Preferences.py" line="121"/>
         <source>Follow style</source>
         <translation>Segue lo stile</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="122"/>
+        <location filename="../../App/System/Preferences.py" line="123"/>
         <source>Tabs above the pages</source>
         <translation>Linguette soprale pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="123"/>
+        <location filename="../../App/System/Preferences.py" line="124"/>
         <source>Tabs below the pages</source>
         <translation>Testo sotto le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="124"/>
+        <location filename="../../App/System/Preferences.py" line="125"/>
         <source>Tabs to the left of the pages</source>
         <translation>Testo a sinistra delle pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="125"/>
+        <location filename="../../App/System/Preferences.py" line="126"/>
         <source>Tabs to the right of the pages</source>
         <translation>Testo a destra delle pagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="132"/>
+        <location filename="../../App/System/Preferences.py" line="133"/>
         <source>Error loading user preferences</source>
         <translation>Errore in caricamento delle preferenze utente</translation>
     </message>

@@ -111,7 +111,8 @@ class PreferencesDialog(QDialog):
         # icons - here for translation requirement (a QApplication is require for _tr() to work)
         self.ui.comboBoxIcons.setItemList([(None, _tr('Preferences', 'Oxygen')),
                                           ('crystal_clear', _tr('Preferences', 'Crystal Clear')),
-                                          ('fluentui', _tr('Preferences', 'Fluent UI'))])
+                                          ('fluentui', _tr('Preferences', 'Fluent UI')),
+                                          ('flatwoken', _tr('Preferences', 'Flatwoken'))])
         # tool button style - here for translation requirement (a QApplication is require for _tr() to work)
         self.ui.comboBoxToolButtonStyle.setItemList([('I', _tr('Preferences', 'Icon only')),
                                                      ('T', _tr('Preferences', 'Text only')),
