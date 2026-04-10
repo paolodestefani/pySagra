@@ -266,7 +266,7 @@ class ColorDelegate(QStyledItemDelegate):
 class ColorComboDelegate(QStyledItemDelegate):
     "Color delegate select from combobox"
 
-    def __init__(self, parent: QWidget, colors: list[str]) -> None:
+    def __init__(self, parent: QWidget, colors: list[tuple[str, str]]) -> None:
         super().__init__(parent)
         self.colors = colors
 

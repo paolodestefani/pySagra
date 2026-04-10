@@ -46,7 +46,11 @@ FROM system.company;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
-            return cur.fetchone()[0]
+            result = cur.fetchone()
+            if result:
+                return result[0]
+            else:
+                return 0
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 

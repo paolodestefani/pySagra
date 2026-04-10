@@ -31,6 +31,7 @@ This modules manages reports: creation/deletion/modification of sql reports
 import zipfile
 import logging
 import re
+from typing import cast
 
 # PySide6
 from PySide6.QtCore import QObject
@@ -129,13 +130,13 @@ class ReportForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # set font
         st = QSettings()
-        self.font: QFont = st.value("XMLEditorFont", QFont('Courier', 8))
-        self.ui.textEditXML.setFont(self.font)
-        self.ui.fontComboBox.setCurrentFont(self.font)
-        self.ui.spinBoxFontSize.setValue(self.font.pointSize())
+        self.editorFont: QFont = cast(QFont, st.value("XMLEditorFont", QFont('Courier', 8), type=QFont))
+        self.ui.textEditXML.setFont(self.editorFont)
+        self.ui.fontComboBox.setCurrentFont(self.editorFont)
+        self.ui.spinBoxFontSize.setValue(self.editorFont.pointSize())
         # set tab spaces
         tabStop = 4
-        metrics = QFontMetrics(self.font)
+        metrics = QFontMetrics(self.editorFont)
         self.ui.textEditXML.setTabStopDistance(tabStop * metrics.maxWidth())
         # syntax highlighting
         self.highlighter = XMLHighlighter(self.ui.textEditXML.document())
@@ -218,10 +219,10 @@ class ReportForm(FormIndexManager):
     def insertImage(self, checked: bool) -> None:
         "Load an image file as base64 string data to clipboard"
         st = QSettings()
-        path=st.value("PathImagesReports", QDir.current().path())
+        path = st.value("PathImagesReports", QDir.current().path(), type = str)
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr('Report', "Select the image to insert into clipboard"),
-                                           path,
+                                           str(path),
                                            _tr('Report', "Portable Network Graphics (*.png);;All files (*.*)"))
 
         if f == "":
@@ -231,8 +232,10 @@ class ReportForm(FormIndexManager):
         buf = QBuffer(ba)
         buf.open(QIODevice.OpenModeFlag.WriteOnly)
         pix.save(buf, "PNG")
+        #txt = str(ba.toBase64().data(), encoding='utf8')
+        txt = bytes(ba.toBase64().data()).decode('utf-8')
         cb = QApplication.clipboard()
-        cb.setText(f"""<image left="0.0" top="0.0" width="45.0" height="48.0" aspectRatio="KeepAspectRatio">{str(ba.toBase64(), encoding='utf8')}</image>""")
+        cb.setText(f"""<image left="0.0" top="0.0" width="45.0" height="48.0" aspectRatio="KeepAspectRatio">{txt}</image>""")
         st.setValue("PathImagesReports", QFileInfo(f).path())
         
     def deleteAll(self) -> None:
@@ -254,7 +257,7 @@ class ReportForm(FormIndexManager):
         path = st.value("PathReports", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Report', "Select the directory"),
-                                                     path)
+                                                     str(path))
         if directory == "":
             return
         row = self.mapper.currentIndex()

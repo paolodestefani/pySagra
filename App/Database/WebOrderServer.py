@@ -51,8 +51,8 @@ WHERE company_id = system.pa_current_company();"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
-            if cur.rowcount:
-                r = cur.fetchone()  # must be only one record
+            r = cur.fetchone()  # must be only one record
+            if r:
                 return (r[0],
                         r[1],
                         r[2],
@@ -60,7 +60,12 @@ WHERE company_id = system.pa_current_company();"""
                         string_decode(r[4]),
                         string_decode(r[5]))
             else:
-                return (None, None, None, None, None, None)
+                return (None, 
+                        None,
+                        None,
+                        None,
+                        None,
+                        None)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 

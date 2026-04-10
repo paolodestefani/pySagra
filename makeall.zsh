@@ -4,7 +4,7 @@
 cd /Users/paolo/Development/pySagra
 
 # activate virtual env
-source /Users/paolo/Development/venv/pyside-ppg/bin/activate
+source /Users/paolo/Development/.venv/pyside-psycopg/bin/activate
 
 # create lib ui modules
 #for filename in App/Ui/*.ui; do
@@ -59,4 +59,4 @@ pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm
 
 # exit from venv
 deactivate
-:
+

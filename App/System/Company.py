@@ -57,6 +57,7 @@ from App.Database.Company import max_company_code
 from App.Database.Company import create_company
 from App.Database.Company import drop_company
 from App.Database.Company import set_company_access
+from App.Database.Company import company_is_in_use
 from App.Database.CodeDescriptionList import user_cdl
 from App.Database.CodeDescriptionList import profile_cdl
 from App.Database.CodeDescriptionList import menu_cdl
@@ -220,6 +221,11 @@ class CompanyForm(FormIndexManager):
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
                                     _tr('Company', "Is not possible to delete a system company"))
+            return
+        if company_is_in_use(companyId):
+            QMessageBox.information(self,
+                                    _tr('MessageDialog', "Information"),
+                                    _tr('Company', "Is not possible to delete this company because it is currently in use"))
             return
         msg = _tr('Company', "Delete this company ?")
         if QMessageBox.question(self,

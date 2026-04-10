@@ -16,13 +16,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
-    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+    QLineEdit, QSizePolicy, QSpacerItem, QVBoxLayout,
+    QWidget)
 
 class Ui_ChooseVariantsDialog(object):
     def setupUi(self, ChooseVariantsDialog):
         if not ChooseVariantsDialog.objectName():
             ChooseVariantsDialog.setObjectName(u"ChooseVariantsDialog")
-        ChooseVariantsDialog.resize(220, 170)
+        ChooseVariantsDialog.resize(219, 108)
         ChooseVariantsDialog.setModal(True)
         self.verticalLayout_2 = QVBoxLayout(ChooseVariantsDialog)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -37,10 +38,15 @@ class Ui_ChooseVariantsDialog(object):
 
         self.verticalLayout.addItem(self.verticalSpacer)
 
+        self.lineEditFreeVariant = QLineEdit(ChooseVariantsDialog)
+        self.lineEditFreeVariant.setObjectName(u"lineEditFreeVariant")
+
+        self.verticalLayout.addWidget(self.lineEditFreeVariant)
+
         self.buttonBox = QDialogButtonBox(ChooseVariantsDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
 
         self.verticalLayout.addWidget(self.buttonBox)
 

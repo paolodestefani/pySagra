@@ -32,6 +32,7 @@ This module provide ordered delivered form management
 import logging
 
 # PySide6
+from PySide6.QtCore import Qt
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
@@ -94,7 +95,7 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setModel(model)
         self.ui.tableView.setLayoutName('stockUnload')
-        self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.ui.tableView.activateWindow()
         #self.ui.tableView.setSortingEnabled(True)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
@@ -107,11 +108,11 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         setting = SettingClass()
         now = QDateTime.currentDateTime()
         # if time between 0.0.0 and lunch start time stat date is the day before date part is dinner
-        if QTime(0, 0) <= now.time() < QTime(setting['lunch_start_time'], 0):
+        if QTime(0, 0) <= now.time() < QTime(int(setting['lunch_start_time'] or 0), 0):
             # dinner of the day before
             self.selectedDate = now.date().addDays(-1)
             self.selectedDayPart = 'D'
-        elif QTime(setting['lunch_start_time'], 0) <= now.time() < QTime(setting['dinner_start_time'], 0):
+        elif QTime(int(setting['lunch_start_time'] or 0), 0) <= now.time() < QTime(int(setting['dinner_start_time'] or 0), 0):
             # lunch
             self.selectedDate = now.date()
             self.selectedDayPart = 'L'
@@ -125,7 +126,7 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         else:
             self.setFilters()
         self.updateTimer = QTimer(self)
-        self.updateTimer.setInterval(setting['ordered_delivered_update_interval'] * 1000)
+        self.updateTimer.setInterval(int(setting['ordered_delivered_update_interval'] or 0) * 1_000)
         self.updateTimer.timeout.connect(self.updateUnload)
         self.ui.checkBoxAutomaticUpdate.clicked.connect(self.setAutomaticUpdate)
         if setting['ordered_delivered_automatic_update']:

@@ -51,8 +51,9 @@ WHERE
     try:
         with appconn.cursor() as cur:
             cur.execute(sql, (QHostInfo.localHostName(),))
-            if cur.rowcount:
-                return cur.fetchone()[0]
+            result = cur.fetchone()
+            if result:
+                return result[0]
             else:
                 return None
     except psycopg.Error as er:

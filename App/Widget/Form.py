@@ -29,7 +29,7 @@ This module contains custom form objects, used for data entry management
 """
 
 # standard library
-#from typing import TypeVar, Generic
+from typing import Any, cast
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -48,7 +48,7 @@ from App.Core.L10n import _tr
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import TableModel, QueryModel
-from App.Database.AbstractModels.TreeModel import TreeQueryModel
+from App.Database.AbstractModels.TreeModel import TreeModel, TreeQueryModel
 #from App.Widget.Delegate import mapperItemDelegate
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
@@ -85,7 +85,7 @@ class FormManager[T](QWidget):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False,) * 12 # False, False, False, False, False, False, False,
                                 #False, False, False, False)
-        self.model: TableModel # main form model
+        self.model: QAbstractItemModel # main form model
         self.detailRelations: list = []  # detail relation list
         self.state = VIEW # initial state
         self.repr = 'Generic form manager'
@@ -106,23 +106,23 @@ class FormManager[T](QWidget):
         "Model representation"
         return self.repr
     
-    def setModel(self, model: TableModel|QueryModel) -> None:
+    def setModel(self, model: QAbstractItemModel) -> None:
         "Set the main form model"
-        self.model = model
+        self.model = model #cast(TableModel, model)
         self.mapper.setModel(self.model) # main form model
         # only for editable models
-        if self.model.isEditable:
+        if hasattr(self.model, 'isEditable') and self.model.isEditable and hasattr(self.model, 'userDataChanged'):
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
     
     def addDetailRelation(self, 
-                          relation: QueryModel|TableModel,
+                          relation: QAbstractItemModel,# QueryModel|TableModel|TreeModel,
                           masterColumn: int,
                           detailColumn: int
                           ) -> None:
         "Add linked models to detailRelations list"
         self.detailRelations.append((relation, masterColumn, detailColumn))
-        if relation.isEditable:
+        if hasattr(relation, 'isEditable') and relation.isEditable:
             if hasattr(relation, 'userDataChanged'):
                 relation.userDataChanged.connect(self.modelChanged)
 
@@ -254,7 +254,8 @@ class FormManager[T](QWidget):
             self.mapper.setCurrentIndex(row)
             return
         try:
-            self.model.submitAll()
+            if hasattr(self.model, 'submitAll'):
+                self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23000':
                 msg = _tr("Form", "Integrity constraint violation: "
@@ -351,7 +352,8 @@ class FormManager[T](QWidget):
             appconn.rollback()
             return
         try:
-            self.model.submitAll()
+            if hasattr(self.model, 'submitAll'):
+                self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
                 MessageBoxCritical(self,
@@ -390,7 +392,8 @@ class FormManager[T](QWidget):
         try:
             # cursor wait
             QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-            self.model.revertAll()  # also do a select()
+            if hasattr(self.model, 'revertAll'):
+                self.model.revertAll()  # also do a select()
         except PyAppDBError as er:
             msg = "Error: {}\n{}".format(er.code, er.message)
             QMessageBox.critical(self,
@@ -461,20 +464,19 @@ class FormViewManager[T](QWidget):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False,) * 12
-        self.model: QueryModel|TableModel|None
+        self.model: QAbstractItemModel # main form model
         self.state = VIEW # initial state
         self.reloadConfirmation = True  # ask confirmation on reload
         # model is mapped direct to tableview
         self.auth: str = auth
         self.view: QTableView|None = None # subclass must set this
         
-    def setModel(self, model: QueryModel|TableModel) -> None:
+    def setModel(self, model: QAbstractItemModel) -> None:
         "Set the main form model"
         self.model = model
         # used for isDirty method, only for editable models
-        if self.model.isEditable:
-            if hasattr(self.model, 'userDataChanged'):
-                self.model.userDataChanged.connect(self.modelChanged)
+        if hasattr(self.model, 'isEditable') and self.model.isEditable and hasattr(self.model, 'userDataChanged'):
+            self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
         
     def setView(self, view: QTableView) -> None:
@@ -621,9 +623,8 @@ class FormViewManager[T](QWidget):
         "Undo pending changes and Reload data from db"
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        if self.model and self.model.isEditable:
-            if hasattr(self.model, 'submitAll'):
-                self.model.revertAll() # also do a select()
+        if self.model and hasattr(self.model, 'isEditable') and self.model.isEditable and hasattr(self.model, 'revertAll'):
+            self.model.revertAll() # also do a select()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
         self.state = VIEW
@@ -679,7 +680,7 @@ class FormViewManager[T](QWidget):
             elif result == QMessageBox.StandardButton.Yes:
                 self.save()
             else:
-                if self.model and self.model.isEditable:
+                if self.model and hasattr(self.model, 'isEditable') and self.model.isEditable and hasattr(self.model, 'revert'):
                     self.model.revert()
                 self.state = VIEW
                 self.updateEditStatus()
@@ -713,7 +714,7 @@ class FormIndexManager[T](QWidget):
         self.state = VIEW # initial state
         self.auth = auth
         self.detailRelations: list = []  # detail relation list
-        self.model: QueryModel|TableModel|TreeQueryModel = TableModel()
+        self.model: QAbstractItemModel = TableModel()
         self.indexModel = QueryModel()
         self.ui: T # The type will be decided by the subclass
         # index mapper
@@ -725,7 +726,7 @@ class FormIndexManager[T](QWidget):
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
         #self.mapper.setItemDelegate(mapperItemDelegate(self))
 
-    def setModel(self, model: QueryModel|TableModel|TreeQueryModel, indexModel: QueryModel) -> None:
+    def setModel(self, model: QAbstractItemModel, indexModel: QueryModel) -> None:
         "Set the main form model and index model, index model can change from filter dialog"
         self.model = model
         self.indexModel = indexModel
@@ -750,13 +751,12 @@ class FormIndexManager[T](QWidget):
         self.indexView.horizontalHeader().setSectionsMovable(True)
 
     def addDetailRelation(self, 
-                          relation: QueryModel|TableModel|TreeQueryModel,
+                          relation: QAbstractItemModel,
                           masterColumn: int,
                           detailColumn: int
                           ) -> None:
         "Add linked models to detailRelations list"
         self.detailRelations.append((relation, masterColumn, detailColumn))
-        #print("add relation", relation, masterColumn, detailColumn)
         if hasattr(relation, 'userDataChanged'):  # a modification of the relation cause an update of the status of the main form
             relation.userDataChanged.connect(self.modelChanged)
 
@@ -769,8 +769,9 @@ class FormIndexManager[T](QWidget):
         "Reload form model and detail relations on mapper index change"
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        #QGuiApplication.processEvents() # non funziona...
-        self.model.filter(0, self.indexModel.index(index, 0).data())
+        #QGuiApplication.processEvents() # not working...
+        if hasattr(self.model, 'filter'):
+            self.model.filter(0, self.indexModel.index(index, 0).data())
         self.mapper.toFirst()
         for relation, masterColumn, detailColumn in self.detailRelations:
             value = self.model.index(self.mapper.currentIndex(), masterColumn).data()
@@ -886,7 +887,8 @@ class FormIndexManager[T](QWidget):
             return
         # master data
         try:
-            self.model.submitAll()
+            if hasattr(self.model, 'submitAll'):
+                self.model.submitAll()
         except PyAppDBError as er:
             match er.code:
                 case 'CCER':
@@ -988,7 +990,8 @@ class FormIndexManager[T](QWidget):
             appconn.rollback()
             return
         try:
-            self.model.submitAll()
+            if hasattr(self.model, 'submitAll'):
+                self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
                 MessageBoxCritical(self,
@@ -1078,7 +1081,7 @@ class FormIndexManager[T](QWidget):
             elif result == QMessageBox.StandardButton.Yes:
                 self.save()
             else:
-                if self.model and self.model.isEditable:
+                if self.model and hasattr(self.model, 'isEditable') and self.model.isEditable:
                     self.model.revert()
                 self.state = VIEW
                 self.updateEditStatus()

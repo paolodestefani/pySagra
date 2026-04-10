@@ -59,7 +59,7 @@ from App.Database.Connect import appconn
 def load_statistic_bi_data(view: str,
                            from_event: int,
                            to_event: int
-                           ) -> list[Any,...]:
+                           ) -> list[Any]|None:
     "Load a statistic data"
     script = f"""SELECT * FROM {view} WHERE "ID Evento" BETWEEN %s AND %s;"""
     try:

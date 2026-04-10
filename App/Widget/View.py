@@ -31,6 +31,7 @@ This module contains general custom views
 # standard library
 import os
 import csv
+from typing import Any
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -416,7 +417,7 @@ class EnhancedTableView(QTableView):
         if not self.model().removeRows(index.row(), 1, parent=QModelIndex()):
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
-                                 self.model().lastError().text())
+                                 _tr("View", "Error deleting row"))
 
     #def printView(self):
         #"Print table content"
@@ -477,10 +478,10 @@ class EnhancedTableView(QTableView):
                         continue
                     index = model.index(i, j)
                     # custom delegates
-                    if isinstance(self.itemDelegateForColumn(j), RelationDelegate):
-                        if hasattr(self.itemDelegateForColumn(j), 'getRelationData'):
-                            data = self.itemDelegateForColumn(j).getRelationData(index)
-                    elif isinstance(self.itemDelegateForColumn(j), HideTextDelegate):
+                    delegate = self.itemDelegateForColumn(j)
+                    if isinstance(delegate, RelationDelegate):
+                        data = delegate.getRelationData(index)
+                    elif isinstance(delegate, HideTextDelegate):
                         data = _tr('View', 'HIDDEN TEXT')
                     else:
                         data = model.data(index)

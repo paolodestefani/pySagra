@@ -50,7 +50,7 @@ class Record(dict):
     """
     ovfield = 'object_version'
 
-    def __init__(self, table: str, pkey: list = []) -> None:
+    def __init__(self, table: str, pkey: list|tuple = []) -> None:
         """- table = table name
            - pkey = list of primary key's fields for update/delete"""
         self.table = table
@@ -159,7 +159,7 @@ class Record(dict):
 class RecordSet(list):
     """A list of record of a database table. Each record is a Record instance"""
 
-    def __init__(self, table: str, pkey: list[str]) -> None:
+    def __init__(self, table: str, pkey: list[str]|tuple[str]) -> None:
         """table = database table
            pkey = list of primary key fields"""
         self.table = table

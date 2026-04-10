@@ -89,10 +89,10 @@ class HelpDialog(QDialog):
             self.restoreGeometry(st.value("HelpDialogGeometry"))
         else:
             self.setGeometry(50, 50, 800, 600)
-        self.sliderValue = st.value("HelpDialogSliderTextZoom", 1)
+        self.sliderValue = st.value("HelpDialogSliderTextZoom", 1, type=int) 
         self.ui.horizontalSliderZoom.setValue(self.sliderValue)
         # restore text zoom
-        for i in range(self.sliderValue):
+        for i in range(self.sliderValue): # type: ignore
             self.ui.textBrowserContent.zoomIn(1)
         # signal/slot
         self.ui.toolButtonBack.clicked.connect(self.ui.textBrowserContent.backward)
@@ -115,7 +115,7 @@ class HelpDialog(QDialog):
 
     def sliderChangedValue(self, value: int) -> None:
         "Update zoom based on slider"
-        if value > self.sliderValue:
+        if value > self.sliderValue: # type: ignore
             self.ui.textBrowserContent.zoomIn(1)
         else:
             self.ui.textBrowserContent.zoomOut(1)

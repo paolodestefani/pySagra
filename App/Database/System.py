@@ -44,7 +44,11 @@ def pa_setting(setting: str) -> str|None:
     try:
         with appconn.cursor() as cur:
             cur.execute('SELECT * FROM system.pa_setting(%s);', (setting,))
-            return cur.fetchone()[0]
+            result = cur.fetchone()
+            if result:
+                return result[0]
+            else:
+                return None
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 

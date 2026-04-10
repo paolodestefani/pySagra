@@ -28,6 +28,7 @@ This module contains functions to generate and print order-related reports.
 """
 
 # standard library
+from typing import Any
 
 # PySide6
 from PySide6.QtCore import QDate
@@ -97,7 +98,9 @@ def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
         dialog.exec()
 
 
-def printOrderDepartmentReport(order_id: int,  department: int|None = None, printer: str|None = None) -> None:
+def printOrderDepartmentReport(order_id: int, 
+                               department: int|None = None,
+                               printer: str|None = None) -> None:
     setting = Setting()
     report_id = get_report_id(setting['department_report'], session['l10n'])
     if not report_id:
@@ -109,7 +112,7 @@ def printOrderDepartmentReport(order_id: int,  department: int|None = None, prin
     for i in report.conditions:
         if report.conditions[i].code == 'order_id':
             where.append((f"{i} = %s", order_id))
-        if report.conditions[i].code == 'department_id':
+        if report.conditions[i].code == 'department_id' and department is not None:
             where.append((f"{i} = %s", department))
     report.data = report_query(report, where)
     report.generate()
@@ -126,18 +129,26 @@ def printOrderDepartmentReport(order_id: int,  department: int|None = None, prin
         dialog.exec()
 
 
-def printStockUnloadReport(report_id: int, printer: str|None = None, copies: int = 1, event: int|None = None, day: QDate|None = None, daypart: str|None = None) -> None:
+def printStockUnloadReport(report_id: int,
+                           printer: str|None = None,
+                           copies: int = 1,
+                           event: int|None = None,
+                           day: QDate|None = None,
+                           daypart: str|None = None) -> None:
     report = Report(report_xml(report_id))
     # create condition
     # report definition on condition fields must have a code for event, day, day_part and unload_control
-    where = []
+    where: list[tuple[str, Any]] = []
     for i in report.conditions:
-        if report.conditions[i].code == 'event':
-            where.append((f"{i} = %s", event))
-        if report.conditions[i].code == 'event_date':
-            where.append((f"{i} = %s", day))
-        if report.conditions[i].code == 'day_part':
-            where.append((f"{i} = %s", daypart))
+        match report.conditions[i].code:
+            case 'event' if event is not None:
+                where.append((f"{i} = %s", event))
+            case 'event_date' if day is not None:
+                where.append((f"{i} = %s", day))
+            case 'day_part' if daypart is not None:
+                where.append((f"{i} = %s", daypart))
+            case _:
+                pass
         if report.conditions[i].code == 'unload_control':
             where.append((f"{i} IS %s", True))
     report.data = report_query(report, where)

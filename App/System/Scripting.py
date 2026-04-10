@@ -31,6 +31,7 @@ This modules manages python scripting
 import zipfile
 import logging
 import re
+from typing import cast
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -187,13 +188,13 @@ class ScriptingForm(FormIndexManager):
         #self.ui.textEditScript.textChanged.connect(self.textChanged)
         # set font
         st = QSettings()
-        self.font = st.value("ScriptEditorFont", QFont('Courier', 8))
-        self.ui.textEditScript.setFont(self.font)
-        self.ui.fontComboBox.setCurrentFont(self.font)
-        self.ui.spinBoxFontSize.setValue(self.font.pointSize())
+        self.editorFont: QFont = cast(QFont, st.value("ScriptEditorFont", QFont('Courier', 8), type=QFont))
+        self.ui.textEditScript.setFont(self.editorFont)
+        self.ui.fontComboBox.setCurrentFont(self.editorFont)
+        self.ui.spinBoxFontSize.setValue(self.editorFont.pointSize())
         # set tab spaces
         tabStop = 4
-        metrics = QFontMetricsF(self.font)
+        metrics = QFontMetricsF(self.editorFont)
         self.ui.textEditScript.setTabStopDistance(tabStop * metrics.maxWidth())
         # syntax highlighting
         self.highlighter = PythonHighlighter(self.ui.textEditScript.document())
@@ -277,7 +278,7 @@ class ScriptingForm(FormIndexManager):
         path = st.value("PathScripts", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Scripting', "Select the directory"),
-                                                     path)
+                                                     str(path))
         if directory == "":
             return
 
@@ -314,12 +315,14 @@ class ScriptingForm(FormIndexManager):
         path = st.value("PathScripts", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Scripting', "Select the directory"),
-                                                     path)
+                                                     str(path))
         if directory == "":
             return
         # avoid active filters
-        self.model.filterCondition.clear()
-        self.model.whereConditions.clear()
+        if hasattr(self.model, 'filterCondition'):
+            self.model.filterCondition.clear()
+        if hasattr(self.model, 'whereConditions'):
+            self.model.whereConditions.clear()
         self.reload()
         try:
             for row in range(self.model.rowCount()):
@@ -355,7 +358,7 @@ class ScriptingForm(FormIndexManager):
         path = st.value("PathScripts", QDir.current().path())
         fileName, t = QFileDialog.getOpenFileName(self,
                                                   _tr('Scripts', "Select the file to import"),
-                                                  path,
+                                                  str(path),
                                                   "*.scp.zip")
         if fileName == "":
             return
@@ -373,9 +376,8 @@ class ScriptingForm(FormIndexManager):
                                  _tr('Scripting', "Upload current script"),
                                  f"{msg}\n{er}")
         else:
-            act = act == 'True'
             try:
-                load_script(cls, mth, trg, pys, act)
+                load_script(cls, mth, trg, pys, True if act == 'True' else False)
             except PyAppDBError as er:
                 QMessageBox.critical(self,
                                      _tr("MessageDialog", "Critical"),
@@ -392,7 +394,7 @@ class ScriptingForm(FormIndexManager):
         path = st.value("PathScripts", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Scripting', "Select the directory"),
-                                                     path)
+                                                     str(path))
         if directory == "":
             return
 
@@ -416,9 +418,8 @@ class ScriptingForm(FormIndexManager):
                                          f"{msg}\n{fileName}\n{er}")
                     error = True
                 else:
-                    act = act == 'True'
                     try:
-                        load_script(cls, mth, trg, pys, act)
+                        load_script(cls, mth, trg, pys, True if act == 'True' else False)
                     except PyAppDBError as er:
                         error = True
                         QMessageBox.critical(self,

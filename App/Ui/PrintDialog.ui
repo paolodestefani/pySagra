@@ -93,13 +93,6 @@
        </property>
       </spacer>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0,0">
-     <item>
-      <widget class="QComboBox" name="comboBoxReportCustomizations"/>
-     </item>
      <item>
       <widget class="QLabel" name="label_3">
        <property name="text">
@@ -109,6 +102,13 @@
      </item>
      <item>
       <widget class="QComboBox" name="comboBoxReportList"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1">
+     <item>
+      <widget class="QComboBox" name="comboBoxReportCustomizations"/>
      </item>
     </layout>
    </item>
@@ -124,7 +124,7 @@
       <enum>QTabWidget::TabShape::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="documentMode">
       <bool>false</bool>
@@ -162,8 +162,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>596</width>
-            <height>303</height>
+            <width>597</width>
+            <height>267</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -240,8 +240,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>597</width>
+            <height>267</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -318,8 +318,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>597</width>
+            <height>267</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -381,8 +381,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>588</width>
-            <height>263</height>
+            <width>574</width>
+            <height>275</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -419,6 +419,21 @@
               <string>Export to PDF file</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_13">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
+               <number>5</number>
+              </property>
               <item>
                <layout class="QGridLayout" name="gridLayout">
                 <item row="0" column="0">
@@ -555,8 +570,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>406</width>
-            <height>416</height>
+            <width>529</width>
+            <height>400</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">

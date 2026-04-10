@@ -283,7 +283,7 @@ class Order():
             others = list(used_dep_desc)
             others.remove(get_department_desc(i))
             if others:
-                r['other_departments'] = ", ".join(others)
+                r['other_departments'] = ", ".join([d for d in others if d])
             else:
                 r['other_departments'] = None
             headersdep.append(r)

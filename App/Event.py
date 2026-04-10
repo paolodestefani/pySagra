@@ -31,7 +31,7 @@ This module allows events management
 # standard library
 import logging
 import cryptography
-import xml.etree.ElementTree as ET
+#import xml.etree.ElementTree as ET
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -61,6 +61,7 @@ from App.Database.Event import is_used
 from App.Database.Department import department_list
 from App.Database.Item import item_web_list
 from App.Database.CodeDescriptionList import price_list_cdl
+from App.Widget.Dialog import MessageBoxCritical
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ImageDelegate
 from App.Widget.Form import FormIndexManager
@@ -164,7 +165,7 @@ class EventForm(FormIndexManager):
         path = st.value("PathImagesEvents", QDir.current().path())
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr("Event", "Select the image file to upload"),
-                                           path,
+                                           str(path),
                                            _tr("Event", "Portable Network Graphics (*.png);;All files (*.*)"))
         if not f:
             return
@@ -180,8 +181,10 @@ class EventForm(FormIndexManager):
             self.ui.labelEventImage.setPixmap(pix)
         # save path
         st.setValue("PathImagesEvents", QFileInfo(f).path())
-        self.model.isDirty = True
-        self.model.userDataChanged.emit()
+        if hasattr(self.model, 'isDirty'):
+            self.model.isDirty = True
+        if hasattr(self.model, 'userDataChanged'):
+            self.model.userDataChanged.emit()
 
     @scriptMethod
     def download(self) -> None:
@@ -192,7 +195,7 @@ class EventForm(FormIndexManager):
         path = st.value("PathImagesEvents", QDir.current().path())
         f, t = QFileDialog.getSaveFileName(self,
                                            _tr("Event", "Select the destination file name"),
-                                           path,
+                                           str(path),
                                            _tr("Event", "Portable Network Graphics (*.png);;All files (*.*)"))
         if f == "":
             return
@@ -202,16 +205,18 @@ class EventForm(FormIndexManager):
                                     _tr("MessageDialog", "Information"),
                                     _tr("Event", "Image file saved"))
         else:
-            QMessageBoxCritical(self,
-                                _tr("MessageDialog", "Critical"),
-                                _tr("Event", "Error on saving image file"))
+            MessageBoxCritical(self,
+                               _tr("MessageDialog", "Critical"),
+                               _tr("Event", "Error on saving image file"))
 
     @scriptMethod
     def removeImage(self) -> None:
         "Remove company image"
         self.ui.labelEventImage.clear()
-        self.model.isDirty = True
-        self.model.userDataChanged.emit()
+        if hasattr(self.model, 'isDirty'):
+            self.model.isDirty = True
+        if hasattr(self.model, 'userDataChanged'):
+            self.model.userDataChanged.emit()
 
     @scriptMethod
     def new(self):

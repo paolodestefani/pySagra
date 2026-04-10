@@ -1086,7 +1086,7 @@ class PandasModel(QAbstractTableModel):
             elif fm == 'date':
                 if pd.isna(dt):
                     return ""
-                return dt.strftime('%d/%m/%Y')
+                return dt.strftime('%d/%m/%Y') if hasattr(dt, 'strftime') else str(dt)
             else:
                 return str(dt)
         

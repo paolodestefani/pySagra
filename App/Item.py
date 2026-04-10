@@ -23,7 +23,7 @@
 
 """Items
 
-This module contains items form management classes and funtions
+This module contains items form management classes and functions
 
 
 """
@@ -121,13 +121,14 @@ def item() -> None:
     logging.info('Items Form added to main window')
 
 
-class ChooseItemDialog(QDialog, Ui_ChooseItemDialog):
+class ChooseItemDialog(QDialog):
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.setupUi(self)
+        self.ui = Ui_ChooseItemDialog()
+        self.ui.setupUi(self)
         for k, v in item_with_variant_cdl():
-            self.comboBoxItems.addItem(v, k)
+            self.ui.comboBoxItems.addItem(v, k)
 
 
 class ItemForm(FormIndexManager):
@@ -183,8 +184,8 @@ class ItemForm(FormIndexManager):
         self.ui.tableView.setItemDelegateForColumn(I_SALABLE, BooleanDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_WEBAVAILABLE, BooleanDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_OBSOLETE, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, [(setting['normal_background_color'], _tr('Item', 'default'))] + COLORS))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(setting['normal_text_color'], _tr('Item', 'default'))] + COLORS))
+        self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, [(setting['normal_background_color'] or '', _tr('Item', 'default'))] + COLORS))
+        self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(setting['normal_text_color'] or '', _tr('Item', 'default'))] + COLORS))
         # mapper mappings
         self.ui.comboBoxType.setFunction(itemType)
         self.mapper.addMapping(self.ui.comboBoxType, TYPE, b"modelDataStr")
@@ -286,7 +287,7 @@ class ItemForm(FormIndexManager):
         self.ui.checkBoxVariants.setChecked(True)
         # add variants
         model = self.ui.tableViewVariants.model()
-        for so, (vd, pd) in enumerate(get_variants(dlg.comboBoxItems.currentData()), 1):
+        for so, (vd, pd) in enumerate(get_variants(dlg.ui.comboBoxItems.currentData()), 1):
             model.insertRows(model.rowCount(), 1)
             modelRow = model.rowCount() - 1
             model.setData(model.createIndex(modelRow, VDESC), vd)

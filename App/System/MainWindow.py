@@ -55,7 +55,7 @@ from PySide6.QtWidgets import QToolBar
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDialog
-#from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QMenuBar
 from PySide6.QtWidgets import QTabWidget
 
@@ -107,9 +107,10 @@ MERO = 8 # menu role
 
 # create actions (main window)
 
-def createActions(mainWindow: QMainWindow) -> None:
+def createActions(mainWindow: MainWindow) -> None:
     # create available actions
     createActionDictionary(mainWindow)
+    action: QAction|QWidgetAction
     # create active actions for user's profile
     for act, aut in get_actions(): # base
         if act not in actionDefinition:
@@ -147,7 +148,7 @@ def createActions(mainWindow: QMainWindow) -> None:
 
 # create menu
 
-def addMenuItems(item: str, menu: QMenuBar) -> None:
+def addMenuItems(item: str, menu: QMenuBar|QMenu) -> None:
     "Add action or submenu to menu"
     for child, itemType, description, action in get_menu(item):
         if itemType == 'S':
@@ -162,7 +163,6 @@ def addMenuItems(item: str, menu: QMenuBar) -> None:
 def createMenuBar(mainWindow: QMainWindow) -> None:
     "Create menu bar adding menus"
     menuBar = QMenuBar() # for MAC we need to create a menubar and set later
-    #menuBar.setNativeMenuBar(True)
     for child, itemType, description, action in get_menu(session['menu']):
         menu = menuBar.addMenu(description or "EMPTY MENU")
         addMenuItems(child, menu)
@@ -194,7 +194,7 @@ def createToolBar(mainWindow: QMainWindow) -> None:
 
 class TabWidget(QTabWidget):
 
-    def __init__(self, mainWin: QMainWindow) -> None:
+    def __init__(self, mainWin: MainWindow) -> None:
         super().__init__(mainWin)
         self.appimage = QPixmap(f":/{APPNAME}")
         # close current tab
@@ -342,16 +342,16 @@ class MainWindow(QMainWindow):
         # delete everything already in place
         currentAction.clear() # clear action dictionary
         # toolbars
-        for i in self.findChildren(QToolBar, None):
+        for i in self.findChildren(QToolBar):
             i.clear() # clear toolbar button
             self.removeToolBar(i) # remove toolbar from main window
         # menu bar
         if self.menuBar():
             self.menuBar().clear() # clear menu from menu bar
         # actions
-        for i in self.actions():
-            self.removeAction(i) # remove actions from main window
-            i.deleteLater() # delete old actions
+        for a in self.actions():
+            self.removeAction(a) # remove actions from main window
+            a.deleteLater() # delete old actions
         # create new UI
         # record counter, must be set after connection, user can change font
         self.counter = QLineEdit("-- / --", self)
@@ -421,9 +421,10 @@ class MainWindow(QMainWindow):
 
     def closeTab(self, index: int) -> bool:
         "Close current tab"
-        if not self.tabWidget.widget(index):
+        w = self.tabWidget.widget(index)
+        if not w:
             return False
-        if self.tabWidget.widget(index).close():
+        if w.close():
             self.tabWidget.removeTab(index)
             # empty tab widget
             if self.tabWidget.count() == 0:
@@ -436,11 +437,6 @@ class MainWindow(QMainWindow):
         while self.tabWidget.count():
             if not self.closeTab(self.tabWidget.currentIndex()):
                 break
-        # while self.tabWidget.count():
-        #     self.tabWidget.currentWidget().close()
-        #     self.tabWidget.removeTab(self.tabWidget.currentIndex())
-        # # self.tabWidget.clear() don't close the widget pages
-        # self.updateEditStatus(NSEMPTY, -1, -1)
 
     def hideTabBar(self) -> None:
         "Hide tabbar"
@@ -454,96 +450,97 @@ class MainWindow(QMainWindow):
         if tn == -1:
             self.updateEditStatus(NSEMPTY, -1, -1, None)
         else:
-            if hasattr(self.tabWidget.widget(tn), 'updateEditStatus'):
-                self.tabWidget.widget(tn).updateEditStatus()
+            t = self.tabWidget.widget(tn)
+            if t and hasattr(t, 'updateEditStatus'):
+                t.updateEditStatus()
             else:
                 self.updateEditStatus(NSEMPTY, -1, -1, None)
 
     # main action's slot redirection
 
     def new(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'new'):
-                self.tabWidget.currentWidget().new()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'new'):
+            w.new()
 
     def save(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'save'):
-                self.tabWidget.currentWidget().save()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'save'):
+            w.save()
 
     def delete(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'delete'):
-                self.tabWidget.currentWidget().delete()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'delete'):
+            w.delete()
 
     def reload(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'reload'):
-                if self.tabWidget.currentWidget().reloadConfirmation:
-                    # confirmation request
-                    if QMessageBox.question(self,
-                                            _tr("MessageDialog", "Question"),
-                                            _tr("Form", "Undo changes and reload data ?"),
-                                            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
-                                            QMessageBox.StandardButton.No
-                                            ) == QMessageBox.StandardButton.No:
-                        return
-                self.tabWidget.currentWidget().reload()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'reload'):
+            if hasattr(w, 'reloadConfirmation') and w.reloadConfirmation:
+                # confirmation request
+                if QMessageBox.question(self,
+                                        _tr("MessageDialog", "Question"),
+                                        _tr("Form", "Undo changes and reload data ?"),
+                                        QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                                        QMessageBox.StandardButton.No
+                                        ) == QMessageBox.StandardButton.No:
+                    return
+                w.reload()
 
-    def addChild(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'addChild'):
-                self.tabWidget.currentWidget().addChild()
+    # def addChild(self) -> None:
+    #     w = self.tabWidget.currentWidget()
+    #     if w and hasattr(w, 'addChild'):
+    #         w.addChild()
 
     def add(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'add'):
-                self.tabWidget.currentWidget().add()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'add'):
+            w.add()
 
     def remove(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'remove'):
-                self.tabWidget.currentWidget().remove()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'remove'):
+            w.remove()
 
     def toFirst(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'toFirst'):
-                self.tabWidget.currentWidget().toFirst()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'toFirst'):
+            w.toFirst()
 
     def toPrevious(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'toPrevious'):
-                self.tabWidget.currentWidget().toPrevious()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'toPrevious'):
+            w.toPrevious()
 
     def toNext(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'toNext'):
-                self.tabWidget.currentWidget().toNext()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'toNext'):
+            w.toNext()
 
     def toLast(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'toLast'):
-                self.tabWidget.currentWidget().toLast()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'toLast'):
+            w.toLast()
 
     def changeView(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'changeView'):
-                self.tabWidget.currentWidget().changeView()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'changeView'):
+            w.changeView()
 
     def setFilters(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'setFilters'):
-                self.tabWidget.currentWidget().setFilters()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'setFilters'):
+            w.setFilters()
 
     def print(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'print'):
-                self.tabWidget.currentWidget().print()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'print'):
+            w.print()
 
     def export(self) -> None:
-        if self.tabWidget.currentWidget():
-            if hasattr(self.tabWidget.currentWidget(), 'export'):
-                self.tabWidget.currentWidget().export()
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'export'):
+            w.export()
 
     def disconnected(self, error: str) -> None:
         "Disconnected from db server, call by check notification"
@@ -568,7 +565,6 @@ class MainWindow(QMainWindow):
                                     QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
                                     QMessageBox.StandardButton.No  # default botton
                                     ) == QMessageBox.StandardButton.No:
-                self.close()
                 return
         # close all open tabs
         self.closeAllTabs()
@@ -607,8 +603,9 @@ class MainWindow(QMainWindow):
 
     def helpLink(self) -> str:
         "Return contect help link if available"
-        if hasattr(self.tabWidget.currentWidget(), 'helpLink'):
-            return self.tabWidget.currentWidget().helpLink
+        w = self.tabWidget.currentWidget()
+        if w and hasattr(w, 'helpLink'):
+            return w.helpLink
         else:
             return "help/main.html"
 

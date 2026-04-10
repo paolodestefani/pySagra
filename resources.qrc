@@ -37,7 +37,7 @@
     <file alias="system_toolbar">icon/oxygen/configure-toolbars.png</file>
     <file alias="system_report">icon/oxygen/animator.png</file>
 	<file alias="system_scripting">icon/oxygen/python-logo.png</file>
-	<file alias="system_customization">icon/oxygen/dashboard-show.png</file>
+	<file alias="system_customization">icon/oxygen/preferences-web-browser-cache.png</file>
     <file alias="system_quit">icon/oxygen/system-shutdown.png</file>
     <file alias="file_cash_desk">icon/oxygen/accessories-calculator.png</file>
 	<file alias="file_printer">icon/oxygen/printer.png</file>
@@ -47,8 +47,8 @@
 	<file alias="file_price_list">icon/oxygen/folder-cyan.png</file>
 	<file alias="file_event">icon/oxygen/view-pim-calendar.png</file>
 	<file alias="file_update_web_order">icon/oxygen/akregator.png</file>
-	<file alias="file_order">icon/oxygen/folder-documents.png</file>
-    <file alias="file_order_number">icon/oxygen/folder-development.png</file>
+	<file alias="file_order">icon/oxygen/rating.png</file>
+    <file alias="file_order_number">icon/oxygen/system.png</file>
     <file alias="file_settings">icon/oxygen/preferences-system.png</file>
     <file alias="edit_new">icon/oxygen/document-new.png</file>
     <file alias="edit_save">icon/oxygen/document-save.png</file>
@@ -81,7 +81,7 @@
     <file alias="tools_tool">icon/oxygen/applications-development.png</file>
     <file alias="help_content">icon/oxygen/help-contents.png</file>
     <file alias="help_faq">icon/oxygen/ktip.png</file>
-    <file alias="help_system_info">icon/oxygen/computer.png</file>
+    <file alias="help_system_info">icon/oxygen/computer-laptop.png</file>
   </qresource>
   <qresource prefix="/icon/crystal_clear">
     <file alias="qt_logo">icon/crystal_clear/Qt-logo-neon.png</file>
@@ -106,10 +106,10 @@
     <file alias="system_quit">icon/crystal_clear/shutdown.png</file>
     <file alias="file_cash_desk">icon/crystal_clear/wordprocessing.png</file>
 	<file alias="file_printer">icon/crystal_clear/file-print.png</file>
-    <file alias="file_department">icon/crystal_clear/folder-green.png</file>
-    <file alias="file_seat_map">icon/crystal_clear/folder-blue.png</file>
+    <file alias="file_department">icon/crystal_clear/folder-yellow.png</file>
+    <file alias="file_seat_map">icon/crystal_clear/folder-green.png</file>
     <file alias="file_item">icon/crystal_clear/folder-red.png</file>
-	<file alias="file_price_list">icon/crystal_clear/folder-yellow.png</file>
+	<file alias="file_price_list">icon/crystal_clear/folder-blue.png</file>
 	<file alias="file_event">icon/crystal_clear/date.png</file>
 	<file alias="file_update_web_order">icon/crystal_clear/network-settings.png</file>
 	<file alias="file_order">icon/crystal_clear/bookmark.png</file>
@@ -151,7 +151,7 @@
   <qresource prefix="/icon/fluentui">
     <file alias="qt_logo">icon/fluentui/Qt-logo-neon.png</file>
     <file alias="python_logo">icon/fluentui/python-logo.png</file>
-    <file alias="print_preview">icon/fluentui/Page-Facing-Up.png</file>
+    <file alias="print_preview">icon/fluentui/Eye.png</file>
 	<file alias="print_printer">icon/fluentui/Printer.png</file>
     <file alias="print_direct">icon/fluentui/Printer.png</file>
     <file alias="print_pdf">icon/fluentui/Scroll.png</file>
@@ -160,14 +160,14 @@
     <file alias="system_preferences">icon/fluentui/Peach.png</file>
     <file alias="system_connections">icon/fluentui/Globe-Showing-Europe-Africa.png</file>
     <file alias="system_connections_history">icon/fluentui/Globe-Showing-Americas.png</file>
-    <file alias="system_company">icon/fluentui/Card-Index-Dividers.png</file>
+    <file alias="system_company">icon/fluentui/File-Cabinet.png</file>
     <file alias="system_profile">icon/fluentui/Busts-In-Silhouette.png</file>
     <file alias="system_user">icon/fluentui/Bust-In-Silhouette.png</file>
     <file alias="system_menu">icon/fluentui/Gear.png</file>
     <file alias="system_toolbar">icon/fluentui/Gear.png</file>
     <file alias="system_report">icon/fluentui/Clapper-Board.png</file>
 	<file alias="system_scripting">icon/fluentui/python-logo.png</file>
-	<file alias="system_customization">icon/fluentui/Ringed-Planet.png</file>
+	<file alias="system_customization">icon/fluentui/Fire.png</file>
     <file alias="system_quit">icon/fluentui/Hand-With-Fingers-Splayed.png</file>
     <file alias="file_cash_desk">icon/fluentui/Keyboard.png</file>
 	<file alias="file_printer">icon/fluentui/Printer.png</file>
@@ -195,14 +195,14 @@
     <file alias="edit_remove">icon/fluentui/Large-Orange-Diamond.png</file>
     <file alias="edit_filter">icon/fluentui/Magnifying-Glass-Tilted-Left.png</file>
     <file alias="edit_print">icon/fluentui/Printer.png</file>
-    <file alias="edit_export">icon/fluentui/Bookmark-Tabs.png</file>
+    <file alias="edit_export">icon/fluentui/Shuffle-Tracks-Button.png</file>
     <file alias="edit_change">icon/fluentui/Counterclockwise-Arrows-Button.png</file>
     <file alias="order_switch">icon/fluentui/Left-Right-Arrow.png</file>
     <file alias="order_ok">icon/fluentui/Ok-Button.png</file>
     <file alias="order_cancel">icon/fluentui/Cl-Button.png</file>
-    <file alias="order_note">icon/fluentui/Memo.png</file>
+    <file alias="order_note">icon/fluentui/Page-Facing-Up.png</file>
     <file alias="order_flag">icon/fluentui/Round-Pushpin.png</file>
-    <file alias="activities_order">icon/fluentui/Clipboard.png</file>
+    <file alias="activities_order">icon/fluentui/Memo.png</file>
     <file alias="activities_inventory">icon/fluentui/Package.png</file>
 	<file alias="activities_order_progress">icon/fluentui/Eleven-Thirty.png</file>
     <file alias="activities_ordered_delivered">icon/fluentui/Delivery-Truck.png</file>
@@ -211,12 +211,12 @@
     <file alias="tools_tool">icon/fluentui/Hammer.png</file>
     <file alias="help_content">icon/fluentui/Blue-Book.png</file>
     <file alias="help_faq">icon/fluentui/Light-Bulb.png</file>
-    <file alias="help_system_info">icon/fluentui/Desktop-Computer.png</file>
+    <file alias="help_system_info">icon/fluentui/Laptop.png</file>
   </qresource>
   <qresource prefix="/icon/flatwoken">
     <file alias="qt_logo">icon/flatwoken/Qt-logo-neon.png</file>
     <file alias="python_logo">icon/flatwoken/python-logo.png</file>
-    <file alias="print_preview">icon/flatwoken/Actions-Preview.png</file>
+    <file alias="print_preview">icon/flatwoken/Preview.png</file>
 	<file alias="print_printer">icon/flatwoken/Printer.png</file>
     <file alias="print_direct">icon/flatwoken/Printer.png</file>
     <file alias="print_pdf">icon/flatwoken/Pdf.png</file>
@@ -232,7 +232,7 @@
     <file alias="system_toolbar">icon/flatwoken/Preferences-Desktop-C.png</file>
     <file alias="system_report">icon/flatwoken/Player-Video.png</file>
 	<file alias="system_scripting">icon/flatwoken/python-logo.png</file>
-	<file alias="system_customization">icon/flatwoken/Sunrise-Calendar.png</file>
+	<file alias="system_customization">icon/flatwoken/Mindmeister.png</file>
     <file alias="system_quit">icon/flatwoken/Dialog-Shutdown.png</file>
     <file alias="file_cash_desk">icon/flatwoken/Office.png</file>
 	<file alias="file_printer">icon/flatwoken/Printer.png</file>
@@ -270,7 +270,7 @@
     <file alias="activities_order">icon/flatwoken/Gedit-B.png</file>
     <file alias="activities_inventory">icon/flatwoken/Dropbox-B.png</file>
 	<file alias="activities_order_progress">icon/flatwoken/Stopwatch.png</file>
-    <file alias="activities_ordered_delivered">icon/flatwoken/Folder-Downloads.png</file>
+    <file alias="activities_ordered_delivered">icon/flatwoken/Search-Log.png</file>
     <file alias="activities_sales_summary">icon/flatwoken/Easytag.png</file>
     <file alias="statistics_statistic">icon/flatwoken/System-Monitor.png</file>
     <file alias="tools_tool">icon/flatwoken/Settings-C.png</file>

@@ -124,13 +124,20 @@ class TableWidgetDragRows(QTableWidget):
         self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
+        
+    def item(self, row: int, column: int) -> TableWidgetItem:
+        item = super().item(row, column)
+        if item is not None:
+            return TableWidgetItem(item.data(Qt.ItemDataRole.DisplayRole))
+        return TableWidgetItem(None)
 
     def dropEvent(self, event: QDropEvent) -> None:
         if not event.isAccepted() and event.source() == self:
             drop_row = self.drop_on(event)
 
             rows = sorted(set(item.row() for item in self.selectedItems()))
-            rows_to_move = [[self.item(row_index, column_index).copy() for column_index in range(self.columnCount())]
+            rows_to_move = [[self.item(row_index, column_index).copy() 
+                             for column_index in range(self.columnCount())]
                             for row_index in rows]
             for row_index in reversed(rows):
                 self.removeRow(row_index)
@@ -163,4 +170,4 @@ class TableWidgetDragRows(QTableWidget):
         elif rect.bottom() - pos.y() < margin:
             return True
         # noinspection PyTypeChecker
-        return rect.contains(pos, True) and not (int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and pos.y() >= rect.center().y()
+        return rect.contains(pos, True) and not (self.model().flags(index) & Qt.ItemFlag.ItemIsDropEnabled) and pos.y() >= rect.center().y()

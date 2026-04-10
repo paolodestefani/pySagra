@@ -1000,8 +1000,8 @@ class PrintDialog(QDialog):
             self.restoreGeometry(st.value(f"PrintDialogGeometry/{self.reportClass}"))
         self.ui.lineEditDirectory.setText(st.value("ExportPDFDirectory", QDir().currentPath()))
         self.ui.checkBoxOpenPDF.setChecked(st.value("ExportPDFOpenFileAfter", 'false') == 'true')
-        self.ui.comboBoxPDFVersion.setCurrentIndex(int(st.value("ExportPDFVersion", '1')))
-        self.ui.spinBoxResolution.setValue(int(st.value("ExportPDFResolution", '100')))
+        self.ui.comboBoxPDFVersion.setCurrentIndex(st.value("ExportPDFVersion", 1, type=int))
+        self.ui.spinBoxResolution.setValue(st.value("ExportPDFResolution", 100, type=int))
         # report list for customizations or given report code
         if reportId:
             self.ui.comboBoxReportList.addItem(report_description(reportId), reportId)
@@ -1082,7 +1082,7 @@ class PrintDialog(QDialog):
             if not self.ui.layoutParameters.itemAtPosition(row, 1):  # some time rowCount is wrong
                 continue
             widget = self.ui.layoutParameters.itemAtPosition(row, 1).widget()
-            wv: int|str|float|QDate|QDateTime|bool
+            wv: int|str|float|QDate|QDateTime|bool|list[object]
             match widget:
                 case QComboBox():
                     wv = widget.currentIndex()
@@ -1749,8 +1749,8 @@ class PrintPDFDialog(QDialog):
         st = QSettings(self)
         dirname = st.value("ExportPDFDirectory", QDir().currentPath())
         self.ui.checkBoxOpenFile.setChecked(st.value("ExportPDFOpenFileAfter", 'false') == 'true')
-        self.ui.comboBoxPDFVersion.setCurrentIndex(int(st.value("ExportPDFVersion", '1')))
-        self.ui.spinBoxResolution.setValue(int(st.value("ExportPDFResolution", '100')))
+        self.ui.comboBoxPDFVersion.setCurrentIndex(st.value("ExportPDFVersion", 1, type=int))
+        self.ui.spinBoxResolution.setValue(st.value("ExportPDFResolution", 100, type=int))
         self.ui.lineEditDirectory.setText(dirname)
         # file name
         self.ui.lineEditFileName.setText(file_name)

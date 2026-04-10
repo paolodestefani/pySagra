@@ -31,6 +31,7 @@ This module provides order entry dialog and required subcalsses/funtions
 # standard library
 import logging
 import decimal
+from typing import Any, cast, Callable
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -82,9 +83,9 @@ from App.Database.Item import is_for_takeaway
 from App.Database.Item import get_item_desc
 from App.Database.Printer import get_printer_name
 from App.Database.Item import get_variants
-from App.Database.WebOrder import get_web_order_header
-from App.Database.WebOrder import get_web_order_details
-from App.Database.WebOrder import set_web_order_processed
+#from App.Database.WebOrder import get_web_order_header
+#from App.Database.WebOrder import get_web_order_details
+#from App.Database.WebOrder import set_web_order_processed
 from App.Database.Order import Order
 from App.Database.Order import get_orders_issued
 from App.Report.Order import printOrderReport
@@ -117,6 +118,7 @@ def orderEntry() -> None:
                                 'is necessary to setup an event for the current date'))
         return
     setting = SettingClass()
+    Ui_OrderDialog: Any
     if setting['order_entry_ui'] == 0:
         from App.Ui.OrderDialog0 import Ui_OrderDialog0 as Ui_OrderDialog
     elif setting['order_entry_ui'] == 1:
@@ -148,31 +150,38 @@ class DepartmentNoteDialog(QDialog):
 class VariantCheckBox(QCheckBox):
     def __init__(self, parent, desc, priced):
         super().__init__(parent)
-        self.setText(desc)
         self.priceDelta = priced
+        if priced > 0:
+            self.setText(f"{desc} (+{toCurrency(priced)})")
+        else:
+            self.setText(desc)
 
 class ChooseVariantDialog(QDialog):
     "Dialog for item variants selection"
-    def __init__(self, parent: QWidget, item: int, variants: str):
+    def __init__(self, parent: QWidget, item: str, variants: list):
         super().__init__(parent)
         self.ui = Ui_ChooseVariantsDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(item)
-        self.ui.bg = QButtonGroup(self)
-        self.ui.bg.setExclusive(False)
+        self.bg = QButtonGroup(self)
+        self.bg.setExclusive(False)
         for variant, delta in variants:
             v = VariantCheckBox(self, variant, delta)
-            self.ui.bg.addButton(v)
+            self.bg.addButton(v)
             self.ui.layout.addWidget(v)
 
     def getVariants(self):
         "Rwturn a string of variants ad a price delta"
         variants = []
         priceDelta = 0
-        for i in self.ui.bg.buttons():
+        # get variants and price delta
+        for i in self.bg.buttons():
             if i.isChecked():
                 variants.append(i.text())
                 priceDelta += i.priceDelta
+        # free variants
+        if self.ui.lineEditFreeVariant.text():
+            variants.append(self.ui.lineEditFreeVariant.text())
         return " ".join(variants), priceDelta
 
 # a button of the list. It's a push button subclass with some more attribute
@@ -252,7 +261,7 @@ class ButtonList(QPushButton):
 class BaseOrderDialog(QDialog):
     "Order dialog"
 
-    def __init__(self, parent: QWidget = None, uidialog: QWidget = None) -> None:
+    def __init__(self, parent: QWidget, uidialog: Callable) -> None:
         super().__init__(parent)
         self.ui = uidialog()
         self.ui.setupUi(self)

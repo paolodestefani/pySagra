@@ -91,7 +91,7 @@ WHERE department_id = %s;"""
             if result:
                 return result[0]
             else:
-                return None
+                return None # should not happen
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     

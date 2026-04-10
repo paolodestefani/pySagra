@@ -61,6 +61,16 @@ class Ui_PrintDialog(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.label_3 = QLabel(PrintDialog)
+        self.label_3.setObjectName(u"label_3")
+
+        self.horizontalLayout.addWidget(self.label_3)
+
+        self.comboBoxReportList = QComboBox(PrintDialog)
+        self.comboBoxReportList.setObjectName(u"comboBoxReportList")
+
+        self.horizontalLayout.addWidget(self.comboBoxReportList)
+
 
         self.verticalLayout_14.addLayout(self.horizontalLayout)
 
@@ -70,16 +80,6 @@ class Ui_PrintDialog(object):
         self.comboBoxReportCustomizations.setObjectName(u"comboBoxReportCustomizations")
 
         self.horizontalLayout_7.addWidget(self.comboBoxReportCustomizations)
-
-        self.label_3 = QLabel(PrintDialog)
-        self.label_3.setObjectName(u"label_3")
-
-        self.horizontalLayout_7.addWidget(self.label_3)
-
-        self.comboBoxReportList = QComboBox(PrintDialog)
-        self.comboBoxReportList.setObjectName(u"comboBoxReportList")
-
-        self.horizontalLayout_7.addWidget(self.comboBoxReportList)
 
         self.horizontalLayout_7.setStretch(0, 1)
 
@@ -103,7 +103,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaParameters.setWidgetResizable(True)
         self.scrollAreaWidgetContentsParameters = QWidget()
         self.scrollAreaWidgetContentsParameters.setObjectName(u"scrollAreaWidgetContentsParameters")
-        self.scrollAreaWidgetContentsParameters.setGeometry(QRect(0, 0, 596, 303))
+        self.scrollAreaWidgetContentsParameters.setGeometry(QRect(0, 0, 597, 267))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContentsParameters)
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -132,7 +132,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaFilters.setWidgetResizable(True)
         self.scrollAreaWidgetContentsFilters = QWidget()
         self.scrollAreaWidgetContentsFilters.setObjectName(u"scrollAreaWidgetContentsFilters")
-        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 597, 267))
         self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContentsFilters)
         self.verticalLayout_5.setSpacing(0)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
@@ -161,7 +161,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaSorting.setWidgetResizable(True)
         self.scrollAreaWidgetContentsSorting = QWidget()
         self.scrollAreaWidgetContentsSorting.setObjectName(u"scrollAreaWidgetContentsSorting")
-        self.scrollAreaWidgetContentsSorting.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContentsSorting.setGeometry(QRect(0, 0, 597, 267))
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContentsSorting)
         self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -188,7 +188,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaPrintOptions.setWidgetResizable(True)
         self.scrollAreaWidgetContentsOptions = QWidget()
         self.scrollAreaWidgetContentsOptions.setObjectName(u"scrollAreaWidgetContentsOptions")
-        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 588, 263))
+        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 574, 275))
         self.verticalLayout_18 = QVBoxLayout(self.scrollAreaWidgetContentsOptions)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
         self.groupBoxPrint = QGroupBox(self.scrollAreaWidgetContentsOptions)
@@ -222,7 +222,9 @@ class Ui_PrintDialog(object):
         self.groupBoxPDFExport = QGroupBox(self.scrollAreaWidgetContentsOptions)
         self.groupBoxPDFExport.setObjectName(u"groupBoxPDFExport")
         self.verticalLayout_13 = QVBoxLayout(self.groupBoxPDFExport)
+        self.verticalLayout_13.setSpacing(0)
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.verticalLayout_13.setContentsMargins(5, 5, 5, 5)
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.label_6 = QLabel(self.groupBoxPDFExport)
@@ -321,7 +323,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaCustomize.setWidgetResizable(True)
         self.scrollAreaWidgetContentsCustomize = QWidget()
         self.scrollAreaWidgetContentsCustomize.setObjectName(u"scrollAreaWidgetContentsCustomize")
-        self.scrollAreaWidgetContentsCustomize.setGeometry(QRect(0, 0, 406, 416))
+        self.scrollAreaWidgetContentsCustomize.setGeometry(QRect(0, 0, 529, 400))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContentsCustomize)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.groupBoxCurrent = QGroupBox(self.scrollAreaWidgetContentsCustomize)
@@ -456,7 +458,7 @@ class Ui_PrintDialog(object):
         self.buttonBox.accepted.connect(PrintDialog.accept)
         self.buttonBox.rejected.connect(PrintDialog.reject)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(PrintDialog)

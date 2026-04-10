@@ -255,18 +255,6 @@ class CompanyModel(TableModel):
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy('company_id')
         self.repr = 'Company table model'
-        
-    def submitAll(self, column: int|None = None, value: Any|None = None) -> bool:
-        # check if delete request of a in use company
-        for row in self.toDelete:
-            company = self.toDelete[row]['pkey']['company_id']
-            if company_is_in_use(company):
-                msg = _tr('Company', "Cannot delete company {} because currently in use").format(company)
-                raise PyAppDBError('0000', msg)
-        # otherwise continue
-        super().submitAll(column, value)
-        return True
-        
 
 
 class UserIndexModel(QueryModel):
