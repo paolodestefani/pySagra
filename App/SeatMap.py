@@ -233,7 +233,9 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
             tc = self.model.index(r, TEXT_COLOR).data()
             bc = self.model.index(r, BACKGROUND_COLOR).data()
             b = QPushButton(cod, self) # item description
-            b.setFont(QFont(self.setting['table_list_font_family'], self.setting['table_list_font_size'] + 5, QFont.Weight.Bold))
+            b.setFont(QFont(self.setting['table_list_font_family'] or "Arial", 
+                            int(self.setting['table_list_font_size'] or 7) + 5,
+                            QFont.Weight.Bold))
             b.setStyleSheet(f"color: {tc}; background-color: {bc};")
             b.setMinimumWidth(self.ui.spinBoxMinWidth.value())
             b.setMinimumHeight(self.ui.spinBoxMinHeight.value())
@@ -242,8 +244,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                 continue
             self.ui.gridLayoutPreview.addWidget(b, row, col)
         # fill the remaining cells of gl with an empty widget
-        for r in range(1, int(self.setting['table_list_rows']) + 1):
-            for c in range(1, int(self.setting['table_list_columns']) + 1):
+        for r in range(1, int(self.setting['table_list_rows'] or 0) + 1):
+            for c in range(1, int(self.setting['table_list_columns'] or 0) + 1):
                 if self.ui.gridLayoutPreview.itemAtPosition(r, c) is None:
                     w = QWidget(self)
                     w.setMinimumWidth(self.ui.spinBoxMinWidth.value())
@@ -262,7 +264,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         if not color.isValid():
             return
         button.setStyleSheet(f"background-color: {color.name()};")
-        button.bgColor = color.name()
+        if hasattr(button, 'bgColor'):
+            button.bgColor = color.name()
 
     def chooseBackground(self) -> None:
         color = QColorDialog.getColor(Qt.GlobalColor.white, self)

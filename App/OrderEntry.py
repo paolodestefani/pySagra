@@ -118,7 +118,7 @@ def orderEntry() -> None:
                                 'is necessary to setup an event for the current date'))
         return
     setting = SettingClass()
-    Ui_OrderDialog: Any
+    Ui_OrderDialog: Callable
     if setting['order_entry_ui'] == 0:
         from App.Ui.OrderDialog0 import Ui_OrderDialog0 as Ui_OrderDialog
     elif setting['order_entry_ui'] == 1:
@@ -189,8 +189,9 @@ class ChooseVariantDialog(QDialog):
 class ButtonList(QPushButton):
     "Push button for item list"
 
-    def __init__(self, text: str, textColor: str, backgroundColor: str, parent: QWidget) -> None:
+    def __init__(self, text: str, textColor: str, backgroundColor: str, parent: BaseOrderDialog) -> None:
         super().__init__(parent)
+        self.setting = parent.setting
         self.description = text
         self.textColor = textColor
         self.backgroundColor = backgroundColor
@@ -201,7 +202,7 @@ class ButtonList(QPushButton):
         self.price = None
         self.hasVariants = False
         self.setAutoFillBackground(True)
-        self.setFont(QFont(setting['order_list_font_family'], setting['order_list_font_size'], QFont.Bold))
+        self.setFont(QFont(self.setting['order_list_font_family'], self.setting['order_list_font_size'], QFont.Weight.Bold))
         self.setMinimumWidth(65)
         #####
         # for colors use stylesheet to avoid problem with platform themes
@@ -215,22 +216,22 @@ class ButtonList(QPushButton):
             self.setEnabled(True)  # disabled if level = 0 below
             if self.sc:
                 value = value or 0 # avoid None values
-                if not self.sc or (self.sc and not setting['always_show_stock_inventory']):
+                if not self.sc or (self.sc and not self.setting['always_show_stock_inventory']):
                     self.setText(self.caption)
                 else:
                     self.setText(self.caption + f"\n({self.level})")
                 # normal level
-                if value >= setting['warning_stock_level']:
+                if value >= self.setting['warning_stock_level']:
                     ss = f"background-color: {self.backgroundColor}; color: {self.textColor}"
                 # warning level
-                elif setting['critical_stock_level'] < value < setting['warning_stock_level']:
-                    ss = f"background-color: {setting['warning_background_color']}; color: {setting['warning_text_color']}"
+                elif self.setting['critical_stock_level'] < value < self.setting['warning_stock_level']:
+                    ss = f"background-color: {self.setting['warning_background_color']}; color: {self.setting['warning_text_color']}"
                 # critical level
-                elif 0 < value <= setting['critical_stock_level']:
-                    ss = f"background-color: {setting['critical_background_color']}; color: {setting['critical_text_color']}"
+                elif 0 < value <= self.setting['critical_stock_level']:
+                    ss = f"background-color: {self.setting['critical_background_color']}; color: {self.setting['critical_text_color']}"
                 # disabled: value = 0
                 else:
-                    ss = f"background-color: {setting['disabled_background_color']}; color: {setting['disabled_text_color']}"
+                    ss = f"background-color: {self.setting['disabled_background_color']}; color: {self.setting['disabled_text_color']}"
                     self.setDisabled(True)
             else:
                 # no level control -> always normal
@@ -265,25 +266,27 @@ class BaseOrderDialog(QDialog):
         super().__init__(parent)
         self.ui = uidialog()
         self.ui.setupUi(self)
-        global setting
-        setting = Setting()
+        #global setting
+        self.setting = Setting()
         # restore geometry
         st = QSettings()
         if st.value("OrderDialogGeometry"):
             self.restoreGeometry(st.value("OrderDialogGeometry"))
         # window flags
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.setWindowFlags(Qt.Dialog|Qt.WindowMinMaxButtonsHint|Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Dialog|
+                            Qt.WindowType.WindowMinMaxButtonsHint|
+                            Qt.WindowType.WindowCloseButtonHint)
         # dialog icons
         self.ui.pushButtonTablesSwitch.setIcon(currentIcon['order_switch'])
         self.ui.pushButtonConfirm.setIcon(currentIcon['order_ok'])
         self.ui.pushButtonCancel.setIcon(currentIcon['order_cancel'])
         self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Order'))
         # idle time control
-        if setting['check_inactivity']:
+        if self.setting['check_inactivity']:
             self.idleTimer = QTimer(self)
             self.idleTimer.timeout.connect(self.resetAdvice)
-            self.idleTimer.start(setting['inactivity_time'] * 1000)
+            self.idleTimer.start(self.setting['inactivity_time'] * 1000)
         # delivery button group
         self.ui.buttonGroupDelivery = QButtonGroup(self)
         self.ui.buttonGroupDelivery.addButton(self.ui.radioButtonTable)
@@ -296,12 +299,12 @@ class BaseOrderDialog(QDialog):
         self.ui.tabWidgetList.setTabPosition({'N': QTabWidget.TabPosition.North,
                                               'S': QTabWidget.TabPosition.South,
                                               'E': QTabWidget.TabPosition.East,
-                                              'W': QTabWidget.TabPosition.West}[setting['order_list_tab_position']])
+                                              'W': QTabWidget.TabPosition.West}[self.setting['order_list_tab_position']])
         # order list tablewidget
-        self.ui.list_rows = setting['order_list_rows']
-        self.ui.list_columns = setting['order_list_columns']
-        self.ui.tables_list_rows = setting['table_list_rows']
-        self.ui.tables_list_columns = setting['table_list_columns']
+        self.ui.list_rows = self.setting['order_list_rows']
+        self.ui.list_columns = self.setting['order_list_columns']
+        self.ui.tables_list_rows = self.setting['table_list_rows']
+        self.ui.tables_list_columns = self.setting['table_list_columns']
         self.ui.twheader = [_tr('OrderDialog', "ID"),
                             _tr('OrderDialog', "Variants"),
                             _tr('OrderDialog', "Item"),
@@ -339,7 +342,7 @@ class BaseOrderDialog(QDialog):
         gl.setSpacing(10)
         for tt, tr, tc, ttc, tbc in table_list():
             b = QPushButton(tt, self) # item description
-            b.setFont(QFont(setting['table_list_font_family'], setting['table_list_font_size'], QFont.Bold))
+            b.setFont(QFont(self.setting['table_list_font_family'], self.setting['table_list_font_size'], QFont.Weight.Bold))
             b.setStyleSheet(f"color: {ttc}; background-color: {tbc};")
             b.setMinimumWidth(50)
             b.setMinimumHeight(40)
@@ -440,7 +443,7 @@ class BaseOrderDialog(QDialog):
         else: # = table
             self.ui.lineEditTable.setEnabled(True)
             self.ui.spinBoxCovers.setEnabled(True)
-            if setting['use_table_list']:
+            if self.setting['use_table_list']:
                 self.ui.pushButtonTablesSwitch.setEnabled(True)
                 self.ui.stackedWidgetTableOrder.setCurrentIndex(1)
             for i in range(self.ui.tabWidgetList.count()):
@@ -450,7 +453,7 @@ class BaseOrderDialog(QDialog):
         "Reset dialog advice from idle timer"
         message = _tr("OrderDialog", "Warning: No order inserted since {} seconds.\n"
                       "It is recommended to update the window data, "
-                      "Update it now ?").format(setting['inactivity_time'])
+                      "Update it now ?").format(self.setting['inactivity_time'])
         if QMessageBox.question(self,
                                 _tr("OrderDialog", "Question"),
                                 message,
@@ -469,14 +472,14 @@ class BaseOrderDialog(QDialog):
         self.ui.lcdNumberTime.display(text)
 
     def checkCovers(self, value):
-        if value > setting['max_covers']:
+        if value > self.setting['max_covers']:
             QMessageBox.warning(self,
                                 _tr("OrderDialog", "Warning"),
-                                _tr("OrderDialog", "Warning: the number of covers is greater than {}").format(setting['max_covers']))
+                                _tr("OrderDialog", "Warning: the number of covers is greater than {}").format(self.setting['max_covers']))
             self.ui.spinBoxCovers.setFocus()
 
     def tablesOrder(self):
-        if not setting['use_table_list']:
+        if not self.setting['use_table_list']:
             return
         if self.ui.stackedWidgetTableOrder.currentIndex() == 0:
             self.ui.stackedWidgetTableOrder.setCurrentIndex(1)
@@ -515,7 +518,7 @@ class BaseOrderDialog(QDialog):
                                     QMessageBox.No) == QMessageBox.No:
                 return
         #get_current_event()  # update current event, don't need this as File\Events updates everything
-        if setting['default_delivery_type'] == 'T': # tables
+        if self.setting['default_delivery_type'] == 'T': # tables
             self.ui.radioButtonTable.setChecked(True)
             self.ui.lineEditTable.setEnabled(True)
             self.ui.lineEditTable.clear()
@@ -523,7 +526,7 @@ class BaseOrderDialog(QDialog):
             self.ui.lineEditCustomerName.clear()
             self.ui.spinBoxCovers.setEnabled(True)
             self.ui.spinBoxCovers.setValue(0)
-            if setting['use_table_list']:
+            if self.setting['use_table_list']:
                 self.ui.pushButtonTablesSwitch.setEnabled(True)
                 self.ui.stackedWidgetTableOrder.setCurrentIndex(1)
             else:
@@ -540,7 +543,7 @@ class BaseOrderDialog(QDialog):
             self.ui.pushButtonTablesSwitch.setDisabled(True)
             self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
         # electronic payment check
-        if setting['default_payment_type'] == 'E':
+        if self.setting['default_payment_type'] == 'E':
             self.ui.checkBoxElectronicPayment.setChecked(True)
         else:
             self.ui.checkBoxElectronicPayment.setChecked(False)
@@ -552,10 +555,10 @@ class BaseOrderDialog(QDialog):
         for i in range(self.ui.tabWidgetOrder.rowCount(), -1, -1):
             self.ui.tabWidgetOrder.removeRow(i)
         # disable show variants button on automatic popup
-        if setting['automatic_show_variants']:
+        if self.setting['automatic_show_variants']:
             self.ui.pushButtonVariants.setDisabled(True)
         # disable show level on always show stock
-        if setting['always_show_stock_inventory']:
+        if self.setting['always_show_stock_inventory']:
             self.ui.pushButtonShowLevel.setDisabled(True)
         self.ui.radioButton1.setChecked(True)
         self.ui.doubleSpinBoxSubTotal.setValue(0.0)
@@ -569,7 +572,7 @@ class BaseOrderDialog(QDialog):
         for i, dep in department_list(include_menu=True):
             ti = self.ui.tabWidgetList.addTab(QWidget(), dep)
             gl = QGridLayout()
-            gl.setSpacing(setting['order_list_spacing'])
+            gl.setSpacing(self.setting['order_list_spacing'])
             for ji, jd, jp, jr, jc, jl, jx, jtc, jbc, jv, js in item_list(session['event_id'], i):
                 # check item position
                 if not jr or not jc:
@@ -607,7 +610,7 @@ class BaseOrderDialog(QDialog):
         for button in self.ui.bgnotes.buttons():
             button.setIcon(currentIcon['empty'])
         # idle control
-        if setting['check_inactivity']:
+        if self.setting['check_inactivity']:
             self.idleTimer.start()
         # focus on covers
         self.ui.lineEditTable.setFocus()
@@ -861,7 +864,7 @@ class BaseOrderDialog(QDialog):
                                 msg)
             return
         # mandatory table number
-        if (setting['mandatory_table_number']
+        if (self.setting['mandatory_table_number']
             and self.ui.radioButtonTable.isChecked()
                 and not self.ui.lineEditTable.text().strip()):
             msg = _tr("OrderDialog", "The table number is missing!")
@@ -871,7 +874,7 @@ class BaseOrderDialog(QDialog):
             self.ui.lineEditTable.setFocus()
             return
         # unknown table number
-        if (setting['mandatory_table_number'] and setting['use_table_list']
+        if (self.setting['mandatory_table_number'] and self.setting['use_table_list']
             and self.ui.radioButtonTable.isChecked()):
             if not table_exists(self.ui.lineEditTable.text().strip()):
                 msg = _tr("OrderDialog", "The table number does not exist, use it anyway ?")
@@ -975,8 +978,8 @@ class BaseOrderDialog(QDialog):
             return
         # PRINT ORDER
         # customer copy
-        if setting['print_customer_copy']:
-            printer = get_printer_name(setting['customer_printer_class'], session['hostname'])
+        if self.setting['print_customer_copy']:
+            printer = get_printer_name(self.setting['customer_printer_class'], session['hostname'])
             try:
                 printOrderReport(ti, printer)
             except Exception as er:
@@ -984,8 +987,8 @@ class BaseOrderDialog(QDialog):
                                      _tr("MessageDialog", "Critical"),
                                      _tr('OrderDialog', "Unable to print order customer copy:\n{}").format(er))   
         # covers copy
-        if setting['print_cover_copy'] and order.header['delivery'] == 'T':
-            printer = get_printer_name(setting['cover_printer_class'], session['hostname'])
+        if self.setting['print_cover_copy'] and order.header['delivery'] == 'T':
+            printer = get_printer_name(self.setting['cover_printer_class'], session['hostname'])
             try:
                 printOrderCoverReport(ti, printer)
             except Exception as er:
@@ -994,7 +997,7 @@ class BaseOrderDialog(QDialog):
                                      _tr('OrderDialog', "Unable to print order cover copy:\n{}").format(er))   
                 
         # departments copies
-        if setting['print_department_copy']:
+        if self.setting['print_department_copy']:
             for i in used_dep:
                 prncls = get_department_printer_class(i)
                 if not prncls:
@@ -1007,17 +1010,17 @@ class BaseOrderDialog(QDialog):
                                          _tr("MessageDialog", "Critical"),
                                          _tr('OrderDialog', "Unable to print order department copy:\n{}").format(er)) 
         # check stock unload report
-        if setting['print_ordered_delivered_report']:
+        if self.setting['print_ordered_delivered_report']:
             # get orders issued in the half day from last inserted order header
             n = get_orders_issued(order.header['event_id'],
                                   order.header['stat_order_date'],
                                   order.header['stat_order_day_part'])
-            printer = get_printer_name(setting['ordered_delivered_printer_class'], session['hostname'])
+            printer = get_printer_name(self.setting['ordered_delivered_printer_class'], session['hostname'])
             try:
-                printStockUnloadReport(setting['ordered_delivered_report'],
+                printStockUnloadReport(self.setting['ordered_delivered_report'],
                                         session['l10n'],
                                         printer,
-                                        setting['ordered_delivered_copies'],
+                                        self.setting['ordered_delivered_copies'],
                                         order.header['event'],
                                         order.header['stat_order_date'],
                                         order.header['stat_order_day_part'])

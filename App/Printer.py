@@ -134,9 +134,9 @@ class PrinterForm(FormIndexManager):
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 f"{msg}\n{self.ui.lineEditDescription.text()}",
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 

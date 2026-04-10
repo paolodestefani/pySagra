@@ -232,6 +232,7 @@ class AnalysisForm(QWidget):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent)
+        self.model: PandasModel|None = None
         self.tabName = title
         self.helpLink = None
         # available edit status
@@ -263,7 +264,7 @@ class AnalysisForm(QWidget):
                          (_tr('Statistics', 'Variance'), 'var')]:
                 f.addItem(i, j)
         for c in (self.ui.comboBoxSort1, self.ui.comboBoxSort2):
-            for i, j in [('', ''),
+            for i, j in [('', ''), # type: ignore
                          (_tr('Statistics', 'Ascending'), True),
                          (_tr('Statistics', 'Descending'), False)]:
                 c.addItem(i, j)
@@ -271,7 +272,7 @@ class AnalysisForm(QWidget):
     def changeAnalysis(self, index: int) -> None:
         "Change analysis type"
         # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         match index:
             case 1:
                 self.model = OrderHeaderPandasModel()
@@ -286,7 +287,8 @@ class AnalysisForm(QWidget):
         QGuiApplication.restoreOverrideCursor()
         # events filter
         self.ui.comboBoxEvent.clear()
-        self.ui.comboBoxEvent.addItems([''] + self.model.getEvents())
+        if self.model and hasattr(self.model, 'getEvents'):
+            self.ui.comboBoxEvent.addItems([''] + self.model.getEvents())
         # assign columns to comboboxes
         for c in (self.ui.comboBoxColumn1,
                   self.ui.comboBoxColumn2,
@@ -299,12 +301,14 @@ class AnalysisForm(QWidget):
                   self.ui.comboBoxRow6,
                   self.ui.comboBoxRow7):
             c.clear()
-            c.addItems([''] + [i[0] for i in self.model.columns.values() if i[2]])
+            if self.model and hasattr(self.model, 'columns'):
+                c.addItems([''] + [i[0] for i in self.model.columns.values() if i[2]])
         # values comboboxes
         for v in (self.ui.comboBoxValue1,
                   self.ui.comboBoxValue2):
             v.clear()
-            v.addItems([''] + [i[0] for i in self.model.columns.values() if i[1]])
+            if self.model and hasattr(self.model, 'columns'):
+                v.addItems([''] + [i[0] for i in self.model.columns.values() if i[1]])
         
     def showApplyOptions(self):
         if self.ui.groupBoxValues.isVisible():

@@ -90,7 +90,7 @@ def eventBasedTool() -> None:
                                 _tr('Utility', 'No event available'))
         return
     dlg = EventToolDialog(mw, title, icon)
-    if dlg.exec() == QDialog.Rejected:
+    if dlg.exec() == QDialog.DialogCode.Rejected:
         return
     dlg.close()
     logging.info('Delete event based tool shown')
@@ -108,7 +108,7 @@ def deleteTool() -> None:
                                 _tr('Utility', 'You are not authorized to use this utility'))
         return
     dlg = DeleteToolDialog(mw, title, icon)
-    if dlg.exec() == QDialog.Rejected:
+    if dlg.exec() == QDialog.DialogCode.Rejected:
         return
     dlg.close()
     logging.info('Delete tool dialog shown')
@@ -126,7 +126,7 @@ def copyTool() -> None:
                                 _tr('Utility', 'You are not authorized to use this utility'))
         return
     dlg = CopyToolDialog(mw, title, icon)
-    if dlg.exec() == QDialog.Rejected:
+    if dlg.exec() == QDialog.DialogCode.Rejected:
         return
     dlg.close()
     logging.info('Copy tool dialog shown')

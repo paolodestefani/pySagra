@@ -317,11 +317,11 @@ class SettingsDialog(QDialog):
 
     def clicked(self, button: QPushButton) -> None:
         "Call Apply on clicked Ok or Apply button"
-        if self.ui.buttonBox.standardButton(button) == QDialogButtonBox.Apply:
+        if self.ui.buttonBox.standardButton(button) == QDialogButtonBox.StandardButton.Apply:
             self.apply()
 
     @scriptMethod
-    def apply(self) -> None:
+    def apply(self) -> bool:
         self.setting['lunch_start_time'] = self.ui.spinBoxLunch.value()
         self.setting['dinner_start_time'] = self.ui.spinBoxDinner.value()
         if self.ui.radioButtonTable.isChecked():

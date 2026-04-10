@@ -87,7 +87,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.tabName = title
         self.helpLink = None
         # overwrite standard sortfilterdialog with event filter dialog
-        self.sortFilterDialog = EventFilterDialog(self, session['event_id'])
+        self.sortFilterDialog = EventFilterDialog(self, session['event_id']) # type: ignore
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
@@ -122,7 +122,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.ui.tableView.setItemDelegateForColumn(TOTAL, AmountDelegate(self))
         # daily details
         self.ui.checkBoxDetail.checkStateChanged.connect(self.showDetails)
-        self.showDetails(Qt.Unchecked)
+        self.showDetails(Qt.CheckState.Unchecked)
 
     def showDetails(self, state):
         if state == Qt.Unchecked:
