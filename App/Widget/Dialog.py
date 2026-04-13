@@ -30,6 +30,7 @@ This module contains general custom dialogs
 
 # standard library
 import os
+import sys
 from typing import cast, Any
 import logging
 
@@ -149,7 +150,7 @@ referenceList = {'eventList': event_cdl,
 
 
 class MessageBox(QDialog):
-    "Custom message dialog"
+    "Custom message dialog for critical messages"
 
     def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
@@ -166,13 +167,26 @@ class MessageBox(QDialog):
 def MessageBoxCritical(parent, 
                        title: str|None = None, 
                        text: str|None = None, 
-                       detail: str|None = None) -> None:
+                       detail: str|None = None,
+                       type: str = 'T') -> None:
+    "Show a critical message dialog with optional detail message"
     dlg = MessageBox(parent)
     dlg.setWindowTitle(title or _tr('Dialog', "Critical error"),)
     dlg.ui.labelMessage.setText(text or _tr('Dialog', "Unidentified critical error"),)
-    dlg.ui.plainTextEditDetailMessage.setPlainText(detail or "")
-    dlg.exec()
-
+    match type:
+        case 'T': # text
+            dlg.ui.textEditDetailMessage.setHtml(detail or "")
+        case 'H': # html
+            dlg.ui.textEditDetailMessage.setHtml(detail or "")
+        case 'M': # Markdown
+            dlg.ui.textEditDetailMessage.setMarkdown(detail or "")
+        case _: # should not happen
+            pass
+    ret = dlg.exec()
+    # clicking on Abort should be equal to dialog.rejected
+    if ret == QDialog.DialogCode.Rejected:
+        sys.exit(0)
+        
 
 class SelectImageDialog(QDialog):
     "Select Image Dialog"

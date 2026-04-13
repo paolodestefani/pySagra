@@ -1308,9 +1308,10 @@ class Report():
         # restore page offset
         self.offset = page_offset
 
-    def groupGenerate(self, data: list[Any]|tuple[Any], group_index: int = 0) -> None:
+    def groupGenerate(self, data: list[Any], group_index: int = 0) -> None:
         "Resolve groups recursively"
         grp = self.groups[group_index] if self.groups else None
+        #data = sorted(data, key = lambda x: x[self.column[grp]] if grp else None) # type: ignore
         for key, group in itertools.groupby(data, lambda x: x[self.column[grp]] if grp else None):  # if no group returns all the dataset
             sub_data = list(group)
             header_record = {k: sub_data[0][v] for k, v in self.column.items()} # first record of the group
@@ -1979,7 +1980,7 @@ else:
                 </band>
             </groupHeader>
             <groupFooter>
-                <band height="30.0" isVisibleParameter="printFooter">
+                <band height="30.0" isVisibleParameter="printFooter" newPageAfter="True">
                     <label left="5.0" top="4.0" width="140.0" height="20" fontWeight="Bold" color="darkblue">Summary for:</label>
                     <field left="100.0" top="4.0" width="80" height="20.0" fontWeight="Bold" color="darkblue">department</field>
                     <label left="200.0" top="4.0" width="30.0" height="20" color="darkblue">Sum:</label>

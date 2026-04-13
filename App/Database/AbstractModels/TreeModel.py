@@ -51,7 +51,7 @@ from PySide6.QtGui import QFont
 from App import session
 from App import currentIcon
 from App import actionDefinition
-from App.Database import ovfield
+from App.Database import OVFIELD
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Psycopg import DEFAULT
 from App.Database.Connect import appconn
@@ -338,7 +338,7 @@ class TreeModel(QAbstractItemModel):
         # select fields + primary key fields + object version field
         fields = ", ".join([f"{i[FIELD]}" for i in self.columns]
                            + [f"{i}" for i in self.primaryKey]
-                           + [f"{ovfield}"])
+                           + [f"{OVFIELD}"])
         self._cols = len(self.columns)
         self._pkcols = range(self._cols, self._cols + len(self.primaryKey))
         self._ovcol = self._cols + len(self.primaryKey)

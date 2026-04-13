@@ -29,7 +29,7 @@ class Ui_SettingsDialog(object):
         if not SettingsDialog.objectName():
             SettingsDialog.setObjectName(u"SettingsDialog")
         SettingsDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        SettingsDialog.resize(722, 569)
+        SettingsDialog.resize(827, 612)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -37,8 +37,22 @@ class Ui_SettingsDialog(object):
         SettingsDialog.setSizePolicy(sizePolicy)
         self.verticalLayout_17 = QVBoxLayout(SettingsDialog)
         self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.verticalLayout_13 = QVBoxLayout()
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.labelIcon = QLabel(SettingsDialog)
+        self.labelIcon.setObjectName(u"labelIcon")
+
+        self.verticalLayout_13.addWidget(self.labelIcon)
+
+        self.verticalSpacer_7 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_13.addItem(self.verticalSpacer_7)
+
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout_13)
+
         self.tabWidget = QTabWidget(SettingsDialog)
         self.tabWidget.setObjectName(u"tabWidget")
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
@@ -1062,7 +1076,11 @@ class Ui_SettingsDialog(object):
 
         self.tabWidget.addTab(self.tab5, "")
 
-        self.verticalLayout_13.addWidget(self.tabWidget)
+        self.horizontalLayout_2.addWidget(self.tabWidget)
+
+        self.horizontalLayout_2.setStretch(1, 1)
+
+        self.verticalLayout_17.addLayout(self.horizontalLayout_2)
 
         self.buttonBox = QDialogButtonBox(SettingsDialog)
         self.buttonBox.setObjectName(u"buttonBox")
@@ -1070,10 +1088,7 @@ class Ui_SettingsDialog(object):
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Apply|QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
-        self.verticalLayout_13.addWidget(self.buttonBox)
-
-
-        self.verticalLayout_17.addLayout(self.verticalLayout_13)
+        self.verticalLayout_17.addWidget(self.buttonBox)
 
 #if QT_CONFIG(shortcut)
         self.labelCopy_4.setBuddy(self.spinBoxCustomerCopies)
@@ -1109,6 +1124,7 @@ class Ui_SettingsDialog(object):
 
     def retranslateUi(self, SettingsDialog):
         SettingsDialog.setWindowTitle(QCoreApplication.translate("SettingsDialog", u"Settings", None))
+        self.labelIcon.setText(QCoreApplication.translate("SettingsDialog", u"Icon", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("SettingsDialog", u"Order entry user interface", None))
         self.groupBox_8.setTitle(QCoreApplication.translate("SettingsDialog", u"Department tab position", None))
         self.groupBoxOrderGeometry.setTitle(QCoreApplication.translate("SettingsDialog", u"Order list base geometry", None))

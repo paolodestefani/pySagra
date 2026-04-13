@@ -17,7 +17,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
     QDialogButtonBox, QFrame, QHBoxLayout, QLabel,
-    QLayout, QPlainTextEdit, QSizePolicy, QSpacerItem,
+    QLayout, QSizePolicy, QSpacerItem, QTextEdit,
     QVBoxLayout, QWidget)
 
 class Ui_MessageDialog(object):
@@ -25,6 +25,7 @@ class Ui_MessageDialog(object):
         if not MessageDialog.objectName():
             MessageDialog.setObjectName(u"MessageDialog")
         MessageDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        MessageDialog.resize(535, 455)
         MessageDialog.setSizeGripEnabled(False)
         self.verticalLayout_4 = QVBoxLayout(MessageDialog)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -63,7 +64,7 @@ class Ui_MessageDialog(object):
         self.buttonBox = QDialogButtonBox(MessageDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Abort|QDialogButtonBox.StandardButton.Ignore)
         self.buttonBox.setCenterButtons(True)
 
         self.mainVerticalLayout.addWidget(self.buttonBox)
@@ -82,12 +83,13 @@ class Ui_MessageDialog(object):
         self.verticalLayout = QVBoxLayout(self.frameDetails)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.plainTextEditDetailMessage = QPlainTextEdit(self.frameDetails)
-        self.plainTextEditDetailMessage.setObjectName(u"plainTextEditDetailMessage")
-        self.plainTextEditDetailMessage.setMinimumSize(QSize(512, 256))
-        self.plainTextEditDetailMessage.setReadOnly(True)
+        self.textEditDetailMessage = QTextEdit(self.frameDetails)
+        self.textEditDetailMessage.setObjectName(u"textEditDetailMessage")
+        self.textEditDetailMessage.setMinimumSize(QSize(512, 256))
+        self.textEditDetailMessage.setReadOnly(True)
+        self.textEditDetailMessage.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
-        self.verticalLayout.addWidget(self.plainTextEditDetailMessage)
+        self.verticalLayout.addWidget(self.textEditDetailMessage)
 
 
         self.mainVerticalLayout.addWidget(self.frameDetails)

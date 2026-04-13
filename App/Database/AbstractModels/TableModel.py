@@ -53,7 +53,7 @@ from PySide6.QtCore import QByteArray
 
 # application modules
 from App import session
-from App.Database import ovfield
+from App.Database import OVFIELD
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Psycopg import DEFAULT
@@ -559,7 +559,7 @@ class TableModel(QAbstractTableModel):
         self.sqlCheck = (f"SELECT {', '.join(self.primaryKey)}\n"
                          f"FROM {self.table}\n"
                          f"WHERE {' AND '.join(
-                             [f'{i} = %({i})s' for i in self.primaryKey + (ovfield,)])};")
+                             [f'{i} = %({i})s' for i in self.primaryKey + (OVFIELD,)])};")
         try:
             with appconn.cursor() as cur: # manual submit, no commit (form can save multiple table models)
 
@@ -572,7 +572,7 @@ class TableModel(QAbstractTableModel):
                     args = pkey.copy()
                     #if self.isCompanyTable:
                     #    args['company_id'] = session['current_company']
-                    args[ovfield] = self.dataSet[row][ovfield]
+                    args[OVFIELD] = self.dataSet[row][OVFIELD]
                     logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
                     logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
                     cur.execute(self.sqlCheck, args)
@@ -584,7 +584,7 @@ class TableModel(QAbstractTableModel):
                     if not fields: # no real fields need update
                         continue
                     where = " AND ".join([f"{i} = %({i})s" for i in pkey])
-                    fieldsback = ", ".join([i[FIELD] for i in self.columns if i[FIELD]] + [ovfield])
+                    fieldsback = ", ".join([i[FIELD] for i in self.columns if i[FIELD]] + [OVFIELD])
                     script = (f"UPDATE {self.table}\n"
                               f"SET {fields}\n"
                               f"WHERE {where}\n"
@@ -596,9 +596,7 @@ class TableModel(QAbstractTableModel):
                     
                     for k, v in args.items():
                         #print("Key:", k, "Value:", v, "Type:", type(v))
-                        if isinstance(v, QByteArray):
-                            print(f"CAMPO {k}: Invio binario puro, dimensione {v.size()} bytes")
-                    cur.execute(script, args)
+                        cur.execute(script, args)
                     # repopulate the modified row
                     for record in cur:
                         # selected fields
@@ -610,7 +608,7 @@ class TableModel(QAbstractTableModel):
                             else:
                                 logger.error(f"ERRORE: Ricevuto tipo {type(record[index])} invece di QByteArray")
                         # row object version
-                        self.dataSet[row][ovfield] = record[-1] # ovfield is always the last onefield
+                        self.dataSet[row][OVFIELD] = record[-1] # OVFIELD is always the last onefield
                     self.dataChanged.emit(self.createIndex(row, 0),
                                           self.createIndex(row, cols),
                                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify de record
@@ -624,7 +622,7 @@ class TableModel(QAbstractTableModel):
                     args = pkey.copy()
                     if self.isCompanyTable:
                         args['company_id'] = session['current_company']
-                    args[ovfield] = dd[ovfield]
+                    args[OVFIELD] = dd[OVFIELD]
                     logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
                     logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
                     cur.execute(self.sqlCheck, args)
@@ -658,7 +656,7 @@ class TableModel(QAbstractTableModel):
                         valueList += [f"'{self.recordType[i]}'" for i in self.recordType]  # record type must be string
                     fields = ", ".join(fieldList)
                     values = ", ".join(valueList)
-                    fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [ovfield])
+                    fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])
                     args = {c[FIELD]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[FIELD] and not c[RO]}
                     if self.recordType:
                         for i in self.recordType:
@@ -685,7 +683,7 @@ class TableModel(QAbstractTableModel):
                     #args = {k: v for k, v in zip(self.primaryKey, pkey)}
                     #fields = ", ".join([f"{i[FIELD]}" for i in self.columns] +
                     #       [f"{i}" for i in self.primaryKey] +
-                    #       [ovfield])
+                    #       [OVFIELD])
                     #script = f"SELECT {fields}\nFROM {self.table}"
                     #script += f"\nWHERE {where};"
                     #logger.info(f"**** {self.repr} SELECT INSERT repopulate script ****\n{script}")
@@ -698,7 +696,7 @@ class TableModel(QAbstractTableModel):
                         # primary key
                         self.dataSet[row]['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
                         # object version
-                        self.dataSet[row][ovfield] = record[ovcol]
+                        self.dataSet[row][OVFIELD] = record[ovcol]
                     self.dataChanged.emit(self.createIndex(row, 0),
                                           self.createIndex(row, cols),
                                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify record
@@ -777,7 +775,7 @@ class TableModel(QAbstractTableModel):
             # save the deleted record primary key and object version
             if self.dataSet[i].get('pkey'):  # could happend if insert/delete before save
                 self.toDelete.append({'pkey': self.dataSet[i]['pkey'].copy(),
-                                      ovfield: self.dataSet[i][ovfield]})
+                                      OVFIELD: self.dataSet[i][OVFIELD]})
             # if row deleted is before an inserted/modified adjust row number (-1)
             self.toInsert.sort()
             self.toInsert = [ri - 1 if ri > i else ri for ri in self.toInsert]
@@ -876,7 +874,7 @@ class TableModel(QAbstractTableModel):
         # None fields (usually calculated fields) are converted to Null string
         fields = ", ".join([f"{i[FIELD] or 'Null'}" for i in self.columns]
                            + [f"{i}" for i in self.primaryKey]
-                           + [ovfield])
+                           + [OVFIELD])
 
         script = f"SELECT {fields}\nFROM {self.table}\n"
         args = []
@@ -921,7 +919,7 @@ class TableModel(QAbstractTableModel):
                     # master column
                     item['master_row'] = record[1] # master row number
                     # row object version
-                    item[ovfield] = record[ovcol]
+                    item[OVFIELD] = record[ovcol]
                     # append on record list
                     #print("Item:", item)
                     self.dataSet.append(item)
@@ -963,7 +961,7 @@ class PandasModel(QAbstractTableModel):
             script += "\nWHERE company_id = system.pa_current_company();"
         else:
             script += ";"
-        print("**** PandasModel SELECT script ****\n", script)
+        #print("**** PandasModel SELECT script ****\n", script)
         try:
             with appconn.cursor() as cur:
                 cur.execute(script)
@@ -978,8 +976,8 @@ class PandasModel(QAbstractTableModel):
         # force correct data types
         f = {self.columns[i][0]: self.columns[i][3] for i in self.columns if self.columns[i][3]}
         self._dataframe = df.astype(f)
-        print(f"Dataframe loaded with {len(self._dataframe)} rows and {len(self._dataframe.columns)} columns")
-        print("DTypes:", self._dataframe.dtypes)
+        #print(f"Dataframe loaded with {len(self._dataframe)} rows and {len(self._dataframe.columns)} columns")
+        #print("DTypes:", self._dataframe.dtypes)
         
         # Number of columns needed for row headers (index)
         #self.row_levels = df.index.nlevels if hasattr(df.index, 'nlevels') else 1
@@ -1022,9 +1020,9 @@ class PandasModel(QAbstractTableModel):
                                     margins=totals,
                                     margins_name=_tr('Statistics','Totale Generale'))
         logger.info(f"Pivot table created with {len(self._pivot)} rows and {len(self._pivot.columns)} columns")
-        print(self._pivot.head())
-        print(self._pivot.columns)
-        print(self._pivot.index.names)
+        #print(self._pivot.head())
+        #print(self._pivot.columns)
+        #print(self._pivot.index.names)
         #print(self._pivot.info())
         # update col_levels
         #self.col_levels = self._pivot.columns.nlevels if hasattr(self._pivot.columns, 'nlevels') else 1

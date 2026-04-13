@@ -37,6 +37,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtGui import QColor
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPalette
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QColorDialog
@@ -73,8 +74,9 @@ def settings() -> None:
     logging.info('Starting settings dialog')
     mw = session['mainwin']
     title = currentAction['app_file_setting'].text()
+    icon = currentAction['app_file_setting'].icon()
     auth = currentAction['app_file_setting'].data()
-    sd = SettingsDialog(mw, title, auth)
+    sd = SettingsDialog(mw, title, icon, auth)
     sd.exec_()
     logging.info('Settings dialog shown')
 
@@ -82,12 +84,13 @@ def settings() -> None:
 class SettingsDialog(QDialog):
     "Application settings dialog box for set/get application parameters"
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: str) -> None:
         super().__init__(parent)
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+        self.ui.labelIcon.setPixmap(icon.pixmap(100))
         self.setting = Setting()
         self.ui.spinBoxLunch.setValue(self.setting['lunch_start_time'])
         self.ui.horizontalSliderLunch.setValue(self.setting['lunch_start_time']) # initially slider/spinbox are not connected

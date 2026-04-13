@@ -47,5 +47,5 @@ ECIIU = 'PA013'  # Company is in use (drop company sp)
 
 # other parameters
 
-ovfield = 'object_version' # object versione field name for concurrency
-companyfield = 'company_id'  # default company id field name
+OVFIELD = 'object_version' # object versione field name for concurrency
+COMPANYFIELD = 'company_id'  # default company id field name

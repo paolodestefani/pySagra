@@ -72,6 +72,7 @@ from App import WEBSITE
 from App import session
 
 # application modules
+from App.Widget.Dialog import MessageBoxCritical
 from App.System.Login import LoginDialog
 from App.System.MainWindow import MainWindow
 
@@ -79,7 +80,7 @@ from App.System.MainWindow import MainWindow
 logger = logging.getLogger(__name__)
 
 
-def logUnhandledException(ex_cls: str, ex:str, tb: types.TracebackType) -> None:
+def logUnhandledException(ex_cls: type[BaseException], ex: BaseException, tb: types.TracebackType | None) -> None:
     "Function to get and log unhadked exceptions"
     logger.critical(''.join(traceback.format_tb(tb)))
     logger.critical('%s', ex_cls)
@@ -93,13 +94,11 @@ def logUnhandledException(ex_cls: str, ex:str, tb: types.TracebackType) -> None:
            .replace(">", "&gt;")
            .replace('"', "&quot;"))
     msg = f"""<pre>{''.join(traceback.format_tb(tb))}</pre><b>{exs}</b>"""
-    if QMessageBox.critical(session.get('mainwin'),
-                            "Unhadled exception",
-                            msg,
-                            QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Abort
-                            ) == QMessageBox.StandardButton.Abort:
-        sys.exit(0)
-
+    MessageBoxCritical(session.get('mainwin'),
+                       "Unhadled exception",
+                       "Uncaught exception occurred, see details for more information",
+                       msg,
+                       'H')
 
 # -------------------------------------------------------------------------- #
 

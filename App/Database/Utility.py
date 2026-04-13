@@ -31,7 +31,7 @@ Database utilities
 import psycopg
 
 # application modules
-from App.Database import ovfield
+from App.Database import OVFIELD
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import PyAppDBConcurrencyError
@@ -48,7 +48,7 @@ class Record(dict):
         - update_record for update the record in the table based on the primary key
         - delete_record for delete the record in the table based on the primary key
     """
-    ovfield = 'object_version'
+    OVFIELD = 'object_version'
 
     def __init__(self, table: str, pkey: list|tuple = []) -> None:
         """- table = table name
@@ -96,11 +96,11 @@ class Record(dict):
     def update_record(self) -> None:
         "Update a record base on primary key, raise an exception if modified before"
         # check object_version
-        if ovfield in self:
+        if OVFIELD in self:
             where = " AND ".join([f"{i} = %({i})s" for i in self.pkey])
             args = {k:self[k] for k in self.pkey} # primary key fields
-            args[ovfield] = self[ovfield]
-            script = (f"SELECT {ovfield} = %({ovfield})s\n"
+            args[OVFIELD] = self[OVFIELD]
+            script = (f"SELECT {OVFIELD} = %({OVFIELD})s\n"
                       f"FROM {self.table}\n"
                       f"WHERE {where};")
             try:
@@ -116,7 +116,7 @@ class Record(dict):
         script = (f"UPDATE {self.table}\n"
                   f"SET {', '.join([f'{i} = %({i})s' for i in self if i not in self.pkey])}\n"
                   f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])}\n"
-                  f"RETURNING {ovfield};")
+                  f"RETURNING {OVFIELD};")
         try:
             with appconn.transaction():
                 with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
@@ -130,10 +130,10 @@ class Record(dict):
     def delete_record(self) :
         "Delete one record base on primary key, raise an exception if modified before"
         # check row_timestamp
-        if ovfield in self:
+        if OVFIELD in self:
             where = " AND ".join([f"{i} = %({i})s" for i in self.pkey])
             args = {k:self[k] for k in self.pkey}
-            script = (f"SELECT {ovfield} = {self[ovfield]}\n"
+            script = (f"SELECT {OVFIELD} = {self[OVFIELD]}\n"
                       f"FROM {self.table}\n"
                       f"WHERE {where};")
             try:

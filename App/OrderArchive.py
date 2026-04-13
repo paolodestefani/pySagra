@@ -54,6 +54,7 @@ from App.Database.Models import OrderLineModel
 from App.Database.Models import OrderDepartmentTreeModel
 from App.Database.CodeDescriptionList import item_all_cdl
 from App.Database.CodeDescriptionList import department_cdl
+from App.Widget.Dialog import MessageBoxCritical
 from App.Widget.Dialog import PrintDialog
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import QuantityDelegate
@@ -336,8 +337,9 @@ class OrderForm(FormIndexManager):
                                                 _tr('MessageDialog', "Information"),
                                                 _tr('OrderArchive', "No data to render"))
                     except ReportException as er:
-                        QMessageBox.critical(self,
-                                             _tr('MessageDialog', "Critical"),
-                                             str(er),
-                                             QMessageBox.StandardButton.Ok)
+                        MessageBoxCritical(self,
+                                           _tr('MessageDialog', "Critical"),
+                                           _tr('OrderArchive', "Error printing department copy"),
+                                           str(er),
+                                           )
                     self.depCopy[i].setChecked(False)

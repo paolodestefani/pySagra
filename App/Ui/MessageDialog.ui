@@ -5,6 +5,14 @@
   <property name="windowModality">
    <enum>Qt::WindowModality::ApplicationModal</enum>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>535</width>
+    <height>455</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -82,7 +90,7 @@
         <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="standardButtons">
-        <set>QDialogButtonBox::StandardButton::Ok</set>
+        <set>QDialogButtonBox::StandardButton::Abort|QDialogButtonBox::StandardButton::Ignore</set>
        </property>
        <property name="centerButtons">
         <bool>true</bool>
@@ -124,7 +132,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPlainTextEdit" name="plainTextEditDetailMessage">
+         <widget class="QTextEdit" name="textEditDetailMessage">
           <property name="minimumSize">
            <size>
             <width>512</width>
@@ -133,6 +141,9 @@
           </property>
           <property name="readOnly">
            <bool>true</bool>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>

@@ -358,10 +358,6 @@ class EnhancedTableView(QTableView):
             ci = header.visualIndex(c)
             if ci != i:
                 header.moveSection(ci, i)
-
-    # def contextMenuEvent(self, position: QContextMenuEvent) -> None:
-    #     # self.cm.exec_(self.viewport().mapToGlobal(position))
-    #     self.cm.exec(QCursor.pos())
         
     def showContextMenu(self, pos) -> None:
         self.cm.exec(self.mapToGlobal(pos))
@@ -418,20 +414,6 @@ class EnhancedTableView(QTableView):
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
                                  _tr("View", "Error deleting row"))
-
-    #def printView(self):
-        #"Print table content"
-        #notes = _tr("View", "Print")
-        #dialog = QPrintPreviewDialog()
-        #dialog.setGeometry(QStyle.alignedRect(Qt.LeftToRight,
-                                              #Qt.AlignCenter,
-                                              #QSize(800, 600),
-                                              #qApp.desktop().availableGeometry()))
-        #dialog.setWindowFlags(Qt.Dialog|Qt.WindowMinMaxButtonsHint|Qt.WindowCloseButtonHint)
-        #dialog.setWindowTitle(_tr("View", "Print preview"))
-        #st = PrintView(self)
-        #dialog.paintRequested.connect(st.print_)
-        #dialog.exec_()
 
     def exportView(self) -> None:
         "Export to CSV file"
@@ -542,7 +524,8 @@ class EnhancedTableView(QTableView):
     def updateViewLayout(self, viewId: int|None = None) -> None:
         "Save current view layout to database"
         if not viewId:
-            viewId = int(self.ag.checkedAction().data())
+            #viewId = int(self.ag.checkedAction().data())
+            return
         columns = [(i,
                     self.horizontalHeader().visualIndex(i),
                     not self.isColumnHidden(i),

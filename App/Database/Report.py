@@ -399,8 +399,8 @@ def report_query(report: Report, condition: list|None = None, sorting: list|None
     # terminate script
     script += ";"
     # execute query and returns result set
-    print(script)
-    print(args)
+    #print(script)
+    #print(args)
     try:
         with appconn.cursor() as cur:
             #print(cur.mogrify(script, args))

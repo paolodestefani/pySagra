@@ -79,9 +79,9 @@ REPORTSETTING = 'reportsetting.csv'
 def customization() -> None:
     logger.info('Starting customization dialog')
     mw = session['mainwin']
-    auth = currentAction['sys_customization'].data()
     title = currentAction['sys_customization'].text()
     icon = currentAction['sys_customization'].icon()
+    auth = currentAction['sys_customization'].data()
     dialog = CustomizationsDialog(mw, title, icon, auth)
     dialog.show()
     logger.info('Customization dialog shown')

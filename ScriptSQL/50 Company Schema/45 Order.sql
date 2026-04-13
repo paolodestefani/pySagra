@@ -180,7 +180,7 @@ BEGIN
         WHERE order_header_id = NEW.order_header_id
         ) THEN
         UPDATE company.order_header 
-        SET status = 'P', fullfillment_date = now() 
+        SET status = 'P', fullfillment_date = now()     -- (P)rocessed
         WHERE order_header_id = NEW.order_header_id;
 	ELSIF ( 
         SELECT bool_or(CASE WHEN fullfillment_date IS NULL THEN false ELSE true END) 
@@ -188,11 +188,11 @@ BEGIN
         WHERE order_header_id = NEW.order_header_id
         ) THEN
 		UPDATE company.order_header 
-        SET status = 'I', fullfillment_date = Null 
+        SET status = 'I', fullfillment_date = Null      -- (I)n progress
         WHERE order_header_id = NEW.order_header_id;
     ELSE
         UPDATE company.order_header
-        SET status = 'A', fullfillment_date = Null 
+        SET status = 'A', fullfillment_date = Null      -- (A)quired
         WHERE order_header_id = NEW.order_header_id;
 	END IF;
 
@@ -236,7 +236,7 @@ CREATE TABLE order_header (
     change                  numeric(12, 2) NOT NULL DEFAULT 0,
     is_electronic_payment   boolean NOT NULL DEFAULT false,
     is_from_web             boolean NOT NULL DEFAULT false,
-    status                  char NOT NULL DEFAULT 'A', -- (A)quired, (I)in progress, (P)rocessed
+    status                  char NOT NULL DEFAULT 'A', -- (A)quired, (I)n progress, (P)rocessed
 	fullfillment_date       timestamptz(3) NULL,
     external_code           integer,
     --
@@ -248,11 +248,11 @@ CREATE TABLE order_header (
         REFERENCES system.company (company_id) 
         MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
     CONSTRAINT order_header_delivery_check 
-        CHECK (delivery IN ('T', 'A')), -- (T)able or take(A)way
+        CHECK (delivery IN ('T', 'A')),             -- (T)able, take(A)way
     CONSTRAINT order_header_day_part_check 
-        CHECK (stat_order_day_part IN ('L', 'D')), -- (L)unch / (D)inner
+        CHECK (stat_order_day_part IN ('L', 'D')),  -- (L)unch, (D)inner
 	CONSTRAINT order_header_status_check 
-        CHECK (status IN ('A', 'I', 'P')), -- (A)quired, (I)in progress, (P)rocessed
+        CHECK (status IN ('A', 'I', 'P')),          -- (A)quired, (I)in progress, (P)rocessed
     CONSTRAINT order_header_event_fk 
         FOREIGN KEY (event_id) 
         REFERENCES event (event_id)
