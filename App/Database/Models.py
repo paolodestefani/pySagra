@@ -74,7 +74,7 @@ class MenuItemTreeModel(TreeModel):
 
     def __init__(self, parent: QObject|None = None):
         super().__init__(parent)
-        self.table = "system.menu_item"
+        self.table = "system.menu_toolbar_item"
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("parent", _tr('Models', 'Menu'), False, 'str'),
@@ -105,7 +105,7 @@ class ToolbarItemTreeModel(TreeModel):
 
     def __init__(self, parent: QObject|None = None):
         super().__init__(parent)
-        self.table = "system.toolbar_item"
+        self.table = "system.menu_toolbar_item"
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("parent", _tr('Models', 'Menu'), False, 'str'),
@@ -471,17 +471,17 @@ class MenuIndexModel(QueryModel):
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
-    menu_code,
+    code,
     description,
     is_system_object,
     created_by,
     created_at,
     updated_by,
     updated_at
-FROM system.menu;"""
+FROM system.menu_toolbar;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
-        self.columns = (("menu_code", _tr('Models', 'Menu'), False, 'str'),
+        self.columns = (("code", _tr('Models', 'Menu'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -491,17 +491,18 @@ FROM system.menu;"""
         # True if is a company table
         self.isCompanyTable = False
         self.repr = 'Menu index query model'
-        self.addOrderBy('menu_code ASC')
+        self.recordType = {'type': 'M'}
+        self.addOrderBy('code ASC')
         
 
 class MenuModel(TableModel):
 
     def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
-        self.table = "system.menu"
+        self.table = "system.menu_toolbar"
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
-        self.columns = (("menu_code", _tr('Models', 'Menu'), False, 'str'),
+        self.columns = (("code", _tr('Models', 'Menu'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -511,11 +512,10 @@ class MenuModel(TableModel):
         # True if is a company table
         self.isCompanyTable = False
         # primary key fields, tuple or list
-        self.primaryKey = ("menu_code",)
-        # sql where clause, plain sql string without WHERE
-        #self.sqlWhere = ''
+        self.primaryKey = ("code",)
+        self.recordType = {'type': 'M'}
         # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("menu_code")
+        self.addOrderBy("code")
         self.repr = 'Menu table model'
         
 
@@ -525,17 +525,17 @@ class ToolbarIndexModel(QueryModel):
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
-    toolbar_code,
+    code,
     description,
     is_system_object,
     created_by,
     created_at,
     updated_by,
     updated_at
-FROM system.toolbar;"""
+FROM system.menu_toolbar;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
-        self.columns = (("toolbar_code", _tr('Models', 'Toolbar'), False, 'str'),
+        self.columns = (("code", _tr('Models', 'Toolbar'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -544,18 +544,19 @@ FROM system.toolbar;"""
                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
         # True if is a company table
         self.isCompanyTable = False
+        self.recordType = {'type': 'T'}
         self.repr = 'Toolbar index querymodel'
-        self.addOrderBy('toolbar_code ASC')
+        self.addOrderBy('code ASC')
         
 
 class ToolbarModel(TableModel):
 
     def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
-        self.table = "system.toolbar"
+        self.table = "system.menu_toolbar"
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
-        self.columns = (("toolbar_code", _tr('Models', 'Code'), False, 'str'),
+        self.columns = (("code", _tr('Models', 'Code'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -565,11 +566,12 @@ class ToolbarModel(TableModel):
         # True if is a company table
         self.isCompanyTable = False
         # primary key fields, tuple or list
-        self.primaryKey = ("toolbar_code",)
+        self.primaryKey = ("code",)
+        self.recordType = {'type': 'T'}
         # sql where clause, plain sql string without WHERE
         #self.sqlWhere = ''
         # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("toolbar_code")
+        self.addOrderBy("code")
         self.repr = 'Toolbar table model'
 
 

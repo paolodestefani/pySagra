@@ -87,7 +87,7 @@ class ToolbarForm(FormIndexManager):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, True, True, True, True,
-                                True, True, True, True)
+                                True, True, False, False)
         self.ui = Ui_ToolbarWidget()
         self.ui.setupUi(self)
         # icons for add/remove buttons

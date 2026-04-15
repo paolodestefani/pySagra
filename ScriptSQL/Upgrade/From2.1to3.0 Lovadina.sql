@@ -97,8 +97,8 @@ SELECT
 	u.user_ins,
 	40,
 	'default',
-	'default_it',
-	'default_it'
+	'm_default_it',
+	't_default_it'
 FROM (
 	SELECT DISTINCT
 		user_ins
@@ -113,7 +113,7 @@ INSERT INTO system.app_user_company (
 	profile_code,
 	menu_code,
 	toolbar_code)
-VALUES ('system', 40, 'full', 'full_en', 'full_en')
+VALUES ('system', 40, 'full', 'm_full_en', 't_full_en')
 ON CONFLICT DO NOTHING;
 
 DO $$ BEGIN RAISE NOTICE '% Set profile/menu/toolbar for users on company 40', clock_timestamp(); END; $$;

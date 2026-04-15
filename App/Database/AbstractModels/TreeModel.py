@@ -78,7 +78,7 @@ SELECT
     sorting,
     coalesce(action, ''),
     object_version
-FROM system.menu_item m
+FROM system.menu_toolbar_item m
 WHERE parent = %s
 ORDER BY sorting;"""
     try:

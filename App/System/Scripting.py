@@ -166,7 +166,7 @@ class ScriptingForm(FormIndexManager):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, True, True, True, True,
-                                True, True, True, False)
+                                True, True, False, False)
         self.ui = Ui_ScriptingWidget()
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)

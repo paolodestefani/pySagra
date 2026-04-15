@@ -94,7 +94,7 @@ class MenusForm(FormIndexManager):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, True, True, True, True,
-                                True, True, True, True)
+                                True, True, False, False)
         self.ui = Ui_MenuWidget()
         self.ui.setupUi(self)
         # icons for add/remove buttons

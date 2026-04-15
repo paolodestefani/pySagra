@@ -443,7 +443,7 @@ class SortFilterDialog(QDialog):
         # sorting comboboxes
         for row in range(len(self.model.columns)):
             field = RowComboBox(self)
-            field.addItem('', None) # item 0
+            field.addItem('', None) # item 0 for clear/reset
             for f, d, r, t in self.model.columns:
                 field.addItem(d, f)
             field.row = row
@@ -642,7 +642,7 @@ class SortFilterDialog(QDialog):
         row = s.row
         # reset negate
         self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)
-        # if index is zero reset everythingall the row
+        # if index is zero reset everythinga of the row
         if index == 0:
             # reset operator
             self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(0)
@@ -745,6 +745,8 @@ class SortFilterDialog(QDialog):
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter qwidget"
+        if not self.model or index < 0:
+            return
         # get current row number
         s = self.sender()        
         if not isinstance(s, RowComboBox):
@@ -960,27 +962,73 @@ class PrintDialog(QDialog):
         self.ui = Ui_PrintDialog()
         self.ui.setupUi(self)
         # can't be class variables for translation requirements
-        # object type (operator, operator description, require operand [0=Y, 1=N, 2=like operator])
-        self.FILTERING = {'N': [('', '', 0),  # first row means no data
-                                ('=', _tr('Operator', '='), 0),
-                                ('<', _tr('Operator', '<'), 0),
-                                ('<=', _tr('Operator', '<='), 0),
-                                ('>', _tr('Operator', '>'), 0),
-                                ('>=', _tr('Operator', '>='), 0),
-                                ('<>', _tr('Operator', '<>'), 0),
-                                ('Is Null', _tr('Operator', 'Is null'), 1),
-                                ('Is Not Null', _tr('Operator', 'Is not null'), 1)],
-                          'B': [('', '', 0),  # first row means no data
-                                ('=', _tr('Operator', 'Is'), 0),
-                                ('Is Null', _tr('Operator', 'Is null'), 1),
-                                ('Is Not Null', _tr('Operator', 'Is not null'), 1)],
-                          'S': [('', '', 0),  # first row means no data
-                                ('=', _tr('Operator', '='), 0),
-                                ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 2),
-                                ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 2),
-                                ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 2),
-                                ('Is', _tr('Operator', 'Is null'), 1),
-                                ('Is Not', _tr('Operator', 'Is not null'), 1)]}
+        # object type (operator, operator description, format, widget)
+        # format:
+        # 0 = require operand argument (field operator %s - args)
+        # 1 = no require operand (field operator)
+        # 2 = operand included in operator with argument as list (field operator - args)
+        # 3 = operand included in operator with argument literal
+        self.FILTERING = {
+            # integer
+            'int': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'SB'), # spinbox
+                  ('<', _tr('Operator', '<'), 0, 'SB'),
+                  ('<=', _tr('Operator', '<='), 0, 'SB'),
+                  ('>', _tr('Operator', '>'), 0, 'SB'),
+                  ('>=', _tr('Operator', '>='), 0, 'SB'),
+                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
+                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None),
+                  ('=', _tr('Operator', 'From list'), 0, 'LIST')], # list of reference values
+            # decimal number
+            'decimal': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
+                  ('<', _tr('Operator', '<'), 0, 'DSB'),
+                  ('<=', _tr('Operator', '<='), 0, 'DSB'),
+                  ('>', _tr('Operator', '>'), 0, 'DSB'),
+                  ('>=', _tr('Operator', '>='), 0, 'DSB'),
+                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
+                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+            # boolean
+            'bool': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'CB'), # checkbox
+                  ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
+            # string
+            'str': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'LE'), # line edit
+                  ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
+                  ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
+                  ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
+                  ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
+                  ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
+            # date
+            'date': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'DE'), # date edit
+                  ('<', _tr('Operator', '<'), 0, 'DE'),
+                  ('<=', _tr('Operator', '<='), 0, 'DE'),
+                  ('>', _tr('Operator', '>'), 0, 'DE'),
+                  ('>=', _tr('Operator', '>='), 0, 'DE'),
+                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+            # date time
+            'datetime': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'DTE'), # date time edit
+                  ('<', _tr('Operator', '<'), 0, 'DTE'),
+                  ('<=', _tr('Operator', '<='), 0, 'DTE'),
+                  ('>', _tr('Operator', '>'), 0, 'DTE'),
+                  ('>=', _tr('Operator', '>='), 0, 'DTE'),
+                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+             # time
+            'time': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
+                  ('<', _tr('Operator', '<'), 0, 'TE'),
+                  ('<=', _tr('Operator', '<='), 0, 'TE'),
+                  ('>', _tr('Operator', '>'), 0, 'TE'),
+                  ('>=', _tr('Operator', '>='), 0, 'TE'),
+                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+            # reference field / list
+            'refstr': [('', '', 0, None),  # first row means no data
+                  ('=', _tr('Operator', '='), 0, 'SCB'), # standard combo box
+                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'CCB'), # checkable combo box
+                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)]}
 
         self.ORDERING = (('ASC', _tr('Sort', 'Ascending')),
                          ('DESC', _tr('Sort', 'Descending')))
@@ -1352,34 +1400,42 @@ class PrintDialog(QDialog):
         # filters
         for row in range(FILTER_ROWS):
             field = RowComboBox(self)
-            field.addItem('', None)
+            field.addItem('', None) # item 0 for clear/reset
             for k, v in self.report.conditions.items():
                 field.addItem(v.description, k)
             field.row = row
             field.currentIndexChanged.connect(self.condIndexChanged)
+            neg = RowCheckBox(self)
+            neg.row = row
+            neg.setToolTip(_tr('PrintDialog','Not'))
             oper = RowComboBox(self)
             oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
-            self.ui.layoutFilters.addWidget(field, row, 0)
-            self.ui.layoutFilters.addWidget(oper, row, 1)
-            self.ui.layoutFilters.addWidget(QWidget(self), row, 2)
-        self.ui.layoutFilters.setColumnStretch(0, 2)
-        self.ui.layoutFilters.setColumnStretch(1, 1)
-        self.ui.layoutFilters.setColumnStretch(2, 1)
+            self.ui.layoutFilters.addWidget(field, row, FIELD)
+            self.ui.layoutFilters.addWidget(neg, row, NEGATE)
+            self.ui.layoutFilters.addWidget(oper, row, OPERATOR)
+            sw = SpacerWidget(self)
+            self.ui.layoutFilters.addWidget(sw, row, OPERAND)
+        # set layout stretch
+        self.ui.layoutFilters.setColumnStretch(FIELD, 2)
+        self.ui.layoutFilters.setColumnStretch(NEGATE, 0)
+        self.ui.layoutFilters.setColumnStretch(OPERATOR, 1)
+        self.ui.layoutFilters.setColumnStretch(OPERAND, 1)
         self.ui.layoutFilters.setRowStretch(row + 1, 1)
-        # sorting
+        # sorting comboboxes
         for row, f in enumerate(self.report.conditions):
             field = RowComboBox(self)
-            field.addItem('', None)
+            field.addItem('', None) # item 0 for clear/reset
             for i in self.report.conditions:
                 field.addItem(self.report.conditions[i].description, i)
             field.row = row
             field.currentIndexChanged.connect(self.sortIndexChanged)
             order = QComboBox(self)
-            self.ui.layoutSorting.addWidget(field, row, 0)
-            self.ui.layoutSorting.addWidget(order, row, 1)
-        self.ui.layoutSorting.setColumnStretch(0, 2)
-        self.ui.layoutSorting.setColumnStretch(1, 1)
+            self.ui.layoutSorting.addWidget(field, row, SORTFIELD)
+            self.ui.layoutSorting.addWidget(order, row, SORTORDER)
+        # set layout stretch
+        self.ui.layoutSorting.setColumnStretch(SORTFIELD, 2)
+        self.ui.layoutSorting.setColumnStretch(SORTORDER, 1)
         self.ui.layoutSorting.setRowStretch(row + 1, 1)
         # report class sorting
         self.ui.spinBoxClassSorting.setValue(report_adapt_sorting(custId))
@@ -1407,7 +1463,34 @@ class PrintDialog(QDialog):
         self.setReportCustomization(-1)  # initial settings
 
     def condIndexChanged(self, index: int) -> None:
-        "Set combobox items and parameter QWidget"
+        "Set combobox items (operator) and operand QWidget"
+        if index < 0:
+            return
+        # get current row number
+        s = self.sender()        
+        if not isinstance(s, RowComboBox):
+            return
+        row = s.row
+        # reset negate
+        self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)
+        # clear if index is zero
+        if index == 0:
+            # reset operator
+            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(0)
+            return
+        # get field type
+        ftype = self.conditions[self.sender().currentData()].ftype # type: ignore[attr-defined]
+        if not ftype:
+            return
+        # set operator alternatives
+        self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
+        for o, d, r, w in self.FILTERING[ftype]:
+            if hasattr(self.conditions[self.sender().currentData()], 'reference') and w == 'LIST':
+                continue
+            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
+        
+    def operIndexChanged(self, index: int) -> None:
+        "Create a widget for field and operator"
         if index < 0:
             return
         # get current row number
@@ -1417,94 +1500,92 @@ class PrintDialog(QDialog):
         row = s.row
         # clear if index is zero
         if index == 0:
-            self.ui.layoutFilters.itemAtPosition(row, 1).widget().clear()
-            self.ui.layoutFilters.itemAtPosition(row, 2).widget().deleteLater()
             # delete previous widget (MANDATORY)
-            self.ui.layoutFilters.removeWidget(self.ui.layoutFilters.itemAtPosition(row, 2).widget())
-            self.ui.layoutFilters.addWidget(QWidget(self), row, 2)
+            w = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+            self.ui.layoutFilters.removeWidget(w)
+            w.deleteLater()
+            # add spacer
+            sw = SpacerWidget(self) # spacer widget
+            #sw.wt = 'spacer'
+            self.ui.layoutFilters.addWidget(sw, row, OPERAND)
             return
         # get field type
-        ftype = self.conditions[self.sender().currentData()].ftype # type: ignore[attr-defined]
-        if self.ui.layoutFilters.itemAtPosition(row, 2):
-            self.ui.layoutFilters.itemAtPosition(row, 2).widget().deleteLater()
-        self.ui.layoutFilters.itemAtPosition(row, 1).widget().clear()
-        widget: QWidget
-        match ftype:
-            case 'int':
-                for o, d, r in self.FILTERING['N']:
-                    self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
+        field = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentData()
+        ftype = self.conditions[field].ftype # type: ignore[attr-defined]
+        w = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+        nwt = self.FILTERING[ftype][index][3]
+        # insert new operand widget
+        widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
+        match nwt:
+            case 'SB': # spinbox
                 widget = QSpinBox(self)
                 widget.setRange(0, 2147483647)
-            case 'bool':
-                for o, d, r in self.FILTERING['B']:
-                    self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
-                widget = QCheckBox(self)
-            case 'decimal2':
-                for o, d, r in self.FILTERING['N']:
-                    self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
+            case 'DSB': # double spinbox
                 widget = QDoubleSpinBox(self)
                 widget.setDecimals(2)
                 widget.setMaximum(99999999.99)
-            case 'str':
-                for o, d, r in self.FILTERING['S']:
-                    self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
-                widget = QLineEdit(self)
-            case 'date':
-                for o, d, r in self.FILTERING['N']:
-                    self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
+            case 'CB': # check box
+                widget = QCheckBox(self)
+            case 'DE': # date edit
                 widget = QDateEdit(QDate.currentDate(), self)
                 widget.setCalendarPopup(True)
                 widget.setMinimumDate(QDate(1800, 1, 1))
                 widget.setMaximumDate(QDate(3000, 12, 31))
                 widget.setDate(QDate.currentDate())
-            case 'datetime':
-                for o, d, r in self.FILTERING['N']:
-                    self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
+            case 'DTE': # date time edit
                 widget = QDateTimeEdit(self)
                 widget.setCalendarPopup(True)
                 widget.setMinimumDate(QDate(1800, 1, 1))
                 widget.setMaximumDate(QDate(3000, 12, 31))
                 widget.setDate(QDate.currentDate())
-            case _:
-                # no widget
-                widget = QWidget(self)
-        if hasattr(self.conditions[self.sender().currentData()], 'reference'): # type: ignore[attr-defined]
-            widget = RelationalComboBox(self)
-            widget.setFunction(referenceList[self.conditions[self.sender().currentData()].reference]) # type: ignore[attr-defined]
-            for o, d, r in self.FILTERING['N']:
-                self.ui.layoutFilters.itemAtPosition(row, 1).widget().addItem(d, o)
-        widget.setVisible(True) # initial visibility
-        # delete previous widget first (MANDATORY)
-        self.ui.layoutFilters.removeWidget(self.ui.layoutFilters.itemAtPosition(row, 2).widget())
-        # insert new widget
-        self.ui.layoutFilters.addWidget(widget, row, 2)
-
-    def operIndexChanged(self, index: int) -> None:
-        "Disable widget if operand is not required"
-        # get current row number
-        s = self.sender()        
-        if not isinstance(s, RowComboBox):
-            return
-        row = s.row
-        if self.ui.layoutFilters.itemAtPosition(row, 1):
-            i = self.ui.layoutFilters.itemAtPosition(row, 1).widget().count()
-            if  self.ui.layoutFilters.itemAtPosition(row, 1).widget().currentIndex() in (i - 1, i - 2):
-                self.ui.layoutFilters.itemAtPosition(row, 2).widget().setVisible(False)
-            else:
-                self.ui.layoutFilters.itemAtPosition(row, 2).widget().setVisible(True)
-
+            case 'TE': # time edit
+                widget = QTimeEdit(QTime.currentTime(), self)
+                #widget.setTime(QTime.currentTime())
+            case 'LE': # line edit
+                widget = QLineEdit(self)
+            case 'LES': # line edit string list
+                widget = LineEditStrings(self)
+            case 'LEI': # line edit int list
+                widget = LineEditInts(self)
+            case 'LED': # line edit decimal list
+                widget = LineEditDecimals(self)
+            case 'SCB': # standard combo box
+                widget = QComboBox(self)
+                # for k, v in get_list(self.model.columns[fi][6]):
+                #     widget.addItem(v, k)
+            case 'CCB': # chackable combo box
+                widget = CheckableComboBox(self)
+                # for k, v in get_list(self.model.columns[fi][6]):
+                #     widget.addItem(v, k)
+            case 'LIST':
+                # if hasattr(self.model, 'reference'):
+                #     widget = QComboBox(self)
+                #     for k, v in self.model.reference[field]():
+                #         widget.addItem(v, k)
+                # else:
+                #     widget = SpacerWidget(self)
+                widget = SpacerWidget(self)
+            case _: # no widget required (is null/is not null)
+                widget = SpacerWidget(self)
+        self.ui.layoutFilters.removeWidget(w)
+        w.deleteLater()
+        # new widget
+        self.ui.layoutFilters.addWidget(widget, row, OPERAND)
+        
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter widget"
+        if index < 0:
+            return
         # get current row number
         s = self.sender()        
         if not isinstance(s, RowComboBox):
             return
         row = s.row
         # clear first
-        self.ui.layoutSorting.itemAtPosition(row, 1).widget().clear()
+        self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().clear()
         if index != 0:
             for i, j in self.ORDERING:
-                self.ui.layoutSorting.itemAtPosition(row, 1).widget().addItem(j, i)
+                self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().addItem(j, i)
 
     def generateReport(self) -> bool:
         "Generate sql query, where condition, order by expression and report"
@@ -1535,56 +1616,67 @@ class PrintDialog(QDialog):
         condition = []
         argument = []
         for r in range(FILTER_ROWS):
-            if (hasattr(self.ui.layoutFilters.itemAtPosition(r, 0), 'widget') and  # can happended if no filters
-                (self.ui.layoutFilters.itemAtPosition(r, 0).widget().currentIndex() != 0 and  # field
-                 self.ui.layoutFilters.itemAtPosition(r, 1).widget().currentIndex() != 0)):  # operator
-                fl = self.ui.layoutFilters.itemAtPosition(r, 0).widget().currentData()
+            if (hasattr(self.ui.layoutFilters.itemAtPosition(r, FIELD), 'widget') and  # can happended if no filters
+                (self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() != 0 and  # field
+                 self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex() != 0)):  # operator
+                fl = self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentData()
                 ty = self.report.conditions[fl].ftype
-                op = self.ui.layoutFilters.itemAtPosition(r, 1).widget().currentData()
-                oi = self.ui.layoutFilters.itemAtPosition(r, 1).widget().currentIndex()
-                wd = self.ui.layoutFilters.itemAtPosition(r, 2).widget()
-                if wd:
-                    match wd:
-                        case QComboBox():
-                            v = wd.currentData()
-                        case QLineEdit():
-                            v = wd.text()
-                        case QSpinBox() | QDoubleSpinBox():
-                            v = wd.value()
-                        case QDateEdit():
-                            v = wd.date()
-                        case QDateTimeEdit():
-                            v = wd.dateTime()
-                        case QCheckBox():
-                            if wd.checkState() == Qt.CheckState.Checked:
-                                v = True
-                            else:
-                                v = False
-                else:
-                    v = None
-                if ty in ('int', 'decimal2', 'date', 'datetime'):
-                    i = 'N'
-                elif ty == 'bool':
-                    i = 'B'
-                else:
-                    i = 'S'
-                if self.FILTERING[i][oi][2] == 0:
-                    condition.append(f"{fl} {op} %s")
-                    argument.append(v)
-                elif self.FILTERING[i][oi][2] == 1:
-                    condition.append(f"{fl} {op}")
-                    argument.append(None) # for zip function we nedd ad argument
-                else:
-                    condition.append(f"{fl} {op}")
-                    argument.append(v)
+                ng = self.ui.layoutFilters.itemAtPosition(r, NEGATE).widget().isChecked()
+                op = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentData()
+                oi = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex()
+                wd = self.ui.layoutFilters.itemAtPosition(r, OPERAND).widget()
+                match wd:
+                    case CheckableComboBox():
+                        v = wd.currentData() # list
+                    case QComboBox():
+                        v = wd.currentData()
+                    case LineEditStrings()|LineEditInts()|LineEditDecimals(): # lists
+                        v = wd.value()
+                    case QLineEdit():
+                        v = wd.text()
+                    case QSpinBox()|QDoubleSpinBox():
+                        v = wd.value()
+                    case QDateEdit():
+                        v = wd.date()
+                    case QTimeEdit(): # time before datetime because is subclass of QDateTimeEdit
+                        v = wd.time()
+                    case QDateTimeEdit():
+                        v = wd.dateTime()
+                    case QCheckBox():
+                        if wd.checkState() == Qt.CheckState.Checked:
+                            v = True
+                        else:
+                            v = False
+                    case _:
+                        v = None
+                arg: Any
+                match self.FILTERING[ty][oi][2]:
+                    case 0:
+                        cond = f"{fl} {op} %s"
+                        arg = v
+                    case 1:
+                        cond = f"{fl} {op}"
+                        arg = None
+                    case 2:
+                        cond = f"{fl} {op}"
+                        arg = v.split() if isinstance(v, str) else v
+                    case 3:
+                        cond = f"{fl} {op}"
+                        arg = v
+                    case _:
+                        pass
+                if ng:
+                    cond = f"NOT {cond}"
+                condition.append(cond)
+                argument.append(arg)
         self.where = list(zip(condition, argument))
         # get orderby clause
         sorting = []
         if hasattr(self, 'conditions'):
             for r in range(len(self.report.conditions)):
-                if self.ui.layoutSorting.itemAtPosition(r, 0).widget().currentIndex() != 0:
-                    f = self.ui.layoutSorting.itemAtPosition(r, 0).widget().currentData()
-                    s = self.ui.layoutSorting.itemAtPosition(r, 1).widget().currentData()
+                if self.ui.layoutSorting.itemAtPosition(r, SORTFIELD).widget().currentIndex() != 0:
+                    f = self.ui.layoutSorting.itemAtPosition(r, SORTFIELD).widget().currentData()
+                    s = self.ui.layoutSorting.itemAtPosition(r, SORTORDER).widget().currentData()
                     sorting.append(f'{f} {s}')
         self.orderby = sorting
         # create self.data

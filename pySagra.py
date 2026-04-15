@@ -177,7 +177,7 @@ if __name__ == "__main__":
                         datefmt='%Y-%m-%d %H:%M:%S')
     ##########################################
     # redirect uncaught exceptions to logger
-    sys.excepthook = logUnhandledException
+    #sys.excepthook = logUnhandledException
     ##########################################
     # logging information
     logger.info('')

@@ -95,7 +95,7 @@ class ConnectionForm(FormManager[Ui_ConnectionWidget]):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False, False, False, True, False, False, False, False,
-                                True, False, True, True)
+                                True, False, False, True)
         self.ui = Ui_ConnectionWidget()
         self.ui.setupUi(self)
         self.view = self.ui.tableView  # required for formviewmanager
@@ -157,7 +157,7 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False, False, False, True, True, True, True, True,
-                                True, False, True, True)
+                                True, False, False, True)
         self.ui = Ui_ConnectionHistoryWidget()
         self.ui.setupUi(self)
         self.view = self.ui.tableView  # required for formviewmanager

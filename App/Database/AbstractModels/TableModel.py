@@ -102,7 +102,7 @@ class QueryModel(QAbstractTableModel):
         self.isCompanyTable = False # True if is a company table
         self.companyField = 'company_id' # company_id field name, subclass can modifie this if use table alias
         self.hasTotalsRow = False  # used for sorting
-        self.recordType = None  # list of field:value key for record type
+        self.recordType: Any = None  # dict of field:value key for record type
         
     def __repr__(self) -> str:
         "Model representation"
