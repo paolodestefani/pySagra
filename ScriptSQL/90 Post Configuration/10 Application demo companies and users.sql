@@ -90,19 +90,19 @@ VALUES
 ('cashier', 'app_activity_sales_summary', 'X');
 
 -- menu
-INSERT INTO menu (menu_code, description, is_system_object) 
+INSERT INTO menu_toolbar (type, code, description, is_system_object) 
 VALUES
 -- IT menu
-('cashier_it', 'Solo cassa', false);
+('M', 'm_cashier_it', 'Solo cassa', false);
 
 -- menu items
-INSERT INTO menu_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
-('cashier_it', 'cs', 'Sistema', 10, 'M', Null),
-('cashier_it', 'cfi', 'Archivi', 20, 'M', Null),
-('cashier_it', 'ae', 'Modifica', 30, 'M', Null),
-('cashier_it', 'cac', 'Attività', 40, 'M', Null),
-('cashier_it', 'ch', 'Aiuto', 99, 'M', Null),
+('m_cashier_it', 'cs', 'Sistema', 10, 'M', Null),
+('m_cashier_it', 'cfi', 'Archivi', 20, 'M', Null),
+('m_cashier_it', 'ae', 'Modifica', 30, 'M', Null),
+('m_cashier_it', 'cac', 'Attività', 40, 'M', Null),
+('m_cashier_it', 'ch', 'Aiuto', 99, 'M', Null),
 -- system menu
 ('cs', 'cscc', Null, 1, 'A', 'sys_change_company'),
 ('cs', 'css1', Null, 2, 'S', Null),
@@ -129,16 +129,16 @@ VALUES
 ('cac', 'cacins', Null, 7, 'A', 'app_activity_sales_summary');
 
 -- toolbar
-INSERT INTO toolbar (toolbar_code, description, is_system_object) 
+INSERT INTO menu_toolbar (type, code, description, is_system_object) 
 VALUES
-('cashier_it', 'Solo cassa', false);
+('T', 't_cashier_it', 'Solo cassa', false);
 
 -- toolbar items
-INSERT INTO toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
-('cashier_it', 'ae', 'Modifica', 2, 'T', Null),
-('cashier_it', 'sqa', 'Accesso rapido', 4, 'T', Null),
-('sqa', 'sqaord', Null, 1, 'T', 'app_activity_order_entry');
+('t_cashier_it', 'tae', 'Modifica', 2, 'T', Null),
+('t_cashier_it', 'tsqa', 'Accesso rapido', 4, 'T', Null),
+('tsqa', 'tsqaord', Null, 1, 'T', 'app_activity_order_entry');
 
 
 -- *** PROFILE/MENU/TOOLBAR FOR ORDER PROGRESS ONLY *** --
@@ -177,19 +177,19 @@ VALUES
 ('progress', 'app_activity_order_progress', 'X');
 
 -- menu
-INSERT INTO menu (menu_code, description, is_system_object) 
+INSERT INTO menu_toolbar (type, code, description, is_system_object) 
 VALUES
 -- IT menu
-('progress_it', 'Solo avanzamento ordini', false);
+('M', 'm_progress_it', 'Solo avanzamento ordini', false);
 
 -- menu items
-INSERT INTO menu_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
-('progress_it', 'ps', 'Sistema', 10, 'M', Null),
-('progress_it', 'pfi', 'Archivi', 20, 'M', Null),
-('progress_it', 'ae', 'Modifica', 30, 'M', Null),
-('progress_it', 'pac', 'Attività', 40, 'M', Null),
-('progress_it', 'ph', 'Aiuto', 99, 'M', Null),
+('m_progress_it', 'ps', 'Sistema', 10, 'M', Null),
+('m_progress_it', 'pfi', 'Archivi', 20, 'M', Null),
+('m_progress_it', 'ae', 'Modifica', 30, 'M', Null),
+('m_progress_it', 'pac', 'Attività', 40, 'M', Null),
+('m_progress_it', 'ph', 'Aiuto', 99, 'M', Null),
 -- system menu
 ('ps', 'sscc', Null, 1, 'A', 'sys_change_company'),
 ('ps', 'pss1', Null, 2, 'S', Null),
@@ -213,16 +213,16 @@ VALUES
 ('pac', 'pacord', Null, 1, 'A', 'app_activity_order_progress');
 
 -- toolbar
-INSERT INTO toolbar (toolbar_code, description, is_system_object) 
+INSERT INTO menu_toolbar (type, code, description, is_system_object) 
 VALUES
-('progress_it', 'Solo avanzamento ordini', false);
+('T', 't_progress_it', 'Solo avanzamento ordini', false);
 
 -- toolbar items
-INSERT INTO toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
-('progress_it', 'ae', 'Modifica', 2, 'T', Null),
-('progress_it', 'pqa', 'Accesso rapido', 4, 'T', Null),
-('pqa', 'pqaord', Null, 1, 'T', 'app_activity_order_progress');
+('t_progress_it', 'tae', 'Modifica', 2, 'T', Null),
+('t_progress_it', 'tpqa', 'Accesso rapido', 4, 'T', Null),
+('tpqa', 'tpqaord', Null, 1, 'T', 'app_activity_order_progress');
 
 
 -- DEMO COMPANY
@@ -242,14 +242,14 @@ VALUES
 -- additional profile/menu for users
 INSERT INTO system.app_user_company (app_user_code, company_id, profile_code, menu_code, toolbar_code) 
 VALUES
-('system', 10, 'full', 'full_en', 'full_en'),
-('system', 20, 'full', 'full_en', 'full_en'),
-('utente', 10, 'default', 'default_it', 'default_it'),
-('utente', 20, 'default', 'default_it', 'default_it'),
-('cassa', 10, 'cashier', 'cashier_it', 'cashier_it'),
-('cassa', 20, 'cashier', 'cashier_it', 'cashier_it'),
-('avanza', 10, 'progress', 'progress_it', 'progress_it'),
-('avanza', 20, 'progress', 'progress_it', 'progress_it');
+('system', 10, 'full', 'm_full_en', 't_full_en'),
+('system', 20, 'full', 'm_full_en', 't_full_en'),
+('utente', 10, 'default', 'm_default_it', 't_default_it'),
+('utente', 20, 'default', 'm_default_it', 't_default_it'),
+('cassa', 10, 'cashier', 'm_cashier_it', 't_cashier_it'),
+('cassa', 20, 'cashier', 'm_cashier_it', 't_cashier_it'),
+('avanza', 10, 'progress', 'm_progress_it', 't_progress_it'),
+('avanza', 20, 'progress', 'm_progress_it', 't_progress_it');
 
 
 

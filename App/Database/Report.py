@@ -117,8 +117,8 @@ ORDER BY v.i, report_code, l10n;"""
 def clear_report_adapt(adapt_id: int) -> None:
     "Clear the report customizations setting"
     script = """
-DELETE FROM system.report_adapt_setting
-WHERE report_adapt_id = %s;"""
+DELETE FROM system.adaptation_setting
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -130,14 +130,14 @@ def get_report_adapt_setting(adapt_id: int) -> tuple:
     "Returns the report customizations"
     script = """
 SELECT 
-    adapt_type,
+    element_type,
     layout_row,
     combo1_index,
     combo2_index,
     widget_value
-FROM system.report_adapt_setting
-WHERE report_adapt_id = %s
-ORDER BY adapt_type, layout_row;"""
+FROM system.adaptation_setting
+WHERE adaptation_id = %s
+ORDER BY element_type, layout_row;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (adapt_id,))
@@ -152,48 +152,42 @@ ORDER BY adapt_type, layout_row;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_report_adapt(adapt_id: int, 
-                     adapt_type: str, 
-                     layout_row: int,
-                     combo1_index: int|None, 
-                     combo2_index: int|None, 
-                     widget_value: str|None
-                     ) -> None:
+def set_report_adapt(adapt_id: int, columns: list[tuple]) -> None:
     "Set the report adaptation definition"
-    script = """
-INSERT INTO system.report_adapt_setting (
-    report_adapt_id, 
-    adapt_type, 
+    script1 = """
+DELETE FROM system.adaptation_setting
+WHERE adaptation_id = %s;"""
+    script2 = """
+INSERT INTO system.adaptation_setting (
+    adaptation_id, 
+    element_type, 
     layout_row, 
     combo1_index, 
     combo2_index, 
     widget_value)
-VALUES (%s, %s, %s, %s, %s, %s)
-ON CONFLICT ON CONSTRAINT report_adapt_setting_pk DO 
-UPDATE
-SET combo1_index = %s,
-    combo2_index = %s,
-    widget_value = %s;"""
+VALUES (%s, %s, %s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (adapt_id,
-                                     adapt_type,
-                                     layout_row,
-                                     combo1_index,
-                                     combo2_index,
-                                     widget_value,
-                                     combo1_index,
-                                     combo2_index,
-                                     widget_value))
+                cur.execute(script1, (adapt_id,))
+                cur.executemany(script2, columns)
+                                #[(adapt_id,
+                                    #  adapt_type,
+                                    #  layout_row,
+                                    #  combo1_index,
+                                    #  combo2_index,
+                                    #  widget_value,
+                                    #  combo1_index,
+                                    #  combo2_index,
+                                    #  widget_value))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def delete_report_adapt(adapt_id: int) -> None:
     "Delete report adapt"
     script = """
-DELETE FROM system.report_adapt
-WHERE report_adapt_id = %s;"""
+DELETE FROM system.adaptation
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -203,9 +197,10 @@ WHERE report_adapt_id = %s;"""
 
 def create_new_adapt(report_id: int, adapt_desc: str) -> None:
     "Create a new customization"
+    # for report customizations, class is set to report_id
     script = """
-INSERT INTO system.report_adapt (report_id, description)
-VALUES (%s, %s);"""
+INSERT INTO system.adaptation (type, report_id, description)
+VALUES ('R', %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -214,12 +209,12 @@ VALUES (%s, %s);"""
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def report_class_adapt_list(class_code: str, l10n: str='en_US') -> list:
-    "Return id and description of all the report customizations of the input class"
+    "Return id and description of all the report customizations for the input class"
     script1 = """
 SELECT 
-    ra.report_adapt_id, 
+    ra.adaptation_id, 
     ra.description
-FROM system.report_adapt ra
+FROM system.adaptation ra
 JOIN system.report r ON ra.report_id = r.report_id
 WHERE r.report_class = %s AND r.l10n = %s 
 ORDER BY ra.class_sorting;"""
@@ -235,8 +230,8 @@ def report_adapt_sorting(adapt_id: int) -> int:
     script = """
 SELECT 
     class_sorting
-FROM system.report_adapt
-WHERE report_adapt_id = %s;"""
+FROM system.adaptation
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (adapt_id,))
@@ -251,9 +246,9 @@ WHERE report_adapt_id = %s;"""
 def set_report_adapt_sorting(adapt_id: int, sorting: int) -> None:
     "Set customization sorting index"
     script = """
-UPDATE system.report_adapt
+UPDATE system.adaptation
 SET class_sorting = %s
-WHERE report_adapt_id = %s;"""
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():

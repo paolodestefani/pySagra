@@ -48,7 +48,6 @@ SET search_path = company;
 
    
 -- price list
---DROP TABLE IF EXISTS price_list CASCADE;
 CREATE TABLE price_list (
     created_at          timestamptz(3) NOT NULL,
 	created_by          text NOT NULL,
@@ -82,8 +81,7 @@ CREATE TRIGGER t99_update_company_user_date
     BEFORE INSERT OR UPDATE ON price_list 
     FOR EACH ROW EXECUTE PROCEDURE system.update_company_user_date();
 
-
---DROP TABLE IF EXISTS price_list_detail CASCADE;
+-- price list items
 CREATE TABLE price_list_item (
     created_at          timestamptz(3) NOT NULL,
 	created_by          text NOT NULL,

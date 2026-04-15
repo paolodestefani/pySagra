@@ -121,11 +121,11 @@ CREATE TABLE app_user_company (
         MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
     CONSTRAINT app_user_company_menu_fk
         FOREIGN KEY (menu_code) 
-        REFERENCES menu (menu_code)
+        REFERENCES menu_toolbar (code)
         MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
     CONSTRAINT app_user_company_toolbar_fk 
         FOREIGN KEY (toolbar_code) 
-        REFERENCES toolbar (toolbar_code)
+        REFERENCES menu_toolbar (code)
         MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE
 )
 TABLESPACE {pyAppPgTablesTS};

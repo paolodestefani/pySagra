@@ -35,19 +35,36 @@ from App.Database.Connect import appconn
 
 def get_actions() -> list[tuple]:
     "Returns all actions definition for current user/profile"
+    script = """
+SELECT 
+    pa.action,
+    pa.auth
+FROM system.profile_action pa
+JOIN system.connection cn ON pa.profile_code = cn.profile_code
+JOIN system.app_user u ON cn.app_user_code = u.user_code
+WHERE cn.session_id = pg_backend_pid();"""
     try:
         with appconn.cursor() as cur:
-            cur.execute("SELECT * FROM system.pa_get_actions()")
+            cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 
 def get_menu(item: str) -> list[tuple]:
-    "Returns menu definition from system.menu_item"
+    "Returns menu definition from system.menu_toolbar_item"
+    script = """
+SELECT 
+    m.child,
+    m.item_type,
+    m.description,
+    m.action
+FROM system.menu_toolbar_item m
+WHERE m.parent = %s
+ORDER BY m.sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute("SELECT * FROM system.pa_get_menu(%s)", (item,))
+            cur.execute(script, (item,))
             return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
@@ -55,16 +72,25 @@ def get_menu(item: str) -> list[tuple]:
 
 def get_toolbar(item: str) -> list[tuple]:
     "Returns toolbar definition from system.menu_item"
+    script = """
+SELECT 
+    t.child,
+    t.item_type,
+    t.description,
+    t.action
+FROM system.menu_toolbar_item t
+WHERE t.parent = %s
+ORDER BY t.sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute("SELECT * FROM system.pa_get_toolbar(%s)", (item,))
+            cur.execute(script, (item,))
             return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def get_menu_tree(menu: str) -> list[tuple]:
     "Returns actions for given menu"
-    sql = """
+    script = """
 SELECT 
     child,
     item_type,
@@ -77,7 +103,7 @@ WHERE
 ORDER BY sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(sql, (menu,))
+            cur.execute(script, (menu,))
             return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))

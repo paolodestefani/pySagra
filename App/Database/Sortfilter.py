@@ -38,13 +38,13 @@ from App.Database.Connect import appconn
 def create_sortfilter(sortfilter_class: str, sortfilter_description: str) -> int:
     "Create a new sortfilter customization"
     script = """
-INSERT INTO system.sortfilter_adapt (description, sortfilter_class)
-VALUES (%s, %s)
-RETURNING sortfilter_adapt_id;"""
+INSERT INTO system.adaptation (type, class, description)
+VALUES ('S',%s, %s)
+RETURNING adaptation_id;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (sortfilter_description, sortfilter_class))
+                cur.execute(script, (sortfilter_class, sortfilter_description))
                 result = next(cur, None)
                 if result:
                     return result[0]
@@ -56,8 +56,8 @@ RETURNING sortfilter_adapt_id;"""
 def delete_sortfilter(sortfilter_id: int) -> None:
     "Delete sortfilter customization of sortfilter_id"
     script = """
-DELETE FROM system.sortfilter_adapt
-WHERE sortfilter_adapt_id = %s;"""
+DELETE FROM system.adaptation
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -69,10 +69,10 @@ def list_sortfilter(sortfilter_class: str) -> list:
     "Get available sortfilter customizations for class"
     script = """ 
 SELECT
-    sortfilter_adapt_id,
+    adaptation_id,
     description
-FROM system.sortfilter_adapt
-WHERE sortfilter_class = %s
+FROM system.adaptation
+WHERE type = 'S' AND class = %s
 ORDER BY class_sorting;"""
     try:
         with appconn.cursor() as cur:
@@ -114,12 +114,12 @@ ORDER BY class_sorting;"""
 #         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def get_sortfilter_limit(sf_id: int) -> int|None:
-    "Get row count limit for sortfilter_adapt_id"
+    "Get row count limit for adaptation_id"
     script = """
 SELECT 
     row_count_limit
-FROM system.sortfilter_adapt
-WHERE sortfilter_adapt_id = %s;"""
+FROM system.adaptation
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (sf_id,))
@@ -132,11 +132,11 @@ WHERE sortfilter_adapt_id = %s;"""
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def set_sortfilter_limit(sf_id: int, limit: int|None) -> None:
-    "Set row count limit for sortfilter_adapt_id"
+    "Set row count limit for adaptation_id"
     script = """
-UPDATE system.sortfilter_adapt
+UPDATE system.adaptation
 SET row_count_limit = %s
-WHERE sortfilter_adapt_id = %s;"""
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -147,8 +147,8 @@ WHERE sortfilter_adapt_id = %s;"""
 def clear_sortfilter_setting(sf_id: int) -> None:
     "Claer sortfilter customizations, required before updating"
     script = """
-DELETE FROM system.sortfilter_adapt_setting
-WHERE sortfilter_adapt_id = %s;"""
+DELETE FROM system.adaptation_setting
+WHERE adaptation_id = %s;"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
@@ -166,8 +166,8 @@ SELECT
     negate_state,
     combo2_index,
     widget_value
-FROM system.sortfilter_adapt_setting
-WHERE sortfilter_adapt_id = %s
+FROM system.adaptation_setting
+WHERE adaptation_id = %s
 ORDER BY layout_row;"""
     try:
         with appconn.cursor() as cur:
@@ -183,46 +183,29 @@ ORDER BY layout_row;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_sortfilter_setting(sf_id: int, 
-                           sf_element: str, 
-                           row: int, 
-                           cmb1: int,
-                           neg: bool|None, 
-                           cmb2: int, 
-                           wv: str|None
-                           ) -> None:
+def set_sortfilter_setting(sf_id: int, columns: list[tuple]) -> None:
     "Set available sortfilter customizations settings for id and element"
-    script = """
--- insert/update setting
-INSERT INTO system.sortfilter_adapt_setting (
-    sortfilter_adapt_id,
+    script1 = """
+-- delete first all settings for element
+DELETE FROM system.adaptation_setting
+WHERE adaptation_id = %s;"""
+    script2 = """
+-- insert new settings
+INSERT INTO system.adaptation_setting (
+    adaptation_id,
     element_type,
     layout_row,
     combo1_index,
     negate_state,
     combo2_index,
     widget_value)
-VALUES (%s, %s, %s, %s, %s, %s, %s)
-ON CONFLICT ON CONSTRAINT sortfilter_adapt_setting_pk DO
-UPDATE SET 
-    combo1_index = %s,
-    negate_state = %s,
-    combo2_index = %s,
-    widget_value = %s;"""
+VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+    #params = [(sf_id, e, r, c1, n, c2, wv) for e, r, c1, n, c2, wv in columns]
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (sf_id,
-                                     sf_element,
-                                     row,
-                                     cmb1,
-                                     neg,
-                                     cmb2,
-                                     wv,
-                                     cmb1,
-                                     neg,
-                                     cmb2,
-                                     wv))
+                cur.execute(script1, (sf_id,))
+                cur.executemany(script2, columns)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -230,8 +213,8 @@ def sortfilter_adapt_sorting(sortfilter_id: int) -> int:
     "Returns sortfilter sorting index"
     script = """
 SELECT class_sorting
-FROM system.sortfilter_adapt
-WHERE sortfilter_adapt_id = %s;"""
+FROM system.adaptation
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -247,9 +230,9 @@ WHERE sortfilter_adapt_id = %s;"""
 def set_sortfilter_adapt_sorting(sortfilter_id: int, sorting: int) -> None:
     "Set sortfilter sorting index"
     script = """
-UPDATE system.sortfilter_adapt
+UPDATE system.adaptation
 SET class_sorting = %s
-WHERE sortfilter_adapt_id = %s;"""
+WHERE adaptation_id = %s;"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:

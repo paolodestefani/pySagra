@@ -37,18 +37,18 @@ from App.Database.Connect import appconn
 def create_itemview(view_class: str, view_description: str) -> int:
     "Create a new itemview customization"
     script = """
-INSERT INTO system.itemview_adapt (description, itemview_class)
-VALUES (%s, %s)
-RETURNING itemview_adapt_id;"""
+INSERT INTO system.adaptation (type, class, description)
+VALUES ('I', %s, %s)
+RETURNING adaptation_id;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (view_description, view_class))
+                cur.execute(script, (view_class, view_description))
                 result = cur.fetchone()
                 if result:
                     return result[0]
                 else:
-                    raise PyAppDBError("02000", "No itemview_adapt_id returned from database")
+                    raise PyAppDBError("02000", "No adaptation_id returned from database")
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -56,12 +56,12 @@ def list_itemviews(view_class: str) -> list[tuple]:
     "Get available view customizations for class"
     script = """
 SELECT 
-    itemview_adapt_id, 
+    adaptation_id, 
     description, 
     is_default_for_class
-FROM system.itemview_adapt
-WHERE itemview_class = %s
-ORDER BY itemview_adapt_id;"""
+FROM system.adaptation
+WHERE type = 'I' AND class = %s
+ORDER BY class_sorting;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script, (view_class,))
@@ -69,7 +69,7 @@ ORDER BY itemview_adapt_id;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_view_columns(view_id: int) -> list[tuple]:
+def get_view_columns(adaptation_id: int) -> list[tuple]:
     "Returns the view definition"
     script = """
 SELECT 	
@@ -77,61 +77,62 @@ SELECT
     sorting,
     is_visible,
     size
-FROM system.itemview_adapt_setting
-WHERE itemview_adapt_id = %s
+FROM system.adaptation_setting
+WHERE adaptation_id = %s
 ORDER BY sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (view_id,))
+            cur.execute(script, (adaptation_id,))
             return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_view_columns(view_id: int, columns: list[tuple]) -> None:
+def set_view_columns(adaptation_id: int, columns: list[tuple]) -> None:
     "Set the view definition"
-    script = """
-INSERT INTO system.itemview_adapt_setting (
-    itemview_adapt_id,
+    script1 = """
+DELETE FROM system.adaptation_setting
+WHERE adaptation_id = %s;"""
+    script2 = """
+INSERT INTO system.adaptation_setting (
+    adaptation_id,
     column_number,
     sorting,
     is_visible,
     size)
-VALUES (%s, %s, %s, %s, %s)
-ON CONFLICT ON CONSTRAINT itemview_adapt_setting_pk DO
-UPDATE SET sorting = %s, is_visible = %s, size = %s;"""
-    params = [(view_id, c, p, h, w, p, h, w) for c, p, h, w in columns]
+VALUES (%s, %s, %s, %s, %s);"""
+    #params = [(adaptation_id, c, p, h, w) for c, p, h, w in columns]
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                # Esecuzione batch: molto più veloce del loop for
-                cur.executemany(script, params)
+                cur.execute(script1, (adaptation_id,))
+                cur.executemany(script2, columns)
     except psycopg.Error as er:
-        # Recuperiamo lo stato SQL se disponibile
         sqlstate = er.diag.sqlstate if er.diag else "Unknown"
         raise PyAppDBError(sqlstate, str(er))
 
-def delete_view_layout(view_id: int) -> None:
-    "Delete a view customization"
+def delete_view_layout(adaptation_id: int) -> None:
+    "Delete a view adaptation"
     script = """
-DELETE FROM system.itemview_adapt 
-WHERE itemview_adapt_id = %s;"""
+DELETE FROM system.adaptation 
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (view_id,))
+                cur.execute(script, (adaptation_id,))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        raise PyAppDBError(sqlstate, str(er))
 
 def set_default_view_layout(view_class: str, view_id: int) -> None:
     "Set default layout for view class"
     script1 = """
-UPDATE system.itemview_adapt
+UPDATE system.adaptation
 SET is_default_for_class = false
-WHERE itemview_class = %s;"""
+WHERE class = %s;"""
     script2 = """
-UPDATE system.itemview_adapt
+UPDATE system.adaptation
 SET is_default_for_class = true
-WHERE itemview_adapt_id = %s;"""
+WHERE adaptation_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():

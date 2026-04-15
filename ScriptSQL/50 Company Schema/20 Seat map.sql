@@ -50,7 +50,6 @@ SET search_path = company;
 
    
 -- numbered tables table
---DROP TABLE IF EXISTS ompany.numbered_table CASCADE;
 CREATE TABLE seat_map (
     created_at          timestamptz(3) NOT NULL,
 	created_by          text NOT NULL,

@@ -101,24 +101,12 @@ class ConnectionForm(FormManager[Ui_ConnectionWidget]):
         self.view = self.ui.tableView  # required for formviewmanager
         # button icons
         self.ui.killClientButton.setIcon(currentIcon['system_kill'])
-        #self.ui.sendSssMsgButton.setIcon(currentIcon['email_new'])
-        #self.ui.sendBrcMsgButton.setIcon(currentIcon['email_new'])
         # signal slot connections
         self.ui.killClientButton.clicked.connect(self.killClient)
-        #self.ui.sendSssMsgButton.clicked.connect(self.sendSessionMessage)
-        #self.ui.sendBrcMsgButton.clicked.connect(self.sendBroadcastMessage)
         self.ui.tableView.setModel(model)
         self.ui.tableView.setLayoutName('currentConnection')  # must be set AFTER model
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.ui.tableView.activateWindow()
-        self.ui.tableView.setSortingEnabled(True)
-        self.ui.tableView.horizontalHeader().setSectionsMovable(True)
-        #self.ui.tableView.setSelectionMode(QAbstractItemView.MultiSelection)
-        # map view to mapper and mapper to view
-        #self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
-        #self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
-        # start
-        #self.mapper.toFirst()
 
     def killClient(self) -> None:
         "Kills selected client PID"

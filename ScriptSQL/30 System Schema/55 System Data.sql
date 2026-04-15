@@ -122,25 +122,25 @@ VALUES
 ('default', 'about_system_info', 'X');
 
 -- MENU
-INSERT INTO menu (menu_code, description, is_system_object) 
+INSERT INTO menu_toolbar (type, code, description, is_system_object) 
 VALUES
 -- EN menu
-('full_en', 'Full menu', true),
-('full_it', 'Menu completo', true),
+('M', 'm_full_en', 'Full menu', true),
+('M', 'm_full_it', 'Menu completo', true),
 -- IT menu
-('default_it', 'Menu predefinito', true);
+('M', 'm_default_it', 'Menu predefinito', true);
 
 -- MENU ITEMS
-INSERT INTO menu_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
 -- full system menu
-('full_en', 'fs', 'System', 1, 'M', Null),
-('full_en', 'ae', 'Edit', 15, 'M', Null),
-('full_en', 'fh', 'Help', 99, 'M', Null),
+('m_full_en', 'fs', 'System', 1, 'M', Null),
+('m_full_en', 'ae', 'Edit', 15, 'M', Null),
+('m_full_en', 'fh', 'Help', 99, 'M', Null),
 
-('full_it', 'fs', 'Sistema', 1, 'M', Null),
-('full_it', 'ae', 'Modifica', 15, 'M', Null),
-('full_it', 'fh', 'Aiuto', 99, 'M', Null),
+('m_full_it', 'fs', 'Sistema', 1, 'M', Null),
+('m_full_it', 'ae', 'Modifica', 15, 'M', Null),
+('m_full_it', 'fh', 'Aiuto', 99, 'M', Null),
 
 ('fs', 'fscc', Null, 1, 'A', 'sys_change_company'),
 ('fs', 'fss1', Null, 2, 'S', Null),
@@ -189,9 +189,9 @@ VALUES
 ('fh', 'fha', Null, 6, 'A', 'about_program'),
 ('fh', 'fhqt', Null, 7, 'A', 'about_qt'),
 -- menu default IT
-('default_it', 'ds', 'Sistema', 1, 'M', Null),
-('default_it', 'ae', 'Modifica', 15, 'M', Null),
-('default_it', 'dh', 'Aiuto', 99, 'M', Null),
+('m_default_it', 'ds', 'Sistema', 1, 'M', Null),
+('m_default_it', 'ae', 'Modifica', 15, 'M', Null),
+('m_default_it', 'dh', 'Aiuto', 99, 'M', Null),
 ('ds', 'dscc', Null, 1, 'A', 'sys_change_company'),
 ('ds', 'dss1', Null, 2, 'S', Null),
 ('ds', 'dscp', Null, 3, 'A', 'sys_change_password'),
@@ -208,40 +208,40 @@ VALUES
 ('dh', 'dhqt', Null, 7, 'A', 'about_qt');
 
 -- TOOLBAR
-INSERT INTO toolbar (toolbar_code, description, is_system_object) 
+INSERT INTO menu_toolbar (type, code, description, is_system_object) 
 VALUES
 -- EN
-('full_en', 'Full', True),
+('T', 't_full_en', 'Full', True),
 -- IT
-('default_it', 'Predefinita', True);
+('T', 't_default_it', 'Predefinita', True);
 
 -- TOOLBAR ITEMS
-INSERT INTO toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
 -- EN toolbars
 -- full toolbars
-('full_en', 'ae', 'Edit', 2, 'T', Null),
-('full_en', 'fqa', 'Quick access', 4, 'T', Null),
-('ae', 'aene', Null, 1, 'A', 'edit_new'),
-('ae', 'aesa', Null, 2, 'A', 'edit_save'),
-('ae', 'aede', Null, 3, 'A', 'edit_delete'),
-('ae', 'aerl', Null, 4, 'A', 'edit_reload'),
-('ae', 'aes1', Null, 5, 'S', Null),
-('ae', 'aefr', Null, 6, 'A', 'edit_first'),
-('ae', 'aepr', Null, 7, 'A', 'edit_previous'),
-('ae', 'aenv', Null, 8, 'A', 'edit_counter'),
-('ae', 'aenx', Null, 9, 'A', 'edit_next'),
-('ae', 'aels', Null, 10, 'A', 'edit_last'),
-('ae', 'aes2', Null, 11, 'S', Null),
-('ae', 'aefl', Null, 12, 'A', 'edit_filter'),
-('ae', 'aecv', Null, 13, 'A', 'edit_change_view'),
-('ae', 'aes3', Null, 14, 'S', Null),
-('ae', 'aept', Null, 15, 'A', 'edit_print'),
-('ae', 'aeex', Null, 16, 'A', 'edit_export'),
+('t_full_en', 'tae', 'Edit', 2, 'T', Null),
+('t_full_en', 'tfqa', 'Quick access', 4, 'T', Null),
+('tae', 'taene', Null, 1, 'A', 'edit_new'),
+('tae', 'taesa', Null, 2, 'A', 'edit_save'),
+('tae', 'taede', Null, 3, 'A', 'edit_delete'),
+('tae', 'taerl', Null, 4, 'A', 'edit_reload'),
+('tae', 'taes1', Null, 5, 'S', Null),
+('tae', 'taefr', Null, 6, 'A', 'edit_first'),
+('tae', 'taepr', Null, 7, 'A', 'edit_previous'),
+('tae', 'taect', Null, 8, 'A', 'edit_counter'),
+('tae', 'taenx', Null, 9, 'A', 'edit_next'),
+('tae', 'taels', Null, 10, 'A', 'edit_last'),
+('tae', 'taes2', Null, 11, 'S', Null),
+('tae', 'taefl', Null, 12, 'A', 'edit_filter'),
+('tae', 'taecv', Null, 13, 'A', 'edit_change_view'),
+('tae', 'taes3', Null, 14, 'S', Null),
+('tae', 'taept', Null, 15, 'A', 'edit_print'),
+('tae', 'taeex', Null, 16, 'A', 'edit_export'),
 -- IT toolbars
 -- default toolbars
-('default_it', 'ae', 'Modifica', 2, 'T', Null),
-('default_it', 'dqa', 'Accesso rapido', 4, 'T', Null);
+('t_default_it', 'tae', 'Modifica', 2, 'T', Null),
+('t_default_it', 'tdqa', 'Accesso rapido', 4, 'T', Null);
 
 -- system.usersapp_user
 INSERT INTO app_user (user_code, description, user_password, is_admin, is_system_object, can_edit_views, can_edit_sortfilters, can_edit_reports, l10n) 

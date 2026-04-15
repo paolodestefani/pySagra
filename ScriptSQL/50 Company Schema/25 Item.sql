@@ -50,7 +50,6 @@ SET search_path = company;
 
    
 -- items table
---DROP TABLE IF EXISTS item CASCADE;
 CREATE TABLE item (
     created_at              timestamptz(3) NOT NULL,
 	created_by              text NOT NULL,
@@ -70,7 +69,6 @@ CREATE TABLE item (
     pos_column              integer,
 	normal_background_color char(7) DEFAULT '#4141c5',
     normal_text_color       char(7) DEFAULT '#FFFFFF',
-    -- price numeric(12, 2) NOT NULL DEFAULT 0,
     has_variants            boolean NOT NULL DEFAULT false,
     has_inventory_control   boolean NOT NULL DEFAULT true,
     has_delivered_control   boolean NOT NULL DEFAULT false,
@@ -118,7 +116,6 @@ CREATE TRIGGER t99_update_company_user_date
    
    
 -- item variations table
---DROP TABLE IF EXISTS item_variant CASCADE;
 CREATE TABLE item_variant (
     created_at              timestamptz(3) NOT NULL,
 	created_by              text NOT NULL,
@@ -161,7 +158,6 @@ CREATE TRIGGER t99_update_company_user_date
    
    
 -- item parts for kit and menu
---DROP TABLE IF EXISTS item_part CASCADE;
 CREATE TABLE item_part (
     created_at          timestamptz(3) NOT NULL,
 	created_by          text NOT NULL,

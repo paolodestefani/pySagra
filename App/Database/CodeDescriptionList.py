@@ -99,11 +99,13 @@ def profile_cdl() -> list[tuple]:
 
 def menu_cdl() -> list[tuple]:
     "Get menu list"
-    return generic_cdl('menu_code', 'description', 'system.menu')
+    return generic_cdl('code', 'description', 'system.menu_toolbar',
+                       condition=["type = 'M'"])
 
 def toolbar_cdl() -> list[tuple]:
     "Get toolbars list"
-    return generic_cdl('toolbar_code', 'description', 'system.toolbar')
+    return generic_cdl('code', 'description', 'system.menu_toolbar',
+                       condition=["type = 'T'"])
 
 def user_cdl() -> list[tuple]:
     "Get users list"

@@ -102,12 +102,12 @@ VALUES
 -- APPLICATION MENU
 
 -- FULL MENU EN
-INSERT INTO menu_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
-('full_en', 'ffi', 'File', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
-('full_en', 'fac', 'Activity', 20, 'M', Null),
-('full_en', 'fst', 'Statistics', 30, 'M', Null),
-('full_en', 'ftl', 'Tools', 40, 'M', Null),
+('m_full_en', 'ffi', 'File', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
+('m_full_en', 'fac', 'Activity', 20, 'M', Null),
+('m_full_en', 'fst', 'Statistics', 30, 'M', Null),
+('m_full_en', 'ftl', 'Tools', 40, 'M', Null),
 -- file menu
 ('ffi', 'fficdk', Null, 1, 'A', 'app_file_cash_desk'),
 ('ffi', 'ffiprn', Null, 2, 'A', 'app_file_printer'),
@@ -140,16 +140,16 @@ VALUES
 ('ftl', 'ftldel', Null, 2, 'A', 'app_tool_delete'),
 ('ftl', 'ftlcpy', Null, 3, 'A', 'app_tool_copy'),
 -- FULL MENU IT
-('full_it', 'ffi', 'Archivi', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
-('full_it', 'fac', 'Attività', 20, 'M', Null),
-('full_it', 'fst', 'Statistiche', 30, 'M', Null),
-('full_it', 'ftl', 'Strumenti', 40, 'M', Null),
+('m_full_it', 'ffi', 'Archivi', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
+('m_full_it', 'fac', 'Attività', 20, 'M', Null),
+('m_full_it', 'fst', 'Statistiche', 30, 'M', Null),
+('m_full_it', 'ftl', 'Strumenti', 40, 'M', Null),
 
 -- DEFAULT MENU
-('default_it', 'dfi', 'Archivi', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
-('default_it', 'dac', 'Attività', 20, 'M', Null),
-('default_it', 'dst', 'Statistiche', 30, 'M', Null),
-('default_it', 'dtl', 'Strumenti', 40, 'M', Null),
+('m_default_it', 'dfi', 'Archivi', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
+('m_default_it', 'dac', 'Attività', 20, 'M', Null),
+('m_default_it', 'dst', 'Statistiche', 30, 'M', Null),
+('m_default_it', 'dtl', 'Strumenti', 40, 'M', Null),
 -- file menu
 ('dfi', 'dficdk', Null, 1, 'A', 'app_file_cash_desk'),
 ('dfi', 'dfiprn', Null, 2, 'A', 'app_file_printer'),
@@ -183,14 +183,14 @@ VALUES
 ('dtl', 'dtlcpy', Null, 3, 'A', 'app_tool_copy');
 
 -- TOOLBAR ITEMS
-INSERT INTO toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
 -- EN toolbars
 -- full toolbars
-('fqa', 'fqaord', Null, 1, 'T', 'app_activity_order_entry'),
+('tfqa', 'tfqaord', Null, 1, 'T', 'app_activity_order_entry'),
 -- IT toolbars
 -- default toolbars
-('dqa', 'dqaord', Null, 1, 'T', 'app_activity_order_entry');
+('tdqa', 'tdqaord', Null, 1, 'T', 'app_activity_order_entry');
 
 -- END OF SCRIPT
 

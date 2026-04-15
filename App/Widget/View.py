@@ -88,14 +88,6 @@ from App.Widget.TableWidget import TableWidgetItem
 from App.Ui.ViewSettingsDialog import Ui_ViewSettingsDialog
 
 
-# navigation status settings
-
-(NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST, FILTER, ADD,
- REMOVE, CHANGE, PRINT, EXPORT) = range(14)
-
-VIEW, EDIT = range(2)
-FORM, GRID = range(2)
-
 
 class TableViewSettingsDialog(QDialog):
 
@@ -124,7 +116,7 @@ class TableViewSettingsDialog(QDialog):
         self.ui.tableWidget.horizontalHeader().hideSection(0)
         self.ui.tableWidget.horizontalHeader().hideSection(2)
         self.ui.tableWidget.resizeColumnToContents(1)
-
+        # set flags for drag and drop and item selection
         for r in range(parent.horizontalHeader().count()):
             for c in range(5):
                 if c in (0, 1, 2):
@@ -132,6 +124,8 @@ class TableViewSettingsDialog(QDialog):
                                                             Qt.ItemFlag.ItemIsSelectable|
                                                             Qt.ItemFlag.ItemIsDragEnabled|
                                                             Qt.ItemFlag.ItemIsDropEnabled)
+        # set readonly for field name
+        self.ui.tableWidget.setItemDelegateForColumn(1, GenericReadOnlyDelegate(self))
 
     def accept(self) -> None:
         # reset layout first (first time store the state)
@@ -194,18 +188,16 @@ class EnhancedTableView(QTableView):
         # default item delegate for all column
         self.setItemDelegate(GenericReadOnlyDelegate(self))
         # self.horizontalHeader().setStretchLastSection(True)
-        # state of the hoerizontal header, used for reset
+        # state of the horizontal header, used for reset
         self.horizontalHeaderState: QByteArray|None = None
-        # context menu actions
+        # CONTEXT MENU ACTIONS
         # activate/deactivate column sorting
         self.cmSorting = QAction(_tr("View", "Column sorting"), self)
-        # self.cmSorting.setIcon(currentIcon['view_sort'])
         self.cmSorting.setCheckable(True)
         self.cmSorting.setChecked(False)
         self.cmSorting.triggered.connect(self.activateSorting)
         # activate/deactivate column movable
         self.cmMovable = QAction(_tr("View", "Column movable"), self)
-        #self.cmMovable.setIcon(currentIcon['view_movablecolumns'])
         self.cmMovable.setCheckable(True)
         self.cmMovable.setChecked(False)
         self.cmMovable.triggered.connect(self.activateMovableColumns)
@@ -214,57 +206,46 @@ class EnhancedTableView(QTableView):
         self.cmVHeader.setCheckable(True)
         self.cmVHeader.setChecked(False)
         self.cmVHeader.triggered.connect(self.showVerticalHeader)
-        # resize to content
+        # resize columns to content
         self.cmResizeColsToContent = QAction(_tr("View", "Resize columns to contents"), self)
         self.cmResizeColsToContent.setCheckable(False)
-        self.cmResizeColsToContent.setIcon(currentIcon['view_resize_columns'])
         self.cmResizeColsToContent.triggered.connect(self.resizeColumnsToContents)
+        # resize rows to content
         self.cmResizeRowsToContent = QAction(_tr("View", "Resize rows to contents"), self)
         self.cmResizeRowsToContent.setCheckable(False)
-        self.cmResizeRowsToContent.setIcon(currentIcon['view_resize_rows'])
         self.cmResizeRowsToContent.triggered.connect(self.resizeRowsToContents)
         # export to CSV file
         self.cmExport = QAction(_tr("View", "Export to CSV file"), self)
-        #self.cmExport.setIcon(currentIcon['edit_export'])
         self.cmExport.triggered.connect(self.exportView)
         # layout customizations
         self.cmCustomizations = QMenu(_tr("View", "Set layout"), self)
-        #self.cmCustomizations.setIcon(currentIcon['view_layout'])
         self.ag = QActionGroup(self)
         # customizations are inserted in a separate method after name assignement
         self.ag.triggered.connect(self.setStoredLayout)
         if session['can_edit_views']:
-            # save customization
+            # update customization
             self.cmUpdateLayout = QAction(_tr("View", "Update current layout"), self)
-            #self.cmUpdateLayout.setIcon(currentIcon['edit_save'])
             self.cmUpdateLayout.triggered.connect(self.updateViewLayout)
             # delete view layout
             self.cmDelete = QAction(_tr("View", "Delete current layout"), self)
-            #self.cmDelete.setIcon(currentIcon['view_delete'])
             self.cmDelete.triggered.connect(self.deleteViewLayout)
             # set as default current view layout
             self.cmDefault = QAction(_tr("View", "Set current layout as default"), self)
-            #self.cmDefault.setIcon(currentIcon['view_default'])
             self.cmDefault.triggered.connect(self.defaultViewLayout)
             # save customization as
             self.cmSaveLayout = QAction(_tr("View", "Save current layout as ..."), self)
-            #self.cmSaveLayout.setIcon(currentIcon['edit_save_as'])
             self.cmSaveLayout.triggered.connect(self.saveViewLayoutAs)
             # hide current column
             self.cmHide = QAction(_tr("View", "Hide current column"), self)
-            #self.cmHide.setIcon(currentIcon['view_hide_column'])
             self.cmHide.triggered.connect(self.hideCurrentColumn)
             # show all view columns
             self.cmShow = QAction(_tr("View", "Show all columns"), self)
-            #self.cmShow.setIcon(currentIcon['view_show_columns'])
             self.cmShow.triggered.connect(self.showAllColumns)
             # reset view state
             self.cmReset = QAction(_tr("View", "Reset view state"), self)
-            #self.cmReset.setIcon(currentIcon['edit_reload'])
             self.cmReset.triggered.connect(self.resetViewState)
             # manage view settings
             self.cmManage = QAction(_tr("View", "Manage settings"), self)
-            #self.cmManage.setIcon(currentIcon['view_configure'])
             self.cmManage.triggered.connect(self.manageSettings)
         # add actions to context menu
         self.cm = QMenu(self)
@@ -316,9 +297,11 @@ class EnhancedTableView(QTableView):
     def setModel(self, model: QAbstractItemModel|None) -> None:
         super().setModel(model)
         self.setSortingEnabled(False) # better not to sort when editing
+        self.horizontalHeader().setSectionsMovable(False) # better not to move when editing
 
     def setLayoutName(self, name: str) -> None:
-        "As EnhancedTableView is declared in QtDesigner we must set the name of the layout after instantiation"
+        # As EnhancedTableView is declared in QtDesigner we must set the name of the layout after instantiation
+        # in the widget definition in order to load the correct customizations
         self.layoutName = name
         self.fillCustomizationMenu()
         target_action = self.ag.checkedAction() # pyside6 requirement... 
@@ -327,7 +310,6 @@ class EnhancedTableView(QTableView):
     def setStoredLayout(self, action: QAction) -> None:
         if not action: # no customization available
             return
-        #print(f"DEBUG: Header count is {self.horizontalHeader().count()}")
         viewId = int(action.data())
         # reset layout first (first time store the state)
         if self.horizontalHeaderState:
@@ -388,16 +370,12 @@ class EnhancedTableView(QTableView):
 
     def add(self) -> int:
         "Insert a row in grid at the end"
-        #session['mainwin'].updateEditStatus(ESINS)
-        #self.setSortingEnabled(False)
         row = self.model().rowCount()
         success = self.model().insertRow(row)
-        #print("success", success)
         index = self.model().createIndex(row, 0)
         self.scrollTo(index)
         self.setCurrentIndex(index)
         self.edit(index)
-        #print('Rows', self.model().rowCount())
         return row
 
     def remove(self) -> None:
@@ -521,12 +499,17 @@ class EnhancedTableView(QTableView):
         dialog.ui.groupBoxViewSettings.setTitle(title)
         dialog.exec_()
 
-    def updateViewLayout(self, viewId: int|None = None) -> None:
+    def updateViewLayout(self) -> None:
         "Save current view layout to database"
-        if not viewId:
-            #viewId = int(self.ag.checkedAction().data())
+        if not self.layoutName:
             return
-        columns = [(i,
+        if not self.ag.checkedAction():  # no layout setted
+            return
+        viewId = int(self.ag.checkedAction().data())
+        if not viewId:
+            return
+        columns = [(viewId,
+                    i,
                     self.horizontalHeader().visualIndex(i),
                     not self.isColumnHidden(i),
                     self.columnWidth(i))
@@ -543,9 +526,9 @@ class EnhancedTableView(QTableView):
                                     _tr("View", "Layout customization saved"))
 
     def saveViewLayoutAs(self) -> None:
+        "Create a new layout customization"
         if not self.layoutName:
             return
-        "Create a new layout customization"
         viewDesc, ok = QInputDialog.getText(self,
                                             _tr("View", "New layout customization"),
                                             _tr("View", "Insert new customizazion description"))
@@ -559,10 +542,15 @@ class EnhancedTableView(QTableView):
                                  _tr("MessageDialog", "Critical"),
                                  "{}\n{}".format(er.code, er.message))
         else:
-            # update layput settings
-            self.updateViewLayout(viewId)
             # recreate customization list
             self.fillCustomizationMenu()
+            # set new customization as current
+            for a in self.ag.actions():
+                if a.data() == str(viewId):
+                    a.setChecked(True)
+                    break
+            # update layout settings
+            self.updateViewLayout()
 
     def deleteViewLayout(self, action: QAction|None = None) -> None:
         "Delete current view layout from database"

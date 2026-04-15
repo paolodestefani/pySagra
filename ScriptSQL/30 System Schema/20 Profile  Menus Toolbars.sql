@@ -107,35 +107,38 @@ CREATE TRIGGER t99_update_company_user_date
     FOR EACH ROW EXECUTE PROCEDURE update_company_user_date();
 
 
--- system table: menu
-CREATE TABLE menu(
+-- system table: menu and toolbar definitions
+CREATE TABLE menu_toolbar(
     created_at              timestamptz(3) NOT NULL,
 	created_by              text NOT NULL,
     updated_at              timestamptz(3) NOT NULL,
 	updated_by              text NOT NULL,
     object_version          integer NOT NULL,
     --
-    menu_code               varchar(48),
+    type                    char(1) NOT NULL, -- (M)enu or (T)oolbar
+    code                    varchar(48),
     description             text,
     is_system_object        boolean NOT NULL DEFAULT False,
     --
-    CONSTRAINT menu_pk 
-        PRIMARY KEY (menu_code) 
-        USING INDEX TABLESPACE {pyAppPgIndexesTS}
+    CONSTRAINT menu_toolbar_pk 
+        PRIMARY KEY (code) 
+        USING INDEX TABLESPACE {pyAppPgIndexesTS},
+    CONSTRAINT menu_toolbar_type_check 
+        CHECK (type IN ('M', 'T'))  -- (M)enu, (T)oolbar
 )
 TABLESPACE {pyAppPgTablesTS};
-COMMENT ON TABLE menu IS 
-    'Menu class definition';
-ALTER TABLE menu 
+COMMENT ON TABLE menu_toolbar IS 
+    'Menu and toolbar class definition';
+ALTER TABLE menu_toolbar 
     OWNER TO {pyAppPgOwnerRole};
 
 CREATE TRIGGER t99_update_company_user_date 
-    BEFORE INSERT OR UPDATE ON menu 
+    BEFORE INSERT OR UPDATE ON menu_toolbar 
     FOR EACH ROW EXECUTE PROCEDURE update_company_user_date();
 
 
--- system table: menu item
-CREATE TABLE menu_item(
+-- system table: menu toolbar item
+CREATE TABLE menu_toolbar_item(
     created_at              timestamptz(3) NOT NULL,
 	created_by              text NOT NULL,
     updated_at              timestamptz(3) NOT NULL,
@@ -146,146 +149,22 @@ CREATE TABLE menu_item(
     child                   varchar(48),
     description             text,
     sorting                 integer NOT NULL,
-    item_type               char(1) NOT NULL,
+    item_type               char(1) NOT NULL,   -- (A)ction, (M)enu, (S)eparator for menu 
+                                                -- (T)oolbar, (A)ction, (S)eparator,  (W)idget for toolbar
     action                  varchar(48),
     --
     CONSTRAINT menu_item_pk 
         PRIMARY KEY (parent, child) 
         USING INDEX TABLESPACE {pyAppPgIndexesTS},
-    CONSTRAINT menu_item_type_check 
-        CHECK (item_type IN ('A', 'M', 'S')) -- Action, Menu, Separator
+    CONSTRAINT menu_item_item_type_check 
+        CHECK (item_type IN ('A', 'M', 'S', 'T', 'W')) -- Action, Menu, Separator, Toolbar, Widget
 )
 TABLESPACE {pyAppPgTablesTS};
-COMMENT ON TABLE menu_item IS 
-    'Menu and structure';
-ALTER TABLE menu_item 
+COMMENT ON TABLE menu_toolbar_item IS 
+    'Menu and toolbar structure';
+ALTER TABLE menu_toolbar_item 
     OWNER TO {pyAppPgOwnerRole};
 
 CREATE TRIGGER t99_update_company_user_date 
-    BEFORE INSERT OR UPDATE ON menu_item 
+    BEFORE INSERT OR UPDATE ON menu_toolbar_item 
     FOR EACH ROW EXECUTE PROCEDURE update_company_user_date();
-
-
--- system table: toolbar
-CREATE TABLE toolbar(
-    created_at              timestamptz(3) NOT NULL,
-	created_by              text NOT NULL,
-    updated_at              timestamptz(3) NOT NULL,
-	updated_by              text NOT NULL,
-    object_version          integer NOT NULL,
-    --
-    toolbar_code            varchar(48),
-    description             text,
-    is_system_object        boolean NOT NULL DEFAULT False,
-    --
-    CONSTRAINT toolbar_pk 
-        PRIMARY KEY (toolbar_code) 
-        USING INDEX TABLESPACE {pyAppPgIndexesTS}
-)
-TABLESPACE {pyAppPgTablesTS};
-COMMENT ON TABLE toolbar IS 
-    'Toolbar class definition';
-ALTER TABLE toolbar 
-    OWNER TO {pyAppPgOwnerRole};
-
-CREATE TRIGGER t99_update_company_user_date 
-    BEFORE INSERT OR UPDATE ON toolbar 
-    FOR EACH ROW EXECUTE PROCEDURE update_company_user_date();
-
-
--- system table: toolbar item
-CREATE TABLE toolbar_item(
-    created_at              timestamptz(3) NOT NULL,
-	created_by              text NOT NULL,
-    updated_at              timestamptz(3) NOT NULL,
-	updated_by              text NOT NULL,
-    object_version          integer NOT NULL,
-    --
-    parent                  varchar(48),
-    child                   varchar(48),
-    description             text,
-    sorting                 integer NOT NULL,
-    item_type               char(1) NOT NULL,
-    action                  varchar(48),
-    --
-    CONSTRAINT toolbar_item_pk 
-        PRIMARY KEY (parent, child) 
-        USING INDEX TABLESPACE {pyAppPgIndexesTS},
-    CONSTRAINT toolbar_item_type_check 
-        CHECK (item_type IN ('T', 'A', 'S', 'W')) -- Toolbar, Action, Separator,  Widget
-)
-TABLESPACE {pyAppPgTablesTS};
-COMMENT ON TABLE toolbar_item IS 
-    'Toolbar structure';
-ALTER TABLE toolbar_item 
-    OWNER TO {pyAppPgOwnerRole};
-
-CREATE TRIGGER t99_update_company_user_date 
-    BEFORE INSERT OR UPDATE ON toolbar_item 
-    FOR EACH ROW EXECUTE PROCEDURE update_company_user_date();
-
-
--- system function: get current user/profile actions
-CREATE FUNCTION pa_get_actions()
-RETURNS TABLE (action varchar, auth char) AS
-$$
-BEGIN
-    RETURN QUERY 
-        SELECT pa.action, pa.auth
-        FROM system.profile_action pa
-        JOIN system.connection cn ON pa.profile_code = cn.profile_code
-        JOIN system.app_user u ON cn.app_user_code = u.user_code
-        WHERE cn.session_id = pg_backend_pid();
-END;
-$$
-LANGUAGE plpgsql;
-COMMENT ON FUNCTION pa_get_actions() IS 
-    'Get current user/profile actions';
-ALTER FUNCTION pa_get_actions() 
-    OWNER TO {pyAppPgOwnerRole};
-
-
--- system function: get current user menu
-CREATE FUNCTION pa_get_menu(object varchar)
-RETURNS TABLE ( child varchar, 
-                item_type char,
-                description text,
-                action varchar) AS
-$$
-BEGIN
-    RETURN QUERY 
-        EXECUTE 'SELECT m.child, m.item_type, m.description, m.action
-            FROM system.menu_item m
-            WHERE m.parent = $1
-            ORDER BY m.sorting;' 
-            USING object;
-END;
-$$
-LANGUAGE plpgsql;
-COMMENT ON FUNCTION pa_get_menu(varchar) IS 
-    'Get current user menu';
-ALTER FUNCTION pa_get_menu(varchar) 
-    OWNER TO {pyAppPgOwnerRole};
-
-
--- system function: get current user toolbar
-CREATE OR REPLACE FUNCTION pa_get_toolbar(object varchar)
-RETURNS TABLE ( child varchar,
-                item_type char,
-                description text, 
-                action varchar) AS
-$$
-BEGIN
-    RETURN QUERY 
-        EXECUTE 'SELECT t.child, t.item_type, t.description, t.action
-            FROM system.toolbar_item t
-            WHERE t.parent = $1
-            ORDER BY t.sorting;' 
-            USING object;
-END;
-$$
-LANGUAGE plpgsql;
-COMMENT ON FUNCTION pa_get_toolbar(varchar) IS 
-    'Get current user toolbar';
-ALTER FUNCTION pa_get_toolbar(varchar) 
-    OWNER TO {pyAppPgOwnerRole};

@@ -50,7 +50,6 @@ SET search_path = company;
 
 
 -- departments table
---DROP TABLE IF EXISTS company.department CASCADE;
 CREATE TABLE department (
     created_at              timestamptz(3) NOT NULL,
 	created_by              text NOT NULL,

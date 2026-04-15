@@ -571,8 +571,7 @@ class SortFilterDialog(QDialog):
         if not self.model:
             return
         cid = int(self.ui.comboBoxSetting.currentData())
-        # clear before updating
-        clear_sortfilter_setting(cid)
+        columns = []
         # filters
         for row in range(FILTER_ROWS):
             if self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex() != 0:
@@ -601,32 +600,28 @@ class SortFilterDialog(QDialog):
                             wv = False
                     case _:
                         wv = None
-                try:
-                    set_sortfilter_setting(cid, 'F', row, cmb1, neg, cmb2, str(wv))
-                except PyAppDBError as er:
-                    QMessageBox.critical(self,
-                                         _tr("MessageDialog", "Critical"),
-                                         f"Database error: {er.code}\n{er.message}")
-                    return
-        # limit
-        if self.ui.checkBoxMaxRows.isChecked():
-            try:
-                set_sortfilter_limit(cid, self.ui.spinBoxMaxRows.value())
-            except PyAppDBError as er:
-                    QMessageBox.critical(self,
-                                         _tr("MessageDialog", "Critical"),
-                                         f"Database error: {er.code}\n{er.message}")
-                    return
-                
+                columns.append((cid, 'F',row, cmb1, neg, cmb2, str(wv)))
         # sorting
         for row in range(len(self.model.columns)):
             if self.ui.layoutSorting.itemAtPosition(row, FIELD).widget().currentIndex() != 0:
                 cmb1 = self.ui.layoutSorting.itemAtPosition(row, SORTFIELD).widget().currentIndex()
                 cmb2 = self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().currentIndex()
                 wv = None
-                try:
-                    set_sortfilter_setting(cid, 'S', row, cmb1, None, cmb2, wv)
-                except PyAppDBError as er:
+                columns.append((cid, 'S', row, cmb1, None, cmb2, str(wv)))
+        # update sort filter
+        try:
+            set_sortfilter_setting(cid, columns)
+        except PyAppDBError as er:
+            QMessageBox.critical(self,
+                                         _tr("MessageDialog", "Critical"),
+                                         f"Database error: {er.code}\n{er.message}")
+            return
+        
+        # limit
+        if self.ui.checkBoxMaxRows.isChecked():
+            try:
+                set_sortfilter_limit(cid, self.ui.spinBoxMaxRows.value())
+            except PyAppDBError as er:
                     QMessageBox.critical(self,
                                          _tr("MessageDialog", "Critical"),
                                          f"Database error: {er.code}\n{er.message}")
