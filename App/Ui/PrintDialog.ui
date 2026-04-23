@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>758</width>
+    <height>493</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,16 +93,6 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Report</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBoxReportList"/>
-     </item>
     </layout>
    </item>
    <item>
@@ -124,7 +114,7 @@
       <enum>QTabWidget::TabShape::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <property name="documentMode">
       <bool>false</bool>
@@ -162,8 +152,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>597</width>
-            <height>267</height>
+            <width>714</width>
+            <height>316</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -240,8 +230,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>597</width>
-            <height>267</height>
+            <width>714</width>
+            <height>316</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -288,84 +278,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tabSorting">
-      <attribute name="title">
-       <string>Sorting</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_8">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <property name="leftMargin">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>6</number>
-       </property>
-       <property name="rightMargin">
-        <number>6</number>
-       </property>
-       <property name="bottomMargin">
-        <number>6</number>
-       </property>
-       <item>
-        <widget class="QScrollArea" name="scrollAreaSorting">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContentsSorting">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>597</width>
-            <height>267</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <layout class="QGridLayout" name="layoutSorting">
-             <property name="leftMargin">
-              <number>6</number>
-             </property>
-             <property name="topMargin">
-              <number>6</number>
-             </property>
-             <property name="rightMargin">
-              <number>6</number>
-             </property>
-             <property name="bottomMargin">
-              <number>6</number>
-             </property>
-             <property name="horizontalSpacing">
-              <number>12</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>6</number>
-             </property>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tabPintOptions">
       <attribute name="title">
        <string>Options</string>
@@ -381,37 +293,61 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>574</width>
-            <height>275</height>
+            <width>686</width>
+            <height>296</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_18">
            <item>
-            <widget class="QGroupBox" name="groupBoxPrint">
-             <property name="title">
-              <string>Print</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_11">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_2">
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QGroupBox" name="groupBoxPrint">
+               <property name="title">
+                <string>Print</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1">
+                 <layout class="QVBoxLayout" name="verticalLayout_2">
                   <item>
-                   <widget class="QLabel" name="labelDirectPrint">
-                    <property name="text">
-                     <string>Direct print to</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="comboBoxPrinters"/>
+                   <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1">
+                    <item>
+                     <widget class="QLabel" name="labelDirectPrint">
+                      <property name="text">
+                       <string>Direct print to</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBoxPrinters"/>
+                    </item>
+                   </layout>
                   </item>
                  </layout>
                 </item>
                </layout>
-              </item>
-             </layout>
-            </widget>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonUserDefault">
+               <property name="text">
+                <string>Set as user default</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QGroupBox" name="groupBoxPDFExport">
@@ -543,8 +479,8 @@
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>20</width>
-               <height>68</height>
+               <width>549</width>
+               <height>34</height>
               </size>
              </property>
             </spacer>
@@ -570,11 +506,11 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>529</width>
-            <height>400</height>
+            <width>686</width>
+            <height>378</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_16">
            <item>
             <widget class="QGroupBox" name="groupBoxCurrent">
              <property name="title">
@@ -625,6 +561,26 @@
                    </spacer>
                   </item>
                   <item>
+                   <widget class="QPushButton" name="pushButtonClassDefault">
+                    <property name="text">
+                     <string>Set as class default</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_6">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
                    <widget class="QPushButton" name="pushButtonSetSorting">
                     <property name="text">
                      <string>Set sorting to</string>
@@ -655,34 +611,66 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBoxNew">
-             <property name="title">
-              <string>New customization</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_12">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QGroupBox" name="groupBox">
+               <property name="title">
+                <string>Report</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout">
                 <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>Name</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="lineEditNewName"/>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButtonNewCustomization">
-                  <property name="text">
-                   <string>Create</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                  <item>
+                   <widget class="QLabel" name="labelReportClass">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Class</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxReportList"/>
+                  </item>
+                 </layout>
                 </item>
                </layout>
-              </item>
-             </layout>
-            </widget>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBoxNew">
+               <property name="title">
+                <string>New customization</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_12">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_6">
+                  <item>
+                   <widget class="QLineEdit" name="lineEditNewName"/>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxSystem">
+                    <property name="text">
+                     <string>System</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="pushButtonNewCustomization">
+                    <property name="text">
+                     <string>Create</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QLabel" name="labelWarningOnNew">
@@ -706,42 +694,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <spacer name="horizontalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Report Class: </string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="labelReportClass">
-               <property name="font">
-                <font>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Report Class: </string>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </item>
           </layout>
          </widget>
@@ -773,6 +725,35 @@
    <header>App.Widget.Control</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>toolButtonPrintPreview</tabstop>
+  <tabstop>toolButtonPrint</tabstop>
+  <tabstop>toolButtonPrintDirect</tabstop>
+  <tabstop>toolButtonPrintPDF</tabstop>
+  <tabstop>comboBoxReportCustomizations</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>scrollAreaParameters</tabstop>
+  <tabstop>scrollAreaFilters</tabstop>
+  <tabstop>scrollAreaPrintOptions</tabstop>
+  <tabstop>comboBoxPrinters</tabstop>
+  <tabstop>pushButtonUserDefault</tabstop>
+  <tabstop>lineEditDirectory</tabstop>
+  <tabstop>pushButtonSelectDirectory</tabstop>
+  <tabstop>lineEditFileName</tabstop>
+  <tabstop>checkBoxOpenPDF</tabstop>
+  <tabstop>comboBoxPDFVersion</tabstop>
+  <tabstop>spinBoxResolution</tabstop>
+  <tabstop>scrollAreaCustomize</tabstop>
+  <tabstop>pushButtonUpdate</tabstop>
+  <tabstop>pushButtonDelete</tabstop>
+  <tabstop>pushButtonClassDefault</tabstop>
+  <tabstop>pushButtonSetSorting</tabstop>
+  <tabstop>spinBoxClassSorting</tabstop>
+  <tabstop>comboBoxReportList</tabstop>
+  <tabstop>lineEditNewName</tabstop>
+  <tabstop>checkBoxSystem</tabstop>
+  <tabstop>pushButtonNewCustomization</tabstop>
+ </tabstops>
  <resources>
   <include location="../../resources.qrc"/>
  </resources>

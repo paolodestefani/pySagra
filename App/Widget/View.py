@@ -72,12 +72,14 @@ from App import session
 from App import currentIcon
 from App.Core.L10n import _tr
 from App.Database.Exceptions import PyAppDBError
-from App.Database.Itemview import list_itemviews
-from App.Database.Itemview import create_itemview
-from App.Database.Itemview import get_view_columns
-from App.Database.Itemview import set_view_columns
-from App.Database.Itemview import delete_view_layout
-from App.Database.Itemview import set_default_view_layout
+from App.Database.Adaptation import list_adaptation
+from App.Database.Adaptation import create_adaptation
+from App.Database.Adaptation import get_view_columns
+from App.Database.Adaptation import set_adapt_setting
+from App.Database.Adaptation import delete_adaptation
+from App.Database.Adaptation import set_adapt_class_default
+from App.Database.Adaptation import set_adapt_user_default
+from App.Database.Adaptation import get_adapt_default
 from App.Widget.Delegate import GenericReadOnlyDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import HideTextDelegate
@@ -187,7 +189,6 @@ class EnhancedTableView(QTableView):
         self.verticalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignVCenter)
         # default item delegate for all column
         self.setItemDelegate(GenericReadOnlyDelegate(self))
-        # self.horizontalHeader().setStretchLastSection(True)
         # state of the horizontal header, used for reset
         self.horizontalHeaderState: QByteArray|None = None
         # CONTEXT MENU ACTIONS
@@ -217,6 +218,9 @@ class EnhancedTableView(QTableView):
         # export to CSV file
         self.cmExport = QAction(_tr("View", "Export to CSV file"), self)
         self.cmExport.triggered.connect(self.exportView)
+        # set as user default current view layout
+        self.cmUserDefault = QAction(_tr("View", "Set current layout as user default"), self)
+        self.cmUserDefault.triggered.connect(self.setUserDefaultLayout)
         # layout customizations
         self.cmCustomizations = QMenu(_tr("View", "Set layout"), self)
         self.ag = QActionGroup(self)
@@ -229,9 +233,9 @@ class EnhancedTableView(QTableView):
             # delete view layout
             self.cmDelete = QAction(_tr("View", "Delete current layout"), self)
             self.cmDelete.triggered.connect(self.deleteViewLayout)
-            # set as default current view layout
-            self.cmDefault = QAction(_tr("View", "Set current layout as default"), self)
-            self.cmDefault.triggered.connect(self.defaultViewLayout)
+            # set as class default current view layout
+            self.cmClassDefault = QAction(_tr("View", "Set current layout as class default"), self)
+            self.cmClassDefault.triggered.connect(self.setClassDefaultLayout)
             # save customization as
             self.cmSaveLayout = QAction(_tr("View", "Save current layout as ..."), self)
             self.cmSaveLayout.triggered.connect(self.saveViewLayoutAs)
@@ -259,11 +263,12 @@ class EnhancedTableView(QTableView):
         self.cm.addActions([self.cmExport]) #, self.cmPrint])
         self.cm.addSeparator()
         self.cm.addMenu(self.cmCustomizations)
+        self.cm.addAction(self.cmUserDefault)
         self.cm.addSeparator()
         if session['can_edit_views']:
             self.cm.addActions([self.cmUpdateLayout,
                                 self.cmDelete,
-                                self.cmDefault,
+                                self.cmClassDefault,
                                 self.cmSaveLayout])
             self.cm.addSeparator()
             self.cm.addActions([self.cmHide, self.cmShow, self.cmReset, self.cmManage])
@@ -279,7 +284,7 @@ class EnhancedTableView(QTableView):
         self.cmCustomizations.clear()
         # create actions and menu
         try:
-            result = list_itemviews(self.layoutName)
+            result = list_adaptation('I', self.layoutName)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -293,6 +298,11 @@ class EnhancedTableView(QTableView):
                 a.setChecked(True)
             self.ag.addAction(a)
             self.cmCustomizations.addAction(a)
+        # initial default layout
+        dl = get_adapt_default('I', self.layoutName, session['user'])
+        for a in self.ag.actions():
+            if a.data() == str(dl):
+                a.setChecked(True)
 
     def setModel(self, model: QAbstractItemModel|None) -> None:
         super().setModel(model)
@@ -512,10 +522,16 @@ class EnhancedTableView(QTableView):
                     i,
                     self.horizontalHeader().visualIndex(i),
                     not self.isColumnHidden(i),
-                    self.columnWidth(i))
+                    self.columnWidth(i),
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None)
                    for i in range(self.horizontalHeader().count())]
         try:
-            set_view_columns(viewId, columns)
+            set_adapt_setting(viewId, columns)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -534,9 +550,24 @@ class EnhancedTableView(QTableView):
                                             _tr("View", "Insert new customizazion description"))
         if not ok or viewDesc == '':
             return
+        # ask for system/non-system object
+        system = False
+        ret = QMessageBox.question(self,
+                                   _tr('MessageDialog', "Question"),
+                                   _tr('View', 'Create a system object?'),
+                                   QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No|QMessageBox.StandardButton.Cancel,  # butons
+                                   QMessageBox.StandardButton.Cancel  # default botton
+                                   )
+        match ret:
+            case QMessageBox.StandardButton.Yes:
+                system = True
+            case QMessageBox.StandardButton.No:
+                system = False
+            case _:
+                return
         # create new customization
         try:
-            viewId = create_itemview(self.layoutName, viewDesc)
+            viewId = create_adaptation('I', self.layoutName, viewDesc, None, system)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -556,7 +587,7 @@ class EnhancedTableView(QTableView):
         "Delete current view layout from database"
         viewId = int(self.ag.checkedAction().data())
         try:
-            delete_view_layout(viewId)
+            delete_adaptation(viewId)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -568,7 +599,30 @@ class EnhancedTableView(QTableView):
                                     _tr("MessageDialog", "Information"),
                                     _tr("View", "Current layout deleted"))
 
-    def defaultViewLayout(self) -> None:
+    def setUserDefaultLayout(self) -> None:
+        "Set curent layout as default for user"
+        if not self.layoutName:
+            return
+        if not self.ag.checkedAction():  # no layout setted
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("View", "No configuration has been set"))
+            return
+        viewId = int(self.ag.checkedAction().data())
+        try:
+            set_adapt_user_default('I', self.layoutName, session['user'], viewId)
+        except PyAppDBError as er:
+            QMessageBox.critical(self,
+                                 _tr("MessageDialog", "Critical"),
+                                 "{}\n{}".format(er.code, er.message))
+        else:
+            # recreate customization list
+            self.fillCustomizationMenu()
+            QMessageBox.information(self,
+                                    _tr("MessageDialog", "Information"),
+                                    _tr("View", "Current layout setted as user default"))
+
+    def setClassDefaultLayout(self) -> None:
         "Set curent layout as default for view class"
         if not self.layoutName:
             return
@@ -579,7 +633,7 @@ class EnhancedTableView(QTableView):
             return
         viewId = int(self.ag.checkedAction().data())
         try:
-            set_default_view_layout(self.layoutName, viewId)
+            set_adapt_class_default(viewId)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -589,4 +643,4 @@ class EnhancedTableView(QTableView):
             self.fillCustomizationMenu()
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),
-                                    _tr("View", "Current layout setted as default"))
+                                    _tr("View", "Current layout setted as class default"))

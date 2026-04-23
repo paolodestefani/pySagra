@@ -736,7 +736,8 @@ class FormIndexManager[T](QWidget):
         if hasattr(self.model, 'userDataChanged'):
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.indexModel, self)
-        #self.indexMapper.setModel(self.sortFilterDialog.model)
+        
+    
 
     def setIndexView(self, view: QTableView) -> None:
         "Set index view"
@@ -1053,6 +1054,9 @@ class FormIndexManager[T](QWidget):
 
     def setIndexModel(self, model: QueryModel) -> None:
         self.indexModel = model
+        
+    def applySortFilter(self)-> None:
+        self.sortFilterDialog.applySortFilter()
 
     def setFilters(self) -> None:
         "Create/open filter dialog and update main model"

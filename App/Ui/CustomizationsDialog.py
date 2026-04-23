@@ -24,7 +24,7 @@ class Ui_CustomizationsDialog(object):
     def setupUi(self, CustomizationsDialog):
         if not CustomizationsDialog.objectName():
             CustomizationsDialog.setObjectName(u"CustomizationsDialog")
-        CustomizationsDialog.resize(320, 160)
+        CustomizationsDialog.resize(267, 176)
         self.verticalLayout_5 = QVBoxLayout(CustomizationsDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout = QHBoxLayout()
@@ -43,49 +43,55 @@ class Ui_CustomizationsDialog(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
 
-        self.groupBox_5 = QGroupBox(CustomizationsDialog)
-        self.groupBox_5.setObjectName(u"groupBox_5")
-        self.verticalLayout = QVBoxLayout(self.groupBox_5)
+        self.verticalLayout_4 = QVBoxLayout()
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.groupBox = QGroupBox(CustomizationsDialog)
+        self.groupBox.setObjectName(u"groupBox")
+        self.verticalLayout = QVBoxLayout(self.groupBox)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.checkBoxItemView = QCheckBox(self.groupBox_5)
-        self.checkBoxItemView.setObjectName(u"checkBoxItemView")
+        self.checkBoxSystem = QCheckBox(self.groupBox)
+        self.checkBoxSystem.setObjectName(u"checkBoxSystem")
 
-        self.verticalLayout.addWidget(self.checkBoxItemView)
+        self.verticalLayout.addWidget(self.checkBoxSystem)
 
-        self.checkBoxSortFilter = QCheckBox(self.groupBox_5)
-        self.checkBoxSortFilter.setObjectName(u"checkBoxSortFilter")
+        self.checkBoxNonSystem = QCheckBox(self.groupBox)
+        self.checkBoxNonSystem.setObjectName(u"checkBoxNonSystem")
 
-        self.verticalLayout.addWidget(self.checkBoxSortFilter)
-
-        self.checkBoxReport = QCheckBox(self.groupBox_5)
-        self.checkBoxReport.setObjectName(u"checkBoxReport")
-
-        self.verticalLayout.addWidget(self.checkBoxReport)
+        self.verticalLayout.addWidget(self.checkBoxNonSystem)
 
 
-        self.horizontalLayout.addWidget(self.groupBox_5)
+        self.verticalLayout_4.addWidget(self.groupBox)
+
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_4.addItem(self.verticalSpacer_3)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_4)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.pushButtonExport = QPushButton(CustomizationsDialog)
         self.pushButtonExport.setObjectName(u"pushButtonExport")
+        self.pushButtonExport.setAutoDefault(False)
 
         self.verticalLayout_3.addWidget(self.pushButtonExport)
 
         self.pushButtonImport = QPushButton(CustomizationsDialog)
         self.pushButtonImport.setObjectName(u"pushButtonImport")
+        self.pushButtonImport.setAutoDefault(False)
 
         self.verticalLayout_3.addWidget(self.pushButtonImport)
 
         self.pushButtonClear = QPushButton(CustomizationsDialog)
         self.pushButtonClear.setObjectName(u"pushButtonClear")
+        self.pushButtonClear.setAutoDefault(False)
 
         self.verticalLayout_3.addWidget(self.pushButtonClear)
 
 
         self.horizontalLayout.addLayout(self.verticalLayout_3)
 
-        self.horizontalLayout.setStretch(1, 1)
 
         self.verticalLayout_5.addLayout(self.horizontalLayout)
 
@@ -95,14 +101,12 @@ class Ui_CustomizationsDialog(object):
 
         self.buttonBox = QDialogButtonBox(CustomizationsDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Close)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Close)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_5.addWidget(self.buttonBox)
 
-        QWidget.setTabOrder(self.checkBoxItemView, self.checkBoxSortFilter)
-        QWidget.setTabOrder(self.checkBoxSortFilter, self.checkBoxReport)
 
         self.retranslateUi(CustomizationsDialog)
         self.buttonBox.accepted.connect(CustomizationsDialog.accept)
@@ -114,10 +118,9 @@ class Ui_CustomizationsDialog(object):
     def retranslateUi(self, CustomizationsDialog):
         CustomizationsDialog.setWindowTitle(QCoreApplication.translate("CustomizationsDialog", u"Dialog", None))
         self.labelIcon.setText(QCoreApplication.translate("CustomizationsDialog", u"Icon", None))
-        self.groupBox_5.setTitle(QCoreApplication.translate("CustomizationsDialog", u"Customization type", None))
-        self.checkBoxItemView.setText(QCoreApplication.translate("CustomizationsDialog", u"ItemView", None))
-        self.checkBoxSortFilter.setText(QCoreApplication.translate("CustomizationsDialog", u"SortFilter", None))
-        self.checkBoxReport.setText(QCoreApplication.translate("CustomizationsDialog", u"Report", None))
+        self.groupBox.setTitle(QCoreApplication.translate("CustomizationsDialog", u"Consider Object", None))
+        self.checkBoxSystem.setText(QCoreApplication.translate("CustomizationsDialog", u"System", None))
+        self.checkBoxNonSystem.setText(QCoreApplication.translate("CustomizationsDialog", u"Non-System", None))
         self.pushButtonExport.setText(QCoreApplication.translate("CustomizationsDialog", u"Export", None))
         self.pushButtonImport.setText(QCoreApplication.translate("CustomizationsDialog", u"Import", None))
         self.pushButtonClear.setText(QCoreApplication.translate("CustomizationsDialog", u"Clear", None))

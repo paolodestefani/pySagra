@@ -34,6 +34,7 @@ import logging
 # PySide6
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QVBoxLayout
@@ -116,7 +117,8 @@ def item() -> None:
     title = currentAction['app_file_item'].text()
     auth = currentAction['app_file_item'].data()
     iw = ItemForm(mw, title, auth)
-    iw.reload()
+    iw.applySortFilter()
+    #iw.reload()
     mw.addTab(title, iw)
     logging.info('Items Form added to main window')
 
@@ -135,6 +137,9 @@ class ItemForm(FormIndexManager):
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
+        # scripting init
+        self.script = scriptInit(self)
+        # scripting init
         model = ItemModel(self)
         idxModel = ItemIndexModel(self)
         modelv = ItemVariantModel(self)
@@ -173,17 +178,17 @@ class ItemForm(FormIndexManager):
         # set index view
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('item')
-        self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        #self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
         self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_cdl))
-        self.ui.tableView.setItemDelegateForColumn(I_STOCK, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_VARIANTS, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_UNLOAD, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_KITPART, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_MENUPART, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_SALABLE, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_WEBAVAILABLE, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_OBSOLETE, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_STOCK, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_VARIANTS, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_UNLOAD, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_KITPART, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_MENUPART, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_SALABLE, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_WEBAVAILABLE, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(I_OBSOLETE, BooleanDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, [(setting['normal_background_color'] or '', _tr('Item', 'default'))] + COLORS))
         self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(setting['normal_text_color'] or '', _tr('Item', 'default'))] + COLORS))
         # mapper mappings
@@ -244,8 +249,6 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonRemoveMen.clicked.connect(self.ui.tableViewMenuItems.remove)
         self.ui.pushButtonAddPri.clicked.connect(self.ui.tableViewPrices.add)
         self.ui.pushButtonRemovePri.clicked.connect(self.ui.tableViewPrices.remove)
-        # scripting init
-        self.script = scriptInit(self)
 
     def copyDescription(self):
         "Copy item description to item customer description on editingFinished of description lineEdit"
@@ -322,33 +325,6 @@ class ItemForm(FormIndexManager):
             self.ui.checkBoxDeliveredControl.setEnabled(True)
             self.ui.checkBoxKitPart.setEnabled(True)
             self.ui.checkBoxMenuPart.setEnabled(True)
-
-    # def add(self):
-    #     if self.ui.tabWidget.currentIndex() == TABVAR:
-    #         if self.ui.tableViewVariants.isEnabled():
-    #             self.ui.tableViewVariants.add()
-    #     elif self.ui.tabWidget.currentIndex() == TABCOM:
-    #         if self.ui.tableViewComponents.isEnabled():
-    #             self.ui.tableViewComponents.add()
-    #     elif self.ui.tabWidget.currentIndex() == TABMEN:
-    #         if self.ui.tableViewMenuItems.isEnabled():
-    #             self.ui.tableViewMenuItems.add()
-    #     elif self.ui.tabWidget.currentIndex() == TABPRI:
-    #         self.ui.tableViewPrices.add()
-    #     else:
-    #         pass
-
-    # def remove(self):
-    #     if self.ui.tabWidget.currentIndex() == TABVAR:
-    #         self.ui.tableViewVariants.remove()
-    #     elif self.ui.tabWidget.currentIndex() == TABCOM:
-    #         self.ui.tableViewComponents.remove()
-    #     elif self.ui.tabWidget.currentIndex() == TABMEN:
-    #         self.ui.tableViewMenuItems.remove()
-    #     elif self.ui.tabWidget.currentIndex() == TABPRI:
-    #         self.ui.tableViewPrices.remove()
-    #     else:
-    #         pass
 
     @scriptMethod
     def new(self):

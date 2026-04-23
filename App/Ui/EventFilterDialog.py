@@ -24,7 +24,7 @@ class Ui_EventFilterDialog(object):
     def setupUi(self, EventFilterDialog):
         if not EventFilterDialog.objectName():
             EventFilterDialog.setObjectName(u"EventFilterDialog")
-        EventFilterDialog.resize(280, 229)
+        EventFilterDialog.resize(280, 281)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -37,6 +37,7 @@ class Ui_EventFilterDialog(object):
         self.groupBoxEvent.setObjectName(u"groupBoxEvent")
         self.verticalLayout_2 = QVBoxLayout(self.groupBoxEvent)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(5, 5, 5, 5)
         self.comboBoxEvent = QComboBox(self.groupBoxEvent)
         self.comboBoxEvent.setObjectName(u"comboBoxEvent")
 
@@ -47,9 +48,11 @@ class Ui_EventFilterDialog(object):
 
         self.groupBoxDate = QGroupBox(EventFilterDialog)
         self.groupBoxDate.setObjectName(u"groupBoxDate")
-        self.groupBoxDate.setCheckable(False)
+        self.groupBoxDate.setCheckable(True)
+        self.groupBoxDate.setChecked(False)
         self.verticalLayout_3 = QVBoxLayout(self.groupBoxDate)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(5, 5, 5, 5)
         self.dateEditDate = QDateEdit(self.groupBoxDate)
         self.dateEditDate.setObjectName(u"dateEditDate")
         self.dateEditDate.setCalendarPopup(True)
@@ -61,9 +64,11 @@ class Ui_EventFilterDialog(object):
 
         self.groupBoxDayPart = QGroupBox(EventFilterDialog)
         self.groupBoxDayPart.setObjectName(u"groupBoxDayPart")
-        self.groupBoxDayPart.setCheckable(False)
+        self.groupBoxDayPart.setCheckable(True)
+        self.groupBoxDayPart.setChecked(False)
         self.verticalLayout = QVBoxLayout(self.groupBoxDayPart)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.radioButtonLunch = QRadioButton(self.groupBoxDayPart)
@@ -89,8 +94,9 @@ class Ui_EventFilterDialog(object):
 
         self.buttonBox = QDialogButtonBox(EventFilterDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_4.addWidget(self.buttonBox)
 

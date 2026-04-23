@@ -69,47 +69,6 @@ ORDER BY class_sorting;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_view_columns(adaptation_id: int) -> list[tuple]:
-    "Returns the view definition"
-    script = """
-SELECT 	
-    column_number,
-    sorting,
-    is_visible,
-    size
-FROM system.adaptation_setting
-WHERE adaptation_id = %s
-ORDER BY sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script, (adaptation_id,))
-            return cur.fetchall()
-    except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
-
-def set_view_columns(adaptation_id: int, columns: list[tuple]) -> None:
-    "Set the view definition"
-    script1 = """
-DELETE FROM system.adaptation_setting
-WHERE adaptation_id = %s;"""
-    script2 = """
-INSERT INTO system.adaptation_setting (
-    adaptation_id,
-    column_number,
-    sorting,
-    is_visible,
-    size)
-VALUES (%s, %s, %s, %s, %s);"""
-    #params = [(adaptation_id, c, p, h, w) for c, p, h, w in columns]
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script1, (adaptation_id,))
-                cur.executemany(script2, columns)
-    except psycopg.Error as er:
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
-
 def delete_view_layout(adaptation_id: int) -> None:
     "Delete a view adaptation"
     script = """

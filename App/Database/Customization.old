@@ -253,50 +253,50 @@ ORDER BY report_adapt_id, adapt_type, layout_row;"""
     #except psycopg2.Error as er:
         #raise PyAppDBError(er.pgcode, er.pgerror)
 
-def set_report_adapt(rid: int,
-                     rri: int,
-                     rdes: str,
-                     rcls: bool
-                     ) -> None:
-    "Set all the report customizations"
-    script = """
-DELETE FROM system.report_adapt WHERE report_adapt_id = %s;
-INSERT INTO system.report_adapt (
-    report_adapt_id,
-    report_id,
-    description,
-    class_sorting)
-VALUES (%s, %s, %s, %s);"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script, (rid, rri, rdes, rcls))
-    except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+# def set_report_adapt(rid: int,
+#                      rri: int,
+#                      rdes: str,
+#                      rcls: bool
+#                      ) -> None:
+#     "Set all the report customizations"
+#     script = """
+# DELETE FROM system.report_adapt WHERE report_adapt_id = %s;
+# INSERT INTO system.report_adapt (
+#     report_adapt_id,
+#     report_id,
+#     description,
+#     class_sorting)
+# VALUES (%s, %s, %s, %s);"""
+#     try:
+#         with appconn.cursor() as cur:
+#             with appconn.transaction():
+#                 cur.execute(script, (rid, rri, rdes, rcls))
+#     except psycopg.Error as er:
+#         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_report_adapt_setting(raid: int,
-                             ratyp: str,
-                             rlrow: int,
-                             rcmb1: int|None,
-                             rcmb2: int|None,
-                             rvv: str
-                             ) -> None:
-    "Set all the item views customizations settings"
-    script = """
-INSERT INTO system.report_adapt_setting (
-    report_adapt_id,
-    adapt_type,
-    layout_row,
-    combo1_index,
-    combo2_index,
-    widget_value)
-VALUES (%s, %s, %s, %s, %s, %s);"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script, (raid, ratyp, rlrow, rcmb1, rcmb2, rvv))
-    except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+# def set_report_adapt_setting(raid: int,
+#                              ratyp: str,
+#                              rlrow: int,
+#                              rcmb1: int|None,
+#                              rcmb2: int|None,
+#                              rvv: str
+#                              ) -> None:
+#     "Set all the item views customizations settings"
+#     script = """
+# INSERT INTO system.report_adapt_setting (
+#     report_adapt_id,
+#     adapt_type,
+#     layout_row,
+#     combo1_index,
+#     combo2_index,
+#     widget_value)
+# VALUES (%s, %s, %s, %s, %s, %s);"""
+#     try:
+#         with appconn.cursor() as cur:
+#             with appconn.transaction():
+#                 cur.execute(script, (raid, ratyp, rlrow, rcmb1, rcmb2, rvv))
+#     except psycopg.Error as er:
+#         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def clear_adapt(adapttype: str) -> None:
     "Clear customizations"
