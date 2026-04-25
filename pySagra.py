@@ -80,6 +80,7 @@ from App.System.MainWindow import MainWindow
 logger = logging.getLogger(__name__)
 
 
+
 def logUnhandledException(ex_cls: type[BaseException], ex: BaseException, tb: types.TracebackType | None) -> None:
     "Function to get and log unhadked exceptions"
     logger.critical(''.join(traceback.format_tb(tb)))
@@ -188,7 +189,6 @@ if __name__ == "__main__":
     logger.info('')
     # start PySide6 Application
     logger.info('Setting up QApplication')
-    #QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv)
     # l10n
     logger.info('Setting up QLocale to system locale')

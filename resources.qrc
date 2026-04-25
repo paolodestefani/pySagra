@@ -256,7 +256,7 @@
     <file alias="edit_find">icon/flatwoken/Search.png</file>
     <file alias="edit_reload">icon/flatwoken/Dialog-Refresh.png</file>
     <file alias="edit_add">icon/flatwoken/Dialog-add.png</file>
-	<file alias="edit_add_child">icon/flatwoken/Dialog-add.png</file>
+	<file alias="edit_add_child">icon/flatwoken/Zoom-In.png</file>
     <file alias="edit_remove">icon/flatwoken/Dialog-remove.png</file>
     <file alias="edit_filter">icon/flatwoken/Search.png</file>
     <file alias="edit_print">icon/flatwoken/Printer.png</file>

@@ -38,6 +38,8 @@ from PySide6.QtCore import QDirIterator
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QProxyStyle
+from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QStyleFactory
@@ -56,11 +58,26 @@ color_scheme = {
     'S': Qt.ColorScheme.Unknown} # system default
 
 
+
+class CenteredProxyStyle(QProxyStyle):
+    def subElementRect(self, element, option, widget=None):
+        # Otteniamo il rettangolo standard dal motore di stile sottostante
+        rect = super().subElementRect(element, option, widget)
+        
+        if element == QStyle.SubElement.SE_ItemViewItemCheckIndicator:
+            # Centriamo il rettangolo del checkbox rispetto all'intera cella
+            rect.moveCenter(option.rect.center())
+        return rect
+
+
 def setTheme(theme: str) -> None:
     "Set the application theme"
     app = QApplication.instance()
     if app is not None and isinstance(app, QApplication):
-        app.setStyle(QStyleFactory.create(theme))
+        base_style = QStyleFactory.create(theme) 
+        proxy_style = CenteredProxyStyle(base_style)
+        app.setStyle(proxy_style)
+        #app.setStyle(QStyleFactory.create(theme))
         app.processEvents()
     
 def setColorScheme(color: str) -> None:

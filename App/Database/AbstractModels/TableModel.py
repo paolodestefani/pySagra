@@ -118,21 +118,34 @@ class QueryModel(QAbstractTableModel):
              index: QModelIndex|QPersistentModelIndex = QModelIndex(),
              role: int = Qt.ItemDataRole.DisplayRole
              ) -> Any:
-        "Returns the required data from dataSet"
+        "Returns the required data from dataSet"    
+        # sometimes dataSet could be empty
         if (not index.isValid() 
             or index.row() > self.rowCount()
             or index.column() > self.columnCount()):
             return None
-        if role == Qt.ItemDataRole.DisplayRole:
-            if (index.row(), index.column()) in self.dataSet:
-                return self.dataSet[index.row(), index.column()]
-        elif role == Qt.ItemDataRole.TextAlignmentRole:
-            # numbers aligned right anything else aligned left
-            if isinstance(index.data(), (int, decimal.Decimal, QDate, QDateTime)):
-                return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-            else:
-                return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        return None
+        row = index.row()
+        col = index.column()
+        result = self.dataSet[row, col]
+        match role:
+            case Qt.ItemDataRole.DisplayRole:
+                if isinstance(result, bool):
+                    return None # do not return text for bool, checkbox is managed in CheckStateRole
+                return result
+            case Qt.ItemDataRole.TextAlignmentRole:
+                # numbers aligned right anything else aligned left
+                if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
+                    return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
+                else:
+                    return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
+            case Qt.ItemDataRole.CheckStateRole:
+                if isinstance(result, bool):
+                    return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+                else:
+                    return None
+            case _:
+                return None
+
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> str|None:
         "Returns header data for row (field header)/column (columns number) headers"
@@ -471,11 +484,17 @@ class TableModel(QAbstractTableModel):
     def flags(self, index: QModelIndex|QPersistentModelIndex) -> Qt.ItemFlag:
         "Return standard flags or readonly for some columns"
         if not index.isValid():
-            return Qt.ItemFlag.ItemIsEnabled
-        flags = QAbstractTableModel.flags(self, index)|Qt.ItemFlag.ItemIsEditable
-        if self.columns[index.column()][RO]:
-            flags = flags ^ Qt.ItemFlag.ItemIsEditable
-        return flags
+            return Qt.ItemFlag.NoItemFlags
+        f = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+        is_bool = self.columns[index.column()][TYPE] == 'bool'
+        is_ro = self.columns[index.column()][RO]
+        if is_bool:
+            if not is_ro:
+                f |= Qt.ItemFlag.ItemIsUserCheckable
+        else:
+            if not is_ro:
+                f |= Qt.ItemFlag.ItemIsEditable
+        return f
 
     def data(self,
              index: QModelIndex | QPersistentModelIndex = QModelIndex(),
@@ -488,21 +507,29 @@ class TableModel(QAbstractTableModel):
             return None
         row = index.row()
         col = index.column()
-        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
-            if len(self.dataSet) <= row:
-                return None
-            if not col in self.dataSet[row]:
-                return None
-            result = self.dataSet[row][col]
-            return result
-        elif role == Qt.ItemDataRole.TextAlignmentRole:
-            # numbers aligned right anything else aligned left
-            if isinstance(index.data(), (int, decimal.Decimal, QDate, QDateTime)):
-                return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-            else:
-                return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        else:
+        if len(self.dataSet) <= row:
             return None
+        if not col in self.dataSet[row]:
+            return None
+        result = self.dataSet[row][col]
+        match role:
+            case Qt.ItemDataRole.DisplayRole | Qt.ItemDataRole.EditRole:
+                if isinstance(result, bool):
+                    return None # do not return text for bool, checkbox is managed in CheckStateRole
+                return result
+            case Qt.ItemDataRole.TextAlignmentRole:
+                # numbers aligned right anything else aligned left
+                if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
+                    return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
+                else:
+                    return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
+            case Qt.ItemDataRole.CheckStateRole:
+                if isinstance(result, bool):
+                    return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+                else:
+                    return None
+            case _:
+                return None
 
     def setData(self, 
                 index: QModelIndex|QPersistentModelIndex = QModelIndex(),
@@ -517,6 +544,21 @@ class TableModel(QAbstractTableModel):
             return False
         row = index.row()
         col = index.column()
+        if role == Qt.ItemDataRole.CheckStateRole:
+            # Converte in bool confrontando con Checked (funziona sia con int che con Enum)
+            new_value = (value == Qt.CheckState.Checked or value == Qt.CheckState.Checked.value)
+            if self.dataSet[row][col] == new_value:
+                return False
+            # save the row/column of the modified cell
+            if (row not in self.toModify and row not in self.toInsert):
+                self.toModify[row] = {}
+            if (row in self.toModify and col not in self.toModify[row]):
+                self.toModify[row][col] = None
+            self.dataSet[row][col] = new_value
+            # Fondamentale: emetti anche il DisplayRole per forzare il refresh del delegate
+            self.dataChanged.emit(index, index, [role, Qt.ItemDataRole.DisplayRole])
+            self.userDataChanged.emit()
+            return True
         if role == Qt.ItemDataRole.EditRole:
             # check if different from before
             if self.dataSet[row][col] == value:

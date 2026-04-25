@@ -37,6 +37,7 @@ from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QStyledItemDelegate
+#from PySide6.QtWidgets import QAbstractItemView
 
 # application modules
 from App import session
@@ -49,6 +50,7 @@ from App.Database.Models import DepartmentModel
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import IntegerDelegate
 from App.Widget.Delegate import RelationDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormViewManager
 from App.Ui.DepartmentWidget import Ui_DepartmentWidget
 
@@ -86,11 +88,12 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('department')
-        self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        #self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_cdl))
-        self.ui.tableView.setItemDelegateForColumn(SORTING, IntegerDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(OBSOLETE, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(NOMANAGE, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(SORTING, IntegerDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(OBSOLETE, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(NOMANAGE, BooleanDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TAKEAWAY, BooleanDelegate(self))
         # scripting init
         self.script = scriptInit(self)

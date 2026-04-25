@@ -91,7 +91,7 @@ from App.Widget.Dialog import SelectImageDialog
 
 
 class GenericDelegate(QStyledItemDelegate):
-    "Delegate for view"
+    "A Delegate for view that automatically choose the editor type based on the field type, and format the display of values"
 
     def paint(self, 
               painter: QPainter,
@@ -102,19 +102,7 @@ class GenericDelegate(QStyledItemDelegate):
         self.initStyleOption(styleOption, index)
         match value:
             case bool():
-                check_option = QStyleOptionViewItem(option)
-                check_option.rect = self.getCheckBoxRect(option)
-                check_option.state |= QStyle.StateFlag.State_Enabled
-                if value:
-                    check_option.state |= QStyle.StateFlag.State_On
-                else:
-                    check_option.state |= QStyle.StateFlag.State_Off
-                QApplication.style().drawPrimitive(
-                    QStyle.PrimitiveElement.PE_IndicatorCheckBox, 
-                    check_option, 
-                    painter
-                )
-                styleOption.text = "" 
+                styleOption.text = ''
             case int():
                 styleOption.text = str(value)
                 styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
@@ -127,30 +115,12 @@ class GenericDelegate(QStyledItemDelegate):
             case _:
                 styleOption.text = str(value or '')  # for null values
                 styleOption.displayAlignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-
         font = index.model().data(index, Qt.ItemDataRole.FontRole)
         if font:
             styleOption.font = font
-        painter.save()
-        # Disegna lo sfondo (Selection, Hover, Alternate Background)
-        QApplication.style().drawPrimitive(
-            QStyle.PrimitiveElement.PE_PanelItemViewItem, styleOption, painter, styleOption.widget
-)
-        QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
-                                         styleOption,
-                                         painter)
-        painter.restore()
-
-    def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
-        check_box_style_option = QStyleOptionButton()
-        check_box_rect = QApplication.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, check_box_style_option, None)
-        #check_box_point = QPoint(int(option.rect.x() + option.rect.width() / 2 - check_box_rect.width() / 2),
-        #                         int(option.rect.y() + option.rect.height() / 2 - check_box_rect.height() / 2))
-        x = int(option.rect.x() + (option.rect.width() - check_box_rect.width()) / 2)
-        y = int(option.rect.y() + (option.rect.height() - check_box_rect.height()) / 2)
-
-        return QRect(QPoint(x, y), check_box_rect.size())
-
+        # call base class to draw the item with the modified style option
+        super().paint(painter, styleOption, index)
+        
     def createEditor(self, 
                      parent: QWidget,
                      option: QStyleOptionViewItem,
@@ -162,7 +132,8 @@ class GenericDelegate(QStyledItemDelegate):
         widget: QCheckBox|QSpinBox|QDateEdit|QDateTimeEdit|QDoubleSpinBox|QLineEdit
         match fieldType:
             case 'bool':  # must be checked before int (bool is subclass of int)
-                widget = QCheckBox(parent)
+                #widget = QCheckBox(parent)
+                widget = QWidget(parent)
             case 'int':
                 widget = QSpinBox(parent)
                 widget.setRange(0, 999999999)
@@ -205,6 +176,8 @@ class GenericDelegate(QStyledItemDelegate):
                 dsb.setValue(val)
             case QLineEdit() as le:
                 le.setText(str(val))
+            case QWidget():  # dummy editor for boolean fields, toggle value
+                pass
             case _:
                 raise TypeError(f"Unsupported editor type: {type(editor)}")
 
@@ -229,9 +202,14 @@ class GenericDelegate(QStyledItemDelegate):
                 model.setData(index, editor.value())
             case QLineEdit():
                 model.setData(index, editor.text())
+            case QWidget()|None:  # dummy editor for boolean fields, toggle value
+                current_val = index.data(Qt.ItemDataRole.EditRole)
+                if current_val is None:
+                    current_val = index.data(Qt.ItemDataRole.DisplayRole)
+                model.setData(index, not bool(current_val), Qt.ItemDataRole.EditRole)
             case _:
                 raise TypeError(f"Unsupported editor type: {editor}")
-            
+  
 
 class ColorDelegate(QStyledItemDelegate):
     "Color delegate"
@@ -444,54 +422,43 @@ class BooleanDelegate(QStyledItemDelegate):
           painter: QPainter,
           option: QStyleOptionViewItem,
           index: QModelIndex|QPersistentModelIndex) -> None:
-        # 1. Inizializza le opzioni standard (gestisce colori, selezione, ecc.)
+        "Draw a checkbox centered in the cell, with state based on the model data and enabled/disabled based on the item flags"
         opts = QStyleOptionViewItem(option)
         self.initStyleOption(opts, index)
-        
         painter.save()
-        
-        # 2. Disegna lo sfondo standard (selezione, hover, alternate rows)
-        # Questo sostituisce tutti i tuoi if/else sulla palette e fillRect
+        # draw background (selection, hover, alternate background)
         QApplication.style().drawPrimitive(
             QStyle.PrimitiveElement.PE_PanelItemViewItem, opts, painter, opts.widget
         )
-
-        # 3. Configura l'opzione per la CheckBox
-        check_box_style_option = QStyleOptionButton()
-        check_box_style_option.rect = self.getCheckBoxRect(opts)
-        
-        # Sincronizza lo stato (Enabled, Selected, ecc.)
-        check_box_style_option.state = opts.state
-        
-        # Determina se è ON o OFF basandosi sui dati del modello
+        # configure CheckBox
+        checkBoxStyleOption = QStyleOptionButton()
+        checkBoxStyleOption.rect = self.getCheckBoxRect(opts)
+        # sync state (Enabled, Selected, etc.)
+        checkBoxStyleOption.state = opts.state & ~QStyle.StateFlag.State_HasFocus  # remove focus state to avoid dotted border
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
             val = index.data(Qt.ItemDataRole.DisplayRole)
-            
         if bool(val):
-            check_box_style_option.state |= QStyle.StateFlag.State_On
+            checkBoxStyleOption.state |= QStyle.StateFlag.State_On
         else:
-            check_box_style_option.state |= QStyle.StateFlag.State_Off
-
-        # Se non modificabile, aggiungi ReadOnly (opzionale per feedback visivo)
+            checkBoxStyleOption.state |= QStyle.StateFlag.State_Off
+        # if not modifyable add ReadOnly
         if not (index.flags() & Qt.ItemFlag.ItemIsEditable):
-            check_box_style_option.state |= QStyle.StateFlag.State_ReadOnly
-
-        # 4. Disegna la CheckBox
+            checkBoxStyleOption.state |= QStyle.StateFlag.State_ReadOnly
+        # draw CheckBox
         QApplication.style().drawControl(
             QStyle.ControlElement.CE_CheckBox,
-            check_box_style_option,
+            checkBoxStyleOption,
             painter
         )
-        
         painter.restore()
 
     def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
-        check_box_style_option = QStyleOptionButton()
-        check_box_rect = QApplication.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, check_box_style_option, None)
-        check_box_point = QPoint(option.rect.x() + option.rect.width() // 2 - check_box_rect.width() // 2,
-                                 option.rect.y() + option.rect.height() // 2 - check_box_rect.height() // 2)
-        return QRect(check_box_point, check_box_rect.size())
+        checkBoxStyleOption = QStyleOptionButton()
+        checkBoxRect = QApplication.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, checkBoxStyleOption, None)
+        checkBoxPoint = QPoint(option.rect.x() + option.rect.width() // 2 - checkBoxRect.width() // 2,
+                               option.rect.y() + option.rect.height() // 2 - checkBoxRect.height() // 2)
+        return QRect(checkBoxPoint, checkBoxRect.size())
 
     def editorEvent(self, 
                     event: QEvent, 
@@ -1256,8 +1223,8 @@ class TimeDelegate(QStyledItemDelegate):
 #         painter.restore()
 
 #     def getCheckBoxRect(self, option):
-#         check_box_style_option = QStyleOptionButton()
-#         check_box_rect = QApplication.style().subElementRect(QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
+#         checkBoxStyleOption = QStyleOptionButton()
+#         check_box_rect = QApplication.style().subElementRect(QStyle.SE_CheckBoxIndicator, checkBoxStyleOption, None)
 #         check_box_point = QPoint(option.rect.x() +
 #                                  option.rect.width() / 2 -
 #                                  check_box_rect.width() / 2,
