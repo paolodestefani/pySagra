@@ -46,7 +46,7 @@ from App.Widget.Delegate import NewStockDelegate
 from App.Widget.Delegate import StockLevelDelegate
 from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import EventFilterDialog
-from App.Database.CodeDescriptionList import item_with_stock_control_cdl
+from App.Database.Lookup import item_with_stock_control_lookup
 from App.Database.Models import InventoryModel
 from App.Database.Models import KitAvailabilityModel
 from App.Database.Models import MenuAvailabilityModel
@@ -90,7 +90,7 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         #self.ui.tableViewItem.setModel(model)
         self.ui.tableViewItem.setLayoutName('Inventory')
         # self.ui.tableViewItem.horizontalHeader().setSectionsMovable(True)
-        self.ui.tableViewItem.setItemDelegateForColumn(ITEM, RelationDelegate(self, item_with_stock_control_cdl))
+        self.ui.tableViewItem.setItemDelegateForColumn(ITEM, RelationDelegate(self, item_with_stock_control_lookup))
         self.ui.tableViewItem.setItemDelegateForColumn(LOADED, QuantityDelegate(self))
         self.ui.tableViewItem.setItemDelegateForColumn(UNLOADED, QuantityDelegate(self))
         self.ui.tableViewItem.setItemDelegateForColumn(STOCK, StockLevelDelegate(self,

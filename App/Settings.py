@@ -51,11 +51,11 @@ from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Setting import Setting
-from App.Database.CodeDescriptionList import printer_class_cdl
-from App.Database.CodeDescriptionList import customer_order_report_cdl
-from App.Database.CodeDescriptionList import department_order_report_cdl
-from App.Database.CodeDescriptionList import cover_order_report_cdl
-from App.Database.CodeDescriptionList import stock_unload_report_cdl
+from App.Database.Lookup import printer_class_lookup
+from App.Database.Lookup import customer_order_report_lookup
+from App.Database.Lookup import department_order_report_lookup
+from App.Database.Lookup import cover_order_report_lookup
+from App.Database.Lookup import stock_unload_report_lookup
 from App.Ui.SettingsDialog import Ui_SettingsDialog
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
@@ -157,15 +157,15 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxCustomerCopies.setValue(self.setting['customer_copies'] or 1)
         self.ui.spinBoxDepartmentCopies.setValue(self.setting['department_copies'] or 1)
         self.ui.spinBoxCoverCopies.setValue(self.setting['cover_copies'] or 1)
-        self.ui.comboBoxCustomerReport.setFunction(customer_order_report_cdl)
+        self.ui.comboBoxCustomerReport.setFunction(customer_order_report_lookup)
         self.ui.comboBoxCustomerReport.setCurrentIndex(self.ui.comboBoxCustomerReport.findData(self.setting['customer_report']))
-        self.ui.comboBoxDepartmentReport.setFunction(department_order_report_cdl)
+        self.ui.comboBoxDepartmentReport.setFunction(department_order_report_lookup)
         self.ui.comboBoxDepartmentReport.setCurrentIndex(self.ui.comboBoxDepartmentReport.findData(self.setting['department_report']))
-        self.ui.comboBoxCoverReport.setFunction(cover_order_report_cdl)
+        self.ui.comboBoxCoverReport.setFunction(cover_order_report_lookup)
         self.ui.comboBoxCoverReport.setCurrentIndex(self.ui.comboBoxCoverReport.findData(self.setting['cover_report']))
-        self.ui.comboBoxCustomerPrinter.setFunction(printer_class_cdl)
+        self.ui.comboBoxCustomerPrinter.setFunction(printer_class_lookup)
         self.ui.comboBoxCustomerPrinter.setCurrentIndex(self.ui.comboBoxCustomerPrinter.findData(self.setting['customer_printer_class']))
-        self.ui.comboBoxCoverPrinter.setFunction(printer_class_cdl)
+        self.ui.comboBoxCoverPrinter.setFunction(printer_class_lookup)
         self.ui.comboBoxCoverPrinter.setCurrentIndex(self.ui.comboBoxCoverPrinter.findData(self.setting['cover_printer_class']))
         self.ui.spinBoxMaxCovers.setValue(self.setting['max_covers'])
         self.ui.checkBoxOrderProgress.setChecked(self.setting['manage_order_progress'])
@@ -176,9 +176,9 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxInactivityTime.setValue(self.setting['inactivity_time'])
         self.ui.groupBoxOrderedDeliveredReport.setChecked(self.setting['print_ordered_delivered_report'])
         self.ui.spinBoxOrderedDeliveredCopies.setValue(self.setting['ordered_delivered_copies'] or 1)
-        self.ui.comboBoxOrderedDeliveredReport.setFunction(stock_unload_report_cdl)
+        self.ui.comboBoxOrderedDeliveredReport.setFunction(stock_unload_report_lookup)
         self.ui.comboBoxOrderedDeliveredReport.setCurrentIndex(self.ui.comboBoxOrderedDeliveredReport.findData(self.setting['ordered_delivered_report']))
-        self.ui.comboBoxOrderedDeliveredPrinterClass.setFunction(printer_class_cdl)
+        self.ui.comboBoxOrderedDeliveredPrinterClass.setFunction(printer_class_lookup)
         self.ui.comboBoxOrderedDeliveredPrinterClass.setCurrentIndex(self.ui.comboBoxOrderedDeliveredPrinterClass.findData(self.setting['ordered_delivered_printer_class']))
         # items inventory
         self.ui.spinBoxInventoryWarningLevel.setDecimals(self.setting['quantity_decimal_places'])

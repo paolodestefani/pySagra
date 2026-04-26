@@ -23,7 +23,7 @@
 
 """Menu
 
-This module manages application menus
+Management of application menu, menu items and shortcuts
 
 """
 
@@ -51,11 +51,11 @@ from App.Database.Models import MenuModel
 from App.Database.Models import MenuItemTreeModel
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import ActionDelegate
-#from App.Widget.Delegate import KeySequenceDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.MenuWidget import Ui_MenuWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
+
 
 # logger
 logger = logging.getLogger(__name__)
@@ -79,6 +79,7 @@ def menu() -> None:
 
 
 class MenusForm(FormIndexManager):
+    "Form for menu management, showing menu list and menu items treeview for each menu"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None: # no parent for tabwidget widget pages
         super().__init__(parent, auth)
@@ -115,6 +116,7 @@ class MenusForm(FormIndexManager):
         self.ui.treeViewMenuItems.setItemDelegateForColumn(ACTION, ActionDelegate(self))
         
     def addChild(self) -> None:
+        "Add a child menu item to the current selected menu item"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
         model = self.ui.treeViewMenuItems.model()
         if model.columnCount(index) == 0:
@@ -131,12 +133,14 @@ class MenusForm(FormIndexManager):
                                                                    QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
     def add(self) -> None:
+        "Add a new menu item to the current selected menu, if no menu item is selected add to root"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
         model = self.ui.treeViewMenuItems.model()
         if not model.insertRow(index.row() + 1, index.parent()):
             return
         
     def remove(self) -> None:
+        "Remove the current selected menu item"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
         model = self.ui.treeViewMenuItems.model()
         if (model.removeRow(index.row(), index.parent())):
@@ -153,15 +157,15 @@ class MenusForm(FormIndexManager):
             self.ui.lineEditDescription.setReadOnly(False)
             
     def delete(self) -> None:
-        "Delete current scheme"
+        "Delete current menu"
         if self.ui.checkBoxSystem.isChecked():
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
-                                    _tr('ShortcutScheme', "Is not possible to delete a system shortcut scheme"))
+                                    _tr('Menu', "Is not possible to delete a system menu"))
             return
         scheme = self.ui.lineEditCode.text()
         description = self.ui.lineEditDescription.text()
-        msg = _tr('ShortcutScheme', "Are you sure you want to delete this scheme ?")
+        msg = _tr('Menu', "Are you sure you want to delete this menu ?")
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 f"{msg}\n{scheme} - {description}",
@@ -171,7 +175,7 @@ class MenusForm(FormIndexManager):
         super().delete()
 
     def new(self) -> None:
-        "Inser a new shortcut scheme"
+        "Inser a new menu"
         super().new()
         self.ui.lineEditCode.setEnabled(True)
         self.ui.lineEditCode.setFocus()
@@ -185,9 +189,4 @@ class MenusForm(FormIndexManager):
         "Reload data, set widgets to default state"
         self.ui.lineEditCode.setDisabled(True)
         super().reload()
-
-    def print_(self) -> None:
-        "Print key sequence scheme list"
-        dialog = PrintDialog(self, 'SHORTCUT', session['l10n'])
-        dialog.show()
 

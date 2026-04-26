@@ -57,10 +57,10 @@ from App import currentIcon
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Exceptions import PyAppDBError
 from App.Database.User import change_password
-from App.Database.CodeDescriptionList import company_cdl
-from App.Database.CodeDescriptionList import profile_cdl
-from App.Database.CodeDescriptionList import menu_cdl
-from App.Database.CodeDescriptionList import toolbar_cdl
+from App.Database.Lookup import company_lookup
+from App.Database.Lookup import profile_lookup
+from App.Database.Lookup import menu_lookup
+from App.Database.Lookup import toolbar_lookup
 from App.Database.Models import UserModel
 from App.Database.Models import UserIndexModel
 from App.Database.Models import UserCompanyModelReferenceUser
@@ -69,7 +69,7 @@ from App.Widget.Dialog import PrintDialog
 from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import ImageDelegate
 from App.Widget.Delegate import RelationDelegate
-from App.Widget.Delegate import BooleanDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Ui.UserWidget import Ui_UserWidget
 from App.Ui.ChangePasswordDialog import Ui_ChangePasswordDialog
 from App.Core.L10n import _tr
@@ -77,6 +77,10 @@ from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 (V_CODE, V_DESCRIPTION, V_IMAGE, V_SYSTEM, V_ISADMIN,
@@ -89,16 +93,15 @@ from App.Core.Scripting import scriptMethod
  UC_USER_INS, UC_DATE_INS, UC_USER_UPD, UC_DATE_UPD) = range(9)
 
 
-
 def user() -> None:
     "Users management"
     logging.info('Starting users Form')
     mw = session['mainwin']
     title = currentAction['sys_user'].text()
     auth = currentAction['sys_user'].data()
-    uw = UsersForm(mw, title, auth)
-    uw.reload()
-    mw.addTab(title, uw)
+    uf = UsersForm(mw, title, auth)
+    uf.applySortFilter()
+    mw.addTab(title, uf)
     logging.info('Users Form added to main window')
 
 
@@ -114,6 +117,7 @@ def changePassword() -> None:
 
 
 class UsersForm(FormIndexManager[Ui_UserWidget]):
+    "User form management"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -134,23 +138,17 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         # icons for add/remove buttons
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
+        # make system checkbox not user editable
+        self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # widget settings
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('user')
-        # can't change system checkbox
-        self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        #self.ui.tableView.setItemDelegateForColumn(CHANGEPWDREQ, BooleanDelegate(self.ui.tableView))
-        self.ui.tableView.setItemDelegateForColumn(V_SYSTEM, BooleanDelegate(self.ui.tableView))
-        self.ui.tableView.setItemDelegateForColumn(V_ISADMIN, BooleanDelegate(self.ui.tableView))
-        self.ui.tableView.setItemDelegateForColumn(V_CAN_EDIT_VIEWS, BooleanDelegate(self.ui.tableView))
-        self.ui.tableView.setItemDelegateForColumn(V_CAN_EDIT_SORTFILTERS, BooleanDelegate(self.ui.tableView))
-        self.ui.tableView.setItemDelegateForColumn(V_CAN_EDIT_REPORTS, BooleanDelegate(self.ui.tableView))
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(V_L10N, RelationDelegate(self, langCountry))
         self.ui.tableView.setItemDelegateForColumn(V_IMAGE, ImageDelegate(self))
         # set password/password change
         self.ui.pushButtonSetTemporaryPassword.clicked.connect(self.setTemporaryPassword)
-        # self.ui.pushButtonForcePasswordChange.clicked.connect(self.forcePasswordChange)
         # signal/slot mappings
         self.ui.pushButtonUpload.clicked.connect(self.upload)
         self.ui.pushButtonDownload.clicked.connect(self.download)
@@ -158,7 +156,6 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         # other widgets
         self.mapper.addMapping(self.ui.lineEditUser, CODE)
         self.mapper.addMapping(self.ui.lineEditUserDescription, DESCRIPTION)
-        #self.mapper.addMapping(self.ui.lineEditEmail, EMAIL)
         self.mapper.addMapping(self.ui.labelImage, IMAGE)
         self.mapper.addMapping(self.ui.lineEditLastCompany, LASTCOMPANY)
         self.mapper.addMapping(self.ui.dateTimeEditLastLogin, LASTLOGIN)
@@ -171,47 +168,29 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.mapper.addMapping(self.ui.checkBoxCanEditViews, CAN_EDIT_VIEWS)
         self.mapper.addMapping(self.ui.checkBoxCanEditSortFilters, CAN_EDIT_SORTFILTERS)
         self.mapper.addMapping(self.ui.checkBoxCanEditReports, CAN_EDIT_REPORTS)
-        # make system checkbox not user editable
-        #self.ui.checkBoxSystem.setAttribute(Qt.WA_TransparentForMouseEvents)
-        #self.ui.checkBoxSystem.setFocusPolicy(Qt.NoFocus)
         # user/company
         self.ui.tableViewUserCompany.setModel(ucModel)
         self.ui.tableViewUserCompany.setLayoutName('usersUserCompany')
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_COMPANY, RelationDelegate(self, company_cdl))
-        #self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_USER, RelationDelegate(self, UserRelation))
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_cdl))
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_cdl))
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_TOOLBAR, RelationDelegate(self, toolbar_cdl))
-        # map detail view/mapper
-        #self.ui.tableViewEmailAccounts.selectionModel().currentRowChanged.connect(self.accMapper.setCurrentModelIndex)
-        #self.accMapper.currentIndexChanged.connect(self.ui.tableViewEmailAccounts.selectRow)
-        #model3.rowCountChanged.connect(self.accountRowChanged)
-        # self.ui.tableViewEmailAccounts.selectionModel().currentRowChanged.connect(self.accountViewRowChanged)
-        # self.accMapper.currentIndexChanged.connect(self.accountMapperRowChanged)
-        # read only account table view
-        #self.ui.tableViewEmailAccounts.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # SSL make TLS useless
-        #self.ui.checkBoxSSL.stateChanged.connect(self.deactivateTls)
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_COMPANY, RelationDelegate(self, company_lookup))
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_lookup))
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_lookup))
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_TOOLBAR, RelationDelegate(self, toolbar_lookup))
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)
         # scripting
         self.script = scriptInit(self)
 
-    # def deactivateTls(self, state: int) -> None:
-    #     if state == Qt.CheckState.Checked:
-    #         self.ui.checkBoxTLS.setCheckState(Qt.CheckState.Unchecked)
-    #         self.ui.checkBoxTLS.setDisabled(True)
-    #     else:
-    #         self.ui.checkBoxTLS.setEnabled(True)
-
     def add(self) -> None:
+        "Add a record"
         self.ui.tableViewUserCompany.add()
 
     def remove(self) -> None:
+        "Remove current record"
         self.ui.tableViewUserCompany.remove()
 
     @scriptMethod
     def new(self) -> None:
+        "New user"
         super().new()
         self.ui.lineEditUser.setEnabled(True)
         self.ui.lineEditUser.setFocus()
@@ -232,6 +211,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.ui.lineEditUser.setDisabled(True)
 
     def delete(self) -> None:
+        "Delete current user"
         userId = self.ui.lineEditUser.text()
         userDescription = self.ui.lineEditUserDescription.text()
         if self.ui.checkBoxSystem.isChecked():
@@ -251,6 +231,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         super().delete()
 
     def mapperIndexChanged(self, row: int) -> None:
+        "Change sittings on change record"
         super().mapperIndexChanged(row)
         if self.ui.checkBoxSystem.isChecked():
             self.ui.lineEditUserDescription.setReadOnly(True)
@@ -283,7 +264,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
     def upload(self) -> None:
         "Upload user image file"
         st = QSettings()
-        path = str(st.value("PathImagesUsers", QDir.current().path()))
+        path = str(st.value("User/PathImages", QDir.current().path()))
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr('User', "Select the image to upload"),
                                            path,
@@ -301,7 +282,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
                                     "automaticlly resized to the max allowed size of 640x480 pixels"))
         else:
             self.ui.labelImage.setPixmap(pix)
-        st.setValue("PathImagesUsers", QFileInfo(f).path())
+        st.setValue("User/PathImages", QFileInfo(f).path())
         if isinstance(self.model, TableModel):
             self.model.isDirty = True
             self.model.userDataChanged.emit()
@@ -312,7 +293,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         if not self.ui.labelImage.pixmap():
             return
         st = QSettings()
-        path = str(st.value("PathImagesUsers", QDir.current().path()))
+        path = str(st.value("User/PathImages", QDir.current().path()))
         f, t = QFileDialog.getSaveFileName(self,
                                            _tr('User', "Select the destination file name"),
                                            path,
@@ -338,6 +319,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             self.model.userDataChanged.emit()
 
     def print(self) -> None:
+        "Print users"
         dialog = PrintDialog(self, 'USER')
         dialog.show()
 
@@ -355,9 +337,9 @@ class ChangePasswordDialog(QDialog):
         self.ui.labelIcon.setPixmap(currentIcon['system_password'].pixmap(100))
         self.ui.lineEditUser.setText(user)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
-        #self.buttonBox.button(QDialogButtonBox.Help).clicked.connect(self.helpRequested)
 
     def accept(self) -> None:
+        "Save new password"
         # check not null and correct password
         if (self.ui.lineEditNewPassword.text() == '' or
             self.ui.lineEditConfirmPassword.text() == ''):
@@ -385,9 +367,6 @@ class ChangePasswordDialog(QDialog):
                                     _tr('MessageDialog', "Information"),
                                     _tr('ChangePassword', "Password changed successfully"))
         QDialog.accept(self)
-
-    def helpRequested(self) -> None:
-        print("Help request")
 
 
 class SetPasswordDialog(ChangePasswordDialog):

@@ -528,17 +528,25 @@ class RelationalComboBox(QComboBox):
         
 
 class DataWidgetMapper(QDataWidgetMapper):
-    "Subclass of QDataWidgetMapper that commit data on combobox change, workaround for comboboxes on MacOS that not get focusOut event properly"
-
+    """
+    Optimized version: Uses standard behavior but forces immediate commit
+    for widgets that don't lose focus correctly on macOS.
+    """
     def addMapping(self, widget: QWidget, section: int, propertyName: QByteArray|bytes|bytearray|memoryview|None = None) -> None:
-        # Match the overloads of QDataWidgetMapper.addMapping
         if propertyName is None:
             super().addMapping(widget, section)
         else:
             super().addMapping(widget, section, propertyName)
+        
+        delegate = self.itemDelegate()
+        
         if isinstance(widget, QComboBox):
-            delegate = self.itemDelegate()
             widget.currentIndexChanged.connect(lambda: delegate.commitData.emit(widget))
+            
+        elif isinstance(widget, QCheckBox):
+            # this forces the commit immediatly for checkboxes, 
+            # which otherwise on macOS would not lose focus and commit until another widget is focused
+            widget.clicked.connect(lambda: delegate.commitData.emit(widget))
 
 
 class ColorComboBox(QComboBox):

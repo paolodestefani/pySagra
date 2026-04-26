@@ -23,8 +23,8 @@
 
 """Company
 
-This module manages company creation/deletion/modification and user access
-to each company
+Management of company: creation, deletion, modification and
+user access to each company
 
 """
 
@@ -58,16 +58,16 @@ from App.Database.Company import create_company
 from App.Database.Company import drop_company
 from App.Database.Company import set_company_access
 from App.Database.Company import company_is_in_use
-from App.Database.CodeDescriptionList import user_cdl
-from App.Database.CodeDescriptionList import profile_cdl
-from App.Database.CodeDescriptionList import menu_cdl
-from App.Database.CodeDescriptionList import toolbar_cdl
+from App.Database.Lookup import user_lookup
+from App.Database.Lookup import profile_lookup
+from App.Database.Lookup import menu_lookup
+from App.Database.Lookup import toolbar_lookup
 from App.Database.Models import CompanyIndexModel
 from App.Database.Models import CompanyModel
 from App.Database.Models import UserCompanyModelReferenceCompany
 from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import ImageDelegate
-from App.Widget.Delegate import BooleanDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Dialog import PrintDialog
 from App.Ui.CompanyWidget import Ui_CompanyWidget
@@ -91,12 +91,14 @@ def company() -> None:
     title = currentAction['sys_company'].text()
     auth = currentAction['sys_company'].data()
     cf = CompanyForm(mw, title, auth)
-    cf.reload()
+    cf.applySortFilter()
     mw.addTab(title, cf)
     logger.info('Company management Form added to main window')
     
 
 class CompanyForm(FormIndexManager):
+    """Form for management of company: creation, deletion, modification
+     and user access to each company"""
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -117,19 +119,15 @@ class CompanyForm(FormIndexManager):
         # icons for add/remove buttons
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
-        # signal slot connections
-        self.ui.pushButtonUpload.clicked.connect(self.upload)
-        self.ui.pushButtonDownload.clicked.connect(self.download)
-        self.ui.pushButtonDelete.clicked.connect(self.removeImage)
         # table view
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('company')  # after setting model
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(COMP_IMAGE, ImageDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(COMP_SYSTEM, BooleanDelegate(self))
         # mapper mappings
         self.mapper.addMapping(self.ui.spinBoxId, COMP_ID)
         self.mapper.addMapping(self.ui.lineEditDescription, COMP_DESC)
-        self.mapper.addMapping(self.ui.labelCompanyImage, COMP_IMAGE) #, b"imageBytearray")
+        self.mapper.addMapping(self.ui.labelCompanyImage, COMP_IMAGE)
         self.mapper.addMapping(self.ui.checkBoxSystem, COMP_SYSTEM)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -137,18 +135,23 @@ class CompanyForm(FormIndexManager):
         # user company
         self.ui.userTableView.setModel(model2)
         self.ui.userTableView.setLayoutName('userCompany')
-        self.ui.userTableView.setItemDelegateForColumn(UC_USER, RelationDelegate(self, user_cdl))
-        self.ui.userTableView.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_cdl))
-        self.ui.userTableView.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_cdl))
-        self.ui.userTableView.setItemDelegateForColumn(UC_TOOLBAR, RelationDelegate(self, toolbar_cdl))
-        # self.toFirst() not here because we need to set models first
+        self.ui.userTableView.setItemDelegateForColumn(UC_USER, RelationDelegate(self, user_lookup))
+        self.ui.userTableView.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_lookup))
+        self.ui.userTableView.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_lookup))
+        self.ui.userTableView.setItemDelegateForColumn(UC_TOOLBAR, RelationDelegate(self, toolbar_lookup))
+        # signal slot connections
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)
+        self.ui.pushButtonUpload.clicked.connect(self.upload)
+        self.ui.pushButtonDownload.clicked.connect(self.download)
+        self.ui.pushButtonDelete.clicked.connect(self.removeImage)
 
     def add(self) -> None:
+        "Add a new user company relation"
         self.ui.userTableView.add()
 
     def remove(self) -> None:
+        "Remove the selected user company relation"
         self.ui.userTableView.remove()
 
     def upload(self, checked: bool) -> None:
@@ -210,11 +213,13 @@ class CompanyForm(FormIndexManager):
             self.model.userDataChanged.emit()
 
     def new(self) -> None:
+        "Create a new company"
         dlg = NewCompanyDialog(self)
-        if dlg.exec_() == QDialog.DialogCode.Accepted:
+        if dlg.exec() == QDialog.DialogCode.Accepted:
             self.reload()
 
     def delete(self) -> None:
+        "Delete the current selected company"
         companyId = self.ui.spinBoxId.value()
         companyDescription = self.ui.lineEditDescription.text()
         if self.ui.checkBoxSystem.isChecked():
@@ -265,19 +270,21 @@ class CompanyForm(FormIndexManager):
 
 
 class NewCompanyDialog(QDialog):
+    """Dialog for creation of a new company with the specified data and image"""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.ui = Ui_NewCompanyDialog()
         self.ui.setupUi(self)
         self.ui.spinBoxCode.setValue(max_company_code() + 10)
-        self.ui.comboBoxProfile.setFunction(profile_cdl)
-        self.ui.comboBoxMenu.setFunction(menu_cdl)
-        self.ui.comboBoxToolbar.setFunction(toolbar_cdl)
+        self.ui.comboBoxProfile.setFunction(profile_lookup)
+        self.ui.comboBoxMenu.setFunction(menu_lookup)
+        self.ui.comboBoxToolbar.setFunction(toolbar_lookup)
         self.ui.pushButtonUpload.clicked.connect(self.upload)
         self.ui.pushButtonClear.clicked.connect(self.removeImage)
 
     def upload(self) -> None:
+        "Upload company image file"
         st = QSettings()
         path = st.value("PathImages", QDir.current().path())
         f, t = QFileDialog.getOpenFileName(self,
@@ -301,10 +308,12 @@ class NewCompanyDialog(QDialog):
         st.setValue("PathImages", QFileInfo(f).path())
 
     def removeImage(self) -> None:
+        "Remove company image file"
         self.ui.labelImage.clear()
         self.ui.labelImage.setText(_tr('Company', "NO IMAGE"))
 
     def accept(self) -> None:
+        "Create the new company with the specified data"
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 _tr('Company', "Create the new company ?"),
@@ -349,7 +358,7 @@ class NewCompanyDialog(QDialog):
             mbox.setText(msg)
             mbox.setDetailedText(er.message)
             mbox.exec_()
-            logger.error('Database error on create new company: %s', er.message)
+            logger.error('Database error on create new company')
             logger.error('Error code: %s', er.code)
             logger.error('Error message: %s', er.message)
         else:

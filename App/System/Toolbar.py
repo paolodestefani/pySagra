@@ -46,13 +46,16 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Models import ToolbarIndexModel
 from App.Database.Models import ToolbarModel
 from App.Database.Models import ToolbarItemTreeModel
-from App.Widget.Delegate import BooleanDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.ToolbarWidget import Ui_ToolbarWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 CODE, DESCRIPTION, SYSTEM = range(3)
 
@@ -65,13 +68,14 @@ def toolbar(auth) -> None:
     mw = session['mainwin']
     title = currentAction['sys_toolbar'].text()
     auth = currentAction['sys_toolbar'].data()
-    mf = ToolbarForm(mw, title, auth)
-    mf.reload()
-    mw.addTab(title, mf)
+    tf = ToolbarForm(mw, title, auth)
+    tf.applySortFilter()
+    mw.addTab(title, tf)
     logging.info('Toolbar Form added to main window')   
 
 
 class ToolbarForm(FormIndexManager):
+    "Toolbar form management"
 
     def __init__(self, parent: QWidget, title: str, auth: str)-> None: # no parent for tabwidget widget pages
         super().__init__(parent, auth)
@@ -97,7 +101,7 @@ class ToolbarForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         # widget settings
         self.ui.tableView.setLayoutName('toolbar')
-        self.ui.tableView.setItemDelegateForColumn(SYSTEM, BooleanDelegate(self))
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
@@ -106,16 +110,14 @@ class ToolbarForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
-        # self.ui.tableViewKeySequence.setLayoutName('shortcutKeys')
-        # self.ui.tableViewKeySequence.setLayout()
         self.ui.treeViewMenuItems.setItemDelegateForColumn(ACTION, ActionDelegate(self))
-        #self.ui.tableViewKeySequence.setItemDelegateForColumn(KEYSEQUENCE, KeySequenceDelegate(self))
         # signal/slot
         #self.ui.pushButtonInsertChild.clicked.connect(self.insertChild)
         #self.ui.pushButtonInsertRow.clicked.connect(self.insertRow)
         #self.ui.pushButtonRemoveRow.clicked.connect(self.removeRow)
 
     def addChild(self) -> None:
+        "Add child item to current"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
         model = self.ui.treeViewMenuItems.model()
         if model.columnCount(index) == 0:
@@ -133,6 +135,7 @@ class ToolbarForm(FormIndexManager):
                                                                    QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
     def add(self) -> None:
+        "Add element"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
         model = self.ui.treeViewMenuItems.model()
         if not model.insertRow(index.row() + 1, index.parent()):
@@ -143,6 +146,7 @@ class ToolbarForm(FormIndexManager):
                 #model.setData(child, _tr("Menu", "[No data]"), Qt.EditRole)
 
     def remove(self) -> None:
+        "Remove element"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
         model = self.ui.treeViewMenuItems.model()
         if (model.removeRow(index.row(), index.parent())):
@@ -152,7 +156,6 @@ class ToolbarForm(FormIndexManager):
         "Make uneditable system profiles"
         super().mapperIndexChanged(row)
         if self.ui.checkBoxSystem.isChecked():
-            #self.ui.setDisabled(True)
             self.ui.lineEditCode.setReadOnly(True)
             self.ui.lineEditDescription.setReadOnly(True)
             # self.ui.pushButtonFillActions.setDisabled(True)
@@ -165,15 +168,15 @@ class ToolbarForm(FormIndexManager):
             # self.ui.tableViewKeySequence.setEditTriggers(QAbstractItemView.AllEditTriggers)
 
     def delete(self) -> None:
-        "Delete current scheme"
+        "Delete current toolbar"
         if self.ui.checkBoxSystem.isChecked():
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
-                                    _tr('ShortcutScheme', "Is not possible to delete a system shortcut scheme"))
+                                    _tr('Toolbar', "Is not possible to delete a system shortcut scheme"))
             return
         scheme = self.ui.lineEditCode.text()
         description = self.ui.lineEditDescription.text()
-        msg = _tr('ShortcutScheme', "Are you sure you want to delete this scheme ?")
+        msg = _tr('Toolbar', "Are you sure you want to delete this scheme ?")
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 f"{msg}\n{scheme} - {description}",
@@ -183,7 +186,7 @@ class ToolbarForm(FormIndexManager):
         super().delete()
 
     def new(self) -> None:
-        "Inser a new shortcut scheme"
+        "Inser a new toolbar"
         super().new()
         self.ui.lineEditCode.setEnabled(True)
         self.ui.lineEditCode.setFocus()
@@ -197,10 +200,4 @@ class ToolbarForm(FormIndexManager):
         "Reload data, set widgets to default state"
         self.ui.lineEditCode.setDisabled(True)
         super().reload()
-
-
-    def print_(self) -> None:
-        "Print key sequence scheme list"
-        dialog = PrintDialog(self, 'SHORTCUT', session['l10n'])
-        dialog.show()
 

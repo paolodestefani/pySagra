@@ -51,8 +51,7 @@ def delete_connection_history(days: int) -> None:
     "Delete connection log table - all records or older then provided days"
     script = """
 DELETE FROM system.connection_history
-WHERE logout_datetime < current_date - %s;"""
-
+WHERE cast(logout_datetime as date) <= (current_date - %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():

@@ -23,8 +23,7 @@
 
 """Customization
 
-This module allow import/export of report, itemview and sort-filter customizations
-
+Import/export of report, itemview and sort-filter customizations
 
 """
 
@@ -50,17 +49,6 @@ from PySide6.QtWidgets import QDialogButtonBox
 from App import session
 from App import currentAction
 from App.Core.L10n import _tr
-# from App.Database.Customization import get_itemview_adapt
-# from App.Database.Customization import set_itemview_adapt
-# from App.Database.Customization import set_itemview_adapt_setting
-# from App.Database.Customization import get_sortfilter_adapt
-# from App.Database.Customization import set_sortfilter_adapt
-# from App.Database.Customization import set_sortfilter_adapt_setting
-# from App.Database.Customization import get_report_adapt
-#from App.Database.Customization import set_report_adapt
-#from App.Database.Customization import set_report_adapt_setting
-#from App.Database.Customization import clear_adapt
-#from App.Database.Customization import update_identity
 from App.Database.Adaptation import set_adapt_setting
 from App.Database.Adaptation import export_adaptation
 from App.Database.Adaptation import export_adaptation_setting
@@ -68,8 +56,8 @@ from App.Database.Adaptation import import_adaptation
 from App.Database.Adaptation import clear_adaptation
 from App.Widget.Dialog import MessageBoxCritical
 
-
 from App.Ui.CustomizationsDialog import Ui_CustomizationsDialog
+
 
 # logger
 logger = logging.getLogger(__name__)
@@ -77,6 +65,7 @@ logger = logging.getLogger(__name__)
 
 # export type and version
 ADAPTVERSION = ['Adaptation archive for pySagra', '1.0']
+
 
 def decodebool(instr: str) -> bool|None:
     "Decode boolean from string"
@@ -92,6 +81,7 @@ def decodebool(instr: str) -> bool|None:
 
 
 def customization() -> None:
+    "Show customization dialog"
     logger.info('Starting customization dialog')
     mw = session['mainwin']
     title = currentAction['sys_customization'].text()
@@ -103,7 +93,8 @@ def customization() -> None:
 
 
 class CustomizationsDialog(QDialog):
-    "Customizations dialog"
+    """Customizations dialog for import/export and clear of 
+    report, itemview and sort-filter customizations"""
 
     def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: str) -> None:
         super().__init__(parent)

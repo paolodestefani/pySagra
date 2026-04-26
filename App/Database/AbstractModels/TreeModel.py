@@ -56,9 +56,6 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Psycopg import DEFAULT
 from App.Database.Connect import appconn
 from App.Database.Company import company_is_in_use
-#from App.Database.CodeDescriptionList import department_cdl
-#from App.Database.CodeDescriptionList import event_lcdl
-#from App.Database.CodeDescriptionList import item_salable_cdl
 from App.Core.L10n import _tr
 
 

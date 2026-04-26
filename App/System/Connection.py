@@ -23,7 +23,7 @@
 
 """Connection
 
-This module manage current connections and connection history
+Management of current connections and connection history
 
 """
 
@@ -66,7 +66,7 @@ def connection() -> None:
     auth = currentAction['sys_connection'].data()
     title = currentAction['sys_connection'].text()
     cw = ConnectionForm(mw, title, auth)
-    cw.reload()
+    cw.applySortFilter()
     mw.addTab(title, cw)
     logger.info('Connections Form added to main window')
 
@@ -78,11 +78,13 @@ def connectionHistory() -> None:
     auth = currentAction['sys_connection_history'].data()
     title = currentAction['sys_connection_history'].text()
     cw = ConnectionHistoryForm(mw, title, auth)
+    cw.applySortFilter()
     mw.addTab(title, cw)
     logger.info('Connections history Form added to main window')
 
 
-class ConnectionForm(FormManager[Ui_ConnectionWidget]):
+class ConnectionForm(FormManager):
+    "Current connections form"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -140,6 +142,7 @@ class ConnectionForm(FormManager[Ui_ConnectionWidget]):
                 logger.error('Database error on kill client: %s', er.message)
 
     def export(self) -> None:
+        "Export current connections list to file"
         self.ui.tableView.exportView()
 
 
@@ -165,9 +168,6 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
         self.ui.tableView.setLayoutName("connectionsHistory")
         # set read only view
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        # mapper - view connections
-        #self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
-        #self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
         # automatic setting initial value
         days = pa_setting('clear_connection_history')
         if days is None:
@@ -184,20 +184,7 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
         self.ui.pushButtonDeleteOlder.clicked.connect(self.deleteOlder)
         self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
         self.ui.pushButtonDeleteSetting.clicked.connect(self.deleteSetting)
-        self.updateList()
-
-    def updateList(self) -> None:
-        try:
-            self.ui.tableView.model().select() # type: ignore
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}",
-                                 QMessageBox.StandardButton.Ok)
-            logger.error('Database error on select connection history: %s', er.message)
-            return
-        self.ui.tableView.selectRow(0)
-        self.ui.tableView.setFocus()
+        #self.updateList()
 
     def deleteOlder(self) -> None:
         "Delete records of log history table"
@@ -248,7 +235,7 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
                                     _tr('Connection', 'Log records deletion completed'))
 
     def deleteSetting(self) -> None:
-        "Delete records of log history table"
+        "Set automatic deletion settings for connection history"
         days = self.ui.spinBoxDays.value()
         if not self.ui.checkBoxAutomaticDeletion.isChecked():
             days = None
@@ -267,4 +254,5 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
                                     _tr('Connection', 'Configuration updated'))
 
     def export(self) -> None:
+        "Export connections history list to file"
         self.ui.tableView.exportView()

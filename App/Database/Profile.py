@@ -37,9 +37,9 @@ from App.Database.Connect import appconn
 
 
 def duplicate_profile(from_code: str, new_code: str, new_description: str) -> None:
-    "Create a new profile copying commands from another"
+    "Create a new profile copying parameters from another"
     # create a new profile
-    sql = "INSERT INTO system.profile (code, description) VALUES (%s, %s);"
+    sql = "INSERT INTO system.profile (profile_code, description) VALUES (%s, %s);"
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:

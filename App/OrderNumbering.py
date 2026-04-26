@@ -44,9 +44,8 @@ from App import currentAction
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-#from App.Database.CodeDescriptionList import printer_class_list
 from App.Database.Models import OrderNumberingModel
-from App.Database.CodeDescriptionList import event_cdl
+from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import IntegerDelegate
 from App.Widget.Delegate import RelationDelegate
@@ -88,7 +87,7 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('OrderNumbering')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_cdl))
+        self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_lookup))
         # scripting init
         self.script = scriptInit(self)
 

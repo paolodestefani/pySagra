@@ -60,10 +60,10 @@ from App.Database.Company import company_is_in_use
 #from App.Database.Statistics import statistics_configuration
 #from App.Database.Statistics import statistics_configuration_columns
 #from App.Database.Statistics import statistics_configuration_totals_columns
-from App.Database.CodeDescriptionList import department_cdl
-from App.Database.CodeDescriptionList import event_cdl
-from App.Database.CodeDescriptionList import item_salable_cdl
-from App.Database.CodeDescriptionList import item_all_cdl
+from App.Database.Lookup import department_lookup
+from App.Database.Lookup import event_lookup
+from App.Database.Lookup import item_salable_lookup
+from App.Database.Lookup import item_all_lookup
 from App.Core.L10n import _tr
 
 
@@ -153,7 +153,7 @@ LEFT JOIN system.company b ON a.company_id = b.company_id;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("a.session_id", _tr('Models', 'Session ID'), True, 'int'),
-                        ("a.access_date,", _tr('Models', 'Access Date'), True, 'datetime'),
+                        ("a.access_date", _tr('Models', 'Access Date'), True, 'datetime'),
                         ("a.db_user_name", _tr('Models', 'Database User'), True, 'str'),
                         ("a.app_user_code", _tr('Models', 'Application User'), True, 'str'),
                         ("a.client_name", _tr('Models', 'Client name'), True, 'str'),
@@ -1036,7 +1036,7 @@ class ItemModel(TableModel):
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("item_id")
         # reference fields dictionary
-        self.reference = {'department': department_cdl}
+        self.reference = {'department': department_lookup}
         self.repr = 'Item table model'
 
 
@@ -1226,9 +1226,9 @@ class PriceListItemModel(TableModel):
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("price_list_item_id")
         # reference fields dictionary
-        self.reference = {'item': item_salable_cdl}
+        self.reference = {'item': item_salable_lookup}
         # list of items for sorting by description
-        self.itemDescription = {k:v for k, v in item_all_cdl()}
+        self.itemDescription = {k:v for k, v in item_all_lookup()}
         self.repr = 'Price list item table model'
 
     def sort(self, column, order=Qt.AscendingOrder):
@@ -1381,7 +1381,7 @@ JOIN item i ON s.item_id = i.item_id;"""
         self.isCompanyTable = True
         self.companyField = 's.company_id'
         # reference fields dictionary
-        self.reference = {'s.event_id': event_cdl}
+        self.reference = {'s.event_id': event_lookup}
         self.repr = 'Items ordered/delivered query model'
 
 
@@ -1460,7 +1460,7 @@ FROM company.vw_order_status;"""
         self.isCompanyTable = True
         self.repr = 'Order status query model'
         # reference fields dictionary
-        self.reference = {'event_id': event_cdl}
+        self.reference = {'event_id': event_lookup}
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy(("event_id", "order_date", "order_time"))
 
@@ -1626,7 +1626,7 @@ FROM company.order_header;"""
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("order_header_id")
         # reference fields dictionary
-        self.reference = {'event_id': event_cdl}
+        self.reference = {'event_id': event_lookup}
 
 
 
@@ -1673,7 +1673,7 @@ class OrderHeaderModel(TableModel):
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("order_header_id")
         # reference fields dictionary
-        self.reference = {'event': event_cdl}
+        self.reference = {'event': event_lookup}
 
 
 class OrderHeaderDepartmentModel(TableModel):

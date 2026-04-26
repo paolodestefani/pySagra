@@ -23,7 +23,8 @@
 
 """Main window
 
-This module is the main user interface, manage tabs and actions
+The main window of the application is the main user interface, manage tabs and actions between them, 
+show status bar, interact with the user and the other modules.
 
 """
 
@@ -193,16 +194,14 @@ def createToolBar(mainWindow: QMainWindow) -> None:
 # custom tab widget
 
 class TabWidget(QTabWidget):
+    "Custom tab widget, show an image when no tab is open and a context menu on right click"
 
     def __init__(self, mainWin: MainWindow) -> None:
+        "Initialization and context menu creation"
         super().__init__(mainWin)
         self.appimage = QPixmap(f":/{APPNAME}")
-        # close current tab
-        #act = QAction(_tr('MainWindow', "Close current tab"), self)
-        #act.setShortcut("Ctrl+K")
-        #act.triggered.connect(mainWin.closeTab)
-        #self.addAction(act)
-        # close all tabs
+        # tabwidget context menu
+        # close all tabs shortcut
         aca = QAction(_tr('MainWindow', "Close all tabs"), self)
         aca.setShortcut("Ctrl+Shift+K")
         aca.triggered.connect(mainWin.closeAllTabs)
@@ -213,9 +212,9 @@ class TabWidget(QTabWidget):
         ast.setChecked(True)
         ast.triggered.connect(mainWin.hideTabBar)
         self.addAction(ast)
-        #self.setStyleSheet(None)
 
     def paintEvent(self, event: QPaintEvent) -> None:
+        "Paint event, show an image and company or event description if no tab is open"
         super().paintEvent(event)
         if self.count() != 0:
             return
@@ -302,24 +301,22 @@ class MainWindow(QMainWindow):
         self.updateActionMenuToolbar()
         # setup status bar
         # create status bar
-        self.status_bar = self.statusBar()
-        self.status_user = QLabel()
-        #self.status_profile = QLabel()
-        self.status_company = QLabel()
-        self.status_user.setFrameShape(QFrame.Shape.Panel)
-        self.status_user.setFrameShadow(QFrame.Shadow.Sunken)
-        self.status_company.setFrameShape(QFrame.Shape.Panel)
-        self.status_company.setFrameShadow(QFrame.Shadow.Sunken)
-        self.status_bar.addPermanentWidget(self.status_user)
-        #self.status_bar.addPermanentWidget(self.status_profile)
-        self.status_bar.addPermanentWidget(self.status_company)
+        self.pySagraStatusBar = self.statusBar()
+        self.pySagraStatusUser = QLabel()
+        self.pySagraStatusCompany = QLabel()
+        self.pySagraStatusUser.setFrameShape(QFrame.Shape.Panel)
+        self.pySagraStatusUser.setFrameShadow(QFrame.Shadow.Sunken)
+        self.pySagraStatusCompany.setFrameShape(QFrame.Shape.Panel)
+        self.pySagraStatusCompany.setFrameShadow(QFrame.Shadow.Sunken)
+        self.pySagraStatusBar.addPermanentWidget(self.pySagraStatusUser)
+        self.pySagraStatusBar.addPermanentWidget(self.pySagraStatusCompany)
         # set user
         user_desc = f"{session['app_user_code']}"
         if len(user_desc) > 32:
             user_desc = user_desc[:29] + "..."
         txt1 = _tr('MainWindow', "User")
         txt2 = f"<b>{txt1}:</b> {user_desc}"
-        self.status_user.setText(txt2)
+        self.pySagraStatusUser.setText(txt2)
         self.updateStatusBar()
         # finally restore window sate
         st = QSettings()
@@ -373,7 +370,7 @@ class MainWindow(QMainWindow):
 
     def updateEditStatus(self, status: tuple, current: int, total: int, limit: int|None = None) -> None:
         "Enable/disable navigation buttons and update counter"
-        # status must be a tuple of 12 boolena values, current and total integers
+        # status must be a tuple of 12 boolean values, current and total integers
         for i in range(12):
             currentAction[('edit_new',
                            'edit_save',
@@ -406,7 +403,7 @@ class MainWindow(QMainWindow):
             company_desc = company_desc[:37] + "..."
         txt1 = _tr('MainWindow', 'Company')
         txt2 = f"<b>{txt1}:</b> {company_desc}"
-        self.status_company.setText(txt2)
+        self.pySagraStatusCompany.setText(txt2)
 
     def addTab(self, tabname: str, widget: QWidget) -> None:
         "Add a new tab"
@@ -459,21 +456,25 @@ class MainWindow(QMainWindow):
     # main action's slot redirection
 
     def new(self) -> None:
+        "New record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'new'):
             w.new()
 
     def save(self) -> None:
+        "Save record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'save'):
             w.save()
 
     def delete(self) -> None:
+        "Delete record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'delete'):
             w.delete()
 
     def reload(self) -> None:
+        "Reload data, with confirmation if necessary"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'reload'):
             if hasattr(w, 'reloadConfirmation') and w.reloadConfirmation:
@@ -487,64 +488,56 @@ class MainWindow(QMainWindow):
                     return
                 w.reload()
 
-    # def addChild(self) -> None:
-    #     w = self.tabWidget.currentWidget()
-    #     if w and hasattr(w, 'addChild'):
-    #         w.addChild()
-
-    def add(self) -> None:
-        w = self.tabWidget.currentWidget()
-        if w and hasattr(w, 'add'):
-            w.add()
-
-    def remove(self) -> None:
-        w = self.tabWidget.currentWidget()
-        if w and hasattr(w, 'remove'):
-            w.remove()
-
     def toFirst(self) -> None:
+        "Go to first record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toFirst'):
             w.toFirst()
 
     def toPrevious(self) -> None:
+        "Go to previous record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toPrevious'):
             w.toPrevious()
 
     def toNext(self) -> None:
+        "Go to next record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toNext'):
             w.toNext()
 
     def toLast(self) -> None:
+        "Go to last record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toLast'):
             w.toLast()
 
     def changeView(self) -> None:
+        "Change view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'changeView'):
             w.changeView()
 
     def setFilters(self) -> None:
+        "Set filters usually showing a filter dialog, but can be anything else, it's up to the view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'setFilters'):
             w.setFilters()
 
     def print(self) -> None:
+        "Print current view, usually showing a print dialog, but can be anything else, it's up to the view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'print'):
             w.print()
 
     def export(self) -> None:
+        "Export data, usually showing an export dialog, but can be anything else, it's up to the view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'export'):
             w.export()
 
     def disconnected(self, error: str) -> None:
         "Disconnected from db server, call by check notification"
-        # _tr function can't be inside an f-string as it will not be recognized
         msg1 = _tr('MainWindow', "The connection is not active with the following error message:")
         msg2 = _tr('MainWindow', "Quitting the application...")
         QMessageBox.critical(self,
@@ -580,7 +573,6 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event: QEvent) -> None:
         "Confirm exiting request on closing"
-        # _tr function can't be inside an f-string as it will not be recognized
         msg = _tr('MainWindow', 'Are you sure you want to quit')
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
@@ -588,6 +580,8 @@ class MainWindow(QMainWindow):
                                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.Yes:
+            # close all open tabs
+            self.closeAllTabs()
             # save window state
             st = QSettings()
             st.setValue("MainWindowGeometry", self.saveGeometry())
@@ -604,7 +598,7 @@ class MainWindow(QMainWindow):
     def helpLink(self) -> str:
         "Return contect help link if available"
         w = self.tabWidget.currentWidget()
-        if w and hasattr(w, 'helpLink'):
+        if w and hasattr(w, 'helpLink') and w.helpLink:
             return w.helpLink
         else:
             return "help/main.html"

@@ -42,7 +42,7 @@ APPVERSIONTAG   = 'Alpha' #'"A new world"'
 AUTHOR          = 'Paolo De Stefani'
 EMAIL           = 'info@paolodestefani.it'
 ORGANIZATION    = 'PDS Software'
-WEBSITE         = 'www.paolodestefani.it'
+WEBSITE         = 'paolodestefani.it'
 
 # minumum required version
 MRV_PYTHON  = 3, 12, 0 

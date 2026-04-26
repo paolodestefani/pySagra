@@ -23,7 +23,8 @@
 
 """Application Actions
 
-This module contains actions definitions
+Actions definitions: description, slot, checkable, icon name, standard shortcut, 
+tooltip, status tip, what's this, menu role
 
 """
 

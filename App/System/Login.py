@@ -94,7 +94,7 @@ logger = logging.getLogger(__name__)
 
 
 class LoginDialog(QDialog):
-    "Login dialog, ask for parameters and launch th connection to server"
+    "Login dialog, ask for parameters and launch the connection to server"
 
     def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
@@ -105,7 +105,7 @@ class LoginDialog(QDialog):
         self.ui.frameMore.hide()
         # restore settings
         st = QSettings()
-        if not st.value("LogInDatabase"): # first time usage
+        if not st.value("LogIn/Database"): # first time usage
             self.ui.checkBoxMore.setChecked(True)
             self.ui.frameMore.show()
         #if st.value("LogIn_Animation", False) is True: # on demand animated gif
@@ -113,15 +113,15 @@ class LoginDialog(QDialog):
         if self.logo.isValid():
             self.ui.labelMain.setMovie(self.logo)
             self.logo.start()
-        self.ui.lineEditServer.setText(st.value("LogInServer", ""))
-        self.ui.spinBoxPort.setValue(st.value("LogInPort", 5432, type=int))
-        self.ui.lineEditDatabase.setText(st.value("LogInDatabase", ""))
+        self.ui.lineEditServer.setText(st.value("LogIn/Server", ""))
+        self.ui.spinBoxPort.setValue(st.value("LogIn/Port", 5432, type=int))
+        self.ui.lineEditDatabase.setText(st.value("LogIn/Database", ""))
         try:
-            self.ui.lineEditDBUser.setText(string_decode(st.value("LogInDbUser", "")))
+            self.ui.lineEditDBUser.setText(string_decode(st.value("LogIn/DbUser", "")))
         except InvalidToken:
             self.ui.lineEditDBUser.setText("")
         try:
-            self.ui.lineEditDBPassword.setText(string_decode(st.value("LogInDbPassword", "")))
+            self.ui.lineEditDBPassword.setText(string_decode(st.value("LogIn/DbPassword", "")))
         except InvalidToken:
             self.ui.lineEditDBPassword.setText("")
         self.ui.lineEditUser.setFocus()
@@ -189,11 +189,11 @@ class LoginDialog(QDialog):
 
         # store login settinggs
         st = QSettings()
-        st.setValue("LogInServer", par['server'])
-        st.setValue("LogInPort", par['port'])
-        st.setValue("LogInDatabase", par['database'])
-        st.setValue("LogInDbUser", string_encode(par['db_user']))
-        st.setValue("LogInDbPassword", string_encode(par['db_password']))
+        st.setValue("LogIn/Server", par['server'])
+        st.setValue("LogIn/Port", par['port'])
+        st.setValue("LogIn/Database", par['database'])
+        st.setValue("LogIn/DbUser", string_encode(par['db_user']))
+        st.setValue("LogIn/DbPassword", string_encode(par['db_password']))
 
         # user style theme
         logger.info("Setting user style to %s", session['style_theme'])
@@ -308,10 +308,10 @@ class ChangeCompanyDialog(QDialog):
             logger.error("Database error %s %s", er.code, er.message)
             return
         if not companies:
-            self.ui.labelMessage.setText(_tr('MessageDialog', "There aro no other companies you can login"))
+            self.ui.labelMessage.setText(_tr('ChangeCompany', "There are no other companies you can login"))
             self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setDisabled(True)
         else:
-            self.ui.labelMessage.setText(_tr('MessageDialog', "Choose a company to login"))
+            self.ui.labelMessage.setText(_tr('ChangeCompany', "Choose a company to login"))
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.lineEditUser.setText(session['user'])
         self.ui.lineEditCompany.setText(session.get('company_description') or '')
@@ -326,7 +326,7 @@ class ChangeCompanyDialog(QDialog):
             return
         newco = int(value)
         newde = get_company_desc(newco)
-        logger.info("On change company starting of setting working company")
+        logger.info("On change company starting setting working company")
         try:
             appconn.change_company(newco)
         except PyAppDBError as er:
@@ -351,13 +351,11 @@ class ChangeCompanyDialog(QDialog):
         try:
             get_current_event()
         except PyAppDBError as er:
+            logger.error("On change company database error %s %s", er.code, er.message)
             MessageBoxCritical(self,
                                _tr('MessageDialog', "Database error"),
                                er.code,
                                er.message)
-            logger.error("On change company database error %s %s", er.code, er.message)
         else:
-            logger.info("On change company current event setted to %s %s",
-                         session['event_id'],
-                         session['event_description'])
+            logger.info("On change company current event setted to %s %s", session['event_id'], session['event_description'])
         super().accept()

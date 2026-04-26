@@ -53,7 +53,7 @@ from App import session
 from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Event import get_event_data
-from App.Database.CodeDescriptionList import event_cdl
+from App.Database.Lookup import event_lookup
 from App.Database.Department import department_list
 from App.Database.Item import item_web_list
 from App.Database.Item import get_variants
@@ -85,7 +85,7 @@ class UpdateWebOrderServerDialog(QDialog):
         self.ui.setupUi(self)
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
-        self.ui.comboBoxEvent.setItemList(event_cdl())
+        self.ui.comboBoxEvent.setItemList(event_lookup())
         # set web order server parameters from database
         server, port, encoding, username, password, filename = get_web_order_server_params()
         self.ui.lineEditServer.setText(server)

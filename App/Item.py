@@ -62,11 +62,11 @@ from App.Database.Models import KitPartModel
 from App.Database.Models import MenuPartModel
 from App.Database.Models import PriceListItemModel
 from App.Database.Setting import SettingClass
-from App.Database.CodeDescriptionList import item_with_variant_cdl
-from App.Database.CodeDescriptionList import kit_part_cdl
-from App.Database.CodeDescriptionList import menu_part_cdl
-from App.Database.CodeDescriptionList import department_cdl
-from App.Database.CodeDescriptionList import price_list_cdl
+from App.Database.Lookup import item_with_variant_lookup
+from App.Database.Lookup import kit_part_lookup
+from App.Database.Lookup import menu_part_lookup
+from App.Database.Lookup import department_lookup
+from App.Database.Lookup import price_list_lookup
 from App.Database.Item import get_variants
 from App.Ui.ItemWidget import Ui_ItemWidget
 from App.Ui.ChooseItemDialog import Ui_ChooseItemDialog
@@ -118,7 +118,6 @@ def item() -> None:
     auth = currentAction['app_file_item'].data()
     iw = ItemForm(mw, title, auth)
     iw.applySortFilter()
-    #iw.reload()
     mw.addTab(title, iw)
     logging.info('Items Form added to main window')
 
@@ -129,7 +128,7 @@ class ChooseItemDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_ChooseItemDialog()
         self.ui.setupUi(self)
-        for k, v in item_with_variant_cdl():
+        for k, v in item_with_variant_lookup():
             self.ui.comboBoxItems.addItem(v, k)
 
 
@@ -180,7 +179,7 @@ class ItemForm(FormIndexManager):
         self.ui.tableView.setLayoutName('item')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
-        self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_cdl))
+        self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_lookup))
         #self.ui.tableView.setItemDelegateForColumn(I_STOCK, BooleanDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(I_VARIANTS, BooleanDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(I_UNLOAD, BooleanDelegate(self))
@@ -196,7 +195,7 @@ class ItemForm(FormIndexManager):
         self.mapper.addMapping(self.ui.comboBoxType, TYPE, b"modelDataStr")
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.mapper.addMapping(self.ui.lineEditCustomerDescription, CUSTOMER_DESCRIPTION)
-        self.ui.comboBoxDepartment.setFunction(department_cdl)
+        self.ui.comboBoxDepartment.setFunction(department_lookup)
         self.mapper.addMapping(self.ui.comboBoxDepartment, DEPARTMENT, b"modelDataInt")
         self.mapper.addMapping(self.ui.spinBoxRow, ROW)
         self.mapper.addMapping(self.ui.spinBoxColumn, COLUMN)
@@ -221,15 +220,15 @@ class ItemForm(FormIndexManager):
         self.ui.tableViewVariants.setItemDelegateForColumn(VSORT, GenericDelegate(self))
         self.ui.tableViewComponents.setModel(modelk)
         self.ui.tableViewComponents.setLayoutName('itemComponent')
-        self.ui.tableViewComponents.setItemDelegateForColumn(KPART, RelationDelegate(self, kit_part_cdl))
+        self.ui.tableViewComponents.setItemDelegateForColumn(KPART, RelationDelegate(self, kit_part_lookup))
         self.ui.tableViewComponents.setItemDelegateForColumn(KQTA, QuantityDelegate(self))
         self.ui.tableViewMenuItems.setModel(modelm)
         self.ui.tableViewMenuItems.setLayoutName('itemMenu')
-        self.ui.tableViewMenuItems.setItemDelegateForColumn(MPART, RelationDelegate(self, menu_part_cdl))
+        self.ui.tableViewMenuItems.setItemDelegateForColumn(MPART, RelationDelegate(self, menu_part_lookup))
         self.ui.tableViewMenuItems.setItemDelegateForColumn(MQTA, QuantityDelegate(self))
         self.ui.tableViewPrices.setModel(modelp)
         self.ui.tableViewPrices.setLayoutName('itemPrice')
-        self.ui.tableViewPrices.setItemDelegateForColumn(PLIST, RelationDelegate(self, price_list_cdl))
+        self.ui.tableViewPrices.setItemDelegateForColumn(PLIST, RelationDelegate(self, price_list_lookup))
         self.ui.tableViewPrices.setItemDelegateForColumn(PPRICE, AmountDelegate(self))
         # self.toFirst() not here because we need to set models first
         self.ui.checkBoxVariants.stateChanged.connect(self.hasVariantsStateChanged)

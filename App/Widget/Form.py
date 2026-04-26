@@ -414,6 +414,9 @@ class FormManager[T](QWidget):
             row = self.model.rowCount() - 1
         self.mapper.setCurrentIndex(row)  # setCurrentIndex() implies updateEditStatus()
 
+    def applySortFilter(self)-> None:
+        self.sortFilterDialog.applySortFilter()
+
     def setFilters(self) -> None:
         "Create/open filter dialog and update main model"
         self.sortFilterDialog.show()
@@ -467,6 +470,7 @@ class FormViewManager[T](QWidget):
         self.model: QAbstractItemModel # main form model
         self.state = VIEW # initial state
         self.reloadConfirmation = True  # ask confirmation on reload
+        self.repr = 'Generic form view manager'
         # model is mapped direct to tableview
         self.auth: str = auth
         self.view: QTableView|None = None # subclass must set this
@@ -630,6 +634,9 @@ class FormViewManager[T](QWidget):
         self.state = VIEW
         self.updateEditStatus()
 
+    def applySortFilter(self)-> None:
+        self.sortFilterDialog.applySortFilter()
+
     def setFilters(self) -> None:
         if not self.model:
             return None
@@ -716,6 +723,7 @@ class FormIndexManager[T](QWidget):
         self.detailRelations: list = []  # detail relation list
         self.model: QAbstractItemModel = TableModel()
         self.indexModel = QueryModel()
+        self.repr = 'Generic form index manager'
         self.ui: T # The type will be decided by the subclass
         # index mapper
         self.indexMapper = QDataWidgetMapper(self)
@@ -736,8 +744,6 @@ class FormIndexManager[T](QWidget):
         if hasattr(self.model, 'userDataChanged'):
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.indexModel, self)
-        
-    
 
     def setIndexView(self, view: QTableView) -> None:
         "Set index view"

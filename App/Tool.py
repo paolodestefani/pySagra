@@ -46,7 +46,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App import currentAction
 from App.Database.Exceptions import PyAppDBError
-from App.Database.CodeDescriptionList import event_cdl
+from App.Database.Lookup import event_lookup
 from App.Database.Tool import delete_event_order
 from App.Database.Tool import inventory_rebuild
 from App.Database.Tool import ordered_delivered_rebuild
@@ -84,7 +84,7 @@ def eventBasedTool() -> None:
                                 _tr('MessageDialog', 'Information'),
                                 _tr('Utility', 'You are not authorized to use this utility'))
         return
-    if not event_cdl():
+    if not event_lookup():
         QMessageBox.information(mw,
                                 _tr('MessageDialog', 'Information'),
                                 _tr('Utility', 'No event available'))
@@ -147,7 +147,7 @@ class EventToolDialog(QDialog):
                      (3, _tr('Utility', 'Numbering Rebuild')),
                      (4, _tr('Utility', 'Mark Orders as Processed'))):
             self.ui.comboBoxUtility.addItem(u, i)
-        for i, d in event_cdl():
+        for i, d in event_lookup():
             self.ui.comboBoxEvent.addItem(d, i)
         self.ui.comboBoxEvent.setCurrentText(session['event_description'])
         self.ui.comboBoxUtility.currentIndexChanged.connect(self.updateWarning)

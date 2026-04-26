@@ -59,10 +59,6 @@ from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Psycopg import DEFAULT
 from App.Database.Connect import appconn
 from App.Database.Company import company_is_in_use
-#from App.Database.Menus import get_menu_tree
-#from App.Database.CodeDescriptionList import department_cdl
-#from App.Database.CodeDescriptionList import event_cdl
-#from App.Database.CodeDescriptionList import item_salable_cdl
 from App.Core.L10n import _tr
 
 # logger
@@ -513,9 +509,13 @@ class TableModel(QAbstractTableModel):
             return None
         result = self.dataSet[row][col]
         match role:
-            case Qt.ItemDataRole.DisplayRole | Qt.ItemDataRole.EditRole:
+            case Qt.ItemDataRole.EditRole:
+                #if isinstance(result, bool):
+                #    return None # do not return text for bool, checkbox is managed in CheckStateRole
+                return result
+            case Qt.ItemDataRole.DisplayRole:
                 if isinstance(result, bool):
-                    return None # do not return text for bool, checkbox is managed in CheckStateRole
+                    return None # Mantiene pulita la tabella se il delegato non lo facesse
                 return result
             case Qt.ItemDataRole.TextAlignmentRole:
                 # numbers aligned right anything else aligned left
@@ -526,8 +526,8 @@ class TableModel(QAbstractTableModel):
             case Qt.ItemDataRole.CheckStateRole:
                 if isinstance(result, bool):
                     return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
-                else:
-                    return None
+                #else:
+                return None
             case _:
                 return None
 

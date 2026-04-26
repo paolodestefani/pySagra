@@ -59,7 +59,7 @@ from App import session
 from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import PandasModel
-from App.Database.CodeDescriptionList import event_cdl
+from App.Database.Lookup import event_lookup
 from App.Database.Models import OrderHeaderPandasModel
 from App.Database.Models import OrderLinePandasModel
 from App.Ui.AnalysisWidget import Ui_AnalysisWidget
@@ -111,7 +111,7 @@ class StatisticsExportDialog(QDialog):
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
 
-        for i, d in event_cdl():
+        for i, d in event_lookup():
             self.ui.comboBoxFromEvent.addItem(d, i)
             self.ui.comboBoxToEvent.addItem(d, i)
         # restore settings

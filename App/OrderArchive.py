@@ -52,8 +52,8 @@ from App.Database.Models import OrderHeaderModel
 from App.Database.Models import OrderHeaderDepartmentModel
 from App.Database.Models import OrderLineModel
 from App.Database.Models import OrderDepartmentTreeModel
-from App.Database.CodeDescriptionList import item_all_cdl
-from App.Database.CodeDescriptionList import department_cdl
+from App.Database.Lookup import item_all_lookup
+from App.Database.Lookup import department_lookup
 from App.Widget.Dialog import MessageBoxCritical
 from App.Widget.Dialog import PrintDialog
 from App.Widget.Delegate import GenericDelegate
@@ -171,7 +171,7 @@ class OrderForm(FormIndexManager):
         # details tableView
         self.ui.tableViewDetails.setModel(modelDet)
         self.ui.tableViewDetails.setLayoutName('orderArchiveDetail')
-        self.ui.tableViewDetails.setItemDelegateForColumn(D_ITEM, RelationDelegate(self, item_all_cdl))
+        self.ui.tableViewDetails.setItemDelegateForColumn(D_ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_QUANTITY, QuantityDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_PRICE, AmountDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_AMOUNT, AmountDelegate(self))
@@ -181,13 +181,13 @@ class OrderForm(FormIndexManager):
         #self.ui.treeViewDepartmentDetails.hideColumn(0)
         #self.ui.treeViewDepartmentDetails.hideColumn(1)
         #self.ui.tableViewDepartmentDetails.setLayoutName('orderArchiveDepartmentDetail')
-        #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_DEPARTMENT, RelationDelegate(self, department_cdl))
-        #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_ITEM, RelationDelegate(self, item_all_cdl))
+        #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_DEPARTMENT, RelationDelegate(self, department_lookup))
+        #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_ITEM, RelationDelegate(self, item_all_lookup))
         #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_QUANTITY, QuantityDelegate(self))
         # header department tableView
         self.ui.tableViewDepartmentHeader.setModel(modelHeaDep)
         self.ui.tableViewDepartmentHeader.setLayoutName('orderArchiveDepartmentHeader')
-        #self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(P_DEPARTMENT, RelationDelegate(self, department_cdl))
+        #self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(P_DEPARTMENT, RelationDelegate(self, department_lookup))
         #self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(HDPRINTED, BooleanDelegate(self))
         # store setting on form creation
         self.setting = Setting()

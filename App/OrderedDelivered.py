@@ -47,7 +47,7 @@ from App import session
 from App import currentAction  
 from App.Database.Setting import SettingClass
 from App.Database.Models import ItemsOrderedDeliveredModel
-from App.Database.CodeDescriptionList import event_cdl
+from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import QuantityDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Form import FormViewManager
@@ -158,7 +158,7 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
 
     def setFilters(self):
         "Filters event, date, day part"
-        if not event_cdl():
+        if not event_lookup():
             QMessageBox.information(self,
                                 _tr('MessageDialog', 'Information'),
                                 _tr('StockUnload', 'No event available'))

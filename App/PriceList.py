@@ -44,7 +44,7 @@ from App import session
 from App import currentAction
 from App import currentIcon
 from App.Database.Exceptions import PyAppDBError
-from App.Database.CodeDescriptionList import item_all_cdl
+from App.Database.Lookup import item_all_lookup
 from App.Database.Models import PriceListIndexModel
 from App.Database.Models import PriceListModel
 from App.Database.Models import PriceListItemModel
@@ -122,7 +122,7 @@ class PriceListForm(FormIndexManager):
         # price list detail
         self.ui.tableViewPrices.setModel(priModel)
         self.ui.tableViewPrices.setLayoutName('priceListDetail')
-        self.ui.tableViewPrices.setItemDelegateForColumn(P_ITEM, RelationDelegate(self, item_all_cdl))
+        self.ui.tableViewPrices.setItemDelegateForColumn(P_ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewPrices.setItemDelegateForColumn(P_PRICE, AmountDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_list))
 

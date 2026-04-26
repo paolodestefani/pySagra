@@ -43,9 +43,8 @@ from PySide6.QtWidgets import QDialog
 from App import session
 from App import currentAction
 from App.Database.Models import SalesSummaryModel
-from App.Database.CodeDescriptionList import event_cdl
+from App.Database.Lookup import event_lookup
 from App.Ui.SalesSummaryWidget import Ui_SalesSummaryWidget
-#from App.Ui.IncomeSummaryFilterDialog import Ui_IncomeSummaryFilterDialog
 from App.Core.L10n import _tr
 from App.Widget.Delegate import AmountDelegate
 from App.Widget.Form import FormViewManager
@@ -170,7 +169,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
 
     def setFilters(self):
         "Filter event from combobox"
-        if not event_cdl():
+        if not event_lookup():
             QMessageBox.information(self,
                                 _tr('MessageDialog', 'Information'),
                                 _tr('SalesSummary', 'No event available'))

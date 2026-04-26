@@ -44,7 +44,6 @@ from App import currentAction
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-#from App.Database.CodeDescriptionList import printer_class_list
 from App.Database.Models import CashDeskModel
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import IntegerDelegate

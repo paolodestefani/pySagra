@@ -60,7 +60,7 @@ from App.Database.Models import EventModel
 from App.Database.Event import is_used
 from App.Database.Department import department_list
 from App.Database.Item import item_web_list
-from App.Database.CodeDescriptionList import price_list_cdl
+from App.Database.Lookup import price_list_lookup
 from App.Widget.Dialog import MessageBoxCritical
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ImageDelegate
@@ -112,7 +112,7 @@ class EventForm(FormIndexManager):
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
         #self.ui.pushButtonUpdateWebOrder.clicked.connect(self.updateWebOrderServer)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
-        self.ui.tableView.setItemDelegateForColumn(PRICELIST, RelationDelegate(self, price_list_cdl))
+        self.ui.tableView.setItemDelegateForColumn(PRICELIST, RelationDelegate(self, price_list_lookup))
         self.ui.tableView.setItemDelegateForColumn(IMAGE, ImageDelegate(self))
         # map view to mapper and mapper to view
         #self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
@@ -122,7 +122,7 @@ class EventForm(FormIndexManager):
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.mapper.addMapping(self.ui.dateTimeEditStart, DATE_START, b"modelDataDateTime")
         self.mapper.addMapping(self.ui.dateTimeEditEnd, DATE_END, b"modelDataDateTime")
-        self.ui.comboBoxPriceList.setFunction(price_list_cdl)
+        self.ui.comboBoxPriceList.setFunction(price_list_lookup)
         self.mapper.addMapping(self.ui.comboBoxPriceList, PRICELIST, b"modelDataStr")
         self.mapper.addMapping(self.ui.labelEventImage, IMAGE, b"imageBytearray")
         #self.mapper.addMapping(self.ui.plainTextEditTableList, TABLES)

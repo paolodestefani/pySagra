@@ -23,7 +23,7 @@
 
 """Profile
 
-This module manages user profiles
+Management of user profiles
 
 """
 
@@ -50,12 +50,13 @@ from App.Database.Models import ProfileModel
 from App.Database.Models import ProfileActionModel
 from App.System.Action import actionDefinition
 from App.Widget.Delegate import RelationDelegate
-from App.Widget.Delegate import BooleanDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.ProfileWidget import Ui_ProfileWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
+
 
 # logger
 logger = logging.getLogger(__name__)
@@ -79,12 +80,13 @@ def profile() -> None:
     title = currentAction['sys_profile'].text()
     auth = currentAction['sys_profile'].data()
     pw = ProfileForm(mw, title, auth)
-    pw.reload()
+    pw.applySortFilter()
     mw.addTab(title, pw)
     logger.info('Profiles Form added to main window')
 
 
 class DuplicateProfileDialog(QDialog):
+    "Dialog box for duplicate the current selected profile"
     
     def __init__(self, parent: QWidget, profile: str) -> None:  # no parent for tabwidget widget pages
         super().__init__(parent)
@@ -100,10 +102,12 @@ class DuplicateProfileDialog(QDialog):
                               self.ui.lineEditCode.text(),
                               self.ui.lineEditDescription.text())
         except PyAppDBError as er:
+            logger.error("On duplicate profile: database error: %s %s", er.code, er.message)
             QMessageBox.critical(self,
                                  _tr('MessageDialog', "Critical"),
                                  f"{er.code} - {er.message}")
         else:
+            logger.info("On duplicate profile: operation completed successfully")
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
                                     _tr('Profile', "Profile duplicated"))
@@ -111,6 +115,7 @@ class DuplicateProfileDialog(QDialog):
 
 
 class ProfileForm(FormIndexManager):
+    "Profile form management"
     
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -134,7 +139,7 @@ class ProfileForm(FormIndexManager):
         # widget settings
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('profile')
-        self.ui.tableView.setItemDelegateForColumn(SYSTEM, BooleanDelegate(self))
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
@@ -166,7 +171,7 @@ class ProfileForm(FormIndexManager):
         actions = {i for i in actionDefinition}
         difference = actions - current
         for i in difference:
-            model.insertRows(model.rowCount(), 1)
+            model.insertRow(model.rowCount())
             modelRow = model.rowCount() - 1
             model.setData(model.createIndex(modelRow, ACTION), i)
             model.setData(model.createIndex(modelRow, AUTHORIZATION), 'X')

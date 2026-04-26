@@ -45,7 +45,7 @@ from App import currentAction
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-from App.Database.CodeDescriptionList import printer_class_cdl
+from App.Database.Lookup import printer_class_lookup
 from App.Database.Models import DepartmentModel
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import IntegerDelegate
@@ -90,7 +90,7 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         self.ui.tableView.setLayoutName('department')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         #self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_cdl))
+        self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_lookup))
         #self.ui.tableView.setItemDelegateForColumn(SORTING, IntegerDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(OBSOLETE, BooleanDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(NOMANAGE, BooleanDelegate(self))

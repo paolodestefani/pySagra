@@ -23,7 +23,7 @@
 
 """Report
 
-This modules manages reports: creation/deletion/modification of sql reports
+Management of application reports: create, delete and modify of pysagra reports
 
 """
 
@@ -65,13 +65,14 @@ from App.Database.Models import ReportModel
 from App.Database.Models import ReportIndexModel
 from App.Report import REPORT_CLASSES
 from App.Widget.Form import FormIndexManager
-from App.Widget.Delegate import BooleanDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Dialog import PrintDialog
 from App.Ui.ReportWidget import Ui_ReportWidget
 from App.Core.L10n import _tr
 from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
 from App.Core.SyntaxHighlighter import XMLHighlighter
+
 
 # logger
 logger = logging.getLogger(__name__)
@@ -92,13 +93,14 @@ def report() -> None:
     mw = session['mainwin']
     title = currentAction['sys_report'].text()
     auth = currentAction['sys_report'].data()
-    cf = ReportForm(mw, title, auth)
-    cf.reload()
-    mw.addTab(title, cf)
+    rf = ReportForm(mw, title, auth)
+    rf.applySortFilter()
+    mw.addTab(title, rf)
     logger.info('Report Form added to main window')
 
 
 class ReportForm(FormIndexManager):
+    "Report form management"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -106,7 +108,7 @@ class ReportForm(FormIndexManager):
         idxModel = ReportIndexModel(self)
         self.setModel(model, idxModel)
         self.tabName = title
-        self.helpLink = "help/main.html#gui"
+        self.helpLink = None
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
@@ -116,21 +118,21 @@ class ReportForm(FormIndexManager):
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('report')
-        self.ui.tableView.setItemDelegateForColumn(V_SYSTEM, BooleanDelegate(self))
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.ui.comboBoxL10n.setItemList(langCountryFlags())
-        self.mapper.addMapping(self.ui.comboBoxL10n, L10N, b"modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxL10n, L10N) #, b"modelDataStr")
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.ui.comboBoxClass.addItems([None] + REPORT_CLASSES)
         self.mapper.addMapping(self.ui.comboBoxClass, CLASS)
         self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
-        self.mapper.addMapping(self.ui.textEditXML, XML, b"plainText")
+        self.mapper.addMapping(self.ui.textEditXML, XML) #, b"plainText")
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # set font
         st = QSettings()
-        self.editorFont: QFont = cast(QFont, st.value("XMLEditorFont", QFont('Courier', 8), type=QFont))
+        self.editorFont: QFont = cast(QFont, st.value("Report/XMLEditorFont", QFont('Courier', 8), type=QFont))
         self.ui.textEditXML.setFont(self.editorFont)
         self.ui.fontComboBox.setCurrentFont(self.editorFont)
         self.ui.spinBoxFontSize.setValue(self.editorFont.pointSize())
@@ -153,6 +155,7 @@ class ReportForm(FormIndexManager):
         self.ui.comboBoxL10n.setDisabled(True)
 
     def mapperIndexChanged(self, row: int) -> None:
+        "Change form settings on change record"
         super().mapperIndexChanged(row)
         if self.ui.checkBoxSystem.isChecked():
             self.ui.comboBoxClass.setEditable(True)
@@ -205,7 +208,7 @@ class ReportForm(FormIndexManager):
         self.ui.textEditXML.setFont(font)
         # save font properties
         st = QSettings()
-        st.setValue("XMLEditorFont", font)
+        st.setValue("Report/XMLEditorFont", font)
 
     def changeFontSize(self, size: int) -> None:
         "Change editor font size"
@@ -214,12 +217,12 @@ class ReportForm(FormIndexManager):
         self.ui.textEditXML.setFont(font)
         # save font properties
         st = QSettings()
-        st.setValue("XMLEditorFont", font)
+        st.setValue("Report/XMLEditorFont", font)
 
     def insertImage(self, checked: bool) -> None:
         "Load an image file as base64 string data to clipboard"
         st = QSettings()
-        path = st.value("PathImagesReports", QDir.current().path(), type = str)
+        path = st.value("Report/PathImages", QDir.current().path(), type = str)
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr('Report', "Select the image to insert into clipboard"),
                                            str(path),
@@ -236,7 +239,7 @@ class ReportForm(FormIndexManager):
         txt = bytes(ba.toBase64().data()).decode('utf-8')
         cb = QApplication.clipboard()
         cb.setText(f"""<image left="0.0" top="0.0" width="45.0" height="48.0" aspectRatio="KeepAspectRatio">{txt}</image>""")
-        st.setValue("PathImagesReports", QFileInfo(f).path())
+        st.setValue("Report/PathImages", QFileInfo(f).path())
         
     def deleteAll(self) -> None:
         "Delete all reports"
@@ -252,9 +255,9 @@ class ReportForm(FormIndexManager):
         self.reload()        
 
     def download(self) -> None:
-        "Dowload current report to file"
+        "Dowload current report to a file"
         st = QSettings()
-        path = st.value("PathReports", QDir.current().path())
+        path = st.value("Report/PathReports", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Report', "Select the directory"),
                                                      str(path))
@@ -285,12 +288,12 @@ class ReportForm(FormIndexManager):
                                     _tr('Report', "Download current report"),
                                     f"<p>{msg}</p><p><b>{fileName}</b></p>")
             # update settings
-            st.setValue("PathReports", directory)
+            st.setValue("Report/PathReports", directory)
 
     def downloadAll(self) -> None:
         "Save all report definition to a directory, one file per report"
         st = QSettings()
-        path = str(st.value("PathReports", QDir.current().path()))
+        path = str(st.value("Report/PathReports", QDir.current().path()))
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Report', "Select the directory"),
                                                      path)
@@ -321,12 +324,12 @@ class ReportForm(FormIndexManager):
                                     _tr('Report', "Download all reports"),
                                     f"<p>{msg}</p><p><b>{directory}</b></p>")
         # update settings
-        st.setValue("PathReports", directory)
+        st.setValue("Report/PathReports", directory)
 
     def upload(self) -> None:
         "Upload one report file from directory"
         st = QSettings()
-        path = str(st.value("PathReports", QDir.currentPath()))
+        path = str(st.value("Report/PathReports", QDir.currentPath()))
         fileName, t = QFileDialog.getOpenFileName(self,
                                                   _tr('Report', "Select the file to import"),
                                                   path,
@@ -363,7 +366,7 @@ class ReportForm(FormIndexManager):
     def uploadAll(self) -> None:
         "Upload all reports from directory"
         st = QSettings()
-        path = str(st.value("PathReports", QDir.currentPath()))
+        path = str(st.value("Report/PathReports", QDir.currentPath()))
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Report', "Select the directory"),
                                                      path)
@@ -407,6 +410,7 @@ class ReportForm(FormIndexManager):
                                     _tr('Report', "All reports imported to database"))
 
     def print(self) -> None:
+        "Print current report"
         rid: int = self.model.data(self.model.index(self.mapper.currentIndex(), ID))
         lcn: str = self.model.data(self.model.index(self.mapper.currentIndex(), L10N))
         dialog = PrintDialog(self, reportId=rid, l10n=lcn)

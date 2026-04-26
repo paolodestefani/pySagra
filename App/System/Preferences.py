@@ -23,7 +23,7 @@
 
 """Preferences
 
-This module allow to set/modify user preferences: ui theme, icon set, font, ecc.
+Preferences allow to set/modify user preferences: ui theme, icon set, font, ecc.
 
 """
 
@@ -62,6 +62,7 @@ from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences
 from App.Ui.PreferencesDialog import Ui_PreferencesDialog
 
+
 # logger
 logger = logging.getLogger(__name__)
 
@@ -81,6 +82,7 @@ tab_position = {'N': QTabWidget.North, # type: ignore[attr-defined]
 
 
 def preferences() -> None:
+    "Launch preferences dialog"
     logger.info('Starting preferences dialog')
     mw = session['mainwin']
     auth = currentAction['sys_preferences'].data()
@@ -131,6 +133,7 @@ class PreferencesDialog(QDialog):
             theme, color, icon, ffamily, fsize, tbstyle, tabposition  = load_preferences(session['app_user_code'])
         except PyAppDBError as er:
             title = _tr("Preferences", "Error loading user preferences")
+            logger.error("On load preferences database error: %s %s", er.code, er.message)
             QMessageBox.critical(self, title, er.message)
             return
         # set widget current value
@@ -184,14 +187,19 @@ class PreferencesDialog(QDialog):
             i.setToolButtonStyle(tool_button_style[tbstyle])
         session['mainwin'].tabWidget.setTabPosition(tab_position[tabposition])
         # save new preferences
-        save_preferences(session['app_user_code'], 
-                         theme,
-                         color,
-                         icon,
-                         ffamily,
-                         fsize,
-                         tbstyle,
-                         tabposition)
+        try:
+            save_preferences(session['app_user_code'], 
+                             theme,
+                             color,
+                             icon,
+                             ffamily,
+                             fsize,
+                             tbstyle,
+                             tabposition)
+        except PyAppDBError as er:
+            title = _tr("Preferences", "Error saving user preferences")
+            logger.error("On save preferences database error: %s %s", er.code, er.message)
+            QMessageBox.critical(self, title, er.message)
 
     def restoreDefault(self) -> None:
         "Restore default setings"

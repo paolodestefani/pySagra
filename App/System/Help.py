@@ -23,7 +23,7 @@
 
 """Help
 
-This module define and launch Help and Faq dialogs
+Definition and management of Help and Faq dialogs
 
 """
 
@@ -54,6 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 def help() -> None:
+    "Show help dialog"
     logger.info('Starting help dialog')
     dialog = HelpDialog(APPNAME, session['mainwin'].helpLink(), session['mainwin'])
     dialog.show()
@@ -61,6 +62,7 @@ def help() -> None:
 
 
 def faq() -> None:
+    "Show FAQ dialog"
     logger.info('Starting faq dialog')
     dialog = HelpDialog(APPNAME, "help\faq.html", session['mainwin'])
     dialog.show()
@@ -71,12 +73,13 @@ class HelpDialog(QDialog):
     "Dialog showing help content"
 
     def __init__(self, title: str, source: str, parent: QWidget) -> None:
-        "Initialize"
         super().__init__(parent)
         self.ui = Ui_HelpDialog()
         self.ui.setupUi(self)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.setWindowFlags(Qt.WindowType.Dialog|Qt.WindowType.WindowMinMaxButtonsHint|Qt.WindowType.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Dialog |
+                            Qt.WindowType.WindowMinMaxButtonsHint |
+                            Qt.WindowType.WindowCloseButtonHint)
         # set buttons' icons
         self.ui.toolButtonBack.setIcon(currentIcon['edit_previous'])
         self.ui.toolButtonHome.setIcon(currentIcon['edit_home'])
@@ -99,8 +102,6 @@ class HelpDialog(QDialog):
         self.ui.toolButtonHome.clicked.connect(self.ui.textBrowserContent.home)
         self.ui.toolButtonForward.clicked.connect(self.ui.textBrowserContent.forward)
         self.ui.textBrowserContent.setSource(QUrl(f"qrc:/{source}"))
-        #if anchor:
-            #self.textBrowserContent.scrollToAnchor(anchor)
         self.setWindowTitle(f"{title}")
         # action for find text
         findDesc = _tr('Help', 'Find')
@@ -125,7 +126,9 @@ class HelpDialog(QDialog):
         "Print help contents"
         dialog = PrintPreviewDialog(self)
         dialog.setGeometry(50, 50, 750, 550)
-        dialog.setWindowFlags(Qt.WindowType.Dialog|Qt.WindowType.WindowMinMaxButtonsHint|Qt.WindowType.WindowCloseButtonHint)
+        dialog.setWindowFlags(Qt.WindowType.Dialog | 
+                              Qt.WindowType.WindowMinMaxButtonsHint |
+                              Qt.WindowType.WindowCloseButtonHint)
         title = _tr('Help', "Print preview of")
         dialog.setWindowTitle(f"{title} {self.windowTitle()}")
         dialog.paintRequested.connect(self.ui.textBrowserContent.print_)

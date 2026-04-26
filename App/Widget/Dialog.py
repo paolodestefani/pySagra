@@ -116,9 +116,9 @@ from App.Database.Adaptation import create_adaptation
 from App.Database.Adaptation import get_adapt_sorting
 from App.Database.Adaptation import set_adapt_sorting
 from App.Database.Report import report_description
-from App.Database.CodeDescriptionList import event_cdl
-from App.Database.CodeDescriptionList import item_cdl
-from App.Database.CodeDescriptionList import get_list
+from App.Database.Lookup import event_lookup
+from App.Database.Lookup import item_lookup
+from App.Database.Lookup import get_list
 from App.Database.Adaptation import create_adaptation
 from App.Database.Adaptation import delete_adaptation
 from App.Database.Adaptation import list_adaptation
@@ -150,8 +150,8 @@ SORTFIELD, SORTORDER = range(2)
 TABPARAMS, TABFILTERS, TABOPTIONS, TABCUSTIMIZE = range(4)
 
 
-referenceList = {'eventList': event_cdl,
-                 'itemList': item_cdl}
+referenceList = {'eventList': event_lookup,
+                 'itemList': item_lookup}
 
 
 class MessageBox(QDialog):
@@ -967,7 +967,7 @@ class EventFilterDialog(QDialog):
             self.ui.groupBoxDayPart.setVisible(False)
         self.adjustSize()
         # fill event combobox
-        for i, d in event_cdl():
+        for i, d in event_lookup():
             self.ui.comboBoxEvent.addItem(d, i)
         self.ui.comboBoxEvent.setCurrentText(session['event_description'])
         # set date

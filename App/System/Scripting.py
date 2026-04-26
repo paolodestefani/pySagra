@@ -23,7 +23,7 @@
 
 """Scripting
 
-This modules manages python scripting
+Python scripting management
 
 """
 
@@ -58,15 +58,18 @@ from App.Database.Company import company_list
 from App.Database.Models import ScriptingIndexModel
 from App.Database.Models import ScriptingModel
 from App.Widget.Form import FormIndexManager
-from App.Widget.Delegate import BooleanDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import HideTextDelegate
-#from App.Widgets.Dialogs import PrintReportDialog
 from App.Ui.ScriptingWidget import Ui_ScriptingWidget
 from App.Core.L10n import _tr
 from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
 from App.Core.SyntaxHighlighter import PythonHighlighter
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 SCRIPTABLE = {'PrintersForm': ['__init__',
@@ -148,12 +151,13 @@ def scripting() -> None:
     title = currentAction['sys_scripting'].text()
     auth = currentAction['sys_scripting'].data()
     sw = ScriptingForm(mw, title, auth)
-    sw.reload()
+    sw.applySortFilter()
     mw.addTab(title, sw)
     logging.info('Scripting Form added to main window')
 
 
 class ScriptingForm(FormIndexManager):
+    "Form for python scripting management"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
         super().__init__(parent, auth)
@@ -161,7 +165,7 @@ class ScriptingForm(FormIndexManager):
         idxModel = ScriptingIndexModel(self)
         self.setModel(model, idxModel)
         self.tabName = title
-        self.helpLink = "help/main.html#gui"
+        self.helpLink = None
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
@@ -171,8 +175,8 @@ class ScriptingForm(FormIndexManager):
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('scripting')
-        self.ui.tableView.setItemDelegateForColumn(TRIGGER, RelationDelegate(self, runOptions))
-        self.ui.tableView.setItemDelegateForColumn(ACTIVE, BooleanDelegate(self))
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(ACTIVE, BooleanDelegate(self))
         # fill classcombobox, methodcombobox and companycombobox
         self.ui.comboBoxClass.currentIndexChanged.connect(self.fillMethods)
         self.ui.comboBoxClass.addItems(list(SCRIPTABLE.keys()))
@@ -181,14 +185,14 @@ class ScriptingForm(FormIndexManager):
         self.mapper.addMapping(self.ui.comboBoxClass, CLASS)
         self.mapper.addMapping(self.ui.comboBoxMethod, METHOD)
         self.ui.comboBoxTrigger.setItemList(runOptions())
-        self.mapper.addMapping(self.ui.comboBoxTrigger, TRIGGER, b"modelDataStr")
-        self.mapper.addMapping(self.ui.comboBoxCompany, COMPANY, b"modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxTrigger, TRIGGER)#, b"modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxCompany, COMPANY)#, b"modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxActive, ACTIVE)
-        self.mapper.addMapping(self.ui.textEditScript, SCRIPT, b"plainText")
+        self.mapper.addMapping(self.ui.textEditScript, SCRIPT)#, b"plainText")
         #self.ui.textEditScript.textChanged.connect(self.textChanged)
         # set font
         st = QSettings()
-        self.editorFont: QFont = cast(QFont, st.value("ScriptEditorFont", QFont('Courier', 8), type=QFont))
+        self.editorFont: QFont = cast(QFont, st.value("Scripting/EditorFont", QFont('Courier', 8), type=QFont))
         self.ui.textEditScript.setFont(self.editorFont)
         self.ui.fontComboBox.setCurrentFont(self.editorFont)
         self.ui.spinBoxFontSize.setValue(self.editorFont.pointSize())
@@ -212,6 +216,7 @@ class ScriptingForm(FormIndexManager):
         self.ui.comboBoxTrigger.setDisabled(True)
 
     def fillMethods(self, text: str) -> None:
+        "fill available methods"
         self.ui.comboBoxMethod.clear()
         self.ui.comboBoxMethod.addItems(SCRIPTABLE.get(self.ui.comboBoxClass.currentText()) or [])  # on New text is empty
 
@@ -226,6 +231,7 @@ class ScriptingForm(FormIndexManager):
         self.ui.comboBoxClass.setFocus()
 
     def save(self) -> None:
+        "Save current script"
         super().save()
         self.ui.comboBoxClass.setDisabled(True)
         self.ui.comboBoxMethod.setDisabled(True)
@@ -251,6 +257,7 @@ class ScriptingForm(FormIndexManager):
         super().delete()
 
     def reload(self) -> None:
+        "reload form"
         super().reload()
         self.ui.comboBoxClass.setDisabled(True)
         self.ui.comboBoxMethod.setDisabled(True)
@@ -261,7 +268,7 @@ class ScriptingForm(FormIndexManager):
         self.ui.textEditScript.setFont(font)
         # save font properties
         st = QSettings()
-        st.setValue("ScriptEditorFont", font)
+        st.setValue("Scripting/EditorFont", font)
 
     def changeFontSize(self, size: int) -> None:
         "Change editor font size"
@@ -270,12 +277,12 @@ class ScriptingForm(FormIndexManager):
         self.ui.textEditScript.setFont(font)
         # save font properties
         st = QSettings()
-        st.setValue("ScriptEditorFont", font)
+        st.setValue("Scripting/EditorFont", font)
 
     def download(self) -> None:
         "Dowload current script to a file"
         st = QSettings()
-        path = st.value("PathScripts", QDir.current().path())
+        path = st.value("Scripting/PathScripts", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Scripting', "Select the directory"),
                                                      str(path))
@@ -307,12 +314,12 @@ class ScriptingForm(FormIndexManager):
                                     _tr('Scripting', "Download current script"),
                                     f"<p>{msg}</p><p><b>{fileName}</b></p>")
             # update settings
-            st.setValue("PathScripts", directory)
+            st.setValue("Scripting/PathScripts", directory)
 
     def downloadAll(self) -> None:
         "Save all scripts to a directory, one file per script"
         st = QSettings()
-        path = st.value("PathScripts", QDir.current().path())
+        path = st.value("Scripting/PathScripts", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Scripting', "Select the directory"),
                                                      str(path))
@@ -349,13 +356,13 @@ class ScriptingForm(FormIndexManager):
                                     _tr('Scripting', "Download all script"),
                                     f"<p>{msg}</p><p><b>{directory}</b></p>")
             # update settings
-            st.setValue("PathScripts", directory)
+            st.setValue("Scripting/PathScripts", directory)
 
 
     def upload(self) -> None:
         "Upload one script file from directory"
         st = QSettings()
-        path = st.value("PathScripts", QDir.current().path())
+        path = st.value("Scripting/PathScripts", QDir.current().path())
         fileName, t = QFileDialog.getOpenFileName(self,
                                                   _tr('Scripts', "Select the file to import"),
                                                   str(path),
@@ -391,7 +398,7 @@ class ScriptingForm(FormIndexManager):
     def uploadAll(self) -> None:
         "Upload all scripts from directory"
         st = QSettings()
-        path = st.value("PathScripts", QDir.current().path())
+        path = st.value("Scripting/PathScripts", QDir.current().path())
         directory = QFileDialog.getExistingDirectory(self,
                                                      _tr('Scripting', "Select the directory"),
                                                      str(path))
