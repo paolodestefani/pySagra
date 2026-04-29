@@ -41,6 +41,7 @@ from PySide6.QtCore import QDir
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QFileInfo
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -50,8 +51,6 @@ from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
-from App import currentAction
-from App import currentIcon
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
 from App.Database.Connect import get_current_event
@@ -76,12 +75,12 @@ from App.Core.Scripting import scriptMethod
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(10)
 
 
-def event() -> None:
+def event(action: QAction, checked: bool = False) -> None:
     "Show/Edit curent connections"
     logging.info('Starting events Form')
     mw = session['mainwin']
-    title = currentAction['app_file_event'].text()
-    auth = currentAction['app_file_event'].data()
+    title = action.text()
+    auth = action.data()
     ew = EventForm(mw, title, auth)
     ew.reload()
     mw.addTab(title, ew)

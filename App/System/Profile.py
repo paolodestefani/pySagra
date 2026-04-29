@@ -32,6 +32,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QMessageBox
@@ -73,12 +74,12 @@ def authorizations() -> tuple[tuple[str, str], ...]:
             ('X', _tr('Profile', 'Execute')))
 
 
-def profile() -> None:
+def profile(action: QAction, checked: bool = False) -> None:
     "Show/Edit profiles"
     logger.info('Starting profiles Form')
     mw = session['mainwin']
-    title = currentAction['sys_profile'].text()
-    auth = currentAction['sys_profile'].data()
+    title = action.text()
+    auth = action.data()
     pw = ProfileForm(mw, title, auth)
     pw.applySortFilter()
     mw.addTab(title, pw)

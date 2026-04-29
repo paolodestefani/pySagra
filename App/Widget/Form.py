@@ -85,7 +85,7 @@ class FormManager[T](QWidget):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False,) * 12 # False, False, False, False, False, False, False,
                                 #False, False, False, False)
-        self.model: QAbstractItemModel # main form model
+        self.model: QueryModel|TableModel # main form model
         self.detailRelations: list = []  # detail relation list
         self.state = VIEW # initial state
         self.repr = 'Generic form manager'
@@ -106,17 +106,18 @@ class FormManager[T](QWidget):
         "Model representation"
         return self.repr
     
-    def setModel(self, model: QAbstractItemModel) -> None:
+    def setModel(self, model: QueryModel|TableModel) -> None:
         "Set the main form model"
         self.model = model #cast(TableModel, model)
         self.mapper.setModel(self.model) # main form model
         # only for editable models
-        if hasattr(self.model, 'isEditable') and self.model.isEditable and hasattr(self.model, 'userDataChanged'):
-            self.model.userDataChanged.connect(self.modelChanged)
+        if hasattr(self.model, 'isEditable') and self.model.isEditable:
+            if hasattr(self.model, 'userDataChanged'):
+                self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
     
     def addDetailRelation(self, 
-                          relation: QAbstractItemModel,# QueryModel|TableModel|TreeModel,
+                          relation: QAbstractItemModel,
                           masterColumn: int,
                           detailColumn: int
                           ) -> None:
@@ -289,7 +290,8 @@ class FormManager[T](QWidget):
         for relation, masterColumn, detailField in self.detailRelations:
             try:
                 value = self.model.data(self.model.index(row, masterColumn))
-                relation.submitAll(detailField, value)
+                if hasattr(relation, 'submitAll'):
+                    relation.submitAll(detailField, value)
             except PyAppDBError as er:
                 if er.code == '23503':
                     msg = _tr("Form", "Referential integrity violation: "
@@ -467,7 +469,7 @@ class FormViewManager[T](QWidget):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False,) * 12
-        self.model: QAbstractItemModel # main form model
+        self.model: QueryModel|TableModel # main form model
         self.state = VIEW # initial state
         self.reloadConfirmation = True  # ask confirmation on reload
         self.repr = 'Generic form view manager'
@@ -475,12 +477,13 @@ class FormViewManager[T](QWidget):
         self.auth: str = auth
         self.view: QTableView|None = None # subclass must set this
         
-    def setModel(self, model: QAbstractItemModel) -> None:
+    def setModel(self, model: QueryModel|TableModel) -> None:
         "Set the main form model"
         self.model = model
         # used for isDirty method, only for editable models
-        if hasattr(self.model, 'isEditable') and self.model.isEditable and hasattr(self.model, 'userDataChanged'):
-            self.model.userDataChanged.connect(self.modelChanged)
+        if hasattr(self.model, 'isEditable') and self.model.isEditable:
+            if hasattr(self.model, 'userDataChanged'):
+                self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
         
     def setView(self, view: QTableView) -> None:
@@ -529,16 +532,6 @@ class FormViewManager[T](QWidget):
             for i in (NEW, SAVE, DELETE):
                 status[i] = False
         session['mainwin'].updateEditStatus(status, current, total)
-
-    # def currentPrimaryKey(self) -> list|None:
-    #     if not self.model or isinstance(self.model, QueryModel):
-    #         return None
-    #     if not self.view:
-    #         return None
-    #     if self.view.selectionModel().currentIndex():
-    #         if self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()):
-    #             return list(self.model.getPrimaryKey(self.view.selectionModel().currentIndex().row()).values())[0]
-    #     return None
 
     def new(self) -> None:
         "Create a new record on model"
@@ -932,7 +925,8 @@ class FormIndexManager[T](QWidget):
         for relation, masterColumn, detailColumn in self.detailRelations:
             value = self.model.index(0, masterColumn).data()
             try:
-                relation.submitAll(detailColumn, value)
+                if hasattr(relation, 'submitAll'):
+                    relation.submitAll(detailColumn, value)
             except PyAppDBError as er:
                 if er.code == '23503':
                     msg = _tr("Form", "Referential integrity violation: "

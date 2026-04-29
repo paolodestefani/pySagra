@@ -122,7 +122,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaFilters.setWidgetResizable(True)
         self.scrollAreaWidgetContentsFilters = QWidget()
         self.scrollAreaWidgetContentsFilters.setObjectName(u"scrollAreaWidgetContentsFilters")
-        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 714, 316))
+        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 98, 28))
         self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContentsFilters)
         self.verticalLayout_5.setSpacing(0)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
@@ -149,7 +149,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaPrintOptions.setWidgetResizable(True)
         self.scrollAreaWidgetContentsOptions = QWidget()
         self.scrollAreaWidgetContentsOptions.setObjectName(u"scrollAreaWidgetContentsOptions")
-        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 686, 296))
+        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 574, 259))
         self.verticalLayout_18 = QVBoxLayout(self.scrollAreaWidgetContentsOptions)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
         self.horizontalLayout_8 = QHBoxLayout()
@@ -400,11 +400,6 @@ class Ui_PrintDialog(object):
 
         self.horizontalLayout_6.addWidget(self.lineEditNewName)
 
-        self.checkBoxSystem = QCheckBox(self.groupBoxNew)
-        self.checkBoxSystem.setObjectName(u"checkBoxSystem")
-
-        self.horizontalLayout_6.addWidget(self.checkBoxSystem)
-
         self.pushButtonNewCustomization = QPushButton(self.groupBoxNew)
         self.pushButtonNewCustomization.setObjectName(u"pushButtonNewCustomization")
 
@@ -469,8 +464,7 @@ class Ui_PrintDialog(object):
         QWidget.setTabOrder(self.pushButtonSetSorting, self.spinBoxClassSorting)
         QWidget.setTabOrder(self.spinBoxClassSorting, self.comboBoxReportList)
         QWidget.setTabOrder(self.comboBoxReportList, self.lineEditNewName)
-        QWidget.setTabOrder(self.lineEditNewName, self.checkBoxSystem)
-        QWidget.setTabOrder(self.checkBoxSystem, self.pushButtonNewCustomization)
+        QWidget.setTabOrder(self.lineEditNewName, self.pushButtonNewCustomization)
 
         self.retranslateUi(PrintDialog)
         self.buttonBox.accepted.connect(PrintDialog.accept)
@@ -523,7 +517,6 @@ class Ui_PrintDialog(object):
         self.groupBox.setTitle(QCoreApplication.translate("PrintDialog", u"Report", None))
         self.labelReportClass.setText(QCoreApplication.translate("PrintDialog", u"Class", None))
         self.groupBoxNew.setTitle(QCoreApplication.translate("PrintDialog", u"New customization", None))
-        self.checkBoxSystem.setText(QCoreApplication.translate("PrintDialog", u"System", None))
         self.pushButtonNewCustomization.setText(QCoreApplication.translate("PrintDialog", u"Create", None))
         self.labelWarningOnNew.setText(QCoreApplication.translate("PrintDialog", u"Creating a new customization does not save its parameters, you need to select the new customization, set the parameters/filters/sorting and update it", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCustomize), QCoreApplication.translate("PrintDialog", u"Customize", None))

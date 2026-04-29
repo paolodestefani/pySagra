@@ -35,7 +35,6 @@ import logging
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QObject
-#from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QFileInfo
@@ -43,6 +42,8 @@ from PySide6.QtCore import QSize
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
+from PySide6.QtGui import QAction
+from PySide6.QtGui import QIcon
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QFileDialog
@@ -52,7 +53,7 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-from App import currentAction
+#from App import currentAction
 from App import currentIcon
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Exceptions import PyAppDBError
@@ -93,25 +94,25 @@ logger = logging.getLogger(__name__)
  UC_USER_INS, UC_DATE_INS, UC_USER_UPD, UC_DATE_UPD) = range(9)
 
 
-def user() -> None:
+def user(action: QAction, checked: bool = False) -> None:
     "Users management"
     logging.info('Starting users Form')
     mw = session['mainwin']
-    title = currentAction['sys_user'].text()
-    auth = currentAction['sys_user'].data()
+    title = action.text()
+    auth = action.data()
     uf = UsersForm(mw, title, auth)
     uf.applySortFilter()
     mw.addTab(title, uf)
     logging.info('Users Form added to main window')
 
 
-def changePassword() -> None:
+def changePassword(action: QAction, checked: bool = False) -> None:
     "Change password dialog"
     # this dialog is used in users form too and is not called by an action
     # so can't use action properties
     logging.info('Starting change password dialog')
     mw = session['mainwin']
-    pd = ChangePasswordDialog(mw, session['app_user_code'])
+    pd = ChangePasswordDialog(mw, session['app_user_code'], action.icon())
     pd.exec()
     logging.info('Change password dialog shown')
 
@@ -175,10 +176,9 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_lookup))
         self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_lookup))
         self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_TOOLBAR, RelationDelegate(self, toolbar_lookup))
+        # signal - slot
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)
-        # scripting
-        self.script = scriptInit(self)
 
     def add(self) -> None:
         "Add a record"
@@ -188,7 +188,6 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         "Remove current record"
         self.ui.tableViewUserCompany.remove()
 
-    @scriptMethod
     def new(self) -> None:
         "New user"
         super().new()
@@ -247,8 +246,6 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             self.ui.pushButtonDownload.setDisabled(False)
             self.ui.pushButtonDelete.setDisabled(False)
             self.ui.checkBoxIsAdmin.setEnabled(True)
-        #self.accMapper.revert()
-        #self.accMapper.toFirst()
 
     def setTemporaryPassword(self) -> None:
         "Ask for a temporary password for current user"
@@ -260,7 +257,6 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             cprIndex = self.model.index(self.mapper.currentIndex(), CHANGEPWDREQ)
             self.model.setData(cprIndex, True)
 
-    @scriptMethod
     def upload(self) -> None:
         "Upload user image file"
         st = QSettings()
@@ -287,7 +283,6 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             self.model.isDirty = True
             self.model.userDataChanged.emit()
 
-    @scriptMethod
     def download(self, checked: bool) -> None:
         "Download user image file"
         if not self.ui.labelImage.pixmap():
@@ -323,18 +318,25 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         dialog = PrintDialog(self, 'USER')
         dialog.show()
 
+    def export(self) -> None:
+        "Export current users list to file"
+        self.ui.tableView.exportView()
+
 
 class ChangePasswordDialog(QDialog):
     "Change password dialog"
 
-    def __init__(self, parent: QWidget, user: str) -> None:
+    def __init__(self, parent: QWidget, user: str, icon: QIcon = None) -> None:
         super().__init__(parent)
         self.ui = Ui_ChangePasswordDialog()
         self.ui.setupUi(self)
         # this dialog is used in users too, can't use action properties
         # because is not called by an action
         self.setWindowTitle(_tr('User', 'Change password'))
-        self.ui.labelIcon.setPixmap(currentIcon['system_password'].pixmap(100))
+        if icon:
+            self.ui.labelIcon.setPixmap(icon.pixmap(100))
+        else:
+            self.ui.labelIcon.setPixmap(currentIcon['system_password'].pixmap(100))
         self.ui.lineEditUser.setText(user)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
 

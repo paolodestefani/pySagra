@@ -15,16 +15,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
-    QDialogButtonBox, QGroupBox, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
+    QHBoxLayout, QLabel, QPushButton, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_CustomizationsDialog(object):
     def setupUi(self, CustomizationsDialog):
         if not CustomizationsDialog.objectName():
             CustomizationsDialog.setObjectName(u"CustomizationsDialog")
-        CustomizationsDialog.resize(267, 176)
+        CustomizationsDialog.resize(230, 176)
         self.verticalLayout_5 = QVBoxLayout(CustomizationsDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout = QHBoxLayout()
@@ -42,32 +41,6 @@ class Ui_CustomizationsDialog(object):
 
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
-
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.groupBox = QGroupBox(CustomizationsDialog)
-        self.groupBox.setObjectName(u"groupBox")
-        self.verticalLayout = QVBoxLayout(self.groupBox)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.checkBoxSystem = QCheckBox(self.groupBox)
-        self.checkBoxSystem.setObjectName(u"checkBoxSystem")
-
-        self.verticalLayout.addWidget(self.checkBoxSystem)
-
-        self.checkBoxNonSystem = QCheckBox(self.groupBox)
-        self.checkBoxNonSystem.setObjectName(u"checkBoxNonSystem")
-
-        self.verticalLayout.addWidget(self.checkBoxNonSystem)
-
-
-        self.verticalLayout_4.addWidget(self.groupBox)
-
-        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_4.addItem(self.verticalSpacer_3)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout_4)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -92,6 +65,7 @@ class Ui_CustomizationsDialog(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_3)
 
+        self.horizontalLayout.setStretch(1, 1)
 
         self.verticalLayout_5.addLayout(self.horizontalLayout)
 
@@ -118,9 +92,6 @@ class Ui_CustomizationsDialog(object):
     def retranslateUi(self, CustomizationsDialog):
         CustomizationsDialog.setWindowTitle(QCoreApplication.translate("CustomizationsDialog", u"Dialog", None))
         self.labelIcon.setText(QCoreApplication.translate("CustomizationsDialog", u"Icon", None))
-        self.groupBox.setTitle(QCoreApplication.translate("CustomizationsDialog", u"Consider Object", None))
-        self.checkBoxSystem.setText(QCoreApplication.translate("CustomizationsDialog", u"System", None))
-        self.checkBoxNonSystem.setText(QCoreApplication.translate("CustomizationsDialog", u"Non-System", None))
         self.pushButtonExport.setText(QCoreApplication.translate("CustomizationsDialog", u"Export", None))
         self.pushButtonImport.setText(QCoreApplication.translate("CustomizationsDialog", u"Import", None))
         self.pushButtonClear.setText(QCoreApplication.translate("CustomizationsDialog", u"Clear", None))

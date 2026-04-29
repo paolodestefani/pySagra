@@ -35,6 +35,8 @@ import logging
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QTimer
+from PySide6.QtGui import QAction
+#from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QVBoxLayout
@@ -42,7 +44,6 @@ from PySide6.QtWidgets import QDialog
 
 # application modules
 from App import session
-from App import currentAction
 from App import currentIcon
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
@@ -110,12 +111,12 @@ def itemType() -> list:
             ('M', _tr('Item', 'Menu'))]
 
 
-def item() -> None:
+def item(action: QAction, checked: bool = False) -> None:
     "Manage items"
     logging.info('Starting items Form')
     mw = session['mainwin']
-    title = currentAction['app_file_item'].text()
-    auth = currentAction['app_file_item'].data()
+    title = action.text()
+    auth = action.data()
     iw = ItemForm(mw, title, auth)
     iw.applySortFilter()
     mw.addTab(title, iw)

@@ -34,6 +34,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QStyledItemDelegate
@@ -41,7 +42,6 @@ from PySide6.QtWidgets import QStyledItemDelegate
 
 # application modules
 from App import session
-from App import currentAction
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
@@ -59,12 +59,12 @@ from App.Ui.DepartmentWidget import Ui_DepartmentWidget
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(11)
 
 
-def department() -> None:
+def department(action: QAction, checked: bool = False) -> None:
     "Manage departments"
     logging.info('Starting departments Form')
     mw = session['mainwin']
-    title = currentAction['app_file_department'].text()
-    auth = currentAction['app_file_department'].data()
+    title = action.text()
+    auth = action.data()
     dw = DepartmentForm(mw, title, auth)
     dw.reload()
     mw.addTab(title, dw)

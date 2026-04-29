@@ -21,8 +21,10 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Sorting and filtering models database management
+"""pySagra - Database adaptation management
 
+This module provides functions to manage adaptations in the database, including
+creating, deleting, listing, exporting, importing adaptations and their settings.   
 
 """
 
@@ -41,34 +43,14 @@ def create_adaptation(adapt_type: str,
                       report_id: int|None = None,
                       system: bool = False) -> int:
     "Create a new adaptation returning the id"
-    # get system id
-    script1 = """
-SELECT coalesce(max(adaptation_id), 0) + 1
-FROM system.adaptation
-WHERE adaptation_id < 1000;"""
-    # insert system object
-    script2 = """
-INSERT INTO system.adaptation (adaptation_id, type, class, report_id, description)
+    script = """
+INSERT INTO system.adaptation (type, class, description, report_id, is_system_object)
 VALUES (%s, %s, %s, %s, %s)
-RETURNING adaptation_id;"""
-    # insert non-system object
-    script3 = """
-INSERT INTO system.adaptation (type, class, report_id, description)
-VALUES (%s, %s, %s, %s)
 RETURNING adaptation_id;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                if system:
-                    cur.execute(script1)
-                    result = cur.fetchone()
-                    if result:
-                        id = result[0]
-                    else:                    
-                        raise PyAppDBError('00000', 'Failed to get adaptation_id')
-                    cur.execute(script2, (id, adapt_type, adapt_class, report_id, description))
-                else:
-                    cur.execute(script3, (adapt_type, adapt_class, report_id, description))
+                cur.execute(script, (adapt_type, adapt_class, description, report_id, system))
                 result = next(cur, None)
                 if result:
                     return result[0]
@@ -77,22 +59,41 @@ RETURNING adaptation_id;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
+def is_system_object(adapt_id: int) -> int|None:
+    "Check if the adaptation id is a system object"
+    script = """
+SELECT adaptation_id
+FROM system.adaptation
+WHERE adaptation_id = %s
+    AND is_system_object IS true;"""
+    try:
+        with appconn.transaction():
+            with appconn.cursor() as cur:
+                cur.execute(script, (adapt_id,))
+                if cur.rowcount > 0:
+                    return True
+                else:
+                    return False
+    except psycopg.Error as er:
+        raise PyAppDBError(er.diag.sqlstate, str(er))
+
 def delete_adaptation(adapt_id: int) -> None:
     "Delete adaptation of given id"
     # also delete adaptation settings (cascade)
     script1 = """
 DELETE FROM system.adaptation
-WHERE adaptation_id = %s;"""
+WHERE adaptation_id = %s
+    AND is_system_object = false;"""
     script2 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
-    COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1001),
+    COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
     (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
 );"""
     script3 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
-    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 100001),
+    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
     (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
 );"""
     try:
@@ -104,21 +105,21 @@ SELECT setval(
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def clear_adaptation(system: bool = False) -> None:
+def clear_adaptation() -> None:
     "Delete all adaptation"
     # also delete adaptation settings (cascade)
-    script1 = f"""
-DELETE FROM system.adaptation WHERE adaptation_id {"<" if system else ">"} 1000;"""
+    script1 = """
+DELETE FROM system.adaptation;"""
     script2 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
-    COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1001),
+    COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
     (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
 );"""
     script3 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
-    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 100001),
+    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
     (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
 );"""
     script4 = """
@@ -153,10 +154,10 @@ ORDER BY class_sorting;"""
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def export_adaptation(system: bool = False) -> list:
+def export_adaptation() -> list:
     "List all adaptation records for export"
     # system objects
-    script = f""" 
+    script = """ 
 SELECT
     adaptation_id,
     type, 
@@ -165,9 +166,9 @@ SELECT
     class_sorting, 
     is_default_for_class,
     report_id,
-    row_count_limit
+    row_count_limit,
+    is_system_object
 FROM system.adaptation
-WHERE adaptation_id {"<" if system else ">"} 1000
 ORDER BY adaptation_id
 """
     try:
@@ -178,9 +179,9 @@ ORDER BY adaptation_id
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
-def export_adaptation_setting(system: bool = False) -> list:
+def export_adaptation_setting() -> list:
     "List all adaptation_setting records for export"
-    script = f""" 
+    script = """ 
 SELECT
     adaptation_setting_id,
     adaptation_id,
@@ -195,7 +196,6 @@ SELECT
     combo2_index,
     widget_value
 FROM system.adaptation_setting
-WHERE adaptation_setting_id {"<" if system else ">"} 100000
 ORDER BY adaptation_setting_id;"""
     try:
         with appconn.cursor() as cur:
@@ -208,19 +208,11 @@ ORDER BY adaptation_setting_id;"""
 def import_adaptation(adaptations: list, adaptsettings: list) -> None:
     "Import all records in adaptation and adaptation_setting tables"
     script1 = """
-DELETE FROM system.adaptation;"""
+DELETE FROM system.adaptation;""" # also delete adaptation settings (cascade)
     script2 = """
-SELECT setval(
-    pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
-    COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1001),
-    (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
-);"""
+ALTER TABLE system.adaptation ALTER COLUMN adaptation_id RESTART WITH 1;"""
     script3 = """
-SELECT setval(
-    pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
-    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 100001),
-    (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
-);"""
+ALTER TABLE system.adaptation_setting ALTER COLUMN adaptation_setting_id RESTART WITH 1;"""
     script4 = """
 INSERT INTO system.adaptation (
     adaptation_id,
@@ -230,8 +222,9 @@ INSERT INTO system.adaptation (
     class_sorting,
     is_default_for_class,
     report_id,
-    row_count_limit)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+    row_count_limit,
+    is_system_object)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
     script5 = """
 INSERT INTO system.adaptation_setting (
     adaptation_setting_id, 
@@ -247,6 +240,18 @@ INSERT INTO system.adaptation_setting (
     combo2_index,
     widget_value)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    script6 = """
+SELECT setval(
+    pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
+    COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
+    (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
+);"""
+    script7 = """
+SELECT setval(
+    pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
+    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
+    (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
+);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -255,6 +260,8 @@ VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
                 cur.execute(script3)
                 cur.executemany(script4, adaptations)
                 cur.executemany(script5, adaptsettings)
+                cur.execute(script6)
+                cur.execute(script7)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -323,29 +330,8 @@ def set_adapt_setting(adapt_id: int, columns: list[tuple]) -> None:
     script1 = """
 DELETE FROM system.adaptation_setting
 WHERE adaptation_id = %s;"""
-    # get current id for system objects
+    # insert new settings
     script2 = """
-SELECT coalesce(max(adaptation_setting_id), 0) + 1
-FROM system.adaptation_setting
-WHERE adaptation_setting_id < 100000;"""
-    # insert new settings for system objects
-    script3 = """
-INSERT INTO system.adaptation_setting (
-    adaptation_setting_id,
-    adaptation_id,
-    column_number,
-    sorting,
-    is_visible,
-    size,
-    element_type,
-    layout_row,
-    combo1_index,
-    negate_state,
-    combo2_index,
-    widget_value)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    # insert new settings for non-system objects
-    script4 = """
 INSERT INTO system.adaptation_setting (
     adaptation_id,
     column_number,
@@ -363,14 +349,7 @@ VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         with appconn.transaction():
             with appconn.cursor() as cur:
                 cur.execute(script1, (adapt_id,))
-                if adapt_id < 1000: # system objects
-                    cur.execute(script2)
-                    result = cur.fetchone()
-                    if result:
-                        lid = result[0]
-                    cur.executemany(script3, [(lid + i,) + tuple(t) for i, t in enumerate(columns)])
-                else:
-                    cur.executemany(script4, columns)
+                cur.executemany(script2, columns)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -442,7 +421,7 @@ WHERE adaptation_id = %s;"""
                 cur.execute(script1, (adapt_id,))
                 result = next(cur, None)
                 if not result:
-                    return none
+                    return None
                 adapt_type = result[0]
                 adapt_class = result[1]
                 cur.execute(script2, (adapt_type, adapt_class))
@@ -540,7 +519,6 @@ INSERT INTO system.adaptation_setting (
     is_visible,
     size)
 VALUES (%s, %s, %s, %s, %s);"""
-    #params = [(adaptation_id, c, p, h, w) for c, p, h, w in columns]
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():

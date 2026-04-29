@@ -33,6 +33,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QStyledItemDelegate
@@ -40,7 +41,7 @@ from PySide6.QtNetwork import QHostInfo
 
 # application modules
 from App import session
-from App import currentAction
+#from App import currentAction
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
@@ -56,12 +57,12 @@ from App.Ui.CashDeskWidget import Ui_CashDeskWidget
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(8)
 
 
-def cashDesk() -> None:
+def cashDesk(action: QAction, checked: bool = False) -> None:
     "Manage cash desk"
     logging.info('Starting cash desk Form')
     mw = session['mainwin']
-    title = currentAction['app_file_cash_desk'].text()
-    auth = currentAction['app_file_cash_desk'].data()
+    title = action.text()
+    auth = action.data()
     dw = CashDeskForm(mw, title, auth)
     dw.reload()
     mw.addTab(title, dw)

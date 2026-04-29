@@ -34,6 +34,7 @@ import logging
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QDirIterator
 from PySide6.QtCore import QSysInfo
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QPixmap
@@ -81,13 +82,13 @@ tab_position = {'N': QTabWidget.North, # type: ignore[attr-defined]
                 'E': QTabWidget.East} # type: ignore[attr-defined]
 
 
-def preferences() -> None:
+def preferences(action: QAction, checked: bool = False) -> None:
     "Launch preferences dialog"
     logger.info('Starting preferences dialog')
     mw = session['mainwin']
-    auth = currentAction['sys_preferences'].data()
-    title = currentAction['sys_preferences'].text()
-    icon = currentIcon['system_preferences']
+    auth = action.data()
+    title = action.text()
+    icon = action.icon()
     dialog = PreferencesDialog(mw, title, icon, auth)
     dialog.show()
     logger.info('Preferences dialog shown')

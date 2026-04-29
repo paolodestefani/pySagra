@@ -23,7 +23,7 @@ class Ui_DuplicateDialog(object):
     def setupUi(self, DuplicateDialog):
         if not DuplicateDialog.objectName():
             DuplicateDialog.setObjectName(u"DuplicateDialog")
-        DuplicateDialog.resize(537, 135)
+        DuplicateDialog.resize(537, 144)
         self.verticalLayout = QVBoxLayout(DuplicateDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout_3 = QHBoxLayout()
@@ -62,8 +62,8 @@ class Ui_DuplicateDialog(object):
 
         self.buttonBox = QDialogButtonBox(DuplicateDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout.addWidget(self.buttonBox)
@@ -78,7 +78,7 @@ class Ui_DuplicateDialog(object):
 
     def retranslateUi(self, DuplicateDialog):
         DuplicateDialog.setWindowTitle(QCoreApplication.translate("DuplicateDialog", u"Dialog", None))
-        self.groupBox.setTitle(QCoreApplication.translate("DuplicateDialog", u"Code", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("DuplicateDialog", u"Description", None))
+        self.groupBox.setTitle(QCoreApplication.translate("DuplicateDialog", u"New code", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("DuplicateDialog", u"New dscription", None))
     # retranslateUi
 

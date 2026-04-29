@@ -36,6 +36,7 @@ import logging
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QDialog
@@ -72,13 +73,13 @@ from App.Core.L10n import _tr
 
 
 
-def eventBasedTool() -> None:
+def eventBasedTool(action: QAction, checked: bool = False) -> None:
     "Launch event based tool dialog"
     logging.info('Starting event based tool dialog')
     mw = session['mainwin']
-    title = currentAction['app_tool_event_based'].text()
-    auth = currentAction['app_tool_event_based'].data()
-    icon = currentAction['app_tool_event_based'].icon()
+    title = action.text()
+    auth = action.data()
+    icon = action.icon()
     if auth != 'X':
         QMessageBox.information(mw,
                                 _tr('MessageDialog', 'Information'),
@@ -95,13 +96,13 @@ def eventBasedTool() -> None:
     dlg.close()
     logging.info('Delete event based tool shown')
     
-def deleteTool() -> None:
+def deleteTool(action: QAction, checked: bool = False) -> None:
     "Delete selected objects from current company"
     logging.info('Starting delete tool dialog')
     mw = session['mainwin']
-    title = currentAction['app_tool_delete'].text()
-    auth = currentAction['app_tool_delete'].data()
-    icon = currentAction['app_tool_delete'].icon()
+    title = action.text()
+    auth = action.data()
+    icon = action.icon()
     if auth != 'X':
         QMessageBox.information(mw,
                                 _tr('MessageDialog', 'Information'),
@@ -113,13 +114,13 @@ def deleteTool() -> None:
     dlg.close()
     logging.info('Delete tool dialog shown')
 
-def copyTool() -> None:
+def copyTool(action: QAction, checked: bool = False) -> None:
     "Copy selected objects from a selected company to the current company"
     logging.info('Starting copy tool dialog')
     mw = session['mainwin']
-    title = currentAction['app_tool_copy'].text()
-    auth = currentAction['app_tool_copy'].data()
-    icon = currentAction['app_tool_copy'].icon()
+    title = action.text()
+    auth = action.data()
+    icon = action.icon()
     if auth != 'X':
         QMessageBox.information(mw,
                                 _tr('MessageDialog', 'Information'),

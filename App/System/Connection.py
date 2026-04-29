@@ -32,6 +32,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QAbstractItemView
@@ -40,7 +41,7 @@ from PySide6.QtWidgets import QVBoxLayout
 
 # application modules
 from App import session
-from App import currentAction
+#from App import currentAction
 from App import currentIcon
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connections import kill_client
@@ -59,24 +60,24 @@ from App.Widget.Form import FormManager
 logger = logging.getLogger(__name__)
 
 
-def connection() -> None:
+def connection(action: QAction, checked: bool = False) -> None:
     "Show/Edit curent connections"
     logger.info('Starting connections Form')
     mw = session['mainwin']
-    auth = currentAction['sys_connection'].data()
-    title = currentAction['sys_connection'].text()
+    auth = action.data()
+    title = action.text()
     cw = ConnectionForm(mw, title, auth)
     cw.applySortFilter()
     mw.addTab(title, cw)
     logger.info('Connections Form added to main window')
 
 
-def connectionHistory() -> None:
+def connectionHistory(action: QAction, checked: bool = False) -> None:
     "Show connections history, clear history"
     logger.info('Starting connections history Form')
     mw = session['mainwin']
-    auth = currentAction['sys_connection_history'].data()
-    title = currentAction['sys_connection_history'].text()
+    auth = action.data()
+    title = action.text()
     cw = ConnectionHistoryForm(mw, title, auth)
     cw.applySortFilter()
     mw.addTab(title, cw)

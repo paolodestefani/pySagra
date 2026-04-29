@@ -34,6 +34,7 @@ import logging
 # PySide6
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QAbstractItemModel
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -47,7 +48,6 @@ from PySide6.QtWidgets import QSizePolicy
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.SeatMap import table_list
 from App.Database.SeatMap import table_delete
@@ -71,12 +71,12 @@ ID, TABLE_CODE, ROW, COLUMN, TEXT_COLOR, BACKGROUND_COLOR, IS_OBSOLETE = range(7
 EDIT, PREVIEW = range(2)
 
 
-def seatMap() -> None:
+def seatMap(action: QAction, checked: bool = False) -> None:
     "Manage seat map"
     logging.info('Starting seat map Form')
     mw = session['mainwin']
-    title = currentAction['app_file_seat_map'].text()
-    auth = currentAction['app_file_seat_map'].data()
+    title = action.text()
+    auth = action.data()
     tw = SeatMapForm(mw, title, auth)
     tw.reload()
     mw.addTab(title, tw)

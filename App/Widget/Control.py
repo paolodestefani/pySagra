@@ -138,69 +138,6 @@ class LabelImage(QLabel):
         self.setText(_tr("Controls", "NO IMAGE"))
         
 
-
-# class LabelImage(QLabel):
-#     imageChanged = Signal()
-
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self._ba = QByteArray()  # Cache interna per i byte
-#         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-#         self.setText("NO IMAGE")
-
-#     def setPixmap(self, pixmap: QPixmap|QImage) -> None:
-#         """Override del metodo standard per intercettare l'upload manuale"""
-#         super().setPixmap(pixmap)
-#         # Svuotiamo la cache così il getter saprà di dover rigenerare i byte dalla pixmap
-#         self._ba = QByteArray() 
-#         self.imageChanged.emit()
-
-#     def _get_imageBytearray(self) -> QByteArray:
-#         """Restituisce i byte per il database (chiamato dal Mapper/Modello)"""
-#         # Se la cache è vuota ma c'è una pixmap (impostata via upload), generiamo i byte
-#         if self._ba.isEmpty() and self.pixmap() and not self.pixmap().isNull():
-#             ba = QByteArray()
-#             buf = QBuffer(ba)
-#             buf.open(QIODeviceBase.OpenModeFlag.WriteOnly)
-#             self.pixmap().save(buf, "PNG")
-#             self._ba = ba
-#         return self._ba
-
-#     def _set_imageBytearray(self, ba: QByteArray | None) -> None:
-#         """Imposta l'immagine dai byte (chiamato dal Database via Mapper)"""
-#         # Se i dati in ingresso sono uguali alla cache, non facciamo nulla (ottimizzazione)
-#         if ba == self._ba:
-#             return
-            
-#         self._ba = QByteArray(ba) if ba else QByteArray()
-        
-#         if not self._ba.isEmpty():
-#             pix = QPixmap()
-#             if pix.loadFromData(self._ba):
-#                 # Usiamo il metodo della classe base per non resettare la cache
-#                 super().setPixmap(pix)
-#             else:
-#                 self.clear()
-#         else:
-#             self.clear()
-        
-#         self.imageChanged.emit()
-
-#     def clear(self) -> None:
-#         """Svuota immagine e cache"""
-#         self._ba = QByteArray()
-#         super().clear()
-#         self.setText("NO IMAGE")
-#         self.imageChanged.emit()
-
-#     # Definizione della Property per il QDataWidgetMapper
-#     imageBytearray = Property(QByteArray, 
-#                               fget=_get_imageBytearray, 
-#                               fset=_set_imageBytearray, 
-#                               notify=imageChanged, 
-#                               user=True)
-    
-
 class SpinBoxDecimal(QDoubleSpinBox):
 
     customValueChanged=Signal(decimal.Decimal)
@@ -212,15 +149,11 @@ class SpinBoxDecimal(QDoubleSpinBox):
         self.setRange(-999999999999.99, 999999999999.99)
         self.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-    # def fixup(self, text: str) -> None:
-    #     # if input is invalid set specialValueText = Null
-    #     self.setValue(self.minimum())
-
     def _get_modelDataDecimal(self) -> decimal.Decimal|None:
         if self.value() == self.minimum():
             return None
         else:
-            return decimal.Decimal(str(self.value())) # floaf to string to decimal for keep rounded values
+            return decimal.Decimal(str(self.value())) # float to string to decimal for keep rounded values
 
     def _set_modelDataDecimal(self, value: decimal.Decimal|None) -> None:
         if value is None:
@@ -303,7 +236,6 @@ class DateEdit(QLineEdit):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.setInputMask('00/00/0000;_')
-        #self.textEdited.connect(self.adjustDate)
 
     def keyPressEvent(self, keyEvent: QKeyEvent) -> None:
         if keyEvent.text() in ('d', 'D'):
@@ -373,10 +305,6 @@ class DateTimeEdit(QDateTimeEdit):
         self.setMinimumDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
         self.dateTimeChanged.connect(self.customValueChanged.emit)
 
-    # def fixup(self, text: str) -> None:
-    #     # if input is invalid set specialValueText = Null
-    #     self.setDateTime(self.minimumDateTime())
-
     def _get_modelDataDateTime(self) -> QDateTime:
         if self.dateTime() <= self.minimumDateTime():
             return QDateTime() 
@@ -396,48 +324,6 @@ class DateTimeEdit(QDateTimeEdit):
                                  fset=_set_modelDataDateTime, 
                                  notify=customValueChanged, 
                                  user=True)
-
-# class DateTimeEdit(QDateTimeEdit):
-#     # Rinominiamo il segnale per evitare conflitti con quello nativo di Qt
-#     customDataChanged = Signal()
-
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.setSpecialValueText(" ")
-#         self.setMinimumDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
-        
-#         # Colleghiamo il cambiamento del widget al NOSTRO segnale
-#         self.dateTimeChanged.connect(self.customDataChanged.emit)
-
-#     def _get_val(self):
-#         if self.dateTime() == self.minimumDateTime():
-#             return None
-#         return self.dateTime()
-
-#     def _set_val(self, value):
-#         # QUESTO PRINT DEVE APPARIRE IN CONSOLE
-#         print(f"DEBUG: DateTimeEdit ricevuto valore: {value} (Tipo: {type(value)})")
-        
-#         self.blockSignals(True)
-#         if value is None or not value:
-#             self.setDateTime(QDateTime(1800, 1, 1, 0, 0, 0))
-#         elif isinstance(value, QDateTime):
-#             self.setDateTime(value)
-#         else:
-#             # Gestione se il modello passa una stringa (es. da SQLite)
-#             dt = QDateTime.fromString(str(value), Qt.ISODate)
-#             if dt.isValid():
-#                 self.setDateTime(dt)
-#             else:
-#                 self.setDateTime(self.minimumDateTime())
-#         self.blockSignals(False)
-        
-#         # Notifichiamo il cambiamento
-#         self.customDataChanged.emit()
-
-#     # Definiamo la Property in modo che PySide6 la esponga correttamente
-#     modelDataDateTime = Property(QDateTime, fget=_get_val, fset=_set_val, 
-#                                  notify=customDataChanged, user=True)
     
 
 class RelationalComboBox(QComboBox):
@@ -465,7 +351,6 @@ class RelationalComboBox(QComboBox):
         if not self.sqlFunc:
             return
         data = self.sqlFunc()
-        #print(data)
         if data:
             if len(data[0]) == 3:  # items with icon
                 if self.nullable:
@@ -500,13 +385,14 @@ class RelationalComboBox(QComboBox):
 
     def _get_modelDataInt(self) -> int|None:
         val = self.currentData(Qt.ItemDataRole.UserRole)
-        return int(val) if val is not None else -1 # must return a number even if null
+        return int(val) if val is not None else None # must return a number even if null
 
     def _set_modelDataInt(self, data: int|None) -> None:
         index = self.findData(data)
-        self.setCurrentIndex(index if index >= 0 else 0) # can be -1 on New
+        self.setCurrentIndex(index if index >= 0 else 0)
 
-    modelDataInt = Property(int, 
+
+    modelDataInt = Property(object, # object because can be int or None
                             fget=_get_modelDataInt,
                             fset=_set_modelDataInt,
                             notify=itemChanged,
@@ -514,13 +400,13 @@ class RelationalComboBox(QComboBox):
 
     def _get_modelDataStr(self) -> str|None:
         val = self.currentData(Qt.ItemDataRole.UserRole)
-        return str(val) if val is not None else "" # must return a string even if null
+        return str(val) if val is not None else None # must return a string even if null
 
     def _set_modelDataStr(self, data: str|None) -> None:
         index = self.findData(data, Qt.ItemDataRole.UserRole, Qt.MatchFlag.MatchExactly|Qt.MatchFlag.MatchCaseSensitive)
         self.setCurrentIndex(index if index >= 0 else 0) # can be -1 on New
 
-    modelDataStr = Property(str, 
+    modelDataStr = Property(object, # object because can be str or None
                             fget=_get_modelDataStr, 
                             fset=_set_modelDataStr, 
                             notify=itemChanged,
@@ -609,10 +495,6 @@ class CheckableComboBox(QComboBox):
         lineEdit = self.lineEdit()
         if lineEdit is not None:
             lineEdit.setReadOnly(True)
-        # Make the lineedit the same color as QPushButton
-        #palette = QApplication.palette(QPushButton())
-        #palette.setBrush(QPalette.Base, palette.button())
-        #self.lineEdit().setPalette(palette)
 
         # Use custom delegate
         self.setItemDelegate(CheckableComboBox.Delegate())
@@ -736,8 +618,6 @@ class CheckableComboBox(QComboBox):
         else:
             raise TypeError("Invalid arguments for addItem")
 
-    # The addItemWithIcon method is now redundant and can be removed.
-
     def addItems(self, texts) -> None:
         # Overriding QComboBox.addItems(self, Iterable[str])
         # If you want to support datalist, use a separate method or call addItem in a loop externally.
@@ -815,13 +695,7 @@ class ColorSetComboBox(QComboBox):
         for c, d in self.colors:
             pix = QPixmap(32, 24)
             pix.fill(QColor(c))
-            # painter = QPainter(pix)
-            # painter.setRenderHint(QPainter.Antialiasing)
-            # painter.setPen(QPen(Qt.black, 1))
-            # r = pix.rect()
-            # painter.drawRect(r)
             self.addItem(QIcon(pix), d, c)
-            # painter.end()
         self.currentIndexChanged.connect(self.emitColor)
         
     def setCurrentColor(self, color: QColor) -> None:
@@ -831,5 +705,3 @@ class ColorSetComboBox(QComboBox):
     def emitColor(self, index: int) -> None:
         color = QColor(self.qtColors[self.currentIndex()])
         self.currentColorChanged.emit(color)
-
-# End of file Control.py

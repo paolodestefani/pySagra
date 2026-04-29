@@ -9,6 +9,16 @@
         <translation>Cambia azienda</translation>
     </message>
     <message>
+        <location filename="../../App/System/Login.py" line="311"/>
+        <source>There are no other companies you can login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Login.py" line="314"/>
+        <source>Choose a company to login</source>
+        <translation type="unfinished">Selezionare un&apos;azienda a cui collegarsi</translation>
+    </message>
+    <message>
         <location filename="../../App/System/Login.py" line="334"/>
         <source>Unknown company id</source>
         <translation>ID azienda sconosciuto</translation>
@@ -194,7 +204,7 @@
     <message>
         <location filename="../../App/System/Login.py" line="269"/>
         <location filename="../../App/System/Login.py" line="305"/>
-        <location filename="../../App/System/Login.py" line="355"/>
+        <location filename="../../App/System/Login.py" line="356"/>
         <source>Database error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -202,16 +212,6 @@
         <location filename="../../App/System/Login.py" line="281"/>
         <source>Information</source>
         <translation>Informazioni</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="311"/>
-        <source>There aro no other companies you can login</source>
-        <translation>Non ci sono altre aziende a cui collegarsi</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="314"/>
-        <source>Choose a company to login</source>
-        <translation>Selezionare un&apos;azienda a cui collegarsi</translation>
     </message>
 </context>
 </TS>

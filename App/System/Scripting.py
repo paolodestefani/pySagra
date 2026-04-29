@@ -38,6 +38,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QDirIterator
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QColor
@@ -51,7 +52,7 @@ from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
-from App import currentAction
+#from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Scripting import load_script
 from App.Database.Company import company_list
@@ -72,36 +73,44 @@ from App.Core.SyntaxHighlighter import PythonHighlighter
 logger = logging.getLogger(__name__)
 
 
-SCRIPTABLE = {'PrintersForm': ['__init__',
+SCRIPTABLE = {'CashDeskForm': ['__init__',
+                                 'new',
+                                 'save',
+                                 'delete',
+                                 'reload'],
+
+              'PrinterForm': ['__init__',
                                'new',
                                'save',
                                'delete',
                                'reload',
                                'add',
                                'remove',
-                               'print_'],
+                               'print'],
 
-              'DepartmentsForm': ['__init__',
+              'DepartmentForm': ['__init__',
                                   'new',
                                   'save',
                                   'delete',
                                   'reload',],
 
-              'TablesForm': ['__init__',
+              'SeatMapForm': ['__init__',
                              'new',
                              'save',
                              'delete',
                              'deleteAll',
                              'reload',
-                             'generateTables'],
+                             'print',
+                             'generateTableNumbers'],
 
-              'ItemsForm': ['__init__',
+              'ItemForm': ['__init__',
                             'new',
                             'save',
                             'delete',
                             'reload',
                             'copyVariants',
-                            'print_'],
+                            'print'],
+                            
               'PriceListForm': ['__init__',
                                 'new',
                                 'save',
@@ -110,8 +119,9 @@ SCRIPTABLE = {'PrintersForm': ['__init__',
                                 'add',
                                 'remove',
                                 'duplicate',
-                                'print_'],
-              'EventsForm': ['__init__',
+                                'print'],
+
+              'EventForm': ['__init__',
                              'new',
                              'save',
                              'delete',
@@ -119,18 +129,20 @@ SCRIPTABLE = {'PrintersForm': ['__init__',
                              'upload',
                              'download',
                              'removeImage',
-                             'print_'],
-              'WebOrdersForm': ['__init__',
-                                'reload',
-                                'deleteOrders',
-                                'recalcTotals'],
-              'OrdersForm': ['__init__',
+                             'print'],
+              'OrderForm': ['__init__',
                              'new',
                              'save',
                              'delete',
                              'reload',
-                             'print_',
+                             'print',
                              'reprint'],
+              'OrderNumberingForm': ['__init__',
+                                     'new',
+                                     'save',
+                                     'delete',
+                                     'reload'],
+
               'SettingsDialog': ['__init__',
                                  'apply',
                                  'accept']}
@@ -144,12 +156,12 @@ def runOptions() -> list[tuple[str, str]]:
             ('A', _tr('script', 'After'))]
 
 
-def scripting() -> None:
+def scripting(action: QAction, checked: bool = False) -> None:
     "Show/Edit python script"
     logging.info('Starting scripting Form')
     mw = session['mainwin']
-    title = currentAction['sys_scripting'].text()
-    auth = currentAction['sys_scripting'].data()
+    title = action.text()
+    auth = action.data()
     sw = ScriptingForm(mw, title, auth)
     sw.applySortFilter()
     mw.addTab(title, sw)
@@ -176,7 +188,6 @@ class ScriptingForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('scripting')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(ACTIVE, BooleanDelegate(self))
         # fill classcombobox, methodcombobox and companycombobox
         self.ui.comboBoxClass.currentIndexChanged.connect(self.fillMethods)
         self.ui.comboBoxClass.addItems(list(SCRIPTABLE.keys()))
@@ -189,7 +200,6 @@ class ScriptingForm(FormIndexManager):
         self.mapper.addMapping(self.ui.comboBoxCompany, COMPANY)#, b"modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxActive, ACTIVE)
         self.mapper.addMapping(self.ui.textEditScript, SCRIPT)#, b"plainText")
-        #self.ui.textEditScript.textChanged.connect(self.textChanged)
         # set font
         st = QSettings()
         self.editorFont: QFont = cast(QFont, st.value("Scripting/EditorFont", QFont('Courier', 8), type=QFont))
@@ -202,7 +212,6 @@ class ScriptingForm(FormIndexManager):
         self.ui.textEditScript.setTabStopDistance(tabStop * metrics.maxWidth())
         # syntax highlighting
         self.highlighter = PythonHighlighter(self.ui.textEditScript.document())
-        # self.ui.textEditScript.show()
         # signal/slot
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonUpload.clicked.connect(self.upload)
@@ -210,10 +219,6 @@ class ScriptingForm(FormIndexManager):
         self.ui.pushButtonUploadAll.clicked.connect(self.uploadAll)
         self.ui.fontComboBox.currentFontChanged.connect(self.changeFont)
         self.ui.spinBoxFontSize.valueChanged.connect(self.changeFontSize)
-        # initial status
-        self.ui.comboBoxClass.setDisabled(True)
-        self.ui.comboBoxMethod.setDisabled(True)
-        self.ui.comboBoxTrigger.setDisabled(True)
 
     def fillMethods(self, text: str) -> None:
         "fill available methods"
@@ -223,9 +228,9 @@ class ScriptingForm(FormIndexManager):
     def new(self) -> None:
         "New script"
         super().new()
-        self.ui.comboBoxClass.setEnabled(True)
-        self.ui.comboBoxMethod.setEnabled(True)
-        self.ui.comboBoxTrigger.setEnabled(True)
+        # self.ui.comboBoxClass.setEnabled(True)
+        # self.ui.comboBoxMethod.setEnabled(True)
+        # self.ui.comboBoxTrigger.setEnabled(True)
         self.ui.comboBoxClass.setCurrentIndex(-1)
         self.ui.comboBoxTrigger.setCurrentIndex(-1)
         self.ui.comboBoxClass.setFocus()
@@ -233,9 +238,9 @@ class ScriptingForm(FormIndexManager):
     def save(self) -> None:
         "Save current script"
         super().save()
-        self.ui.comboBoxClass.setDisabled(True)
-        self.ui.comboBoxMethod.setDisabled(True)
-        self.ui.comboBoxTrigger.setDisabled(True)
+        # self.ui.comboBoxClass.setDisabled(True)
+        # self.ui.comboBoxMethod.setDisabled(True)
+        # self.ui.comboBoxTrigger.setDisabled(True)
         if (self.ui.comboBoxMethod.currentText() == '__init__' and
                 self.ui.comboBoxTrigger.currentData() == 'B'):
             msg = _tr('Scripting', "Warning: script linked to an __init__ "
@@ -259,9 +264,9 @@ class ScriptingForm(FormIndexManager):
     def reload(self) -> None:
         "reload form"
         super().reload()
-        self.ui.comboBoxClass.setDisabled(True)
-        self.ui.comboBoxMethod.setDisabled(True)
-        self.ui.comboBoxTrigger.setDisabled(True)
+        # self.ui.comboBoxClass.setDisabled(True)
+        # self.ui.comboBoxMethod.setDisabled(True)
+        # self.ui.comboBoxTrigger.setDisabled(True)
 
     def changeFont(self, font: QFont) -> None:
         "Change editor font"

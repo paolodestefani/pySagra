@@ -34,30 +34,6 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
-#def update_printer(printer_class, computer, printer):
-    #"Set printer name for given printer class and computer name"
-    #script = """INSERT INTO printer_class_printer (class_id, computer, printer)
-#VALUES (%s, %s, %s)
-#ON CONFLICT ON CONSTRAINT printer_class_printer_unique DO
-#UPDATE SET computer = EXCLUDED.computer, printer = EXCLUDED.printer;"""
-    #try:
-        #with appconn.conn:
-            #with appconn.cursor() as cur:
-                #cur.execute(script, (printer_class, computer, printer))
-    #except psycopg2.Error as er:
-        #raise PyAppDBError(er.pgcode, er.pgerror)
-
-#def delete_printer(printer_class, computer):
-    #"Delete printer name for given printer class and computer name"
-    #script = """DELETE FROM printer_class_printer
-#WHERE class_id = %s AND computer = %s;"""
-    #try:
-        #with appconn.conn:
-            #with appconn.cursor() as cur:
-                #cur.execute(script, (printer_class, computer))
-    #except psycopg2.Error as er:
-        #raise PyAppDBError(er.pgcode, er.pgerror)
-
 def get_printer_name(class_id: int, computer: str) -> str|None:
     "Return the printer name of class_id"
     script = """SELECT printer

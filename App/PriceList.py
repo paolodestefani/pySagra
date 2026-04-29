@@ -33,6 +33,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QAbstractItemView
@@ -41,7 +42,6 @@ from PySide6.QtWidgets import QVBoxLayout
 
 # application modules
 from App import session
-from App import currentAction
 from App import currentIcon
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Lookup import item_all_lookup
@@ -68,12 +68,12 @@ from App.Core.Scripting import scriptMethod
 P_USER_INS, P_DATE_INS, P_USER_UPD, P_DATE_UPD) = range(8)
 
 
-def priceList() -> None:
+def priceList(action: QAction, checked: bool = False) -> None:
     "Manage price list"
     logging.info('Starting price list Form')
     mw = session['mainwin']
-    title = currentAction['app_file_price_list'].text()
-    auth = currentAction['app_file_price_list'].data()
+    title = action.text()
+    auth = action.data()
     plw = PriceListForm(mw, title, auth)
     plw.reload()
     mw.addTab(title, plw)

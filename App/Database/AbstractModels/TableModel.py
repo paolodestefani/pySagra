@@ -107,7 +107,7 @@ class QueryModel(QAbstractTableModel):
     def flags(self, index: QModelIndex|QPersistentModelIndex) -> Qt.ItemFlag:
         "Always return readonly flag"
         if not index.isValid():
-            return Qt.ItemFlag.ItemIsEnabled
+            return Qt.ItemFlag.NoItemFlags
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
 
     def data(self,
@@ -322,7 +322,7 @@ class QueryWithParamsModel(QAbstractTableModel):
     def flags(self, index: QModelIndex|QPersistentModelIndex) -> Qt.ItemFlag:
         "Always return readonly flag"
         if not index.isValid():
-            return Qt.ItemFlag.ItemIsEnabled
+            return Qt.ItemFlag.NoItemFlags
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
 
     def data(self,
@@ -334,16 +334,27 @@ class QueryWithParamsModel(QAbstractTableModel):
             or index.row() > self.rowCount()
             or index.column() > self.columnCount()):
             return None
-        if role == Qt.ItemDataRole.DisplayRole:
-            if (index.row(), index.column()) in self.dataSet:
-                return self.dataSet[index.row(), index.column()]
-        elif role == Qt.ItemDataRole.TextAlignmentRole:
-            # numbers aligned right anything else aligned left
-            if isinstance(index.data(), (int, decimal.Decimal, QDate, QDateTime)):
-                return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-            else:
-                return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        return None
+        row = index.row()
+        col = index.column()
+        result = self.dataSet[row, col]
+        match role:
+            case Qt.ItemDataRole.DisplayRole:
+                if isinstance(result, bool):
+                    return None # do not return text for bool, checkbox is managed in CheckStateRole
+                return result
+            case Qt.ItemDataRole.TextAlignmentRole:
+                # numbers aligned right anything else aligned left
+                if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
+                    return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
+                else:
+                    return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
+            case Qt.ItemDataRole.CheckStateRole:
+                if isinstance(result, bool):
+                    return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+                else:
+                    return None
+            case _:
+                return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> str|None:
         "Returns header data for row (field header)/column (columns number) headers"

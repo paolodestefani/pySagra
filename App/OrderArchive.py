@@ -33,6 +33,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QAbstractItemView
@@ -41,7 +42,6 @@ from PySide6.QtWidgets import QCheckBox
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Setting import Setting
 from App.Database.Printer import get_printer_name
 from App.Database.Department import get_department_printer_class
@@ -93,12 +93,12 @@ from App.Report.Order import printOrderDepartmentReport
 (M_ID, M_IDHEADER, M_EVENT, M_DATE, M_DAYPART, M_ITEM, M_VARIANTS, M_QUANTITY) = range(8)
 
 
-def orderArchive(auth):
+def orderArchive(action: QAction, checked: bool = False) -> None:
     "Manage order archive"
     logging.info('Starting order archive Form')
     mw = session['mainwin']
-    title = currentAction['app_file_order'].text()
-    auth = currentAction['app_file_order'].data()
+    title = action.text()
+    auth = action.data()
     ow = OrderForm(mw, title, auth)
     #ow.reload() # reload after filtering
     mw.addTab(title, ow)

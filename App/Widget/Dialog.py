@@ -115,6 +115,7 @@ from App.Database.Adaptation import delete_adaptation
 from App.Database.Adaptation import create_adaptation
 from App.Database.Adaptation import get_adapt_sorting
 from App.Database.Adaptation import set_adapt_sorting
+from App.Database.Adaptation import is_system_object
 from App.Database.Report import report_description
 from App.Database.Lookup import event_lookup
 from App.Database.Lookup import item_lookup
@@ -762,9 +763,8 @@ class SortFilterDialog(QDialog):
     def newCustomization(self) -> None:
         "Create a new customization"
         name = self.ui.lineEditNewName.text()
-        system = self.ui.checkBoxSystem.isChecked()
         try:
-            cid = create_adaptation('S', self.sortfilterClass, name, None, system)
+            cid = create_adaptation('S', self.sortfilterClass, name, None)
         except PyAppDBError as er:
             MessageBoxCritical(self,
                                 _tr("MessageDialog", "Critical"),
@@ -779,6 +779,16 @@ class SortFilterDialog(QDialog):
     def deleteCurrent(self) -> None:
         "Remove current customization from database"
         cid = int(self.ui.comboBoxSetting.currentData())
+        if is_system_object(cid):
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("View", "System customization cannot be deleted"))
+            return
+        if QMessageBox.question(self,
+                                _tr("MessageDialog", "Question"),
+                                _tr("View", "Are you sure to delete the current customization ?"),
+                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
+            return
         try:
             delete_adaptation(cid)
         except PyAppDBError as er:
@@ -1256,6 +1266,16 @@ class PrintDialog(QDialog):
     def deleteReportCustomization(self) -> None:
         "Delete current report customization"
         custId = self.ui.comboBoxReportCustomizations.currentData()
+        if is_system_object(custId):
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("View", "System customization cannot be deleted"))
+            return
+        if QMessageBox.question(self,
+                                _tr("MessageDialog", "Question"),
+                                _tr("View", "Are you sure to delete the current customization ?"),
+                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
+            return
         try:
             delete_adaptation(custId)
         except PyAppDBError as er:
@@ -1271,16 +1291,17 @@ class PrintDialog(QDialog):
 
     def saveNewCustomizationAs(self) -> None:
         "Create a new customization"
+        if not self.reportClass:
+            return
         report_id = self.ui.comboBoxReportList.currentData()
         description = self.ui.lineEditNewName.text()
-        system = self.ui.checkBoxSystem.isChecked()
         if not report_id or not description:
             MessageBoxCritical(self,
                                _tr("MessageDialog", "Critical"),
                                _tr("Dialog", "You must fill all the parameters of a new customization"))
             return
         try:
-            create_adaptation('R', self.reportClass, description, report_id, system)
+            create_adaptation('R', self.reportClass, description, report_id)
         except PyAppDBError as er:
             MessageBoxCritical(self,
                                _tr("MessageDialog", "Critical"),
@@ -1460,6 +1481,8 @@ class PrintDialog(QDialog):
         "Set current adaptation as default for current user"
         if self.ui.comboBoxReportCustomizations.count() == 0:
             return
+        if not self.reportClass:
+            return
         cid = int(self.ui.comboBoxReportCustomizations.currentData())
         try:
             set_adapt_user_default('R',
@@ -1515,7 +1538,8 @@ class PrintDialog(QDialog):
         # set operator alternatives
         self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
         for o, d, r, w in self.FILTERING[ftype]:
-            if hasattr(self.report.conditions[self.sender().currentData()], 'reference') and w == 'LIST':
+            data = self.sender().currentData()
+            if hasattr(self.report.conditions[data], 'reference') and w == 'LIST':
                 continue
             self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
         
@@ -1824,7 +1848,6 @@ class PrintDialog(QDialog):
         st.setValue("ExportPDFVersion", self.ui.comboBoxPDFVersion.currentIndex())
         st.setValue("ExportPDFResolution", self.ui.spinBoxResolution.value())
         super().done(r)
-
 
 class PrintPreviewDialog(QPrintPreviewDialog):
     "Modified QPrintPreviewDialog for exporting to PDF"

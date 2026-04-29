@@ -80,6 +80,7 @@ from App.Database.Adaptation import delete_adaptation
 from App.Database.Adaptation import set_adapt_class_default
 from App.Database.Adaptation import set_adapt_user_default
 from App.Database.Adaptation import get_adapt_default
+from App.Database.Adaptation import is_system_object
 from App.Widget.Delegate import GenericReadOnlyDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import HideTextDelegate
@@ -550,24 +551,9 @@ class EnhancedTableView(QTableView):
                                             _tr("View", "Insert new customizazion description"))
         if not ok or viewDesc == '':
             return
-        # ask for system/non-system object
-        system = False
-        ret = QMessageBox.question(self,
-                                   _tr('MessageDialog', "Question"),
-                                   _tr('View', 'Create a system object?'),
-                                   QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No|QMessageBox.StandardButton.Cancel,  # butons
-                                   QMessageBox.StandardButton.Cancel  # default botton
-                                   )
-        match ret:
-            case QMessageBox.StandardButton.Yes:
-                system = True
-            case QMessageBox.StandardButton.No:
-                system = False
-            case _:
-                return
         # create new customization
         try:
-            viewId = create_adaptation('I', self.layoutName, viewDesc, None, system)
+            viewId = create_adaptation('I', self.layoutName, viewDesc, None)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -586,6 +572,16 @@ class EnhancedTableView(QTableView):
     def deleteViewLayout(self, action: QAction|None = None) -> None:
         "Delete current view layout from database"
         viewId = int(self.ag.checkedAction().data())
+        if is_system_object(viewId):
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("View", "System layout cannot be deleted"))
+            return
+        if QMessageBox.question(self,
+                                _tr("MessageDialog", "Question"),
+                                _tr("View", "Are you sure to delete the current layout ?"),
+                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
+            return
         try:
             delete_adaptation(viewId)
         except PyAppDBError as er:

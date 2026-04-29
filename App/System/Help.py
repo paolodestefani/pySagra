@@ -53,7 +53,7 @@ from App.Widget.Dialog import PrintPreviewDialog
 logger = logging.getLogger(__name__)
 
 
-def help() -> None:
+def help(action: QAction, checked: bool = False) -> None:
     "Show help dialog"
     logger.info('Starting help dialog')
     dialog = HelpDialog(APPNAME, session['mainwin'].helpLink(), session['mainwin'])
@@ -61,7 +61,7 @@ def help() -> None:
     logger.info('Help dialog shown')
 
 
-def faq() -> None:
+def faq(action: QAction, checked: bool = False) -> None:
     "Show FAQ dialog"
     logger.info('Starting faq dialog')
     dialog = HelpDialog(APPNAME, "help\faq.html", session['mainwin'])

@@ -1308,7 +1308,7 @@ class Report():
         # restore page offset
         self.offset = page_offset
 
-    def groupGenerate(self, data: list[Any], group_index: int = 0) -> None:
+    def groupGenerate(self, data: list[Any]|tuple[Any], group_index: int = 0) -> None:
         "Resolve groups recursively"
         grp = self.groups[group_index] if self.groups else None
         #data = sorted(data, key = lambda x: x[self.column[grp]] if grp else None) # type: ignore

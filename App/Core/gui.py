@@ -60,12 +60,13 @@ color_scheme = {
 
 
 class CenteredProxyStyle(QProxyStyle):
+    "Proxy style to center checkboxes in item views"
+
     def subElementRect(self, element, option, widget=None):
-        # Otteniamo il rettangolo standard dal motore di stile sottostante
+        # get the standard rectangle from the underlying style engine
         rect = super().subElementRect(element, option, widget)
-        
         if element == QStyle.SubElement.SE_ItemViewItemCheckIndicator:
-            # Centriamo il rettangolo del checkbox rispetto all'intera cella
+            # center the checkbox rectangle relative to the entire cell
             rect.moveCenter(option.rect.center())
         return rect
 
@@ -77,7 +78,6 @@ def setTheme(theme: str) -> None:
         base_style = QStyleFactory.create(theme) 
         proxy_style = CenteredProxyStyle(base_style)
         app.setStyle(proxy_style)
-        #app.setStyle(QStyleFactory.create(theme))
         app.processEvents()
     
 def setColorScheme(color: str) -> None:

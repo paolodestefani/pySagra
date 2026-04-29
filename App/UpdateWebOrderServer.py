@@ -41,6 +41,7 @@ import xml.etree.ElementTree as ET
 
 # PySide6
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
@@ -50,7 +51,6 @@ from PySide6.QtWidgets import QDialogButtonBox
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Event import get_event_data
 from App.Database.Lookup import event_lookup
@@ -65,12 +65,12 @@ from App.Ui.UpdateWebOrderServerDialog import Ui_UpdateWebOrderServerDialog
 
 
 
-def updateWebOrderServer() -> None:
+def updateWebOrderServer(action: QAction, checked: bool = False) -> None:
     logging.info('Starting update web order server dialog')
     mw = session['mainwin']
-    auth = currentAction['app_file_update_wo_server'].data()
-    title = currentAction['app_file_update_wo_server'].text()
-    icon = currentAction['app_file_update_wo_server'].icon()
+    auth = action.data()
+    title = action.text()
+    icon = action.icon()
     dialog = UpdateWebOrderServerDialog(mw, title, icon, auth)
     dialog.show()
     logging.info('Web order server dialog shown')

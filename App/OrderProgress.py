@@ -36,6 +36,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QLocale
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QAbstractItemView
@@ -44,7 +45,6 @@ from PySide6.QtWidgets import QTableWidgetItem
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Order import get_order_header_department_details
 from App.Database.Order import update_order_header_department_status
@@ -69,12 +69,12 @@ def limitType() -> list:
 
 
 
-def orderProgress() -> None:
+def orderProgress(action: QAction, checked: bool = False) -> None:
     "Order progress"
     logging.info('Starting order progress diaform')
     mw = session['mainwin']
-    title = currentAction['app_activity_order_progress'].text()
-    auth = currentAction['app_activity_order_progress'].data()
+    title = action.text()
+    auth = action.data()
     #icon = currentAction['app_activity_order_progress'].icon()
     #dlg = OrderProgressDialog(mw, title, icon, auth)
     #dlg.exec()

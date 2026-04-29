@@ -33,12 +33,12 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Setting import Setting
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import QuantityDelegate
@@ -57,12 +57,12 @@ from App.Ui.InventoryWidget import Ui_InventoryWidget
 ID, EVENT, ITEM, LOADED, UNLOADED, STOCK, ORDERED, AVAILABLE, NEW_STOCK = range(9)
 
 
-def inventory(auth):
+def inventory(action: QAction, checked: bool = False):
     "Manage stock inventory"
     logging.info('Starting inventory Form')
     mw = session['mainwin']
-    title = currentAction['app_activity_inventory'].text()
-    auth = currentAction['app_activity_inventory'].data()
+    title = action.text()
+    auth = action.data()
     sw = InventoryForm(mw, title, auth)
     mw.addTab(title, sw)
     logging.info('Stock inventory Form added to main window')

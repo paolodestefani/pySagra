@@ -246,12 +246,8 @@ class TreeQueryModel(QAbstractItemModel):
 
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        #flags = Qt.ItemFlags(QAbstractItemModel.flags(self, index) | Qt.ItemIsEditable)
-        #if self.columns[index.column()][2]:
-            #flags = flags ^ Qt.ItemIsEditable
-        #return flags
-        return Qt.ItemIsEnabled|Qt.ItemIsEditable|Qt.ItemIsSelectable
+            return Qt.ItemFlag.NoItemFlags
+        return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     def getItem(self, index):
         if index.isValid():
@@ -301,10 +297,6 @@ class TreeQueryModel(QAbstractItemModel):
         "Delete all model items"
         if self.rootItem:
             self.rootItem.childItems.clear()
-            
-    def submitAll(self):
-        pass
-
 
 
 class TreeModel(QAbstractItemModel):

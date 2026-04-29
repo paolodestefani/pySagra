@@ -28,9 +28,6 @@ This module provide all the facilities to manage application menus
 
 """
 
-# psycopg2
-#import psycopg2
-
 # application modules
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn

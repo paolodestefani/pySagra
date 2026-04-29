@@ -33,6 +33,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QStyledItemDelegate
@@ -40,7 +41,6 @@ from PySide6.QtNetwork import QHostInfo
 
 # application modules
 from App import session
-from App import currentAction
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
@@ -57,12 +57,12 @@ from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(9)
 
 
-def orderNumbering() -> None:
+def orderNumbering(action: QAction, checked: bool = False) -> None:
     "Manage order number current values"
     logging.info('Starting order numbers form')
     mw = session['mainwin']
-    title = currentAction['app_file_order_number'].text()
-    auth = currentAction['app_file_order_number'].data()
+    title = action.text()
+    auth = action.data()
     dw = OrderNumberingForm(mw, title, auth)
     dw.reload()
     mw.addTab(title, dw)

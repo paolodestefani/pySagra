@@ -34,6 +34,7 @@ import logging
 # PySide6
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QSettings
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QColor
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPalette
@@ -47,7 +48,6 @@ from PySide6.QtWidgets import QPushButton
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Setting import Setting
@@ -69,13 +69,13 @@ COMP_ID, COMP_DESC, COMP_SCHEMA, COMP_SYSTEM, COMP_IMAGE = range(5)
  UC_DATE_INS, UC_USER_UPD, UC_DATE_UPD) = range(9)
 
 
-def settings() -> None:
+def settings(action: QAction, checked: bool = False) -> None:
     "Application settings"
     logging.info('Starting settings dialog')
     mw = session['mainwin']
-    title = currentAction['app_file_setting'].text()
-    icon = currentAction['app_file_setting'].icon()
-    auth = currentAction['app_file_setting'].data()
+    title = action.text()
+    icon = action.icon()
+    auth = action.data()
     sd = SettingsDialog(mw, title, icon, auth)
     sd.exec_()
     logging.info('Settings dialog shown')

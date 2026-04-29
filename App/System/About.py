@@ -24,6 +24,8 @@ from PySide6 import __version__ as PySide6_version
 from PySide6.QtCore import qVersion
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QSize
+from PySide6.QtGui import QAction
+from PySide6.QtGui import QIcon
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QMovie
 from PySide6.QtGui import QPixmap
@@ -42,7 +44,7 @@ from App import AUTHOR
 from App import EMAIL
 from App import WEBSITE
 from App import session
-from App import currentAction
+#from App import currentAction
 from App.Database.Connect import database_information
 from App.Core.L10n import _tr
 from App.Ui.AboutDialog import Ui_AboutDialog
@@ -53,7 +55,7 @@ from App.Ui.SystemInfoDialog import Ui_SystemInfoDialog
 logger = logging.getLogger(__name__)
 
 
-def about() -> None:
+def about(action: QAction, checked: bool = False) -> None:
     "About information dialog"
     logger.info('Starting about dialog')
     a = AboutDialog(session['mainwin'])
@@ -61,15 +63,15 @@ def about() -> None:
     logger.info('About dialog shown')
 
 
-def systemInfo() -> None:
+def systemInfo(action: QAction, checked: bool = False) -> None:
     "System Information action"
     logger.info('Starting system info dialog')
-    h = SystemInfoDialog(session['mainwin'])
+    h = SystemInfoDialog(session['mainwin'], action.icon())
     h.show()
     logger.info('System info shown')
 
 
-def aboutQt() -> None:
+def aboutQt(action: QAction, checked: bool = False) -> None:
     "About Qt"
     logger.info('Starting about qt dialog')
     QMessageBox.aboutQt(session['mainwin'])
@@ -84,7 +86,7 @@ class AboutDialog(QDialog):
         QDialog.__init__(self, parent)
         self.ui = Ui_AboutDialog()
         self.ui.setupUi(self)
-        self.ui.labelIcon.setPixmap(QGuiApplication.windowIcon().pixmap(100))
+        self.ui.labelIcon.setPixmap(QGuiApplication.windowIcon().pixmap(128))
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setWindowFlags(Qt.WindowType.Dialog | 
                             Qt.WindowType.WindowMinMaxButtonsHint |
@@ -146,11 +148,11 @@ class AboutDialog(QDialog):
 class SystemInfoDialog(QDialog):
     "Dialog showing system informations"
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self, parent: QWidget, icon: QIcon) -> None:
         QDialog.__init__(self, parent)
         self.ui = Ui_SystemInfoDialog()
         self.ui.setupUi(self)
-        self.ui.labelIcon.setPixmap(currentAction['about_system_info'].icon().pixmap(128))
+        self.ui.labelIcon.setPixmap(icon.pixmap(128))
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setWindowFlags(Qt.WindowType.Dialog | 
                             Qt.WindowType.WindowMinMaxButtonsHint |

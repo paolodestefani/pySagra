@@ -34,6 +34,7 @@ import logging
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QItemSelectionModel
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QDialog
@@ -66,12 +67,12 @@ CODE, DESCRIPTION, SYSTEM = range(3)
 PARENT, CHILD, ITEMDESCRIPTION, SORTING, ITEMTYPE, ACTION = range(6)
 
 
-def menu() -> None:
+def menu(action: QAction, checked: bool = False) -> None:
     "Show/Edit menus"
     logger.info('Starting menus Form')
     mw = session['mainwin']
-    title = currentAction['sys_menu'].text()
-    auth = currentAction['sys_menu'].data()
+    title = action.text()
+    auth = action.data()
     mf = MenusForm(mw, title, auth)
     mf.reload()
     mw.addTab(title, mf)

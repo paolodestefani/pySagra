@@ -37,14 +37,14 @@ from PySide6.QtCore import QObject
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QTimer
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
-from App import session
-from App import currentAction  
+from App import session 
 from App.Database.Setting import SettingClass
 from App.Database.Models import ItemsOrderedDeliveredModel
 from App.Database.Lookup import event_lookup
@@ -66,12 +66,12 @@ def dayPartMapping():
             ('D', _tr('StockUnload', 'D'))]
 
 
-def orderedDelivered(auth):
+def orderedDelivered(action: QAction, checked: bool = False) -> None:
     "Ordered delivered"
     logging.info('Starting ordered delivered Form')
     mw = session['mainwin']
-    title = currentAction['app_activity_ordered_delivered'].text()
-    auth = currentAction['app_activity_ordered_delivered'].data()
+    title = action.text()
+    auth = action.data()
     su = OrderedDeliveredForm(mw, title, auth)
     mw.addTab(title, su)
     logging.info('Ordered delivered Form added to main window')

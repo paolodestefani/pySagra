@@ -39,6 +39,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QFileInfo
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -47,7 +48,7 @@ from PySide6.QtWidgets import QDialog
 
 # application modules
 from App import session
-from App import currentAction
+#from App import currentAction
 from App import currentIcon
 from App.Database import EDSAE  # Database schema already exists (create company sp)
 from App.Database import ECIAE  # Company id already exists (create company sp)
@@ -84,12 +85,12 @@ COMP_ID, COMP_DESC, COMP_SYSTEM, COMP_IMAGE = range(4)
  UC_DATE_INS, UC_USER_UPD, UC_DATE_UPD) = range(9)
 
 
-def company() -> None:
+def company(action: QAction, checked: bool = False) -> None:
     "Show/Edit company table"
     logger.info('Starting company management Form')
     mw = session['mainwin']
-    title = currentAction['sys_company'].text()
-    auth = currentAction['sys_company'].data()
+    title = action.text()
+    auth = action.data()
     cf = CompanyForm(mw, title, auth)
     cf.applySortFilter()
     mw.addTab(title, cf)

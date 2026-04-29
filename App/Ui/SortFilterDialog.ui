@@ -313,14 +313,7 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
                 <item>
-                 <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0">
-                  <item row="0" column="3">
-                   <widget class="QPushButton" name="pushButtonNewCustomization">
-                    <property name="text">
-                     <string>Create</string>
-                    </property>
-                   </widget>
-                  </item>
+                 <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_2">
                     <property name="text">
@@ -332,9 +325,9 @@
                    <widget class="QLineEdit" name="lineEditNewName"/>
                   </item>
                   <item row="0" column="2">
-                   <widget class="QCheckBox" name="checkBoxSystem">
+                   <widget class="QPushButton" name="pushButtonNewCustomization">
                     <property name="text">
-                     <string>System</string>
+                     <string>Create</string>
                     </property>
                    </widget>
                   </item>
@@ -427,7 +420,6 @@
   <tabstop>pushButtonSetSorting</tabstop>
   <tabstop>spinBoxClassSorting</tabstop>
   <tabstop>lineEditNewName</tabstop>
-  <tabstop>checkBoxSystem</tabstop>
   <tabstop>pushButtonNewCustomization</tabstop>
  </tabstops>
  <resources>

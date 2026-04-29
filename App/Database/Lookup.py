@@ -21,11 +21,10 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Code - description list
+"""Lookup
 
 This module provide  functions that return a code - description list of values
 used by delegates and combo boxes
-
 
 """
 
@@ -36,7 +35,6 @@ import psycopg
 from App import session
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
-#from App.Core.L10n import _tr
 from App.Database.Report import get_report_list
 
 

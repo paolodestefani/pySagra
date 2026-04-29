@@ -64,16 +64,9 @@ from App import session
 from App import currentIcon
 from App.Core.L10n import _tr
 from App.Database.Exceptions import PyAppDBError
-#from App.Database.Itemview import list_itemviews
-#from App.Database.Itemview import create_itemview
-#from App.Database.Itemview import get_view_columns
-#from App.Database.Itemview import set_view_columns
-#from App.Database.Itemview import delete_view_layout
-#from App.Database.Itemview import set_default_view_layout
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import HideTextDelegate
 from App.Widget.Delegate import BooleanDelegate
-
 
 
 # navigation status settings

@@ -42,6 +42,7 @@ from PySide6.QtCore import QFileInfo
 from PySide6.QtCore import QIODevice
 from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QByteArray
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QFontMetrics
@@ -56,7 +57,7 @@ from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
-from App import currentAction
+#from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Report import delete_all_reports
 from App.Database.Report import load_report
@@ -87,12 +88,12 @@ ID, CODE, L10N, CLASS, DESCRIPTION, XML, SYSTEM, USER_INS, DATE_INS, USER_UPD, D
 FORM, GRID = range(2)
 
 
-def report() -> None:
+def report(action: QAction, checked: bool = False) -> None:
     "Show/Edit reports"
     logger.info('Starting report Form')
     mw = session['mainwin']
-    title = currentAction['sys_report'].text()
-    auth = currentAction['sys_report'].data()
+    title = action.text()
+    auth = action.data()
     rf = ReportForm(mw, title, auth)
     rf.applySortFilter()
     mw.addTab(title, rf)
@@ -151,26 +152,26 @@ class ReportForm(FormIndexManager):
         self.ui.fontComboBox.currentFontChanged.connect(self.changeFont)
         self.ui.spinBoxFontSize.valueChanged.connect(self.changeFontSize)
         self.ui.pushButtonInsertImage.clicked.connect(self.insertImage)
-        self.ui.lineEditCode.setDisabled(True)
-        self.ui.comboBoxL10n.setDisabled(True)
 
     def mapperIndexChanged(self, row: int) -> None:
         "Change form settings on change record"
         super().mapperIndexChanged(row)
         if self.ui.checkBoxSystem.isChecked():
-            self.ui.comboBoxClass.setEditable(True)
-            self.ui.lineEditDescription.setReadOnly(True)
+            self.ui.lineEditCode.setDisabled(True)
+            self.ui.comboBoxL10n.setDisabled(True)
+            self.ui.comboBoxClass.setDisabled(True)
+            self.ui.lineEditDescription.setDisabled(True)
             self.ui.textEditXML.setReadOnly(True)
         else:
-            self.ui.comboBoxClass.setEditable(False)
-            self.ui.lineEditDescription.setReadOnly(False)
+            self.ui.lineEditCode.setDisabled(False)
+            self.ui.comboBoxL10n.setDisabled(False)
+            self.ui.comboBoxClass.setDisabled(False)
+            self.ui.lineEditDescription.setDisabled(False)
             self.ui.textEditXML.setReadOnly(False)
 
     def new(self) -> None:
         "New report"
         super().new()
-        self.ui.lineEditCode.setEnabled(True)
-        self.ui.comboBoxL10n.setEnabled(True)
         self.ui.lineEditCode.setFocus()
 
     def save(self) -> None:
@@ -182,8 +183,6 @@ class ReportForm(FormIndexManager):
                                     _tr('Report', "Can't use '.' (dot) in report code"))
             return
         super().save()
-        self.ui.lineEditCode.setDisabled(True)
-        self.ui.comboBoxL10n.setDisabled(True)
 
     def delete(self) -> None:
         "Delete current report"
@@ -235,7 +234,6 @@ class ReportForm(FormIndexManager):
         buf = QBuffer(ba)
         buf.open(QIODevice.OpenModeFlag.WriteOnly)
         pix.save(buf, "PNG")
-        #txt = str(ba.toBase64().data(), encoding='utf8')
         txt = bytes(ba.toBase64().data()).decode('utf-8')
         cb = QApplication.clipboard()
         cb.setText(f"""<image left="0.0" top="0.0" width="45.0" height="48.0" aspectRatio="KeepAspectRatio">{txt}</image>""")

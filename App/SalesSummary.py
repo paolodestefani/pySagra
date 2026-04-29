@@ -34,6 +34,7 @@ import logging
 # PySide6
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QVBoxLayout
@@ -41,7 +42,6 @@ from PySide6.QtWidgets import QDialog
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Models import SalesSummaryModel
 from App.Database.Lookup import event_lookup
 from App.Ui.SalesSummaryWidget import Ui_SalesSummaryWidget
@@ -65,12 +65,12 @@ from App.Widget.Dialog import EventFilterDialog
  TOTAL_L, TOTAL_D, TOTAL) = range(30)
 
 
-def salesSummary(auth):
+def salesSummary(action: QAction, checked: bool = False):
     "Sales summary"
     logging.info('Starting Sales summary Form')
     mw = session['mainwin']
-    title = currentAction['app_activity_sales_summary'].text()
-    auth = currentAction['app_activity_sales_summary'].data()
+    title = action.text()
+    auth = action.data()
     cw = SalesSummaryForm(mw, title, auth)
     mw.addTab(title, cw)
     logging.info('Sales summary Form added to main window')

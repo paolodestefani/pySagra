@@ -33,13 +33,14 @@ import logging
 # PySide6
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QItemSelectionModel
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 
 
 # application modules
 from App import session
-from App import currentAction
+#from App import currentAction
 from App import currentIcon
 from App.Core.L10n import _tr
 from App.Database.Exceptions import PyAppDBError
@@ -62,12 +63,12 @@ CODE, DESCRIPTION, SYSTEM = range(3)
 PARENT, CHILD, ITEMDESCRIPTION, SORTING, ITEMTYPE, ACTION = range(6)
 
 
-def toolbar(auth) -> None:
+def toolbar(action: QAction, checked: bool = False) -> None:
     "Show/Edit toolbars"
     logging.info('Starting toolbar Form')
     mw = session['mainwin']
-    title = currentAction['sys_toolbar'].text()
-    auth = currentAction['sys_toolbar'].data()
+    title = action.text()
+    auth = action.data()
     tf = ToolbarForm(mw, title, auth)
     tf.applySortFilter()
     mw.addTab(title, tf)
@@ -112,9 +113,9 @@ class ToolbarForm(FormIndexManager):
         self.ui.treeViewMenuItems.setModel(treeModel)
         self.ui.treeViewMenuItems.setItemDelegateForColumn(ACTION, ActionDelegate(self))
         # signal/slot
-        #self.ui.pushButtonInsertChild.clicked.connect(self.insertChild)
-        #self.ui.pushButtonInsertRow.clicked.connect(self.insertRow)
-        #self.ui.pushButtonRemoveRow.clicked.connect(self.removeRow)
+        self.ui.pushButtonAddChild.clicked.connect(self.addChild)
+        self.ui.pushButtonAdd.clicked.connect(self.add)
+        self.ui.pushButtonRemove.clicked.connect(self.remove)
 
     def addChild(self) -> None:
         "Add child item to current"
@@ -140,10 +141,11 @@ class ToolbarForm(FormIndexManager):
         model = self.ui.treeViewMenuItems.model()
         if not model.insertRow(index.row() + 1, index.parent()):
             return
-        #for column in range(model.columnCount(index.parent())):
-            #child = model.index(index.row() + 1, column, index.parent())
-            #if not model.data(child):
-                #model.setData(child, _tr("Menu", "[No data]"), Qt.EditRole)
+        for column in range(model.columnCount(index.parent())):
+            child = model.index(index.row() + 1, column, index.parent())
+            model.setData(child, "[No data]", Qt.ItemDataRole.EditRole)
+            if model.headerData(column, Qt.Orientation.Horizontal) is None:
+                model.setHeaderData(column, Qt.Orientation.Horizontal, "[No header]", Qt.ItemDataRole.EditRole)
 
     def remove(self) -> None:
         "Remove element"
@@ -158,14 +160,9 @@ class ToolbarForm(FormIndexManager):
         if self.ui.checkBoxSystem.isChecked():
             self.ui.lineEditCode.setReadOnly(True)
             self.ui.lineEditDescription.setReadOnly(True)
-            # self.ui.pushButtonFillActions.setDisabled(True)
-            # self.ui.tableViewKeySequence.setEditTriggers(QAbstractItemView.NoEditTriggers)
         else:
-            #self.ui.setEnabled(True)
             self.ui.lineEditCode.setReadOnly(False)
             self.ui.lineEditDescription.setReadOnly(False)
-            # self.ui.pushButtonFillActions.setEnabled(True)
-            # self.ui.tableViewKeySequence.setEditTriggers(QAbstractItemView.AllEditTriggers)
 
     def delete(self) -> None:
         "Delete current toolbar"

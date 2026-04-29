@@ -28,7 +28,7 @@ class Ui_ReportWidget(object):
     def setupUi(self, ReportWidget):
         if not ReportWidget.objectName():
             ReportWidget.setObjectName(u"ReportWidget")
-        ReportWidget.resize(1105, 662)
+        ReportWidget.resize(1098, 666)
         self.verticalLayout_6 = QVBoxLayout(ReportWidget)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_5 = QVBoxLayout()
@@ -49,7 +49,7 @@ class Ui_ReportWidget(object):
 
         self.lineEditCode = QLineEdit(self.form)
         self.lineEditCode.setObjectName(u"lineEditCode")
-        self.lineEditCode.setEnabled(False)
+        self.lineEditCode.setEnabled(True)
 
         self.gridLayout.addWidget(self.lineEditCode, 0, 1, 1, 1)
 
@@ -82,6 +82,8 @@ class Ui_ReportWidget(object):
         self.checkBoxSystem = QCheckBox(self.form)
         self.checkBoxSystem.setObjectName(u"checkBoxSystem")
         self.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.checkBoxSystem.setChecked(False)
+        self.checkBoxSystem.setTristate(False)
 
         self.gridLayout.addWidget(self.checkBoxSystem, 0, 7, 1, 1)
 
@@ -198,12 +200,12 @@ class Ui_ReportWidget(object):
         QWidget.setTabOrder(self.textEditXML, self.fontComboBox)
         QWidget.setTabOrder(self.fontComboBox, self.spinBoxFontSize)
         QWidget.setTabOrder(self.spinBoxFontSize, self.pushButtonInsertImage)
-        QWidget.setTabOrder(self.pushButtonInsertImage, self.pushButtonDownload)
+        QWidget.setTabOrder(self.pushButtonInsertImage, self.pushButtonDeleteAll)
+        QWidget.setTabOrder(self.pushButtonDeleteAll, self.pushButtonDownload)
         QWidget.setTabOrder(self.pushButtonDownload, self.pushButtonUpload)
         QWidget.setTabOrder(self.pushButtonUpload, self.pushButtonDownloadAll)
         QWidget.setTabOrder(self.pushButtonDownloadAll, self.pushButtonUploadAll)
         QWidget.setTabOrder(self.pushButtonUploadAll, self.tableView)
-        QWidget.setTabOrder(self.tableView, self.checkBoxSystem)
 
         self.retranslateUi(ReportWidget)
 

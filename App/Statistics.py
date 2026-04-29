@@ -45,6 +45,7 @@ from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QWidget
@@ -56,7 +57,6 @@ from PySide6.QtWidgets import QDialogButtonBox
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import PandasModel
 from App.Database.Lookup import event_lookup
@@ -69,18 +69,18 @@ from App.Widget.Dialog import PrintDialog
 from App.Core.L10n import _tr
 
 
-def statisticsAnalysis() -> None:
+def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
     "Statistical analysis"
     logging.info('Starting Statistical Analysis')
     mw = session['mainwin']
-    title = currentAction['app_statistics_analysis'].text()
-    auth = currentAction['app_statistics_analysis'].data()
+    title = action.text()
+    auth = action.data()
     af = AnalysisForm(mw, title, auth)
     mw.addTab(title, af)
     logging.info('Statistical Analysis added to main window')
 
 
-def statisticsPrint():
+def statisticsPrint(action: QAction, checked: bool = False) -> None:
     "Print statistic reports"
     logging.info('Starting statistics consumption dialog')
     mw = session['mainwin']
@@ -89,13 +89,13 @@ def statisticsPrint():
     logging.info('Statistics consumption dialog shown')
 
 
-def statisticsExport():
+def statisticsExport(action: QAction, checked: bool = False) -> None:
     "Statistics export"
     logging.info('Starting statistics export dialog')
     mw = session['mainwin']
-    title = currentAction['app_statistics_export'].text()
-    auth = currentAction['app_statistics_export'].data()
-    icon = currentAction['app_statistics_export'].icon()
+    title = action.text()
+    auth = action.data()
+    icon = action.icon()
     dlg = StatisticsExportDialog(mw, title, icon, auth)
     dlg.exec_()
     logging.info('Statistics  export dialog shown')
@@ -108,7 +108,7 @@ class StatisticsExportDialog(QDialog):
         self.ui = Ui_StatisticsExportDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
-        self.ui.labelIcon.setPixmap(icon.pixmap(100))
+        self.ui.labelIcon.setPixmap(icon.pixmap(128))
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
 
         for i, d in event_lookup():

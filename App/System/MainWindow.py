@@ -30,6 +30,7 @@ show status bar, interact with the user and the other modules.
 
 # standard library
 import sys
+from functools import partial
 import logging
 
 # PySide6
@@ -129,7 +130,7 @@ def createActions(mainWindow: MainWindow) -> None:
         action.setData(aut) # authorization
 
         if actionDefinition[act][SLOT]:  # slot, passing qaction
-            action.triggered.connect(actionDefinition[act][SLOT])
+            action.triggered.connect(partial(actionDefinition[act][SLOT], action))
         if actionDefinition[act][CHCK]:  # chackable
             action.setCheckable(True)
         if actionDefinition[act][ICON]:  # icon
@@ -455,25 +456,25 @@ class MainWindow(QMainWindow):
 
     # main action's slot redirection
 
-    def new(self) -> None:
+    def new(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "New record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'new'):
             w.new()
 
-    def save(self) -> None:
+    def save(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Save record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'save'):
             w.save()
 
-    def delete(self) -> None:
+    def delete(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Delete record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'delete'):
             w.delete()
 
-    def reload(self) -> None:
+    def reload(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Reload data, with confirmation if necessary"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'reload'):
@@ -488,49 +489,49 @@ class MainWindow(QMainWindow):
                     return
                 w.reload()
 
-    def toFirst(self) -> None:
+    def toFirst(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Go to first record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toFirst'):
             w.toFirst()
 
-    def toPrevious(self) -> None:
+    def toPrevious(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Go to previous record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toPrevious'):
             w.toPrevious()
 
-    def toNext(self) -> None:
+    def toNext(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Go to next record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toNext'):
             w.toNext()
 
-    def toLast(self) -> None:
+    def toLast(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Go to last record"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'toLast'):
             w.toLast()
 
-    def changeView(self) -> None:
+    def changeView(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Change view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'changeView'):
             w.changeView()
 
-    def setFilters(self) -> None:
+    def setFilters(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Set filters usually showing a filter dialog, but can be anything else, it's up to the view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'setFilters'):
             w.setFilters()
 
-    def print(self) -> None:
+    def print(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Print current view, usually showing a print dialog, but can be anything else, it's up to the view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'print'):
             w.print()
 
-    def export(self) -> None:
+    def export(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Export data, usually showing an export dialog, but can be anything else, it's up to the view"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'export'):
@@ -546,7 +547,7 @@ class MainWindow(QMainWindow):
                              QMessageBox.StandardButton.Ok)
         sys.exit(0)
 
-    def changeCompany(self) -> None:
+    def changeCompany(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Change working company"
         # As is necessary to close tab on company change it'is better to put
         # this in main window
@@ -571,7 +572,7 @@ class MainWindow(QMainWindow):
         # update status bar
         self.updateStatusBar()
 
-    def closeEvent(self, event: QEvent) -> None:
+    def close(self, *args, **kwargs) -> bool: # avoid signature change for event handler
         "Confirm exiting request on closing"
         msg = _tr('MainWindow', 'Are you sure you want to quit')
         if QMessageBox.question(self,
@@ -589,11 +590,14 @@ class MainWindow(QMainWindow):
             # disconnect
             logger.info("DB disconnection")
             appconn.close()
-            event.accept()
+            #event.accept()
             logger.info('Closing the application')
             logger.info('****************************************')
+            super().close()
         else:
-            event.ignore()
+            #event.ignore()
+            return False
+        return True
 
     def helpLink(self) -> str:
         "Return contect help link if available"

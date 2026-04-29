@@ -64,7 +64,6 @@ from PySide6.QtWidgets import QSizePolicy
 # application modules
 from App import session
 from App import currentIcon
-from App import currentAction
 from App.Core.L10n import fromCurrency
 from App.Core.L10n import toCurrency
 from App.Database.Exceptions import PyAppDBError
@@ -104,12 +103,12 @@ ORDER, TABLE = range(2)
 
 
 # launch main order entry dialog
-def orderEntry() -> None:
+def orderEntry(action: QAction, checked: bool = False) -> None:
     "Open order dialog"
     logging.info('Starting order entry dialog')
     mw = session['mainwin']
-    title = currentAction['app_activity_order_entry'].text()
-    auth = currentAction['app_activity_order_entry'].data()
+    title = action.text()
+    auth = action.data()
     # exit if no event available
     if not session['event_id']:
         QMessageBox.warning(mw,

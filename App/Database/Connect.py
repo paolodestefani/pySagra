@@ -34,11 +34,9 @@ from typing import Iterator, Any, Optional, ContextManager
 
 # psycopg
 import psycopg
-#from psycopg.rows import dict_row
 
 # PySide6
 from PySide6.QtCore import QDateTime
-#from PySide6.QtCore import QTimer
 
 # Application modules
 from App import APPNAME
@@ -50,7 +48,6 @@ from App.Database import MRV_PGSQL
 from App.Database import EWADB
 
 # exceptions
-#from App.Database.Exceptions import PyAppDatabaseException
 from App.Database.Exceptions import PyAppDBConnectionError
 from App.Database.Exceptions import PyAppDBError
 
@@ -63,11 +60,6 @@ import App.Database.Psycopg
 #  connection to database server  #
 #                                 #
 # ******************************* #
-
-# class log_notice():
-
-#     def append(self, message):
-#         logging.debug("Postres Notice: %s", message)
 
 
 class AppConnection():
@@ -156,14 +148,6 @@ WHERE pr.proname = 'pa_connect' AND ns.nspname = 'system');"""
                 session.update(next(cur))
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
-        
-    # def chek_connection_status(self):
-    #     "check connection status"
-    #     try:
-    #         self._conn.execute("SELECT 1;")
-    #     except psycopg.OperationalError as er:
-    #         logging.error("Connection lost")
-    #         session['mainwin'].disconnected(er)
 
     def cursor(self, row_factory: Optional[psycopg.rows.RowFactory[Any]] = None,
                 binary: bool = False

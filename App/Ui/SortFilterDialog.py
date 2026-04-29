@@ -195,11 +195,6 @@ class Ui_SortFilterDialog(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.pushButtonNewCustomization = QPushButton(self.groupBox)
-        self.pushButtonNewCustomization.setObjectName(u"pushButtonNewCustomization")
-
-        self.gridLayout.addWidget(self.pushButtonNewCustomization, 0, 3, 1, 1)
-
         self.label_2 = QLabel(self.groupBox)
         self.label_2.setObjectName(u"label_2")
 
@@ -210,10 +205,10 @@ class Ui_SortFilterDialog(object):
 
         self.gridLayout.addWidget(self.lineEditNewName, 0, 1, 1, 1)
 
-        self.checkBoxSystem = QCheckBox(self.groupBox)
-        self.checkBoxSystem.setObjectName(u"checkBoxSystem")
+        self.pushButtonNewCustomization = QPushButton(self.groupBox)
+        self.pushButtonNewCustomization.setObjectName(u"pushButtonNewCustomization")
 
-        self.gridLayout.addWidget(self.checkBoxSystem, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.pushButtonNewCustomization, 0, 2, 1, 1)
 
 
         self.verticalLayout_2.addLayout(self.gridLayout)
@@ -277,8 +272,7 @@ class Ui_SortFilterDialog(object):
         QWidget.setTabOrder(self.pushButtonClassDefault, self.pushButtonSetSorting)
         QWidget.setTabOrder(self.pushButtonSetSorting, self.spinBoxClassSorting)
         QWidget.setTabOrder(self.spinBoxClassSorting, self.lineEditNewName)
-        QWidget.setTabOrder(self.lineEditNewName, self.checkBoxSystem)
-        QWidget.setTabOrder(self.checkBoxSystem, self.pushButtonNewCustomization)
+        QWidget.setTabOrder(self.lineEditNewName, self.pushButtonNewCustomization)
 
         self.retranslateUi(SortFilterDialog)
         self.buttonBox.accepted.connect(SortFilterDialog.accept)
@@ -303,9 +297,8 @@ class Ui_SortFilterDialog(object):
         self.pushButtonClassDefault.setText(QCoreApplication.translate("SortFilterDialog", u"Set as class default", None))
         self.pushButtonSetSorting.setText(QCoreApplication.translate("SortFilterDialog", u"Set sorting to", None))
         self.groupBox.setTitle(QCoreApplication.translate("SortFilterDialog", u"New customization", None))
-        self.pushButtonNewCustomization.setText(QCoreApplication.translate("SortFilterDialog", u"Create", None))
         self.label_2.setText(QCoreApplication.translate("SortFilterDialog", u"Name", None))
-        self.checkBoxSystem.setText(QCoreApplication.translate("SortFilterDialog", u"System", None))
+        self.pushButtonNewCustomization.setText(QCoreApplication.translate("SortFilterDialog", u"Create", None))
         self.label.setText(QCoreApplication.translate("SortFilterDialog", u"Class", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCustomize), QCoreApplication.translate("SortFilterDialog", u"Customize", None))
     # retranslateUi
