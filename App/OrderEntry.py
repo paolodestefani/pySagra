@@ -41,12 +41,14 @@ from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import Slot
 from PySide6.QtCore import QRectF
-#from PySide6.QtGui import QPalette
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QPen
 from PySide6.QtGui import QColor
 from PySide6.QtGui import QPainter
 from PySide6.QtGui import QPainterPath
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QAction 
+from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QInputDialog
@@ -60,6 +62,7 @@ from PySide6.QtWidgets import QScrollArea
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QTableWidgetItem
 from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QStyleOptionButton
 
 # application modules
 from App import session
@@ -94,6 +97,7 @@ from App.Report.Order import printStockUnloadReport
 from App.Core.L10n import _tr
 from App.Widget.Dialog import DateTimeInputDialog
 from App.Widget.Control import ButtonSeat
+from App.Widget.Control import ButtonItem
 from App.Ui.DepartmentNoteDialog import Ui_DepartmentNoteDialog
 from App.Ui.ChooseVariantsDialog import Ui_ChooseVariantsDialog
 
@@ -255,113 +259,6 @@ class ChooseVariantDialog(QDialog):
 #             self.setText(self.caption)
 
 
-class ButtonItem(QPushButton):
-    def __init__(self, text: str, textColor: str, backgroundColor: str, parent: BaseOrderDialog) -> None:
-        super().__init__(parent)
-        self.setting = parent.setting
-        self.description = text
-        self.caption = text.replace(' ', '\n')
-        self.setText(self.caption)
-        
-        # Inizializzazione parametri
-        self.id = None
-        self.sc = None 
-        self.price = None
-        self.hasVariants = False
-        
-        self.setFont(QFont(self.setting['order_list_font_family'], self.setting['order_list_font_size'], QFont.Weight.Bold))
-        self.setMinimumWidth(65)
-        
-        # Icona varianti
-        self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25)
-        
-        # Memorizziamo i colori di base
-        self.default_bg = QColor(backgroundColor)
-        self.default_text = QColor(textColor)
-        
-        # Proprietà attuali (verranno aggiornate da __setattr__)
-        self.current_bg = self.default_bg
-        self.current_text = self.default_text
-
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-        if name == 'level':
-            if self.sc:
-                if value >= self.setting['warning_stock_level']:
-                    bc, tc = self.default_bg, self.default_text
-                elif self.setting['critical_stock_level'] < value < self.setting['warning_stock_level']:
-                    bc, tc = QColor(self.setting['warning_background_color']), QColor(self.setting['warning_text_color'])
-                elif 0 < value <= self.setting['critical_stock_level']:
-                    bc, tc = QColor(self.setting['critical_background_color']), QColor(self.setting['critical_text_color'])
-                else:
-                    bc, tc = QColor(self.setting['disabled_background_color']), QColor(self.setting['disabled_text_color'])
-                    self.setEnabled(False)
-                
-                if value > 0: self.setEnabled(True)
-            else:
-                bc, tc = self.default_bg, self.default_text
-                self.setEnabled(True)
-
-            self.current_bg = bc
-            self.current_text = tc
-            self.update() # Fondamentale per ridisegnare subito
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        
-        option = QStyleOptionButton()
-        self.initStyleOption(option)
-        
-        margin = 5
-        rect = option.rect.adjusted(margin, margin, -margin, -margin)
-        
-        # 1. LOGICA COLORI
-        base_color = QColor(self.current_bg)
-        if not self.isEnabled():
-            base_color = QColor(self.setting.get('disabled_background_color', "#dcdcdc"))
-        
-        # 2. CREAZIONE GRADIENTE (Effetto Profondità)
-        # Creiamo un gradiente che va dall'alto verso il basso
-        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        
-        if option.state & QStyle.StateFlag.State_Sunken:
-            # Effetto tasto premuto: il gradiente si inverte o si scurisce
-            gradient.setColorAt(0, base_color.darker(120))
-            gradient.setColorAt(1, base_color.darker(110))
-        else:
-            # Effetto tasto normale: più chiaro sopra, colore base sotto
-            gradient.setColorAt(0, base_color.lighter(115)) # Riflesso luce
-            gradient.setColorAt(0.5, base_color)           # Colore centrale
-            gradient.setColorAt(1, base_color.darker(110)) # Ombra base
-                
-        # 3. DISEGNO SFONDO E BORDO
-        painter.setBrush(gradient)
-        
-        # Penna per il bordo: leggermente più scura alla base per l'effetto 3D
-        border_color = base_color.darker(150)
-        painter.setPen(QPen(border_color, 1))
-        
-        painter.drawRoundedRect(rect, 6, 6)
-        
-        # 4. OPZIONALE: Linea di luce superiore (Highlight)
-        # Aggiunge un sottilissimo bordo chiaro in alto per simulare lo spigolo illuminato
-        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
-            painter.setPen(QPen(base_color.lighter(130), 1))
-            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
-
-        # 5. DISEGNO TESTO
-        painter.setPen(QColor(self.current_text))
-        # Un leggero shadow al testo (opzionale, per leggibilità)
-        # painter.drawText(rect.adjusted(1,1,1,1), Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.caption) 
-        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.caption)
-        
-        # 6. DISEGNO ICONA VARIANTI
-        if self.hasVariants:
-            icon_rect = QRect(rect.right() - 18, rect.top() + 2, 16, 16)
-            painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
-        painter.end()
-
 
 #---------------------#
 #-- main dialog box --#
@@ -446,22 +343,22 @@ class BaseOrderDialog(QDialog):
         # buttons for tables
         self.ui.bgt = QButtonGroup(self)
         self.ui.bgt.setExclusive(False)
-        gl = QGridLayout()
-        gl.setSpacing(10)
         for tt, tr, tc, ttc, tbc in table_list():
+            if tr is None or tc is None:
+                continue
             f =QFont(self.setting['table_list_font_family'], self.setting['table_list_font_size'], QFont.Weight.Bold)
             b = ButtonSeat(self, tt, f, ttc, tbc)
             self.ui.bgt.addButton(b)
-            gl.addWidget(b, tr, tc)
+            self.ui.gridLayoutTables.addWidget(b, tr, tc)
         # fill the remaining cells of gl with an empty button
         for r in range(1, self.ui.tables_list_rows + 1):
             for c in range(1, self.ui.tables_list_columns + 1):
-                if gl.itemAtPosition(r, c) is None:
+                if self.ui.gridLayoutTables.itemAtPosition(r, c) is None:
                     w = QWidget(self)
-                    #w.setMinimumWidth(5)
-                    w.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-                    gl.addWidget(w, r, c)
-        self.ui.frameTables.setLayout(gl)
+                    w.setMinimumWidth(50)
+                    w.setMinimumHeight(50)
+                    w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+                    self.ui.gridLayoutTables.addWidget(w, r, c)
         # list button group
         self.ui.bgt.buttonClicked.connect(self.tableButtonClicked)
         # signal/slot
@@ -683,7 +580,7 @@ class BaseOrderDialog(QDialog):
                     message = _tr('OrderDialog', "Item '{}' lacks of position settings, will not be created").format(jd)
                     QMessageBox.information(self, "Attenzione", message)
                     continue
-                b = ButtonItem(jd, jtc, jbc, self) # item description
+                b = ButtonItem(self, jd, jtc, jbc) # item description
                 b.id = ji # item id
                 b.price = jp # item price
                 b.sc = jl # has stock control

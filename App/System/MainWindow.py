@@ -354,19 +354,11 @@ class MainWindow(QMainWindow):
     def updateEditStatus(self, status: tuple, current: int, total: int, limit: int|None = None) -> None:
         "Enable/disable navigation buttons and update counter"
         # status must be a tuple of 12 boolean values, current and total integers
-        for i in range(12):
-            currentAction[('edit_new',
-                           'edit_save',
-                           'edit_delete',
-                           'edit_reload',
-                           'edit_first',
-                           'edit_previous',
-                           'edit_next',
-                           'edit_last',
-                           'edit_filter',
-                           'edit_change_view',
-                           'edit_print',
-                           'edit_export')[i]].setEnabled(status[i])
+        actions = ('edit_new', 'edit_save', 'edit_delete', 'edit_reload',
+                   'edit_first', 'edit_previous', 'edit_next', 'edit_last',
+                   'edit_filter', 'edit_change_view', 'edit_print', 'edit_export')
+        for action, s in zip(actions, status):
+            currentAction[action].setEnabled(s)
         # set counter status
         self.counter.setValues(current, total, limit)
 

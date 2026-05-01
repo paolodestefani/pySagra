@@ -18,18 +18,18 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboBox,
     QDialog, QDialogButtonBox, QDoubleSpinBox, QFontComboBox,
     QGridLayout, QGroupBox, QHBoxLayout, QLabel,
-    QLayout, QLineEdit, QPushButton, QRadioButton,
-    QSizePolicy, QSlider, QSpacerItem, QSpinBox,
-    QTabWidget, QVBoxLayout, QWidget)
+    QLayout, QLineEdit, QRadioButton, QSizePolicy,
+    QSlider, QSpacerItem, QSpinBox, QTabWidget,
+    QVBoxLayout, QWidget)
 
-from App.Widget.Control import (ColorComboBox, RelationalComboBox)
+from App.Widget.Control import (ButtonItemExample, ColorComboBox, RelationalComboBox)
 
 class Ui_SettingsDialog(object):
     def setupUi(self, SettingsDialog):
         if not SettingsDialog.objectName():
             SettingsDialog.setObjectName(u"SettingsDialog")
         SettingsDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        SettingsDialog.resize(827, 612)
+        SettingsDialog.resize(760, 597)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -250,7 +250,6 @@ class Ui_SettingsDialog(object):
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.verticalLayout_2 = QVBoxLayout(self.groupBox_2)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(5, 5, 5, 5)
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.labelRed_2 = QLabel(self.groupBox_2)
@@ -307,17 +306,17 @@ class Ui_SettingsDialog(object):
 
         self.gridLayout_4.addLayout(self.horizontalLayout_10, 1, 1, 1, 1)
 
-        self.pushButtonWB = QPushButton(self.groupBox_2)
-        self.pushButtonWB.setObjectName(u"pushButtonWB")
+        self.colorComboBoxWB = ColorComboBox(self.groupBox_2)
+        self.colorComboBoxWB.setObjectName(u"colorComboBoxWB")
 
-        self.gridLayout_4.addWidget(self.pushButtonWB, 1, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.colorComboBoxWB, 1, 2, 1, 1)
 
-        self.pushButtonWT = QPushButton(self.groupBox_2)
-        self.pushButtonWT.setObjectName(u"pushButtonWT")
+        self.colorComboBoxWT = ColorComboBox(self.groupBox_2)
+        self.colorComboBoxWT.setObjectName(u"colorComboBoxWT")
 
-        self.gridLayout_4.addWidget(self.pushButtonWT, 1, 3, 1, 1)
+        self.gridLayout_4.addWidget(self.colorComboBoxWT, 1, 3, 1, 1)
 
-        self.pushButtonExampleWL = QPushButton(self.groupBox_2)
+        self.pushButtonExampleWL = ButtonItemExample(self.groupBox_2)
         self.pushButtonExampleWL.setObjectName(u"pushButtonExampleWL")
 
         self.gridLayout_4.addWidget(self.pushButtonExampleWL, 1, 4, 1, 1)
@@ -346,17 +345,17 @@ class Ui_SettingsDialog(object):
 
         self.gridLayout_4.addLayout(self.horizontalLayout_11, 2, 1, 1, 1)
 
-        self.pushButtonCB = QPushButton(self.groupBox_2)
-        self.pushButtonCB.setObjectName(u"pushButtonCB")
+        self.colorComboBoxCB = ColorComboBox(self.groupBox_2)
+        self.colorComboBoxCB.setObjectName(u"colorComboBoxCB")
 
-        self.gridLayout_4.addWidget(self.pushButtonCB, 2, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.colorComboBoxCB, 2, 2, 1, 1)
 
-        self.pushButtonCT = QPushButton(self.groupBox_2)
-        self.pushButtonCT.setObjectName(u"pushButtonCT")
+        self.colorComboBoxCT = ColorComboBox(self.groupBox_2)
+        self.colorComboBoxCT.setObjectName(u"colorComboBoxCT")
 
-        self.gridLayout_4.addWidget(self.pushButtonCT, 2, 3, 1, 1)
+        self.gridLayout_4.addWidget(self.colorComboBoxCT, 2, 3, 1, 1)
 
-        self.pushButtonExampleCL = QPushButton(self.groupBox_2)
+        self.pushButtonExampleCL = ButtonItemExample(self.groupBox_2)
         self.pushButtonExampleCL.setObjectName(u"pushButtonExampleCL")
 
         self.gridLayout_4.addWidget(self.pushButtonExampleCL, 2, 4, 1, 1)
@@ -382,24 +381,21 @@ class Ui_SettingsDialog(object):
 
         self.gridLayout_4.addLayout(self.horizontalLayout_12, 3, 1, 1, 1)
 
-        self.pushButtonDB = QPushButton(self.groupBox_2)
-        self.pushButtonDB.setObjectName(u"pushButtonDB")
+        self.colorComboBoxDB = ColorComboBox(self.groupBox_2)
+        self.colorComboBoxDB.setObjectName(u"colorComboBoxDB")
 
-        self.gridLayout_4.addWidget(self.pushButtonDB, 3, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.colorComboBoxDB, 3, 2, 1, 1)
 
-        self.pushButtonDT = QPushButton(self.groupBox_2)
-        self.pushButtonDT.setObjectName(u"pushButtonDT")
+        self.colorComboBoxDT = ColorComboBox(self.groupBox_2)
+        self.colorComboBoxDT.setObjectName(u"colorComboBoxDT")
 
-        self.gridLayout_4.addWidget(self.pushButtonDT, 3, 3, 1, 1)
+        self.gridLayout_4.addWidget(self.colorComboBoxDT, 3, 3, 1, 1)
 
-        self.pushButtonExampleDL = QPushButton(self.groupBox_2)
+        self.pushButtonExampleDL = ButtonItemExample(self.groupBox_2)
         self.pushButtonExampleDL.setObjectName(u"pushButtonExampleDL")
 
         self.gridLayout_4.addWidget(self.pushButtonExampleDL, 3, 4, 1, 1)
 
-        self.gridLayout_4.setColumnStretch(2, 1)
-        self.gridLayout_4.setColumnStretch(3, 1)
-        self.gridLayout_4.setColumnStretch(4, 1)
 
         self.verticalLayout_2.addLayout(self.gridLayout_4)
 
@@ -966,7 +962,7 @@ class Ui_SettingsDialog(object):
 
         self.gridLayout_8.addWidget(self.colorComboBoxText, 1, 1, 1, 1)
 
-        self.pushButtonExampleNL = QPushButton(self.groupBox_10)
+        self.pushButtonExampleNL = ButtonItemExample(self.groupBox_10)
         self.pushButtonExampleNL.setObjectName(u"pushButtonExampleNL")
 
         self.gridLayout_8.addWidget(self.pushButtonExampleNL, 1, 2, 1, 1)
@@ -1146,19 +1142,13 @@ class Ui_SettingsDialog(object):
         self.labelRed_3.setText(QCoreApplication.translate("SettingsDialog", u"Example", None))
         self.labelYellow_3.setText(QCoreApplication.translate("SettingsDialog", u"Warning", None))
         self.label_31.setText(QCoreApplication.translate("SettingsDialog", u"<=", None))
-        self.pushButtonWB.setText("")
-        self.pushButtonWT.setText("")
         self.pushButtonExampleWL.setText(QCoreApplication.translate("SettingsDialog", u"Warning", None))
         self.labelYellow_4.setText(QCoreApplication.translate("SettingsDialog", u"Critical", None))
         self.label_32.setText(QCoreApplication.translate("SettingsDialog", u"<=", None))
-        self.pushButtonCB.setText("")
-        self.pushButtonCT.setText("")
         self.pushButtonExampleCL.setText(QCoreApplication.translate("SettingsDialog", u"Critical", None))
         self.label_21.setText(QCoreApplication.translate("SettingsDialog", u"Out of stock", None))
         self.label_22.setText(QCoreApplication.translate("SettingsDialog", u"=", None))
         self.label_23.setText(QCoreApplication.translate("SettingsDialog", u"0", None))
-        self.pushButtonDB.setText("")
-        self.pushButtonDT.setText("")
         self.pushButtonExampleDL.setText(QCoreApplication.translate("SettingsDialog", u"Disabled", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), QCoreApplication.translate("SettingsDialog", u"Order entry UI", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("SettingsDialog", u"Lunch / Dinner start time", None))

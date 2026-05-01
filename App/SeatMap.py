@@ -248,8 +248,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
             for c in range(1, int(self.setting['table_list_columns'] or 0) + 1):
                 if self.ui.gridLayoutPreview.itemAtPosition(r, c) is None:
                     w = QWidget(self)
-                    #w.setMinimumWidth(self.ui.spinBoxMinWidth.value())
-                    #w.setMinimumHeight(self.ui.spinBoxMinHeight.value())
+                    w.setMinimumWidth(self.ui.spinBoxMinWidth.value())
+                    w.setMinimumHeight(self.ui.spinBoxMinHeight.value())
                     w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
                     self.ui.gridLayoutPreview.addWidget(w, r, c)
                     

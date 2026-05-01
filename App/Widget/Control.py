@@ -109,6 +109,7 @@ from App import currentIcon
 from App.Core.L10n import _tr
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
+from App.Database.Setting import Setting
 
 
 
@@ -801,4 +802,160 @@ class Counter(QLineEdit):
         self.style().unpolish(self)
         self.style().polish(self)
 
+
+class ButtonItem(QPushButton):
+    """A QPushButton for items with a custom paint event to create a 3D effect and custom colors 
+    based on stock levels, also shows a variant indicator icon if the item has variants"""
+    
+    def __init__(self, parent: QWidget, text: str, textColor: str, backgroundColor: str) -> None:
+        super().__init__(parent)
+        self.setting = parent.setting # link to settings for stock level thresholds and colors
+        self.description = text or ''
+        self.caption = self.description.replace(' ', '\n')
+        self.setText(self.caption)
+        # parameters for stock level logic, variants and price, will be set by the caller
+        self.id = None
+        self.sc = None 
+        self.price = None
+        self.hasVariants = False
+        #self.level = None # *** set by caller, triggers __setattr__ logic for colors and enabled state
+        self.setFont(QFont(self.setting['order_list_font_family'], self.setting['order_list_font_size'], QFont.Weight.Bold))
+        self.setMinimumWidth(65)
+        # variant indicator icon
+        self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25)
+        # base colors from parameters or defaults
+        self.default_bg = QColor(backgroundColor)
+        self.default_text = QColor(textColor)
+        # current properties (will be updated by da __setattr__)
+        self.current_bg = self.default_bg
+        self.current_text = self.default_text
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        if name == 'level':
+            if self.sc:
+                if value >= self.setting['warning_stock_level']:
+                    bc, tc = self.default_bg, self.default_text
+                elif self.setting['critical_stock_level'] < value < self.setting['warning_stock_level']:
+                    bc, tc = QColor(self.setting['warning_background_color']), QColor(self.setting['warning_text_color'])
+                elif 0 < value <= self.setting['critical_stock_level']:
+                    bc, tc = QColor(self.setting['critical_background_color']), QColor(self.setting['critical_text_color'])
+                else:
+                    bc, tc = QColor(self.setting['disabled_background_color']), QColor(self.setting['disabled_text_color'])
+                    self.setEnabled(False)
+                
+                if value > 0: self.setEnabled(True)
+            else:
+                bc, tc = self.default_bg, self.default_text
+                self.setEnabled(True)
+
+            self.current_bg = bc
+            self.current_text = tc
+            self.update()
+
+    def paintEvent(self, event):
+        """Custom paint event to draw the button with a 3D effect, custom colors based on stock level
+        and an optional variant indicator icon"""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        margin = 5
+        rect = option.rect.adjusted(margin, margin, -margin, -margin)
+        # COLOR LOGIC
+        base_color = QColor(self.current_bg)
+        if not self.isEnabled():
+            base_color = QColor(self.setting.get('disabled_background_color', "#dcdcdc"))
+        # GRADIEN FOR 3D EFFECT: light at the top, base color in the middle, darker at the bottom
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        if option.state & QStyle.StateFlag.State_Sunken:
+            # on pushed state, invert gradient for pressed effect: darker at the top, base color at the bottom
+            gradient.setColorAt(0, base_color.darker(120))
+            gradient.setColorAt(1, base_color.darker(110))
+        else:
+            # not pushed state, normal gradient with light reflection at the top and shadow at the bottom
+            gradient.setColorAt(0, base_color.lighter(115)) # light reflection at the top
+            gradient.setColorAt(0.5, base_color)            # central color
+            gradient.setColorAt(1, base_color.darker(110))  # base shadow at the bottom
+        # DRAW BACKGROUND WITH GRADIENT AND BORDER
+        painter.setBrush(gradient)
+        # border pen: slightly darker than the base color for a subtle 3D border
+        border_color = base_color.darker(150)
+        painter.setPen(QPen(border_color, 1))
+        painter.drawRoundedRect(rect, 6, 6)
+        # add a light line at the top to simulate the illuminated edge, only if enabled and not pressed
+        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
+            painter.setPen(QPen(base_color.lighter(130), 1))
+            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+        # DRAW TEXT
+        painter.setPen(QColor(self.current_text))
+        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
+        # DRAW VARIANT INDICATOR ICON IF APPLICABLE
+        if self.hasVariants:
+            icon_rect = QRect(rect.right() - 18, rect.top() + 2, 16, 16)
+            painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
+        painter.end()
+        
+    def showLevel(self):
+        "Update the button text to show the current stock level"
+        if self.sc:
+            self.setText(self.caption + f"\n({self.level})")
+
+    def hideLevel(self):
+        "Update the button text to hide the stock level and show only the caption"
+        if self.sc:
+            self.setText(self.caption)
+
+
+class ButtonItemExample(QPushButton):
+    "A pushbutton for settings example of color change on stock level value"
+    
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        self.textColor = QColor("#000000")
+        self.backgroundColor = QColor("#90ee90")
+        self.setText("Example Item")
+        self.setMinimumWidth(65)
+        
+    def setTextColor(self, color: str) -> None:
+        self.textColor = QColor(color)
+        self.update()
+
+    def setBackgroundColor(self, color: str) -> None:
+        self.backgroundColor = QColor(color)
+        self.update()
+
+    def paintEvent(self, event):
+        """Custom paint event to draw the button with a 3D effect with custom colors"""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        margin = 5
+        rect = option.rect.adjusted(margin, margin, -margin, -margin)
+        # GRADIEN FOR 3D EFFECT: light at the top, base color in the middle, darker at the bottom
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        if option.state & QStyle.StateFlag.State_Sunken:
+            # on pushed state, invert gradient for pressed effect: darker at the top, base color at the bottom
+            gradient.setColorAt(0, self.backgroundColor.darker(120))
+            gradient.setColorAt(1, self.backgroundColor.darker(110))
+        else:
+            # not pushed state, normal gradient with light reflection at the top and shadow at the bottom
+            gradient.setColorAt(0, self.backgroundColor.lighter(115)) # light reflection at the top
+            gradient.setColorAt(0.5, self.backgroundColor)            # central color
+            gradient.setColorAt(1, self.backgroundColor.darker(110))  # base shadow at the bottom
+        # DRAW BACKGROUND WITH GRADIENT AND BORDER
+        painter.setBrush(gradient)
+        # border pen: slightly darker than the base color for a subtle 3D border
+        border_color = self.backgroundColor.darker(150)
+        painter.setPen(QPen(border_color, 1))
+        painter.drawRoundedRect(rect, 6, 6)
+        # add a light line at the top to simulate the illuminated edge, only if enabled and not pressed
+        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
+            painter.setPen(QPen(self.backgroundColor.lighter(130), 1))
+            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+        # DRAW TEXT
+        painter.setPen(QColor(self.textColor))
+        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
+        painter.end()
 

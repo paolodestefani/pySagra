@@ -545,7 +545,7 @@ class Ui_OrderDialog2(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1144, 348))
         self.verticalLayout_19 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
         self.verticalLayout_19.setContentsMargins(0, 0, 0, 0)
@@ -553,6 +553,14 @@ class Ui_OrderDialog2(object):
         self.frameTables.setObjectName(u"frameTables")
         self.frameTables.setFrameShape(QFrame.Shape.StyledPanel)
         self.frameTables.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_16 = QVBoxLayout(self.frameTables)
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.verticalLayout_16.setContentsMargins(5, 5, 5, 5)
+        self.gridLayoutTables = QGridLayout()
+        self.gridLayoutTables.setObjectName(u"gridLayoutTables")
+
+        self.verticalLayout_16.addLayout(self.gridLayoutTables)
+
 
         self.verticalLayout_19.addWidget(self.frameTables)
 

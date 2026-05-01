@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>827</width>
-    <height>612</height>
+    <width>760</width>
+    <height>597</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -347,20 +347,8 @@
             <string>Visual alarm colors for stock level</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
-            <property name="leftMargin">
-             <number>5</number>
-            </property>
-            <property name="topMargin">
-             <number>5</number>
-            </property>
-            <property name="rightMargin">
-             <number>5</number>
-            </property>
-            <property name="bottomMargin">
-             <number>5</number>
-            </property>
             <item>
-             <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,0,1,1,1">
+             <layout class="QGridLayout" name="gridLayout_4">
               <item row="0" column="1">
                <widget class="QLabel" name="labelRed_2">
                 <property name="font">
@@ -458,21 +446,13 @@
                </layout>
               </item>
               <item row="1" column="2">
-               <widget class="QPushButton" name="pushButtonWB">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
+               <widget class="ColorComboBox" name="colorComboBoxWB"/>
               </item>
               <item row="1" column="3">
-               <widget class="QPushButton" name="pushButtonWT">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
+               <widget class="ColorComboBox" name="colorComboBoxWT"/>
               </item>
               <item row="1" column="4">
-               <widget class="QPushButton" name="pushButtonExampleWL">
+               <widget class="ButtonItemExample" name="pushButtonExampleWL">
                 <property name="text">
                  <string>Warning</string>
                 </property>
@@ -515,21 +495,13 @@
                </layout>
               </item>
               <item row="2" column="2">
-               <widget class="QPushButton" name="pushButtonCB">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
+               <widget class="ColorComboBox" name="colorComboBoxCB"/>
               </item>
               <item row="2" column="3">
-               <widget class="QPushButton" name="pushButtonCT">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
+               <widget class="ColorComboBox" name="colorComboBoxCT"/>
               </item>
               <item row="2" column="4">
-               <widget class="QPushButton" name="pushButtonExampleCL">
+               <widget class="ButtonItemExample" name="pushButtonExampleCL">
                 <property name="text">
                  <string>Critical</string>
                 </property>
@@ -564,21 +536,13 @@
                </layout>
               </item>
               <item row="3" column="2">
-               <widget class="QPushButton" name="pushButtonDB">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
+               <widget class="ColorComboBox" name="colorComboBoxDB"/>
               </item>
               <item row="3" column="3">
-               <widget class="QPushButton" name="pushButtonDT">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
+               <widget class="ColorComboBox" name="colorComboBoxDT"/>
               </item>
               <item row="3" column="4">
-               <widget class="QPushButton" name="pushButtonExampleDL">
+               <widget class="ButtonItemExample" name="pushButtonExampleDL">
                 <property name="text">
                  <string>Disabled</string>
                 </property>
@@ -1538,7 +1502,7 @@
                <widget class="ColorComboBox" name="colorComboBoxText"/>
               </item>
               <item row="1" column="2">
-               <widget class="QPushButton" name="pushButtonExampleNL">
+               <widget class="ButtonItemExample" name="pushButtonExampleNL">
                 <property name="text">
                  <string>Normal</string>
                 </property>
@@ -1794,6 +1758,11 @@
   <customwidget>
    <class>ColorComboBox</class>
    <extends>QComboBox</extends>
+   <header>App.Widget.Control</header>
+  </customwidget>
+  <customwidget>
+   <class>ButtonItemExample</class>
+   <extends>QPushButton</extends>
    <header>App.Widget.Control</header>
   </customwidget>
  </customwidgets>

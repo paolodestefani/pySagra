@@ -18,17 +18,17 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractItemView, QAbstractSpinBox, QApplication, QCheckBox,
     QDialog, QDoubleSpinBox, QFrame, QGridLayout,
     QGroupBox, QHBoxLayout, QHeaderView, QLCDNumber,
-    QLabel, QLineEdit, QPushButton, QRadioButton,
-    QScrollArea, QSizePolicy, QSpacerItem, QSpinBox,
-    QStackedWidget, QTabWidget, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QLabel, QLayout, QLineEdit, QPushButton,
+    QRadioButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QSpinBox, QStackedWidget, QTabWidget, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_OrderDialog0(object):
     def setupUi(self, OrderDialog0):
         if not OrderDialog0.objectName():
             OrderDialog0.setObjectName(u"OrderDialog0")
         OrderDialog0.setWindowModality(Qt.WindowModality.NonModal)
-        OrderDialog0.resize(1133, 462)
+        OrderDialog0.resize(1133, 496)
         font = QFont()
         font.setPointSize(10)
         OrderDialog0.setFont(font)
@@ -563,7 +563,7 @@ class Ui_OrderDialog0(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1081, 377))
         self.verticalLayout_13 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.verticalLayout_13.setContentsMargins(0, 0, 0, 0)
@@ -571,6 +571,15 @@ class Ui_OrderDialog0(object):
         self.frameTables.setObjectName(u"frameTables")
         self.frameTables.setFrameShape(QFrame.Shape.StyledPanel)
         self.frameTables.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_16 = QVBoxLayout(self.frameTables)
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.verticalLayout_16.setContentsMargins(5, 5, 5, 5)
+        self.gridLayoutTables = QGridLayout()
+        self.gridLayoutTables.setObjectName(u"gridLayoutTables")
+        self.gridLayoutTables.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+
+        self.verticalLayout_16.addLayout(self.gridLayoutTables)
+
 
         self.verticalLayout_13.addWidget(self.frameTables)
 

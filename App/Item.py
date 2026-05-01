@@ -91,18 +91,19 @@ TABVAR, TABCOM, TABMEN, TABPRI = range(4)
 
 
 # colors for color combo box
-COLORS = [('#FF0000', _tr('Item', 'Red')),
+COLORS = [('#950606', _tr('Item', 'Dark red')),
+          ('#FF0000', _tr('Item', 'Red')),
           ('#FF7700', _tr('Item', 'Orange')),
-          ('#00FF00', _tr('Item', 'Green')),
-          ('#0000FF', _tr('Item', 'Blue')),
-          ('#4141C5', _tr('Item', 'Light blue')),
-          ('#000000', _tr('Item', 'Black')),
-          ('#535353', _tr('Item', 'Gray')),
-          ('#FFFFFF', _tr('Item', 'White')),
           ('#FFFF00', _tr('Item', 'Yellow')),
-          ('#770000', _tr('Item', 'Dark red')),
           ('#007700', _tr('Item', 'Dark green')),
-          ('#000077', _tr('Item', 'Dark blue'))]
+          ('#00FF00', _tr('Item', 'Green')),
+          ('#4141C5', _tr('Item', 'Light blue')),
+          ('#0000FF', _tr('Item', 'Blue')),
+          ('#000077', _tr('Item', 'Dark blue')),
+          ('#000000', _tr('Item', 'Black')),
+          ('#C0C0C0', _tr('Item', 'Light gray')),
+          ('#535353', _tr('Item', 'Gray')),
+          ('#FFFFFF', _tr('Item', 'White'))]
 
 
 def itemType() -> list:
