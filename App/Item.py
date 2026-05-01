@@ -48,6 +48,7 @@ from App import currentIcon
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
+from App.Core.Gui import COLORS
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ColorComboDelegate
 from App.Widget.Delegate import BooleanDelegate
@@ -88,22 +89,6 @@ from App.Ui.ChooseItemDialog import Ui_ChooseItemDialog
 (PID, PLIST, PITEM, PPRICE, PUINS, PDINS, PUUPG, PDUPG) = range(8)
 
 TABVAR, TABCOM, TABMEN, TABPRI = range(4)
-
-
-# colors for color combo box
-COLORS = [('#950606', _tr('Item', 'Dark red')),
-          ('#FF0000', _tr('Item', 'Red')),
-          ('#FF7700', _tr('Item', 'Orange')),
-          ('#FFFF00', _tr('Item', 'Yellow')),
-          ('#007700', _tr('Item', 'Dark green')),
-          ('#00FF00', _tr('Item', 'Green')),
-          ('#4141C5', _tr('Item', 'Light blue')),
-          ('#0000FF', _tr('Item', 'Blue')),
-          ('#000077', _tr('Item', 'Dark blue')),
-          ('#000000', _tr('Item', 'Black')),
-          ('#C0C0C0', _tr('Item', 'Light gray')),
-          ('#535353', _tr('Item', 'Gray')),
-          ('#FFFFFF', _tr('Item', 'White'))]
 
 
 def itemType() -> list:

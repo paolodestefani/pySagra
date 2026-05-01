@@ -60,7 +60,7 @@ from App.Ui.SettingsDialog import Ui_SettingsDialog
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-from App.Item import COLORS
+from App.Core.Gui import COLORS
 
 
 

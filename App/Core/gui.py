@@ -54,6 +54,7 @@ from App import currentIcon
 from App import session
 from App import currentAction
 from App import actionDefinition
+from App.Core.L10n import _tr
 
 # color scheme
 color_scheme = {
@@ -62,45 +63,20 @@ color_scheme = {
     'S': Qt.ColorScheme.Unknown} # system default
 
 
-# class MyProxyStyle(QProxyStyle):
-    
-#     def subElementRect(self, element, option, widget=None):
-#         rect = super().subElementRect(element, option, widget)
-#         if element == QStyle.SubElement.SE_ItemViewItemCheckIndicator:
-#             rect.moveCenter(option.rect.center())
-#         return rect
-
-#     def drawControl(self, element, option, painter, widget=None):
-#         if element == QStyle.ControlElement.CE_PushButton and widget:
-#             bg_color = widget.property("custom_bg")
-#             text_color = widget.property("custom_text")
-            
-#             if bg_color:
-#                 painter.save()
-#                 painter.setRenderHint(QPainter.Antialiasing)
-                
-#                 # 1. Definiamo il colore (gestendo lo stato premuto/disabilitato)
-#                 color = QColor(bg_color)
-#                 if not (option.state & QStyle.State.State_Enabled):
-#                     color = QColor("#dcdcdc") # Grigio per disabilitato
-#                 elif option.state & QStyle.State.State_Sunken:
-#                     color = color.darker(115)
-
-#                 # 2. Disegniamo lo sfondo (il border-radius "rompe" il look nativo)
-#                 painter.setBrush(color)
-#                 painter.setPen(QPen(color.darker(130), 1)) # Un leggero bordo
-#                 painter.drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 5, 5)
-                
-#                 # 3. Disegniamo il testo manualmente
-#                 t_color = QColor(text_color) if text_color else QColor("black")
-#                 painter.setPen(t_color)
-#                 painter.drawText(option.rect, Qt.AlignCenter, option.text)
-                
-#                 painter.restore()
-#                 return  # FONDAMENTALE: non chiamare super() qui!
-
-#         # Per tutti gli altri elementi o bottoni senza colore, usa il comportamento standard
-#         super().drawControl(element, option, painter, widget)
+# colors for color combo box
+COLORS = [('#950606', _tr('Item', 'Dark red')),
+          ('#FF0000', _tr('Item', 'Red')),
+          ('#FF7700', _tr('Item', 'Orange')),
+          ('#FFFF00', _tr('Item', 'Yellow')),
+          ('#007700', _tr('Item', 'Dark green')),
+          ('#00FF00', _tr('Item', 'Green')),
+          ('#4141C5', _tr('Item', 'Light blue')),
+          ('#0000FF', _tr('Item', 'Blue')),
+          ('#000077', _tr('Item', 'Dark blue')),
+          ('#000000', _tr('Item', 'Black')),
+          ('#C0C0C0', _tr('Item', 'Light gray')),
+          ('#535353', _tr('Item', 'Gray')),
+          ('#FFFFFF', _tr('Item', 'White'))]
 
 
 class CenteredProxyStyle(QProxyStyle):

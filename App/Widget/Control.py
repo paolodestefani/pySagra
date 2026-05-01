@@ -892,7 +892,8 @@ class ButtonItem(QPushButton):
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
         # DRAW VARIANT INDICATOR ICON IF APPLICABLE
         if self.hasVariants:
-            icon_rect = QRect(rect.right() - 18, rect.top() + 2, 16, 16)
+            icon_rect = QRect(rect.right() - 18, rect.top() - 2, 24, 24) # on right
+            #icon_rect = QRect(rect.left() + 4, rect.top() + 4, 16, 16) # on left
             painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
         painter.end()
         
