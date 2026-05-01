@@ -35,9 +35,13 @@ import decimal
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtCore import QDirIterator
+from PySide6.QtGui import QColor
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPalette
+from PySide6.QtGui import QPen
 from PySide6.QtWidgets import QProxyStyle
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QMessageBox
@@ -57,6 +61,46 @@ color_scheme = {
     'D': Qt.ColorScheme.Dark,
     'S': Qt.ColorScheme.Unknown} # system default
 
+
+# class MyProxyStyle(QProxyStyle):
+    
+#     def subElementRect(self, element, option, widget=None):
+#         rect = super().subElementRect(element, option, widget)
+#         if element == QStyle.SubElement.SE_ItemViewItemCheckIndicator:
+#             rect.moveCenter(option.rect.center())
+#         return rect
+
+#     def drawControl(self, element, option, painter, widget=None):
+#         if element == QStyle.ControlElement.CE_PushButton and widget:
+#             bg_color = widget.property("custom_bg")
+#             text_color = widget.property("custom_text")
+            
+#             if bg_color:
+#                 painter.save()
+#                 painter.setRenderHint(QPainter.Antialiasing)
+                
+#                 # 1. Definiamo il colore (gestendo lo stato premuto/disabilitato)
+#                 color = QColor(bg_color)
+#                 if not (option.state & QStyle.State.State_Enabled):
+#                     color = QColor("#dcdcdc") # Grigio per disabilitato
+#                 elif option.state & QStyle.State.State_Sunken:
+#                     color = color.darker(115)
+
+#                 # 2. Disegniamo lo sfondo (il border-radius "rompe" il look nativo)
+#                 painter.setBrush(color)
+#                 painter.setPen(QPen(color.darker(130), 1)) # Un leggero bordo
+#                 painter.drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 5, 5)
+                
+#                 # 3. Disegniamo il testo manualmente
+#                 t_color = QColor(text_color) if text_color else QColor("black")
+#                 painter.setPen(t_color)
+#                 painter.drawText(option.rect, Qt.AlignCenter, option.text)
+                
+#                 painter.restore()
+#                 return  # FONDAMENTALE: non chiamare super() qui!
+
+#         # Per tutti gli altri elementi o bottoni senza colore, usa il comportamento standard
+#         super().drawControl(element, option, painter, widget)
 
 
 class CenteredProxyStyle(QProxyStyle):

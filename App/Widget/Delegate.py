@@ -836,7 +836,7 @@ class StockLevelDelegate(QuantityDelegate):
         # first use EditRole (actual value, user inserted) then DisplayRole (formatted value)
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
-            val = index.data(Qt.ItemDataRole.DisplayRole)
+            val = index.data(Qt.ItemDataRole.DisplayRole) or 0
         option.text = session['qlocale'].toString(float(val), 'f', self.prec)  # can be null on insert row
         option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         if self.bold:

@@ -93,6 +93,7 @@ from App.Report.Order import printOrderDepartmentReport
 from App.Report.Order import printStockUnloadReport
 from App.Core.L10n import _tr
 from App.Widget.Dialog import DateTimeInputDialog
+from App.Widget.Control import ButtonSeat
 from App.Ui.DepartmentNoteDialog import Ui_DepartmentNoteDialog
 from App.Ui.ChooseVariantsDialog import Ui_ChooseVariantsDialog
 
@@ -185,73 +186,181 @@ class ChooseVariantDialog(QDialog):
 
 # a button of the list. It's a push button subclass with some more attribute
 
-class ButtonList(QPushButton):
-    "Push button for item list"
+# class ButtonItem(QPushButton):
+#     "Push button for item list"
 
+#     def __init__(self, text: str, textColor: str, backgroundColor: str, parent: BaseOrderDialog) -> None:
+#         super().__init__(parent)
+#         self.setting = parent.setting
+#         self.description = text
+#         self.textColor = textColor
+#         self.backgroundColor = backgroundColor
+#         self.caption = text.replace(' ', '\n')
+#         self.setText(self.caption)
+#         self.id = None
+#         self.sc = None # boolean stock control
+#         self.price = None
+#         self.hasVariants = False
+#         self.setAutoFillBackground(True)
+#         self.setFont(QFont(self.setting['order_list_font_family'], self.setting['order_list_font_size'], QFont.Weight.Bold))
+#         self.setMinimumWidth(65)
+#         #####
+#         # for colors use stylesheet to avoid problem with platform themes
+#         #####
+#         # for variants indicator
+#         self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25)
+        
+#     def __setattr__(self, name, value):
+#         super().__setattr__(name, value)
+#         if name == 'level':
+#             self.setEnabled(True)  # disabled if level = 0 below
+#             if self.sc:
+#                 value = value or 0 # avoid None values
+#                 if not self.sc or (self.sc and not self.setting['always_show_stock_inventory']):
+#                     self.setText(self.caption)
+#                 else:
+#                     self.setText(self.caption + f"\n({self.level})")
+#                 # normal level
+#                 if value >= self.setting['warning_stock_level']:
+#                     ss = f"background-color: {self.backgroundColor}; color: {self.textColor}"
+#                 # warning level
+#                 elif self.setting['critical_stock_level'] < value < self.setting['warning_stock_level']:
+#                     ss = f"background-color: {self.setting['warning_background_color']}; color: {self.setting['warning_text_color']}"
+#                 # critical level
+#                 elif 0 < value <= self.setting['critical_stock_level']:
+#                     ss = f"background-color: {self.setting['critical_background_color']}; color: {self.setting['critical_text_color']}"
+#                 # disabled: value = 0
+#                 else:
+#                     ss = f"background-color: {self.setting['disabled_background_color']}; color: {self.setting['disabled_text_color']}"
+#                     self.setDisabled(True)
+#             else:
+#                 # no level control -> always normal
+#                 ss = f"background-color: {self.backgroundColor}; color: {self.textColor}"
+#             self.setStyleSheet(ss)
+
+#     def paintEvent(self, event=None):
+#         QPushButton.paintEvent(self, event)
+#         if self.hasVariants:
+#             painter = QPainter(self)
+#             painter.setRenderHints(QPainter.Antialiasing)
+#             painter.drawPixmap(5, 5, self.variantIndicatorIcon)
+#             painter.end()
+
+#     def showLevel(self):
+#         if self.sc:
+#             self.setText(self.caption + f"\n({self.level})")
+
+#     def hideLevel(self):
+#         if self.sc:
+#             self.setText(self.caption)
+
+
+class ButtonItem(QPushButton):
     def __init__(self, text: str, textColor: str, backgroundColor: str, parent: BaseOrderDialog) -> None:
         super().__init__(parent)
         self.setting = parent.setting
         self.description = text
-        self.textColor = textColor
-        self.backgroundColor = backgroundColor
         self.caption = text.replace(' ', '\n')
         self.setText(self.caption)
+        
+        # Inizializzazione parametri
         self.id = None
-        self.sc = None # boolean stock control
+        self.sc = None 
         self.price = None
         self.hasVariants = False
-        self.setAutoFillBackground(True)
+        
         self.setFont(QFont(self.setting['order_list_font_family'], self.setting['order_list_font_size'], QFont.Weight.Bold))
         self.setMinimumWidth(65)
-        #####
-        # for colors use stylesheet to avoid problem with platform themes
-        #####
-        # for variants indicator
+        
+        # Icona varianti
         self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25)
         
+        # Memorizziamo i colori di base
+        self.default_bg = QColor(backgroundColor)
+        self.default_text = QColor(textColor)
+        
+        # Proprietà attuali (verranno aggiornate da __setattr__)
+        self.current_bg = self.default_bg
+        self.current_text = self.default_text
+
     def __setattr__(self, name, value):
         super().__setattr__(name, value)
         if name == 'level':
-            self.setEnabled(True)  # disabled if level = 0 below
             if self.sc:
-                value = value or 0 # avoid None values
-                if not self.sc or (self.sc and not self.setting['always_show_stock_inventory']):
-                    self.setText(self.caption)
-                else:
-                    self.setText(self.caption + f"\n({self.level})")
-                # normal level
                 if value >= self.setting['warning_stock_level']:
-                    ss = f"background-color: {self.backgroundColor}; color: {self.textColor}"
-                # warning level
+                    bc, tc = self.default_bg, self.default_text
                 elif self.setting['critical_stock_level'] < value < self.setting['warning_stock_level']:
-                    ss = f"background-color: {self.setting['warning_background_color']}; color: {self.setting['warning_text_color']}"
-                # critical level
+                    bc, tc = QColor(self.setting['warning_background_color']), QColor(self.setting['warning_text_color'])
                 elif 0 < value <= self.setting['critical_stock_level']:
-                    ss = f"background-color: {self.setting['critical_background_color']}; color: {self.setting['critical_text_color']}"
-                # disabled: value = 0
+                    bc, tc = QColor(self.setting['critical_background_color']), QColor(self.setting['critical_text_color'])
                 else:
-                    ss = f"background-color: {self.setting['disabled_background_color']}; color: {self.setting['disabled_text_color']}"
-                    self.setDisabled(True)
+                    bc, tc = QColor(self.setting['disabled_background_color']), QColor(self.setting['disabled_text_color'])
+                    self.setEnabled(False)
+                
+                if value > 0: self.setEnabled(True)
             else:
-                # no level control -> always normal
-                ss = f"background-color: {self.backgroundColor}; color: {self.textColor}"
-            self.setStyleSheet(ss)
+                bc, tc = self.default_bg, self.default_text
+                self.setEnabled(True)
 
-    def paintEvent(self, event=None):
-        QPushButton.paintEvent(self, event)
+            self.current_bg = bc
+            self.current_text = tc
+            self.update() # Fondamentale per ridisegnare subito
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        
+        margin = 5
+        rect = option.rect.adjusted(margin, margin, -margin, -margin)
+        
+        # 1. LOGICA COLORI
+        base_color = QColor(self.current_bg)
+        if not self.isEnabled():
+            base_color = QColor(self.setting.get('disabled_background_color', "#dcdcdc"))
+        
+        # 2. CREAZIONE GRADIENTE (Effetto Profondità)
+        # Creiamo un gradiente che va dall'alto verso il basso
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        
+        if option.state & QStyle.StateFlag.State_Sunken:
+            # Effetto tasto premuto: il gradiente si inverte o si scurisce
+            gradient.setColorAt(0, base_color.darker(120))
+            gradient.setColorAt(1, base_color.darker(110))
+        else:
+            # Effetto tasto normale: più chiaro sopra, colore base sotto
+            gradient.setColorAt(0, base_color.lighter(115)) # Riflesso luce
+            gradient.setColorAt(0.5, base_color)           # Colore centrale
+            gradient.setColorAt(1, base_color.darker(110)) # Ombra base
+                
+        # 3. DISEGNO SFONDO E BORDO
+        painter.setBrush(gradient)
+        
+        # Penna per il bordo: leggermente più scura alla base per l'effetto 3D
+        border_color = base_color.darker(150)
+        painter.setPen(QPen(border_color, 1))
+        
+        painter.drawRoundedRect(rect, 6, 6)
+        
+        # 4. OPZIONALE: Linea di luce superiore (Highlight)
+        # Aggiunge un sottilissimo bordo chiaro in alto per simulare lo spigolo illuminato
+        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
+            painter.setPen(QPen(base_color.lighter(130), 1))
+            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+
+        # 5. DISEGNO TESTO
+        painter.setPen(QColor(self.current_text))
+        # Un leggero shadow al testo (opzionale, per leggibilità)
+        # painter.drawText(rect.adjusted(1,1,1,1), Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.caption) 
+        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.caption)
+        
+        # 6. DISEGNO ICONA VARIANTI
         if self.hasVariants:
-            painter = QPainter(self)
-            painter.setRenderHints(QPainter.Antialiasing)
-            painter.drawPixmap(5, 5, self.variantIndicatorIcon)
-            painter.end()
-
-    def showLevel(self):
-        if self.sc:
-            self.setText(self.caption + f"\n({self.level})")
-
-    def hideLevel(self):
-        if self.sc:
-            self.setText(self.caption)
+            icon_rect = QRect(rect.right() - 18, rect.top() + 2, 16, 16)
+            painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
+        painter.end()
 
 
 #---------------------#
@@ -340,12 +449,8 @@ class BaseOrderDialog(QDialog):
         gl = QGridLayout()
         gl.setSpacing(10)
         for tt, tr, tc, ttc, tbc in table_list():
-            b = QPushButton(tt, self) # item description
-            b.setFont(QFont(self.setting['table_list_font_family'], self.setting['table_list_font_size'], QFont.Weight.Bold))
-            b.setStyleSheet(f"color: {ttc}; background-color: {tbc};")
-            b.setMinimumWidth(50)
-            b.setMinimumHeight(40)
-            b.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            f =QFont(self.setting['table_list_font_family'], self.setting['table_list_font_size'], QFont.Weight.Bold)
+            b = ButtonSeat(self, tt, f, ttc, tbc)
             self.ui.bgt.addButton(b)
             gl.addWidget(b, tr, tc)
         # fill the remaining cells of gl with an empty button
@@ -578,7 +683,7 @@ class BaseOrderDialog(QDialog):
                     message = _tr('OrderDialog', "Item '{}' lacks of position settings, will not be created").format(jd)
                     QMessageBox.information(self, "Attenzione", message)
                     continue
-                b = ButtonList(jd, jtc, jbc, self) # item description
+                b = ButtonItem(jd, jtc, jbc, self) # item description
                 b.id = ji # item id
                 b.price = jp # item price
                 b.sc = jl # has stock control
@@ -587,7 +692,7 @@ class BaseOrderDialog(QDialog):
                 b.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
                 self.ui.bgi.addButton(b, ji)  # assign an id = item id for find button later
                 gl.addWidget(b, jr, jc)
-            # fill the remaining cells of gl with an empty buttonlist
+            # fill the remaining cells of gl with an empty ButtonItem
             for r in range(1, self.ui.list_rows + 1):
                 for c in range(1, self.ui.list_columns + 1):
                     if gl.itemAtPosition(r, c) is None:

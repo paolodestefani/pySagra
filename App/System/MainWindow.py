@@ -76,6 +76,7 @@ from App.Database.Gui import get_menu
 from App.Database.Gui import get_toolbar
 from App.System.Preferences import tool_button_style
 from App.System.Preferences import tab_position
+from App.Widget.Control import Counter
 
 from App.Ui.GoToDialog import Ui_GoToDialog
 
@@ -85,15 +86,6 @@ logger = logging.getLogger(__name__)
 
 # default navigation status, when no tab is open nothing is available
 NSEMPTY = (False,) * 15
-
-COUNTER_NORMAL = ("QLineEdit {border: 1px solid; "
-                  "border-radius: 3px; "
-                  "border-color: grey;};")
-
-COUNTER_LIMIT = ("QLineEdit {border: 1px solid; "
-                 "border-radius: 3px; "
-                 "color: red; "
-                 "border-color: grey;};")
 
 # action definition fields
 DESC = 0 # description
@@ -352,17 +344,7 @@ class MainWindow(QMainWindow):
             a.deleteLater() # delete old actions
         # create new UI
         # record counter, must be set after connection, user can change font
-        self.counter = QLineEdit("-- / --", self)
-        self.counter.setStatusTip(_tr('MainWindow', "Current view's record "
-                                      "counter, shows current record number and total records count"))
-        self.counter.setToolTip(_tr('MainWindow', "Current view's record counter"))
-        font = QFont()
-        font.setBold(True)
-        self.counter.setFont(font)
-        self.counter.setStyleSheet(COUNTER_NORMAL)
-        self.counter.setFixedWidth(120)
-        self.counter.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.counter.setReadOnly(True)
+        self.counter = Counter(self)
         # actions
         createActions(self)
         # create menu' and toolbars
@@ -386,15 +368,7 @@ class MainWindow(QMainWindow):
                            'edit_print',
                            'edit_export')[i]].setEnabled(status[i])
         # set counter status
-        if current >= 0:
-            self.counter.setText(f"{QLocale().toString(current)}/{QLocale().toString(total)}")
-        else:
-            self.counter.setText("-- / --")
-        # show if limit was reached
-        if limit and total == limit:
-            self.counter.setStyleSheet(COUNTER_LIMIT)
-        else:
-            self.counter.setStyleSheet(COUNTER_NORMAL)
+        self.counter.setValues(current, total, limit)
 
     def updateStatusBar(self) -> None:
         "Set status bar text on change company"

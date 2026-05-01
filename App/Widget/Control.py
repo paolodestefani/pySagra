@@ -95,6 +95,13 @@ from PySide6.QtWidgets import QTableView
 from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QStyleOptionButton
+from PySide6.QtWidgets import QStyle
+from PySide6.QtGui import QPen
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QLinearGradient
 
 # application modules
 from App import session
@@ -705,3 +712,93 @@ class ColorSetComboBox(QComboBox):
     def emitColor(self, index: int) -> None:
         color = QColor(self.qtColors[self.currentIndex()])
         self.currentColorChanged.emit(color)
+        
+        
+class ButtonSeat(QPushButton):
+    """A QPushButton with a custom paint event to create a 3D effect and custom colors, 
+    used for seat selection in order dialog"""
+    def __init__(self, 
+                 parent: QWidget,
+                 text: str,
+                 font: QFont,
+                 textColor: str,
+                 backgroundColor: str, ) -> None:
+        super().__init__(parent)
+        self.setText(text)
+        self.setFont(font)
+        self.setMinimumWidth(80)
+        self.setMinimumHeight(40)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        # colors
+        self.seatBackgroundColor = QColor(backgroundColor)
+        self.seatTextColor = QColor(textColor)
+
+    def paintEvent(self, event):
+        "Custom paint event to draw a button with a 3D effect and custom colors"
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        margin = 5
+        rect = option.rect.adjusted(margin, margin, -margin, -margin)
+        # top to bottom gradient for 3D effect
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0, self.seatBackgroundColor.lighter(120)) # light reflection at the top
+        gradient.setColorAt(0.5, self.seatBackgroundColor)            # central color
+        gradient.setColorAt(1, self.seatBackgroundColor.darker(105))  # base shadow at the bottom
+        # draw background with gradient
+        painter.setBrush(gradient)
+        # pen for border: darker than the base color for a subtle 3D border
+        border_color = self.seatBackgroundColor.darker(150)
+        painter.setPen(QPen(border_color, 1))
+        painter.drawRoundedRect(rect, 6, 6)
+        # add a light line at the top to simulate the illuminated edge
+        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
+            painter.setPen(QPen(self.seatBackgroundColor.lighter(130), 1))
+            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+        # draw text
+        painter.setPen(QColor(self.text()))
+        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
+        painter.end()
+
+
+class Counter(QLineEdit):
+    """A QLabel with a custom style to show the current record number and 
+    total records count, with a red border when a limit is reached"""
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        # default font with bold for better visibility
+        font = QFont() 
+        font.setBold(True)
+        self.setFont(font)
+        self.setFixedWidth(120)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setReadOnly(True)
+        self.setStatusTip(_tr('MainWindow', 
+                              "Current view's record "
+                              "counter, shows current record number and total records count"))
+        self.setToolTip(_tr('MainWindow', "Current view's record counter"))
+        # stylesheet for normal and limit reached states
+        self.setStyleSheet("""
+            QLineEdit {
+                border: 2px solid;
+                border-radius: 4px;
+            }
+            QLineEdit[limit="true"] {
+                border-color: red;
+            }
+        """)
+        
+    def setValues(self, current: int, total: int, limit: int|None) -> None:
+        "Set the current and total values for the counter"
+        if current >= 0:
+            self.setText(f"{QLocale().toString(current)}/{QLocale().toString(total)}")
+        else:
+            self.setText("-- / --")
+        # show if limit was reached
+        self.setProperty("limit", bool(limit and total >= limit))
+        # force style update to apply the new stylesheet based on the limit property
+        self.style().unpolish(self)
+        self.style().polish(self)
+
+

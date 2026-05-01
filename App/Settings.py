@@ -257,7 +257,7 @@ class SettingsDialog(QDialog):
         if not color.isValid():
             return
         self.ui.pushButtonWB.color = color.name()
-        self.ui.pushButtonWB.setStyleSheet(f"background-color: {self.ui.pushButtonWB.color};")
+        self.ui.pushButtonWB.setStyleSheet(f"background-color: {self.ui.pushButtonWB.color}; border: 1px solid {self.ui.pushButtonWB.color};")
         self.updateExampleButtons()
 
     def selectWarningText(self) -> None:
@@ -265,7 +265,7 @@ class SettingsDialog(QDialog):
         if not color.isValid():
             return
         self.ui.pushButtonWT.color = color.name()
-        self.ui.pushButtonWT.setStyleSheet(f"background-color: {self.ui.pushButtonWT.color};")
+        self.ui.pushButtonWT.setStyleSheet(f"background-color: {self.ui.pushButtonWT.color}; border: 1px solid {self.ui.pushButtonWT.color};")
         self.updateExampleButtons()
 
     def selectCriticalBackground(self) -> None:
@@ -273,7 +273,7 @@ class SettingsDialog(QDialog):
         if not color.isValid():
             return
         self.ui.pushButtonCB.color = color.name()
-        self.ui.pushButtonCB.setStyleSheet(f"background-color: {self.ui.pushButtonCB.color};")
+        self.ui.pushButtonCB.setStyleSheet(f"background-color: {self.ui.pushButtonCB.color}; border: 1px solid {self.ui.pushButtonCB.color};")
         self.updateExampleButtons()
 
     def selectCriticalText(self) -> None:
@@ -281,7 +281,7 @@ class SettingsDialog(QDialog):
         if not color.isValid():
             return
         self.ui.pushButtonCT.color = color.name()
-        self.ui.pushButtonCT.setStyleSheet(f"background-color: {self.ui.pushButtonCT.color};")
+        self.ui.pushButtonCT.setStyleSheet(f"background-color: {self.ui.pushButtonCT.color}; border: 1px solid {self.ui.pushButtonCT.color};")
         self.updateExampleButtons()
 
     def selectDisabledBackground(self) -> None:
@@ -289,7 +289,7 @@ class SettingsDialog(QDialog):
         if not color.isValid():
             return
         self.ui.pushButtonDB.color = color.name()
-        self.ui.pushButtonDB.setStyleSheet(f"background-color: {self.ui.pushButtonDB.color};")
+        self.ui.pushButtonDB.setStyleSheet(f"background-color: {self.ui.pushButtonDB.color}; border: 1px solid {self.ui.pushButtonDB.color};")
         self.updateExampleButtons()
 
     def selectDisabledText(self) -> None:
@@ -297,25 +297,26 @@ class SettingsDialog(QDialog):
         if not color.isValid():
             return
         self.ui.pushButtonDT.color = color.name()
-        self.ui.pushButtonDT.setStyleSheet(f"background-color: {self.ui.pushButtonDT.color};")
+        self.ui.pushButtonDT.setStyleSheet(f"background-color: {self.ui.pushButtonDT.color}; border: 1px solid {self.ui.pushButtonDT.color};")
         self.updateExampleButtons()
 
     def updateExampleButtons(self) -> None:
         "Update example buttons with new selected colors"
         # warning level
-        ss = f"background-color: {self.ui.pushButtonWB.color}; color: {self.ui.pushButtonWT.color};"
+        ss = f"background-color: {self.ui.pushButtonWB.color}; color: {self.ui.pushButtonWT.color}; border: 1px solid {self.ui.pushButtonWB.color};"
         self.ui.pushButtonExampleWL.setStyleSheet(ss)
         # critical level
-        ss = f"background-color: {self.ui.pushButtonCB.color}; color: {self.ui.pushButtonCT.color};"
+        ss = f"background-color: {self.ui.pushButtonCB.color}; color: {self.ui.pushButtonCT.color}; border: 1px solid {self.ui.pushButtonCB.color};"
         self.ui.pushButtonExampleCL.setStyleSheet(ss)
         # disabled level
-        ss = f"background-color: {self.ui.pushButtonDB.color}; color: {self.ui.pushButtonDT.color};"
+        ss = f"background-color: {self.ui.pushButtonDB.color}; color: {self.ui.pushButtonDT.color}; border: 1px solid {self.ui.pushButtonDB.color};"
         self.ui.pushButtonExampleDL.setStyleSheet(ss)
         
     def updateExampleNormalButton(self) -> None:
         "Update example button with normal colors"
         # normal level
-        ss = f"background-color: {self.ui.colorComboBoxBackground.currentColor()}; color: {self.ui.colorComboBoxText.currentColor()};"
+        ss = f"background-color: {self.ui.colorComboBoxBackground.currentColor()}; color: {self.ui.colorComboBoxText.currentColor()}; border: 1px solid {self.ui.colorComboBoxBackground.currentColor()};"
+        print(ss)
         self.ui.pushButtonExampleNL.setStyleSheet(ss)
 
     def clicked(self, button: QPushButton) -> None:

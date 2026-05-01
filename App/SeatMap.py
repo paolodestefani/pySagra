@@ -59,6 +59,7 @@ from App.Core.Scripting import scriptMethod
 from App.Ui.SeatMapWidget import Ui_SeatMapWidget
 from App.Ui.GenerateTableNumbersDialog import Ui_GenerateTableNumbers
 from App.Widget.Form import  FormManager
+from App.Widget.Control import ButtonSeat
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ColorDelegate
 from App.Widget.Delegate import BooleanDelegate
@@ -232,14 +233,13 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
             col = self.model.index(r, COLUMN).data()
             tc = self.model.index(r, TEXT_COLOR).data()
             bc = self.model.index(r, BACKGROUND_COLOR).data()
-            b = QPushButton(cod, self) # item description
-            b.setFont(QFont(self.setting['table_list_font_family'] or "Arial", 
-                            int(self.setting['table_list_font_size'] or 7) + 5,
-                            QFont.Weight.Bold))
-            b.setStyleSheet(f"color: {tc}; background-color: {bc};")
-            b.setMinimumWidth(self.ui.spinBoxMinWidth.value())
-            b.setMinimumHeight(self.ui.spinBoxMinHeight.value())
-            b.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            b = ButtonSeat(self, 
+                           cod, 
+                           QFont(self.setting['table_list_font_family'] or "Arial",
+                                 int(self.setting['table_list_font_size'] or 7),
+                                 QFont.Weight.Bold),
+                           tc, 
+                           bc)
             if row is None or col is None:
                 continue
             self.ui.gridLayoutPreview.addWidget(b, row, col)
@@ -248,8 +248,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
             for c in range(1, int(self.setting['table_list_columns'] or 0) + 1):
                 if self.ui.gridLayoutPreview.itemAtPosition(r, c) is None:
                     w = QWidget(self)
-                    w.setMinimumWidth(self.ui.spinBoxMinWidth.value())
-                    w.setMinimumHeight(self.ui.spinBoxMinHeight.value())
+                    #w.setMinimumWidth(self.ui.spinBoxMinWidth.value())
+                    #w.setMinimumHeight(self.ui.spinBoxMinHeight.value())
                     w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
                     self.ui.gridLayoutPreview.addWidget(w, r, c)
                     
