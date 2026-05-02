@@ -34,6 +34,7 @@ import logging
 # PySide6
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QObject
+from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QTimer
@@ -94,46 +95,31 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setModel(model)
-        self.ui.tableView.setLayoutName('stockUnload')
+        self.ui.tableView.setLayoutName('OrderedDelivered')
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.ui.tableView.activateWindow()
-        #self.ui.tableView.setSortingEnabled(True)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
         self.ui.tableView.setItemDelegateForColumn(DAY_PART, RelationDelegate(self, dayPartMapping))
         self.ui.tableView.setItemDelegateForColumn(ORDERED, QuantityDelegate(self, bold=True))
         self.ui.tableView.setItemDelegateForColumn(DELIVERED, QuantityDelegate(self, bold=True))
         # initial filtering
-        self.selectedEvent = session['event_id']
-        # set date and day part base on current date and time
-        setting = SettingClass()
-        now = QDateTime.currentDateTime()
-        # if time between 0.0.0 and lunch start time stat date is the day before date part is dinner
-        if QTime(0, 0) <= now.time() < QTime(int(setting['lunch_start_time'] or 0), 0):
-            # dinner of the day before
-            self.selectedDate = now.date().addDays(-1)
-            self.selectedDayPart = 'D'
-        elif QTime(int(setting['lunch_start_time'] or 0), 0) <= now.time() < QTime(int(setting['dinner_start_time'] or 0), 0):
-            # lunch
-            self.selectedDate = now.date()
-            self.selectedDayPart = 'L'
-        else:
-            # dinner of the current date
-            self.selectedDate = now.date()
-            self.selectedDayPart = 'D'
+        self.sortFilterDialog = EventFilterDialog(self, show_date = True, show_daypart = True) # type: ignore
+        # initial filter conditions to current event
         if session['event_id']:
-            self.updateFilterConditions(session['event_id'], self.selectedDate, self.selectedDayPart)
-            model.select()
+            self.updateFilterConditions(session['event_id'])
         else:
-            self.setFilters()
-        self.updateTimer = QTimer(self)
-        self.updateTimer.setInterval(int(setting['ordered_delivered_update_interval'] or 0) * 1_000)
-        self.updateTimer.timeout.connect(self.updateUnload)
-        self.ui.checkBoxAutomaticUpdate.clicked.connect(self.setAutomaticUpdate)
-        if setting['ordered_delivered_automatic_update']:
-            self.ui.checkBoxAutomaticUpdate.setChecked(True)
-            self.ui.dateTimeEdit.setEnabled(True)
-            self.setAutomaticUpdate(True)
-
+            self.sortFilterDialog.show()
+        
+    def updateFilterConditions(self, event, eventDate=None, dayPart=None):
+        "Filter model based on filter dialog selections"
+        self.eventParams = (event, eventDate, dayPart)  # used on printing
+        self.model.addWhere('s.event_id = %s', event)
+        if eventDate:
+            self.model.addWhere('s.event_date = %s', eventDate)
+        if dayPart:
+            self.model.addWhere('s.day_part = %s', dayPart)
+        self.model.select()
+        
     def setAutomaticUpdate(self, state):
         if state:
             self.updateTimer.start()
@@ -145,33 +131,22 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         self.ui.dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self.updateTimer.start()
 
-    def updateFilterConditions(self, event, eventDate, dayPart):
-        "Filter model based on filter dialog selections"
-        self.eventParams = (event, eventDate, dayPart)  # used on printing
-        model = self.ui.tableView.model()
-        model.whereCondition.clear()
-        model.addWhere('i.has_delivered_control = %s', True)
-        model.addWhere('s.event_id = %s', event)
-        model.addWhere('s.event_date = %s', eventDate)
-        model.addWhere('s.day_part = %s', dayPart)
-        model.select()
+    # def setFilters(self):
+    #     "Filters event, date, day part"
+    #     if not event_lookup():
+    #         QMessageBox.information(self,
+    #                             _tr('MessageDialog', 'Information'),
+    #                             _tr('StockUnload', 'No event available'))
+    #         return
+    #     # create filter dialog if not exists
+    #     if not hasattr(self, 'sortFilterDialog'):
+    #         self.sortFilterDialog = EventFilterDialog(self,
+    #                                                   self.selectedEvent,
+    #                                                   self.selectedDate,
+    #                                                   self.selectedDayPart)
+    #     self.sortFilterDialog.show()
 
-    def setFilters(self):
-        "Filters event, date, day part"
-        if not event_lookup():
-            QMessageBox.information(self,
-                                _tr('MessageDialog', 'Information'),
-                                _tr('StockUnload', 'No event available'))
-            return
-        # create filter dialog if not exists
-        if not hasattr(self, 'sortFilterDialog'):
-            self.sortFilterDialog = EventFilterDialog(self,
-                                                      self.selectedEvent,
-                                                      self.selectedDate,
-                                                      self.selectedDayPart)
-        self.sortFilterDialog.show()
-
-    def print_(self):
+    def print(self):
         "Ordered delivered report"
         dialog = PrintDialog(self, 'ORDERED_DELIVERED')
         if not dialog.layoutFilters.itemAtPosition(0, 0):
@@ -183,14 +158,14 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         # report definition must have these conditions and in this order
         # event
         dialog.layoutFilters.itemAtPosition(0, 0).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(0, 1).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(0, 2).widget().setValue(self.eventParams[0])
+        dialog.layoutFilters.itemAtPosition(0, 2).widget().setCurrentIndex(1)
+        dialog.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.eventParams[0])
         # date
         dialog.layoutFilters.itemAtPosition(1, 0).widget().setCurrentIndex(2)
-        dialog.layoutFilters.itemAtPosition(1, 1).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(1, 2).widget().setDate(self.eventParams[1])
+        dialog.layoutFilters.itemAtPosition(1, 2).widget().setCurrentIndex(1)
+        dialog.layoutFilters.itemAtPosition(1, 3).widget().setDate(self.eventParams[1])
         # day part
         dialog.layoutFilters.itemAtPosition(2, 0).widget().setCurrentIndex(3)
-        dialog.layoutFilters.itemAtPosition(2, 1).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(2, 2).widget().setText(self.eventParams[2])
+        dialog.layoutFilters.itemAtPosition(2, 2).widget().setCurrentIndex(1)
+        dialog.layoutFilters.itemAtPosition(2, 3).widget().setText(self.eventParams[2])
         dialog.show()

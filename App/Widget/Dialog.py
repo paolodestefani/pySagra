@@ -134,6 +134,7 @@ from App.Database.Adaptation import get_adapt_class_default
 from App.Database.Adaptation import set_adapt_class_default
 from App.Database.Adaptation import get_adapt_user_default
 from App.Database.Adaptation import set_adapt_user_default
+from App.Database.Event import get_event_data
 from App.Database.Exceptions import PyAppDBError
 from App.Report.ReportEngine import Report
 from App.Report.ReportEngine import ReportException, ReportPrintError
@@ -961,39 +962,44 @@ class SortFilterDialog(QDialog):
 
 
 class EventFilterDialog(QDialog):
+    "Event filter dialog, choice of event, date and day part for event related models"
 
     def __init__(self, 
                  parent: QWidget,
-                 event: int|None = None,
-                 eventDate: QDate|None = None,
-                 dayPart: str|None = None
+                 show_date: bool = False,
+                 show_daypart: bool = False
                  ) -> None:
         super().__init__(parent)
         self.ui = Ui_EventFilterDialog()
         self.ui.setupUi(self)
-        if eventDate is None:
-            self.ui.groupBoxDate.setVisible(False)
-        if dayPart is None:
-            self.ui.groupBoxDayPart.setVisible(False)
+        self.ui.groupBoxDate.setVisible(show_date)
+        self.ui.groupBoxDayPart.setVisible(show_daypart)
         self.adjustSize()
         # fill event combobox
         for i, d in event_lookup():
             self.ui.comboBoxEvent.addItem(d, i)
         self.ui.comboBoxEvent.setCurrentText(session['event_description'])
-        # set date
-        self.ui.dateEditDate.setDate(eventDate or QDate.currentDate())
-        # set day part
-        if not dayPart:
-            dayPart = 'D'  # de definire come recuperare il daypart corrente
-        if dayPart == 'L':
-            self.ui.radioButtonLunch.setChecked(True)
-        else:
-            self.ui.radioButtonDinner.setChecked(True)
+        self.ui.comboBoxEvent.currentIndexChanged.connect(self.setDate)
+        
+    def setDate(self) -> None:
+        "Set date to the first of selected event"
+        event = self.ui.comboBoxEvent.currentData()
+        desc, start_date, end_date, price_list = get_event_data(event)
+        self.ui.dateEditDate.setDate(start_date.date())
 
     def accept(self) -> None:
-        self.parent().updateFilterConditions(self.ui.comboBoxEvent.currentData(),   # type: ignore
-                                             self.ui.dateEditDate.date(),
-                                             'L' if self.ui.radioButtonLunch.isChecked() else 'D')
+        "Apply event filter conditions to model"
+        if self.ui.groupBoxDate.isChecked():
+            date = self.ui.dateEditDate.date()
+        else:
+            date = None
+        if self.ui.groupBoxDayPart.isChecked():
+            dayPart = 'L' if self.ui.radioButtonLunch.isChecked() else 'D'
+        else:
+            dayPart = None
+        self.parent().updateFilterConditions(self.ui.comboBoxEvent.currentData(),
+                                             date,
+                                             dayPart)
         super().accept()
 
 

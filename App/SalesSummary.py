@@ -46,6 +46,8 @@ from App.Database.Models import SalesSummaryModel
 from App.Database.Lookup import event_lookup
 from App.Ui.SalesSummaryWidget import Ui_SalesSummaryWidget
 from App.Core.L10n import _tr
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 from App.Widget.Delegate import AmountDelegate
 from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import PrintDialog
@@ -86,7 +88,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.tabName = title
         self.helpLink = None
         # overwrite standard sortfilterdialog with event filter dialog
-        self.sortFilterDialog = EventFilterDialog(self, session['event_id']) # type: ignore
+        self.sortFilterDialog = EventFilterDialog(self, show_date = False, show_daypart = False)
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
@@ -119,9 +121,21 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.ui.tableView.setItemDelegateForColumn(TOTAL_L, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TOTAL_D, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TOTAL, AmountDelegate(self))
+        # scripting init
+        #self.script = scriptInit(self)
         # daily details
         self.ui.checkBoxDetail.checkStateChanged.connect(self.showDetails)
         self.showDetails(Qt.CheckState.Unchecked)
+        # initial filter conditions to current event
+        if session['event_id']:
+            self.updateFilterConditions(session['event_id'])
+        else:
+            self.sortFilterDialog.show()
+        
+    def updateFilterConditions(self, event, eventDate=None, dayPart=None):
+        "Update model for new event id"
+        self.model.setParameter('event_id', event)
+        self.model.select()
 
     def showDetails(self, state):
         if state == Qt.Unchecked:
@@ -163,22 +177,6 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
             self.ui.tableView.setColumnHidden(TOTAL_L, False)
             self.ui.tableView.setColumnHidden(TOTAL_D, False)
 
-    def updateFilterConditions(self, event_id, eventDate=None, dayPart=None):
-        self.model.setParameter('event_id', event_id)
-        self.model.select()
-
-    def setFilters(self):
-        "Filter event from combobox"
-        if not event_lookup():
-            QMessageBox.information(self,
-                                _tr('MessageDialog', 'Information'),
-                                _tr('SalesSummary', 'No event available'))
-            return
-        # create filter dialog if not exists
-        #if not hasattr(self, 'sortFilterDialog'):
-        #self.sortFilterDialog = EventFilterDialog(self, session['event_id'])
-        self.sortFilterDialog.show()
-
     def print(self):
         "Sales summary report"
         dialog = PrintDialog(self, 'SALES_SUMMARY')
@@ -191,6 +189,6 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         dialog.ui.layoutParameters.itemAtPosition(0, 1).widget().setChecked(self.ui.checkBoxDetail.isChecked())
         # filter on current selected event
         dialog.ui.layoutFilters.itemAtPosition(0, 0).widget().setCurrentIndex(1)
-        dialog.ui.layoutFilters.itemAtPosition(0, 1).widget().setCurrentIndex(1)
-        dialog.ui.layoutFilters.itemAtPosition(0, 2).widget().setValue(self.model.parameter['event_id'])
+        dialog.ui.layoutFilters.itemAtPosition(0, 2).widget().setCurrentIndex(1)
+        dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.model.parameter['event_id'])
         dialog.show()

@@ -258,6 +258,7 @@ class QueryModel(QAbstractTableModel):
             where += self.filterCondition
         if self.whereCondition:
             where += self.whereCondition
+            self.whereCondition.clear() # clear where condition after use, they are intended for one select only
         if where:
             script += "\nWHERE " + f"{' AND '.join([i[0] for i in where])}"
             args += [i[1] for i in where]
@@ -940,6 +941,7 @@ class TableModel(QAbstractTableModel):
             where += self.filterCondition
         if self.whereCondition:
             where += self.whereCondition
+            self.whereCondition.clear() # clear where condition after use, they are intended for one select only
         if where:
             script += f"\nWHERE {' AND '.join([i[0] for i in where])}"
             args += [i[1] for i in where if '%s' in i[0]] # argument if required

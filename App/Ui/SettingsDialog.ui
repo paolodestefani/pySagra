@@ -1550,6 +1550,11 @@
                   <disabled/>
                  </palette>
                 </property>
+                <property name="font">
+                 <font>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Out of stock</string>
                 </property>
@@ -1603,7 +1608,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <bold>false</bold>
+                  <bold>true</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -1646,9 +1651,9 @@
                    <colorrole role="WindowText">
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
-                      <red>255</red>
-                      <green>251</green>
-                      <blue>0</blue>
+                      <red>246</red>
+                      <green>205</green>
+                      <blue>60</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -1657,9 +1662,9 @@
                    <colorrole role="WindowText">
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
-                      <red>255</red>
-                      <green>251</green>
-                      <blue>0</blue>
+                      <red>246</red>
+                      <green>205</green>
+                      <blue>60</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -1669,7 +1674,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <bold>false</bold>
+                  <bold>true</bold>
                  </font>
                 </property>
                 <property name="text">

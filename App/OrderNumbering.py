@@ -33,6 +33,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtCore import QDate
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
@@ -49,6 +50,7 @@ from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import IntegerDelegate
 from App.Widget.Delegate import RelationDelegate
+from App.Widget.Dialog import EventFilterDialog
 from App.Widget.Form import FormViewManager
 from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
 
@@ -64,7 +66,7 @@ def orderNumbering(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     dw = OrderNumberingForm(mw, title, auth)
-    dw.reload()
+    #dw.reload() # not required because filtered model is loaded at init
     mw.addTab(title, dw)
     logging.info('Order numbers form added to main window')
 
@@ -88,8 +90,24 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.ui.tableView.setLayoutName('OrderNumbering')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_lookup))
+        # event filter overwrite standard sort and filter dialog
+        self.sortFilterDialog = EventFilterDialog(self, show_date = True, show_daypart = True) # type: ignore
         # scripting init
         self.script = scriptInit(self)
+        # initial filter conditions to current event
+        if session['event_id']:
+            self.updateFilterConditions(session['event_id'])
+        else:
+            self.sortFilterDialog.show()
+        
+    def updateFilterConditions(self, event, eventDate=None, dayPart=None):
+        "Update model for new event id, date and day part"
+        self.model.addWhere('event_id = %s', event)
+        if eventDate:
+            self.model.addWhere('event_date = %s', eventDate)
+        if dayPart:
+            self.model.addWhere('day_part = %s', dayPart)
+        self.model.select()
 
     @scriptMethod
     def new(self) -> None:
@@ -98,7 +116,6 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         model = self.ui.tableView.model()
         row = model.rowCount() -1
         index = model.createIndex(row, EVENT)
-        #model.setData(index, QHostInfo.localHostName())
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 

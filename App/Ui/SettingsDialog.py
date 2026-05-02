@@ -987,6 +987,9 @@ class Ui_SettingsDialog(object):
         palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush)
         palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush)
         self.labelOutOfStock.setPalette(palette)
+        font1 = QFont()
+        font1.setBold(True)
+        self.labelOutOfStock.setFont(font1)
 
         self.horizontalLayout_13.addWidget(self.labelOutOfStock)
 
@@ -1009,7 +1012,7 @@ class Ui_SettingsDialog(object):
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush1)
         palette1.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush1)
         self.labelCritical.setPalette(palette1)
-        self.labelCritical.setFont(font)
+        self.labelCritical.setFont(font1)
 
         self.horizontalLayout_13.addWidget(self.labelCritical)
 
@@ -1034,12 +1037,12 @@ class Ui_SettingsDialog(object):
         self.labelWarning = QLabel(self.groupBox_3)
         self.labelWarning.setObjectName(u"labelWarning")
         palette2 = QPalette()
-        brush2 = QBrush(QColor(255, 251, 0, 255))
+        brush2 = QBrush(QColor(246, 205, 60, 255))
         brush2.setStyle(Qt.BrushStyle.SolidPattern)
         palette2.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush2)
         palette2.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush2)
         self.labelWarning.setPalette(palette2)
-        self.labelWarning.setFont(font)
+        self.labelWarning.setFont(font1)
 
         self.horizontalLayout_13.addWidget(self.labelWarning)
 

@@ -33,6 +33,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QObject
+from PySide6.QtCore import QDate
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
@@ -149,15 +150,6 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         newIndex = model.index(newRow, ITEM)
         self.ui.tableViewItem.edit(newIndex)
 
-    #def columnChanged(self, current, previous):
-        #"On column change move to next line same column if NEW_STOCK"
-        ##print(previous.column(), current.column(), previous.row(), current.row())
-        #if previous.column() == NEW_STOCK:
-            ##print(previous.column(), current.column(), previous.row(), current.row())
-            #index = self.ui.tableViewItem.model().index(previous.row() + 1, NEW_STOCK)
-            #self.ui.tableViewItem.setCurrentIndex(index)
-            #self.ui.tableViewItem.edit(index)
-
     def updateFilterConditions(self, event, eventDate=None, dayPart=None):
         "Update model of item, kit and menu on new event id"
         self.selectedEvent = event
@@ -173,7 +165,4 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
 
     def setFilters(self):
         "Filters event and items"
-        # create filter dialog if not exists
-        #if not hasattr(self, 'sortFilterDialog'):
-        #    self.sortFilterDialog = EventFilterDialog(self, session['event'])
         self.sortFilterDialog.show()

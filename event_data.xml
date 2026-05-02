@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <event>
-    <title>eterno</title>
-    <start_date>2026-04-01T23:45:13+02:00</start_date>
-    <end_date>2030-12-31T23:59:59+01:00</end_date>
+    <title>SAGRA 2019</title>
+    <start_date>2019-10-11T00:00:00+02:00</start_date>
+    <end_date>2019-10-21T23:59:00+02:00</end_date>
     <items>
         <department description="Primi" />
         <department description="Secondi">
@@ -31,7 +31,7 @@
                 <id>15</id>
                 <description>Salsiccia + Polenta</description>
                 <price>5.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>

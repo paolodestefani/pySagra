@@ -1303,7 +1303,7 @@ Proseguire ugualmente ?</translation>
         <translation>Riga modificata prima dell&apos;aggiornamento/cancellazione: impossibile salvare perchè la riga è stata modificata da un altro client</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="451"/>
+        <location filename="../../App/System/Mainwindow.py" line="452"/>
         <source>Undo changes and reload data ?</source>
         <translation>Annullare le modifiche e ricaricare i dati ?</translation>
     </message>
@@ -1386,22 +1386,22 @@ Proseguire ugualmente ?</translation>
         <translation>Contatore dei record della vista corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="371"/>
+        <location filename="../../App/System/Mainwindow.py" line="372"/>
         <source>Company</source>
         <translation>Azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="523"/>
+        <location filename="../../App/System/Mainwindow.py" line="524"/>
         <source>Warning: open tabs will be closed, continue anyway ?</source>
         <translation>Avviso: le linguette aperte verranno chiuse, procedo comunque ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="543"/>
+        <location filename="../../App/System/Mainwindow.py" line="544"/>
         <source>Are you sure you want to quit</source>
         <translation>Sei sicuro di voler uscire da</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="508"/>
+        <location filename="../../App/System/Mainwindow.py" line="509"/>
         <source>The connection is not active with the following error message:</source>
         <translation>La connessione non è più attiva per il seguente messaggio di errore:</translation>
     </message>
@@ -1411,7 +1411,7 @@ Proseguire ugualmente ?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="509"/>
+        <location filename="../../App/System/Mainwindow.py" line="510"/>
         <source>Quitting the application...</source>
         <translation>Uscita dall&apos;applicazione...</translation>
     </message>
@@ -1449,7 +1449,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Connection.py" line="205"/>
         <location filename="../../App/System/Connection.py" line="228"/>
         <location filename="../../App/System/Connection.py" line="247"/>
-        <location filename="../../App/System/Mainwindow.py" line="511"/>
+        <location filename="../../App/System/Mainwindow.py" line="512"/>
         <location filename="../../App/System/Profile.py" line="108"/>
         <location filename="../../App/System/Report.py" line="356"/>
         <location filename="../../App/System/Report.py" line="398"/>
@@ -1550,9 +1550,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Connection.py" line="132"/>
         <location filename="../../App/System/Connection.py" line="218"/>
         <location filename="../../App/System/Customization.py" line="225"/>
-        <location filename="../../App/System/Mainwindow.py" line="450"/>
-        <location filename="../../App/System/Mainwindow.py" line="522"/>
-        <location filename="../../App/System/Mainwindow.py" line="545"/>
+        <location filename="../../App/System/Mainwindow.py" line="451"/>
+        <location filename="../../App/System/Mainwindow.py" line="523"/>
+        <location filename="../../App/System/Mainwindow.py" line="546"/>
         <location filename="../../App/System/Menu.py" line="171"/>
         <location filename="../../App/System/Profile.py" line="203"/>
         <location filename="../../App/System/Report.py" line="197"/>

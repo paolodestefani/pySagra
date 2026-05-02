@@ -695,7 +695,7 @@ class IntegerDelegate(QStyledItemDelegate):
 class DecimalDelegate(QStyledItemDelegate):
     "A delegate for decimal values or currency values"
 
-    def __init__(self, parent: QWidget, prec=0, maximum=999.9, currency=False, bold=False):
+    def __init__(self, parent: QWidget, prec=0, maximum=999.9, currency=False, bold=False) -> None:
         super().__init__(parent)
         self.prec = prec
         self.maximum = maximum
@@ -706,6 +706,7 @@ class DecimalDelegate(QStyledItemDelegate):
               painter: QPainter,
               option: QStyleOptionViewItem, 
               index: QModelIndex|QPersistentModelIndex) -> None:
+        self.initStyleOption(option, index)
         # first use EditRole (actual value, user inserted) then DisplayRole (formatted value)
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
@@ -720,7 +721,10 @@ class DecimalDelegate(QStyledItemDelegate):
         if index.data(Qt.ItemDataRole.FontRole):
             if index.data(Qt.ItemDataRole.FontRole).bold():
                 option.font.setWeight(QFont.Weight.Bold)
-        super().paint(painter, option, index)
+        # draw
+        widget = option.widget
+        style = widget.style() if widget else QApplication.style()
+        style.drawControl(QStyle.ControlElement.CE_ItemViewItem, option, painter, widget)
 
     def createEditor(self, 
                      parent: QWidget,
@@ -819,32 +823,54 @@ class NewStockDelegate(QuantityDelegate):
 
 class StockLevelDelegate(QuantityDelegate):
 
-    def __init__(self, parent: QWidget, warning=10, critical=5):
-        super().__init__(parent)
+    def __init__(self, parent: QWidget, warning=10, critical=5, bold=True):
+        super().__init__(parent, bold=bold)
         self.warning_level = warning
         self.critical_level = critical
-        self.normalColor = QColor('Green')
-        self.warningColor = QColor('Yellow')
-        self.criticalColor = QColor('Orange')
-        self.outOfStockColor = QColor('Red')
+        self.normalColor = Qt.GlobalColor.darkGreen
+        self.warningColor = Qt.GlobalColor.darkYellow
+        self.criticalColor = Qt.GlobalColor.red
+        self.outOfStockColor = Qt.GlobalColor.gray
 
     def paint(self, 
               painter: QPainter,
               option: QStyleOptionViewItem,
               index: QModelIndex|QPersistentModelIndex
               ) -> None:
+        self.initStyleOption(option, index)
         # first use EditRole (actual value, user inserted) then DisplayRole (formatted value)
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
-            val = index.data(Qt.ItemDataRole.DisplayRole) or 0
-        option.text = session['qlocale'].toString(float(val), 'f', self.prec)  # can be null on insert row
+            val = index.data(Qt.ItemDataRole.DisplayRole)
+        try:
+            num_val = float(val) if val is not None else 0.0
+        except (ValueError, TypeError):
+            num_val = 0.0
+        option.text = session['qlocale'].toString(float(index.data() or 0.0), 'f', self.prec)  # can be null on insert row
         option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
         if self.bold:
             option.font.setWeight(QFont.Weight.Bold)
         if index.data(Qt.ItemDataRole.FontRole):
             if index.data(Qt.ItemDataRole.FontRole).bold():
                 option.font.setWeight(QFont.Weight.Bold)
-        super().paint(painter, option, index)
+        if num_val > self.warning_level:
+            option.palette.setColor(QPalette.ColorRole.Text, self.normalColor)
+            option.palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
+        elif self.critical_level < num_val <= self.warning_level:
+            option.palette.setColor(QPalette.ColorRole.Text, self.warningColor)
+            option.palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
+        elif 0 < num_val <= self.critical_level:
+            option.palette.setColor(QPalette.ColorRole.Text, self.criticalColor)
+            option.palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
+        else:  # out of stock
+            option.palette.setColor(QPalette.ColorRole.Text, self.outOfStockColor)
+            option.palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
+
+        # draw
+        widget = option.widget
+        style = widget.style() if widget else QApplication.style()
+        style.drawControl(QStyle.ControlElement.CE_ItemViewItem, option, painter, widget)
+
         
 
 class BoldDelegate(QStyledItemDelegate):
