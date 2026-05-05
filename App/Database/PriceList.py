@@ -42,12 +42,12 @@ def duplicate_price_list(from_id: int, new_description: str) -> None:
     # create a new price list
     sql1 = """
 INSERT INTO price_list (description) 
-VALUES (%(description)s) RETURNING id;"""
+VALUES (%(description)s) RETURNING price_list_id;"""
 # copy prices from another price list
     sql2 = """
-INSERT INTO price_list_detail (price_list_id, item_id, price)
+INSERT INTO price_list_item (price_list_id, item_id, price)
 SELECT %(new_id)s, item_id, price
-FROM price_list_detail
+FROM price_list_item
 WHERE price_list_id = %(from_id)s;"""
     try:
         with appconn.transaction():

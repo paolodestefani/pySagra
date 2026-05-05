@@ -96,12 +96,12 @@ class GenericDelegate(QStyledItemDelegate):
               painter: QPainter,
               option: QStyleOptionViewItem, 
               index: QModelIndex|QPersistentModelIndex) -> None:
-        value = index.data(Qt.ItemDataRole.DisplayRole)
         styleOption: QStyleOptionViewItem = QStyleOptionViewItem(option)
         self.initStyleOption(styleOption, index)
+        value = index.data(Qt.ItemDataRole.DisplayRole)
         match value:
             case bool():
-                styleOption.text = ''
+                 styleOption.text = ''
             case int():
                 styleOption.text = str(value)
                 styleOption.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
@@ -117,8 +117,10 @@ class GenericDelegate(QStyledItemDelegate):
         font = index.model().data(index, Qt.ItemDataRole.FontRole)
         if font:
             styleOption.font = font
-        # call base class to draw the item with the modified style option
-        super().paint(painter, styleOption, index)
+        # draw
+        widget = option.widget
+        style = widget.style() if widget else QApplication.style()
+        style.drawControl(QStyle.ControlElement.CE_ItemViewItem, styleOption, painter, widget)
         
     def createEditor(self, 
                      parent: QWidget,
@@ -131,7 +133,7 @@ class GenericDelegate(QStyledItemDelegate):
         widget: QWidget|QSpinBox|QDateEdit|QDateTimeEdit|QDoubleSpinBox|QLineEdit
         match fieldType:
             case 'bool':  # must be checked before int (bool is subclass of int)
-                widget = QWidget(parent)
+                widget = None # QWidget(parent)
             case 'int':
                 widget = QSpinBox(parent)
                 widget.setRange(0, 999999999)
@@ -209,34 +211,82 @@ class GenericDelegate(QStyledItemDelegate):
                 raise TypeError(f"Unsupported editor type: {editor}")
   
 
+# class ColorDelegate(QStyledItemDelegate):
+#     "Color delegate"
+
+#     def createEditor(self,
+#                      parent: QWidget,
+#                      option: QStyleOptionViewItem,
+#                      index: QModelIndex|QPersistentModelIndex
+#                      ) -> QWidget:
+#         color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
+#         if not color.isValid():
+#             color = QColor(Qt.GlobalColor.green)
+#         newcolor = QColorDialog.getColor(color, parent)
+#         print("Index", index.row(), index.column(), "Current color", color.name(), "New color", newcolor.name())
+#         if newcolor.isValid():
+#             index.model().setData(index, newcolor.name(), Qt.ItemDataRole.EditRole)
+#             print("Dataset", index.model().dataSet[0])
+#         return QWidget(parent)  # dummy editor, not used
+
+#     def paint(self,
+#               painter: QPainter,
+#               option: QStyleOptionViewItem,
+#               index: QModelIndex|QPersistentModelIndex) -> None:
+#         color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
+#         painter.save()
+#         styleOption = QStyleOptionViewItem(option)
+#         styleOption.backgroundBrush = QBrush(color)
+#         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
+#                                          styleOption,
+#                                          painter)
+#         painter.restore()
+        
 class ColorDelegate(QStyledItemDelegate):
-    "Color delegate"
-
-    def createEditor(self,
-                     parent: QWidget,
-                     option: QStyleOptionViewItem,
-                     index: QModelIndex|QPersistentModelIndex
-                     ) -> QWidget:
-        color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
-        if not color.isValid():
-            color = QColor(Qt.GlobalColor.green)
-        newcolor = QColorDialog.getColor(color, parent)
-        if newcolor.isValid():
-            index.model().setData(index, newcolor.name(), Qt.ItemDataRole.EditRole)
-        return QWidget(parent)  # dummy editor, not used
-
-    def paint(self,
-              painter: QPainter,
-              option: QStyleOptionViewItem,
-              index: QModelIndex|QPersistentModelIndex) -> None:
-        color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
+    
+    def paint(self, painter, option, index):
+        # Recupera il colore dal modello
+        color_val = index.data(Qt.ItemDataRole.DisplayRole)
+        color = QColor(color_val) if color_val else QColor(Qt.GlobalColor.white)
+        
         painter.save()
-        styleOption = QStyleOptionViewItem(option)
-        styleOption.backgroundBrush = QBrush(color)
-        QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
-                                         styleOption,
-                                         painter)
+        opts = QStyleOptionViewItem(option)
+        self.initStyleOption(opts, index)
+        
+        # 1. Rimuove il testo per evitare di vedere il codice HEX
+        opts.text = ""
+        
+        # 2. Imposta il colore di sfondo
+        opts.backgroundBrush = QBrush(color)
+        
+        # Su Windows, per far vedere bene la selezione, Qt disegna un rettangolo tratteggiato.
+        # drawControl gestirà correttamente sia lo sfondo colorato che il focus.
+        QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem, opts, painter)
         painter.restore()
+
+    def editorEvent(self, event, model, option, index):
+        # Usiamo MouseButtonRelease: è lo standard più sicuro tra Win/Mac
+        # per evitare che il dialogo appaia mentre il mouse è ancora premuto
+        if event.type() == QEvent.Type.MouseButtonRelease:
+            # Opzionale: puoi limitare l'apertura solo se viene cliccato il tasto sinistro
+            if event.button() == Qt.MouseButton.LeftButton:
+                current_str = index.data(Qt.ItemDataRole.DisplayRole)
+                current_color = QColor(current_str) if current_str else QColor(Qt.GlobalColor.green)
+                
+                # Nel tuo editorEvent
+                new_color = QColorDialog.getColor(current_color, option.widget, "Seleziona Colore")
+                
+                if new_color.isValid():
+                    # Aggiorna il modello
+                    model.setData(index, new_color.name(), Qt.ItemDataRole.EditRole)
+                    return True
+        return False
+
+    def createEditor(self, parent, option, index):
+        # Fondamentale: impedisce a Windows di creare la QLineEdit di default
+        # che apparirebbe sopra il tuo colore.
+        return None
+
 
 
 class ColorComboDelegate(QStyledItemDelegate):
@@ -794,7 +844,7 @@ class NewStockDelegate(QuantityDelegate):
         if index.data() is None:
             return
         model = index.model()
-        stockIndex = model.createIndex(index.row(), self.STOCK)
+        stockIndex = model.index(index.row(), self.STOCK)
         newLoads = model.data(stockIndex) or 0.0
         dsb = cast(QDoubleSpinBox, editor)
         dsb.setValue(newLoads)
@@ -806,18 +856,18 @@ class NewStockDelegate(QuantityDelegate):
                      ) -> None:
         dsb = cast(QDoubleSpinBox, editor)
         # update loads
-        loadsIndex = model.createIndex(index.row(), self.LOAD)
-        unloadsIndex = model.createIndex(index.row(), self.UNLOAD)
+        loadsIndex = model.index(index.row(), self.LOAD)
+        unloadsIndex = model.index(index.row(), self.UNLOAD)
         unloads = model.data(unloadsIndex) or Decimal(0)
         model.setData(loadsIndex, Decimal(dsb.value()) + unloads)
         # update stock
-        stockIndex = model.createIndex(index.row(), self.STOCK)
+        stockIndex = model.index(index.row(), self.STOCK)
         stock = Decimal(dsb.value())
         model.setData(stockIndex, stock)
         # update available
-        orderedIndex = model.createIndex(index.row(), self.ORDERED)
+        orderedIndex = model.index(index.row(), self.ORDERED)
         ordered = model.data(orderedIndex) or Decimal(0)
-        availableIndex = model.createIndex(index.row(), self.AVAILABLE)
+        availableIndex = model.index(index.row(), self.AVAILABLE)
         model.setData(availableIndex, stock - ordered)
 
 
@@ -828,7 +878,7 @@ class StockLevelDelegate(QuantityDelegate):
         self.warning_level = warning
         self.critical_level = critical
         self.normalColor = Qt.GlobalColor.darkGreen
-        self.warningColor = Qt.GlobalColor.darkYellow
+        self.warningColor = Qt.GlobalColor.yellow
         self.criticalColor = Qt.GlobalColor.red
         self.outOfStockColor = Qt.GlobalColor.gray
 

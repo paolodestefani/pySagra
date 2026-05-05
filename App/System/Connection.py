@@ -93,11 +93,11 @@ class ConnectionForm(FormManager):
         self.setModel(model)
         self.tabName = title
         self.helpLink = None
-        self.reloadConfirmation = False
+        self.reloadConfirmation = True
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False, False, False, True, False, False, False, False,
+        self.availableStatus = (False, False, False, True, True, True, True, True,
                                 True, False, False, True)
         self.ui = Ui_ConnectionWidget()
         self.ui.setupUi(self)
@@ -107,9 +107,15 @@ class ConnectionForm(FormManager):
         # signal slot connections
         self.ui.killClientButton.clicked.connect(self.killClient)
         self.ui.tableView.setModel(model)
-        self.ui.tableView.setLayoutName('currentConnection')  # must be set AFTER model
+        self.ui.tableView.setLayoutName('CurrentConnection')  # must be set AFTER model
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.ui.tableView.activateWindow()
+       
+    def mapperIndexChanged(self, row: int) -> None:
+        "Mapper index changed, update view selection"
+        super().mapperIndexChanged(row)
+        # link navigation to view selection
+        self.ui.tableView.selectRow(row)
 
     def killClient(self) -> None:
         "Kills selected client PID"
@@ -186,6 +192,12 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
         self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
         self.ui.pushButtonDeleteSetting.clicked.connect(self.deleteSetting)
         #self.updateList()
+        
+    def mapperIndexChanged(self, row: int) -> None:
+        "Mapper index changed, update view selection"
+        super().mapperIndexChanged(row)
+        # link navigation to view selection
+        self.ui.tableView.selectRow(row)
 
     def deleteOlder(self) -> None:
         "Delete records of log history table"

@@ -253,7 +253,10 @@ class Order():
                 for p, q in get_menu_items(i['item_id']):
                     r = dict()
                     r['item_id'] = p
-                    r['variants'] = None # menu part can not have variants
+                    if setting['menu_description_on_menu_items']:
+                        r['variants'] = f"({get_item_desc(i['item_id'])})" 
+                    else:
+                        r['variants'] = None # menu part can not have variants
                     r['quantity'] = i['quantity'] * q
                     intermediate.append(r)
             else:

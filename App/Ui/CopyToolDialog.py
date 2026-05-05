@@ -117,10 +117,10 @@ class Ui_CopyToolDialog(object):
 
         self.gridLayout.addWidget(self.checkBoxTable, 2, 0, 1, 1)
 
-        self.checkBoxSetting = QCheckBox(self.groupBoxDelete)
-        self.checkBoxSetting.setObjectName(u"checkBoxSetting")
+        self.checkBoxSettings = QCheckBox(self.groupBoxDelete)
+        self.checkBoxSettings.setObjectName(u"checkBoxSettings")
 
-        self.gridLayout.addWidget(self.checkBoxSetting, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.checkBoxSettings, 3, 0, 1, 1)
 
 
         self.verticalLayout_2.addLayout(self.gridLayout)
@@ -169,6 +169,6 @@ class Ui_CopyToolDialog(object):
         self.checkBoxCashDesk.setText(QCoreApplication.translate("CopyToolDialog", u"Cash desks", None))
         self.checkBoxPrinterClass.setText(QCoreApplication.translate("CopyToolDialog", u"Printer classes", None))
         self.checkBoxTable.setText(QCoreApplication.translate("CopyToolDialog", u"Tables", None))
-        self.checkBoxSetting.setText(QCoreApplication.translate("CopyToolDialog", u"Settings", None))
+        self.checkBoxSettings.setText(QCoreApplication.translate("CopyToolDialog", u"Settings", None))
     # retranslateUi
 

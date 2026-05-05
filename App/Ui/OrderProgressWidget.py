@@ -15,12 +15,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QGroupBox, QHBoxLayout,
-    QHeaderView, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QSplitter, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDateEdit, QGroupBox,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
+    QSpinBox, QSplitter, QTableWidget, QTableWidgetItem,
+    QVBoxLayout, QWidget)
 
-from App.Widget.Control import RelationalComboBox
 from App.Widget.View import EnhancedTableView
 
 class Ui_OrderProgressWidget(object):
@@ -77,20 +77,46 @@ class Ui_OrderProgressWidget(object):
 
         self.horizontalLayout.addWidget(self.checkBoxProcessed)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout.addItem(self.horizontalSpacer)
+        self.horizontalLayout.addItem(self.horizontalSpacer_4)
 
         self.label_3 = QLabel(self.layoutWidget)
         self.label_3.setObjectName(u"label_3")
 
         self.horizontalLayout.addWidget(self.label_3)
 
-        self.comboBoxLimit = RelationalComboBox(self.layoutWidget)
-        self.comboBoxLimit.setObjectName(u"comboBoxLimit")
-        self.comboBoxLimit.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.spinBoxRecords = QSpinBox(self.layoutWidget)
+        self.spinBoxRecords.setObjectName(u"spinBoxRecords")
+        self.spinBoxRecords.setReadOnly(True)
+        self.spinBoxRecords.setMaximum(9999)
 
-        self.horizontalLayout.addWidget(self.comboBoxLimit)
+        self.horizontalLayout.addWidget(self.spinBoxRecords)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+        self.label_5 = QLabel(self.layoutWidget)
+        self.label_5.setObjectName(u"label_5")
+
+        self.horizontalLayout.addWidget(self.label_5)
+
+        self.dateEdit = QDateEdit(self.layoutWidget)
+        self.dateEdit.setObjectName(u"dateEdit")
+        self.dateEdit.setCalendarPopup(True)
+
+        self.horizontalLayout.addWidget(self.dateEdit)
+
+        self.radioButtonLunch = QRadioButton(self.layoutWidget)
+        self.radioButtonLunch.setObjectName(u"radioButtonLunch")
+
+        self.horizontalLayout.addWidget(self.radioButtonLunch)
+
+        self.radioButtonDinner = QRadioButton(self.layoutWidget)
+        self.radioButtonDinner.setObjectName(u"radioButtonDinner")
+
+        self.horizontalLayout.addWidget(self.radioButtonDinner)
 
 
         self.verticalLayout1Order.addLayout(self.horizontalLayout)
@@ -188,7 +214,10 @@ class Ui_OrderProgressWidget(object):
         self.checkBoxAcquired.setText(QCoreApplication.translate("OrderProgressWidget", u"Acquired", None))
         self.checkBoxInProgress.setText(QCoreApplication.translate("OrderProgressWidget", u"In progress", None))
         self.checkBoxProcessed.setText(QCoreApplication.translate("OrderProgressWidget", u"Processed", None))
-        self.label_3.setText(QCoreApplication.translate("OrderProgressWidget", u"Limit to", None))
+        self.label_3.setText(QCoreApplication.translate("OrderProgressWidget", u"Records:", None))
+        self.label_5.setText(QCoreApplication.translate("OrderProgressWidget", u"Date:", None))
+        self.radioButtonLunch.setText(QCoreApplication.translate("OrderProgressWidget", u"Lunch", None))
+        self.radioButtonDinner.setText(QCoreApplication.translate("OrderProgressWidget", u"Dinner", None))
         self.label_2.setText(QCoreApplication.translate("OrderProgressWidget", u"Barcode scan", None))
         self.groupBox.setTitle(QCoreApplication.translate("OrderProgressWidget", u"Barcode scan", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("OrderProgressWidget", u"Edit scan", None))

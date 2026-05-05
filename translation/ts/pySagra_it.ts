@@ -706,27 +706,27 @@
 <context>
     <name>ChangePassword</name>
     <message>
-        <location filename="../../App/System/User.py" line="392"/>
+        <location filename="../../App/System/User.py" line="393"/>
         <source>Insert a valid password on both the line edit</source>
         <translation>Inserire una apssword valida in entrambe le caselle</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="370"/>
+        <location filename="../../App/System/User.py" line="371"/>
         <source>Password changed successfully</source>
         <translation>Password modificata correttamente</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="350"/>
+        <location filename="../../App/System/User.py" line="351"/>
         <source>Insert a valid password on both the line edit boxes</source>
         <translation>Inserire una password valida in entrambe le caselle</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="356"/>
+        <location filename="../../App/System/User.py" line="357"/>
         <source>The Inserted password in the &apos;New password&apos; does not match that of the &apos;Confirm password&apos;</source>
         <translation>La password inserita in &apos;Nuova password&apos; non corrisponde a quella inserita in &apos;Conferma password&apos;</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="396"/>
+        <location filename="../../App/System/User.py" line="397"/>
         <source>New password and confirmed password does not match</source>
         <translation>La nuova poassword non corrisponde alla conferma password</translation>
     </message>
@@ -880,47 +880,47 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Connection</name>
     <message>
-        <location filename="../../App/System/Connection.py" line="121"/>
+        <location filename="../../App/System/Connection.py" line="127"/>
         <source>You must select a connection record first</source>
         <translation>E&apos; necessario selezionare un record della lista delle connessioni</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="127"/>
+        <location filename="../../App/System/Connection.py" line="133"/>
         <source>Cant&apos;t kill current connection</source>
         <translation>Non è possibile terminare la connesione corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="193"/>
+        <location filename="../../App/System/Connection.py" line="205"/>
         <source>Delete older records</source>
         <translation>Cancella record più vecchi</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="194"/>
+        <location filename="../../App/System/Connection.py" line="206"/>
         <source>Number of days for deletion</source>
         <translation>Numero di giorni oper cancellare</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="213"/>
+        <location filename="../../App/System/Connection.py" line="225"/>
         <source>Older records deletion completed</source>
         <translation>Cancellazione dei record più vecchi completata</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="219"/>
+        <location filename="../../App/System/Connection.py" line="231"/>
         <source>Are you sure you want to delete ALL records ?</source>
         <translation>Sei sicuro di voler cancellare TUTTI i record ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="236"/>
+        <location filename="../../App/System/Connection.py" line="248"/>
         <source>Log records deletion completed</source>
         <translation>Cancellazione record storico completata</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="255"/>
+        <location filename="../../App/System/Connection.py" line="267"/>
         <source>Configuration updated</source>
         <translation>Configurazione aggiornata</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="130"/>
+        <location filename="../../App/System/Connection.py" line="136"/>
         <source>Are you sure you want to kill PID</source>
         <translation>Sei sicuro di voler terminare il PID</translation>
     </message>
@@ -933,92 +933,92 @@ Proseguire ugualmente ?</translation>
         <translation>NESSUNA IMMAGINE</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="684"/>
+        <location filename="../../App/Widget/Control.py" line="694"/>
         <source>Transparent</source>
         <translation>Trasparente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="685"/>
+        <location filename="../../App/Widget/Control.py" line="695"/>
         <source>Black</source>
         <translation>Nero</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="686"/>
+        <location filename="../../App/Widget/Control.py" line="696"/>
         <source>Red</source>
         <translation>Rosso</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="687"/>
+        <location filename="../../App/Widget/Control.py" line="697"/>
         <source>Dark red</source>
         <translation>Rosso scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="688"/>
+        <location filename="../../App/Widget/Control.py" line="698"/>
         <source>Green</source>
         <translation>Verde</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="689"/>
+        <location filename="../../App/Widget/Control.py" line="699"/>
         <source>Dark green</source>
         <translation>Verde scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="690"/>
+        <location filename="../../App/Widget/Control.py" line="700"/>
         <source>Blue</source>
         <translation>Blu</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="691"/>
+        <location filename="../../App/Widget/Control.py" line="701"/>
         <source>Dark blue</source>
         <translation>Blu scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="692"/>
+        <location filename="../../App/Widget/Control.py" line="702"/>
         <source>Cyan</source>
         <translation>Ciano</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="693"/>
+        <location filename="../../App/Widget/Control.py" line="703"/>
         <source>Dark cyan</source>
         <translation>Ciano scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="694"/>
+        <location filename="../../App/Widget/Control.py" line="704"/>
         <source>Magenta</source>
         <translation>Magenta</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="695"/>
+        <location filename="../../App/Widget/Control.py" line="705"/>
         <source>Dark magenta</source>
         <translation>Magenta scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="696"/>
+        <location filename="../../App/Widget/Control.py" line="706"/>
         <source>Yellow</source>
         <translation>Giallo</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="697"/>
+        <location filename="../../App/Widget/Control.py" line="707"/>
         <source>Dark yellow</source>
         <translation>Giallo scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="698"/>
+        <location filename="../../App/Widget/Control.py" line="708"/>
         <source>Gray</source>
         <translation>Grigio</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="699"/>
+        <location filename="../../App/Widget/Control.py" line="709"/>
         <source>Dark gray</source>
         <translation>Grigio scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="700"/>
+        <location filename="../../App/Widget/Control.py" line="710"/>
         <source>Light gray</source>
         <translation>Grigio chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="701"/>
+        <location filename="../../App/Widget/Control.py" line="711"/>
         <source>White</source>
         <translation>Bianco</translation>
     </message>
@@ -1094,149 +1094,149 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Dialog</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="213"/>
+        <location filename="../../App/Widget/Dialog.py" line="214"/>
         <source>Select the image file to upload</source>
         <translation>Selezionare il file da caricare</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="215"/>
+        <location filename="../../App/Widget/Dialog.py" line="216"/>
         <source>Portable Network Graphics (*.png);;All files (*.*)</source>
         <translation>Portable Network Graphics (*.png);;Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="222"/>
+        <location filename="../../App/Widget/Dialog.py" line="223"/>
         <source>Unable to load the file {}</source>
         <translation>Impossibile caricare il file {}</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="635"/>
+        <location filename="../../App/Widget/Dialog.py" line="636"/>
         <source>Current customization was updated</source>
         <translation>La personalizzazione corrente è stata aggiornata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="775"/>
+        <location filename="../../App/Widget/Dialog.py" line="776"/>
         <source>New customization saved</source>
         <translation>Nuova personalizzazione salvata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="802"/>
+        <location filename="../../App/Widget/Dialog.py" line="803"/>
         <source>Current customization deleted</source>
         <translation>Personalizzazione corrente cancellata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="838"/>
-        <location filename="../../App/Widget/Dialog.py" line="1499"/>
+        <location filename="../../App/Widget/Dialog.py" line="839"/>
+        <location filename="../../App/Widget/Dialog.py" line="1506"/>
         <source>Current adaptation set as default for current user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="855"/>
-        <location filename="../../App/Widget/Dialog.py" line="1515"/>
+        <location filename="../../App/Widget/Dialog.py" line="856"/>
+        <location filename="../../App/Widget/Dialog.py" line="1522"/>
         <source>Current adaptation set as default for class</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1264"/>
+        <location filename="../../App/Widget/Dialog.py" line="1271"/>
         <source>Customization saved</source>
         <translation>Personalizzazione salvata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1288"/>
+        <location filename="../../App/Widget/Dialog.py" line="1295"/>
         <source>Customization deleted</source>
         <translation>Personalizzazione cancellata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1301"/>
+        <location filename="../../App/Widget/Dialog.py" line="1308"/>
         <source>You must fill all the parameters of a new customization</source>
         <translation>E&apos; necessario compilare tutti i parametri della nuova personalizzazione</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1312"/>
+        <location filename="../../App/Widget/Dialog.py" line="1319"/>
         <source>New customization &apos;{}&apos; created</source>
         <translation>Nuova personalizzazione &apos;{}&apos; creata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1799"/>
+        <location filename="../../App/Widget/Dialog.py" line="1806"/>
         <source>Export directory not set</source>
         <translation>Directory di export non impostata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1804"/>
+        <location filename="../../App/Widget/Dialog.py" line="1811"/>
         <source>File name not set</source>
         <translation>Nome file non impostato</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1810"/>
-        <location filename="../../App/Widget/Dialog.py" line="1882"/>
+        <location filename="../../App/Widget/Dialog.py" line="1817"/>
+        <location filename="../../App/Widget/Dialog.py" line="1889"/>
         <source>File {} exists, overwrite ?</source>
         <translation>IL file {} è già presente, sovrascrivo ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1836"/>
+        <location filename="../../App/Widget/Dialog.py" line="1843"/>
         <source>Select export directory</source>
         <translation>Selezionare la directory di destinazione</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1916"/>
+        <location filename="../../App/Widget/Dialog.py" line="1923"/>
         <source>Select a date:</source>
         <translation>Selezionare una data:</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1751"/>
+        <location filename="../../App/Widget/Dialog.py" line="1758"/>
         <source>Print preview</source>
         <translation>Anteprima di stampa</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1084"/>
+        <location filename="../../App/Widget/Dialog.py" line="1091"/>
         <source>Pdf 1.4</source>
         <translation>Pdf 1.4</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="180"/>
+        <location filename="../../App/Widget/Dialog.py" line="181"/>
         <source>Critical error</source>
         <translation>Errore critico</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="181"/>
+        <location filename="../../App/Widget/Dialog.py" line="182"/>
         <source>Unidentified critical error</source>
         <translation>Errore critico non identificato</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1085"/>
+        <location filename="../../App/Widget/Dialog.py" line="1092"/>
         <source>Pdf A-1b</source>
         <translation>Pdf A-1b</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1086"/>
+        <location filename="../../App/Widget/Dialog.py" line="1093"/>
         <source>Pdf 1.6</source>
         <translation>Pdf 1.6</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1831"/>
+        <location filename="../../App/Widget/Dialog.py" line="1838"/>
         <source>PDF file created</source>
         <translation>File PDF generato</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="818"/>
-        <location filename="../../App/Widget/Dialog.py" line="1475"/>
+        <location filename="../../App/Widget/Dialog.py" line="819"/>
+        <location filename="../../App/Widget/Dialog.py" line="1482"/>
         <source>Current customization sorting updated</source>
         <translation>Ordinamento della personalizzazione corrente aggiornato</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1762"/>
-        <location filename="../../App/Widget/Dialog.py" line="1777"/>
-        <location filename="../../App/Widget/Dialog.py" line="1789"/>
-        <location filename="../../App/Widget/Dialog.py" line="1822"/>
+        <location filename="../../App/Widget/Dialog.py" line="1769"/>
+        <location filename="../../App/Widget/Dialog.py" line="1784"/>
+        <location filename="../../App/Widget/Dialog.py" line="1796"/>
+        <location filename="../../App/Widget/Dialog.py" line="1829"/>
         <source>Critical</source>
         <translation>Errore critico</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1177"/>
+        <location filename="../../App/Widget/Dialog.py" line="1184"/>
         <source>No report available</source>
         <translation>Nessun report disponibile</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1732"/>
+        <location filename="../../App/Widget/Dialog.py" line="1739"/>
         <source>No data to render</source>
         <translation>Nessun dato da stampare</translation>
     </message>
@@ -1244,7 +1244,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Dialogs</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1866"/>
+        <location filename="../../App/Widget/Dialog.py" line="1873"/>
         <source>Export PDF</source>
         <translation>Esporta in PDF</translation>
     </message>
@@ -1254,19 +1254,19 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Widget/Form.py" line="443"/>
         <location filename="../../App/Widget/Form.py" line="674"/>
-        <location filename="../../App/Widget/Form.py" line="1079"/>
+        <location filename="../../App/Widget/Form.py" line="1078"/>
         <source>The data has been modified, save ?</source>
         <translation>I dati sono stati modificati, vuoi salvare ?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="242"/>
-        <location filename="../../App/Widget/Form.py" line="866"/>
+        <location filename="../../App/Widget/Form.py" line="865"/>
         <source>Error inserting a new row</source>
         <translation>Errore in inserimento di una nuova riga</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="254"/>
-        <location filename="../../App/Widget/Form.py" line="886"/>
+        <location filename="../../App/Widget/Form.py" line="885"/>
         <source>Error on mapper submit</source>
         <translation>Errore in mapper submit</translation>
     </message>
@@ -1275,8 +1275,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Form.py" line="362"/>
         <location filename="../../App/Widget/Form.py" line="568"/>
         <location filename="../../App/Widget/Form.py" line="601"/>
-        <location filename="../../App/Widget/Form.py" line="919"/>
-        <location filename="../../App/Widget/Form.py" line="999"/>
+        <location filename="../../App/Widget/Form.py" line="918"/>
+        <location filename="../../App/Widget/Form.py" line="998"/>
         <source>Error on model submit all</source>
         <translation>Errore in model submitt all</translation>
     </message>
@@ -1286,9 +1286,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Form.py" line="363"/>
         <location filename="../../App/Widget/Form.py" line="556"/>
         <location filename="../../App/Widget/Form.py" line="602"/>
-        <location filename="../../App/Widget/Form.py" line="932"/>
-        <location filename="../../App/Widget/Form.py" line="967"/>
-        <location filename="../../App/Widget/Form.py" line="1000"/>
+        <location filename="../../App/Widget/Form.py" line="931"/>
+        <location filename="../../App/Widget/Form.py" line="966"/>
+        <location filename="../../App/Widget/Form.py" line="999"/>
         <source>Referential integrity violation: unable to delete the current record because is still referenced from another database object</source>
         <translation>Violazione dell&apos;integrità referenziale: impossibile cancellare il record corrente perchè è referenziato da un altro oggetto del database</translation>
     </message>
@@ -1298,7 +1298,7 @@ Proseguire ugualmente ?</translation>
         <translation>Errore in submit all</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="895"/>
+        <location filename="../../App/Widget/Form.py" line="894"/>
         <source>Row modified before update/delete: unable to commit the transaction because the row was modified before update or delete from unother client</source>
         <translation>Riga modificata prima dell&apos;aggiornamento/cancellazione: impossibile salvare perchè la riga è stata modificata da un altro client</translation>
     </message>
@@ -1312,35 +1312,35 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Form.py" line="301"/>
         <location filename="../../App/Widget/Form.py" line="333"/>
         <location filename="../../App/Widget/Form.py" line="560"/>
-        <location filename="../../App/Widget/Form.py" line="912"/>
-        <location filename="../../App/Widget/Form.py" line="936"/>
-        <location filename="../../App/Widget/Form.py" line="971"/>
+        <location filename="../../App/Widget/Form.py" line="911"/>
+        <location filename="../../App/Widget/Form.py" line="935"/>
+        <location filename="../../App/Widget/Form.py" line="970"/>
         <source>Duplicate key value violates unique constraint: Can not insert the current record because a key value is already present in the database table</source>
         <translation>Valore chiave duplicato viola un vincolo di univocità: Non è possibile inserire il record corrente perché un valore chiave è già presente nella tabella del database</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="308"/>
         <location filename="../../App/Widget/Form.py" line="340"/>
-        <location filename="../../App/Widget/Form.py" line="943"/>
-        <location filename="../../App/Widget/Form.py" line="978"/>
+        <location filename="../../App/Widget/Form.py" line="942"/>
+        <location filename="../../App/Widget/Form.py" line="977"/>
         <source>Error on model detail submit all</source>
         <translation>Errore in model detail submit all</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="262"/>
-        <location filename="../../App/Widget/Form.py" line="900"/>
+        <location filename="../../App/Widget/Form.py" line="899"/>
         <source>Integrity constraint violation: unable to commit the transaction because a generic integrity violation occured</source>
         <translation>Violazione di un vincolo di integrità: impossibile completare la transazione per un generico errore di violazione di integrità</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="266"/>
-        <location filename="../../App/Widget/Form.py" line="904"/>
+        <location filename="../../App/Widget/Form.py" line="903"/>
         <source>Integrity constraint violation: unable to commit the transaction because a not null error occured</source>
         <translation>Violazione di un vincolo di integrità: impossibile completare la transazione per un errore di valore nullo non permesso</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="270"/>
-        <location filename="../../App/Widget/Form.py" line="908"/>
+        <location filename="../../App/Widget/Form.py" line="907"/>
         <source>Foreign key violation: unable to delete the current record because is still referenced from another database object</source>
         <translation>Violazione di una chiave esterna: impossibile cancellare il record corrente perchè è referenziato da un altro oggetto del database</translation>
     </message>
@@ -1381,7 +1381,7 @@ Proseguire ugualmente ?</translation>
         <translation>Utente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="781"/>
+        <location filename="../../App/Widget/Control.py" line="791"/>
         <source>Current view&apos;s record counter</source>
         <translation>Contatore dei record della vista corrente</translation>
     </message>
@@ -1421,7 +1421,7 @@ Proseguire ugualmente ?</translation>
         <translation>Nessun evento disponibile</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="778"/>
+        <location filename="../../App/Widget/Control.py" line="788"/>
         <source>Current view&apos;s record counter, shows current record number and total records count</source>
         <translation>Contatore della vista corrente, mostra il numero del record corrente ed il numero totale di record presenti</translation>
     </message>
@@ -1445,65 +1445,65 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Company.py" line="204"/>
         <location filename="../../App/System/Company.py" line="257"/>
         <location filename="../../App/System/Company.py" line="358"/>
-        <location filename="../../App/System/Connection.py" line="140"/>
-        <location filename="../../App/System/Connection.py" line="205"/>
-        <location filename="../../App/System/Connection.py" line="228"/>
-        <location filename="../../App/System/Connection.py" line="247"/>
+        <location filename="../../App/System/Connection.py" line="146"/>
+        <location filename="../../App/System/Connection.py" line="217"/>
+        <location filename="../../App/System/Connection.py" line="240"/>
+        <location filename="../../App/System/Connection.py" line="259"/>
         <location filename="../../App/System/Mainwindow.py" line="512"/>
         <location filename="../../App/System/Profile.py" line="108"/>
         <location filename="../../App/System/Report.py" line="356"/>
         <location filename="../../App/System/Report.py" line="398"/>
         <location filename="../../App/System/Scripting.py" line="395"/>
         <location filename="../../App/System/Scripting.py" line="438"/>
-        <location filename="../../App/System/User.py" line="305"/>
-        <location filename="../../App/System/User.py" line="349"/>
-        <location filename="../../App/System/User.py" line="355"/>
-        <location filename="../../App/System/User.py" line="365"/>
-        <location filename="../../App/System/User.py" line="391"/>
-        <location filename="../../App/System/User.py" line="395"/>
-        <location filename="../../App/Widget/Dialog.py" line="221"/>
-        <location filename="../../App/Widget/Dialog.py" line="477"/>
-        <location filename="../../App/Widget/Dialog.py" line="523"/>
-        <location filename="../../App/Widget/Dialog.py" line="559"/>
-        <location filename="../../App/Widget/Dialog.py" line="620"/>
-        <location filename="../../App/Widget/Dialog.py" line="629"/>
-        <location filename="../../App/Widget/Dialog.py" line="770"/>
-        <location filename="../../App/Widget/Dialog.py" line="796"/>
-        <location filename="../../App/Widget/Dialog.py" line="813"/>
-        <location filename="../../App/Widget/Dialog.py" line="833"/>
-        <location filename="../../App/Widget/Dialog.py" line="850"/>
-        <location filename="../../App/Widget/Dialog.py" line="1176"/>
-        <location filename="../../App/Widget/Dialog.py" line="1192"/>
-        <location filename="../../App/Widget/Dialog.py" line="1259"/>
-        <location filename="../../App/Widget/Dialog.py" line="1283"/>
-        <location filename="../../App/Widget/Dialog.py" line="1300"/>
+        <location filename="../../App/System/User.py" line="306"/>
+        <location filename="../../App/System/User.py" line="350"/>
+        <location filename="../../App/System/User.py" line="356"/>
+        <location filename="../../App/System/User.py" line="366"/>
+        <location filename="../../App/System/User.py" line="392"/>
+        <location filename="../../App/System/User.py" line="396"/>
+        <location filename="../../App/Widget/Dialog.py" line="222"/>
+        <location filename="../../App/Widget/Dialog.py" line="478"/>
+        <location filename="../../App/Widget/Dialog.py" line="524"/>
+        <location filename="../../App/Widget/Dialog.py" line="560"/>
+        <location filename="../../App/Widget/Dialog.py" line="621"/>
+        <location filename="../../App/Widget/Dialog.py" line="630"/>
+        <location filename="../../App/Widget/Dialog.py" line="771"/>
+        <location filename="../../App/Widget/Dialog.py" line="797"/>
+        <location filename="../../App/Widget/Dialog.py" line="814"/>
+        <location filename="../../App/Widget/Dialog.py" line="834"/>
+        <location filename="../../App/Widget/Dialog.py" line="851"/>
+        <location filename="../../App/Widget/Dialog.py" line="1183"/>
+        <location filename="../../App/Widget/Dialog.py" line="1199"/>
+        <location filename="../../App/Widget/Dialog.py" line="1266"/>
+        <location filename="../../App/Widget/Dialog.py" line="1290"/>
         <location filename="../../App/Widget/Dialog.py" line="1307"/>
-        <location filename="../../App/Widget/Dialog.py" line="1324"/>
-        <location filename="../../App/Widget/Dialog.py" line="1470"/>
-        <location filename="../../App/Widget/Dialog.py" line="1494"/>
-        <location filename="../../App/Widget/Dialog.py" line="1510"/>
-        <location filename="../../App/Widget/Dialog.py" line="1798"/>
-        <location filename="../../App/Widget/Dialog.py" line="1803"/>
+        <location filename="../../App/Widget/Dialog.py" line="1314"/>
+        <location filename="../../App/Widget/Dialog.py" line="1331"/>
+        <location filename="../../App/Widget/Dialog.py" line="1477"/>
+        <location filename="../../App/Widget/Dialog.py" line="1501"/>
+        <location filename="../../App/Widget/Dialog.py" line="1517"/>
+        <location filename="../../App/Widget/Dialog.py" line="1805"/>
+        <location filename="../../App/Widget/Dialog.py" line="1810"/>
         <location filename="../../App/Widget/Form.py" line="241"/>
         <location filename="../../App/Widget/Form.py" line="253"/>
         <location filename="../../App/Widget/Form.py" line="352"/>
         <location filename="../../App/Widget/Form.py" line="369"/>
         <location filename="../../App/Widget/Form.py" line="402"/>
-        <location filename="../../App/Widget/Form.py" line="865"/>
-        <location filename="../../App/Widget/Form.py" line="885"/>
-        <location filename="../../App/Widget/Form.py" line="988"/>
-        <location filename="../../App/Widget/Form.py" line="1006"/>
+        <location filename="../../App/Widget/Form.py" line="864"/>
+        <location filename="../../App/Widget/Form.py" line="884"/>
+        <location filename="../../App/Widget/Form.py" line="987"/>
+        <location filename="../../App/Widget/Form.py" line="1005"/>
         <source>Critical</source>
         <translation>Errore critico</translation>
     </message>
     <message>
         <location filename="../../App/System/Company.py" line="174"/>
         <location filename="../../App/System/Company.py" line="303"/>
-        <location filename="../../App/System/Connection.py" line="120"/>
         <location filename="../../App/System/Connection.py" line="126"/>
-        <location filename="../../App/System/User.py" line="276"/>
-        <location filename="../../App/Widget/Dialog.py" line="784"/>
-        <location filename="../../App/Widget/Dialog.py" line="1271"/>
+        <location filename="../../App/System/Connection.py" line="132"/>
+        <location filename="../../App/System/User.py" line="277"/>
+        <location filename="../../App/Widget/Dialog.py" line="785"/>
+        <location filename="../../App/Widget/Dialog.py" line="1278"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
@@ -1513,7 +1513,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Company.py" line="233"/>
         <location filename="../../App/System/Company.py" line="262"/>
         <location filename="../../App/System/Company.py" line="367"/>
-        <location filename="../../App/System/Connection.py" line="254"/>
+        <location filename="../../App/System/Connection.py" line="266"/>
         <location filename="../../App/System/Customization.py" line="150"/>
         <location filename="../../App/System/Customization.py" line="173"/>
         <location filename="../../App/System/Customization.py" line="219"/>
@@ -1523,23 +1523,23 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Profile.py" line="196"/>
         <location filename="../../App/System/Report.py" line="182"/>
         <location filename="../../App/System/Report.py" line="191"/>
-        <location filename="../../App/System/User.py" line="218"/>
-        <location filename="../../App/System/User.py" line="301"/>
-        <location filename="../../App/System/User.py" line="369"/>
-        <location filename="../../App/Widget/Dialog.py" line="634"/>
-        <location filename="../../App/Widget/Dialog.py" line="774"/>
-        <location filename="../../App/Widget/Dialog.py" line="801"/>
-        <location filename="../../App/Widget/Dialog.py" line="817"/>
-        <location filename="../../App/Widget/Dialog.py" line="837"/>
-        <location filename="../../App/Widget/Dialog.py" line="854"/>
-        <location filename="../../App/Widget/Dialog.py" line="1263"/>
-        <location filename="../../App/Widget/Dialog.py" line="1287"/>
-        <location filename="../../App/Widget/Dialog.py" line="1311"/>
-        <location filename="../../App/Widget/Dialog.py" line="1474"/>
-        <location filename="../../App/Widget/Dialog.py" line="1498"/>
-        <location filename="../../App/Widget/Dialog.py" line="1514"/>
-        <location filename="../../App/Widget/Dialog.py" line="1731"/>
-        <location filename="../../App/Widget/Dialog.py" line="1830"/>
+        <location filename="../../App/System/User.py" line="219"/>
+        <location filename="../../App/System/User.py" line="302"/>
+        <location filename="../../App/System/User.py" line="370"/>
+        <location filename="../../App/Widget/Dialog.py" line="635"/>
+        <location filename="../../App/Widget/Dialog.py" line="775"/>
+        <location filename="../../App/Widget/Dialog.py" line="802"/>
+        <location filename="../../App/Widget/Dialog.py" line="818"/>
+        <location filename="../../App/Widget/Dialog.py" line="838"/>
+        <location filename="../../App/Widget/Dialog.py" line="855"/>
+        <location filename="../../App/Widget/Dialog.py" line="1270"/>
+        <location filename="../../App/Widget/Dialog.py" line="1294"/>
+        <location filename="../../App/Widget/Dialog.py" line="1318"/>
+        <location filename="../../App/Widget/Dialog.py" line="1481"/>
+        <location filename="../../App/Widget/Dialog.py" line="1505"/>
+        <location filename="../../App/Widget/Dialog.py" line="1521"/>
+        <location filename="../../App/Widget/Dialog.py" line="1738"/>
+        <location filename="../../App/Widget/Dialog.py" line="1837"/>
         <source>Information</source>
         <translation>Informazione</translation>
     </message>
@@ -1547,8 +1547,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Company.py" line="238"/>
         <location filename="../../App/System/Company.py" line="245"/>
         <location filename="../../App/System/Company.py" line="319"/>
-        <location filename="../../App/System/Connection.py" line="132"/>
-        <location filename="../../App/System/Connection.py" line="218"/>
+        <location filename="../../App/System/Connection.py" line="138"/>
+        <location filename="../../App/System/Connection.py" line="230"/>
         <location filename="../../App/System/Customization.py" line="225"/>
         <location filename="../../App/System/Mainwindow.py" line="451"/>
         <location filename="../../App/System/Mainwindow.py" line="523"/>
@@ -1558,20 +1558,20 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Report.py" line="197"/>
         <location filename="../../App/System/Report.py" line="246"/>
         <location filename="../../App/System/Scripting.py" line="256"/>
-        <location filename="../../App/System/User.py" line="223"/>
-        <location filename="../../App/Widget/Dialog.py" line="788"/>
-        <location filename="../../App/Widget/Dialog.py" line="1275"/>
-        <location filename="../../App/Widget/Dialog.py" line="1809"/>
-        <location filename="../../App/Widget/Dialog.py" line="1881"/>
+        <location filename="../../App/System/User.py" line="224"/>
+        <location filename="../../App/Widget/Dialog.py" line="789"/>
+        <location filename="../../App/Widget/Dialog.py" line="1282"/>
+        <location filename="../../App/Widget/Dialog.py" line="1816"/>
+        <location filename="../../App/Widget/Dialog.py" line="1888"/>
         <location filename="../../App/Widget/Form.py" line="442"/>
         <location filename="../../App/Widget/Form.py" line="673"/>
-        <location filename="../../App/Widget/Form.py" line="1078"/>
+        <location filename="../../App/Widget/Form.py" line="1077"/>
         <source>Question</source>
         <translation>Richiesta</translation>
     </message>
     <message>
-        <location filename="../../App/System/Connection.py" line="212"/>
-        <location filename="../../App/System/Connection.py" line="235"/>
+        <location filename="../../App/System/Connection.py" line="224"/>
+        <location filename="../../App/System/Connection.py" line="247"/>
         <location filename="../../App/System/Report.py" line="361"/>
         <location filename="../../App/System/Report.py" line="407"/>
         <location filename="../../App/System/Scripting.py" line="249"/>
@@ -1590,38 +1590,24 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Operator</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="336"/>
-        <location filename="../../App/Widget/Dialog.py" line="346"/>
-        <location filename="../../App/Widget/Dialog.py" line="355"/>
-        <location filename="../../App/Widget/Dialog.py" line="359"/>
-        <location filename="../../App/Widget/Dialog.py" line="367"/>
-        <location filename="../../App/Widget/Dialog.py" line="375"/>
-        <location filename="../../App/Widget/Dialog.py" line="383"/>
-        <location filename="../../App/Widget/Dialog.py" line="391"/>
-        <location filename="../../App/Widget/Dialog.py" line="1023"/>
-        <location filename="../../App/Widget/Dialog.py" line="1033"/>
-        <location filename="../../App/Widget/Dialog.py" line="1042"/>
-        <location filename="../../App/Widget/Dialog.py" line="1046"/>
-        <location filename="../../App/Widget/Dialog.py" line="1054"/>
-        <location filename="../../App/Widget/Dialog.py" line="1062"/>
-        <location filename="../../App/Widget/Dialog.py" line="1070"/>
-        <location filename="../../App/Widget/Dialog.py" line="1078"/>
-        <source>=</source>
-        <translation>=</translation>
-    </message>
-    <message>
         <location filename="../../App/Widget/Dialog.py" line="337"/>
         <location filename="../../App/Widget/Dialog.py" line="347"/>
+        <location filename="../../App/Widget/Dialog.py" line="356"/>
+        <location filename="../../App/Widget/Dialog.py" line="360"/>
         <location filename="../../App/Widget/Dialog.py" line="368"/>
         <location filename="../../App/Widget/Dialog.py" line="376"/>
         <location filename="../../App/Widget/Dialog.py" line="384"/>
-        <location filename="../../App/Widget/Dialog.py" line="1024"/>
-        <location filename="../../App/Widget/Dialog.py" line="1034"/>
-        <location filename="../../App/Widget/Dialog.py" line="1055"/>
-        <location filename="../../App/Widget/Dialog.py" line="1063"/>
-        <location filename="../../App/Widget/Dialog.py" line="1071"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
+        <location filename="../../App/Widget/Dialog.py" line="392"/>
+        <location filename="../../App/Widget/Dialog.py" line="1030"/>
+        <location filename="../../App/Widget/Dialog.py" line="1040"/>
+        <location filename="../../App/Widget/Dialog.py" line="1049"/>
+        <location filename="../../App/Widget/Dialog.py" line="1053"/>
+        <location filename="../../App/Widget/Dialog.py" line="1061"/>
+        <location filename="../../App/Widget/Dialog.py" line="1069"/>
+        <location filename="../../App/Widget/Dialog.py" line="1077"/>
+        <location filename="../../App/Widget/Dialog.py" line="1085"/>
+        <source>=</source>
+        <translation>=</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="338"/>
@@ -1629,13 +1615,13 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="369"/>
         <location filename="../../App/Widget/Dialog.py" line="377"/>
         <location filename="../../App/Widget/Dialog.py" line="385"/>
-        <location filename="../../App/Widget/Dialog.py" line="1025"/>
-        <location filename="../../App/Widget/Dialog.py" line="1035"/>
-        <location filename="../../App/Widget/Dialog.py" line="1056"/>
-        <location filename="../../App/Widget/Dialog.py" line="1064"/>
-        <location filename="../../App/Widget/Dialog.py" line="1072"/>
-        <source>&lt;=</source>
-        <translation>&lt;=</translation>
+        <location filename="../../App/Widget/Dialog.py" line="1031"/>
+        <location filename="../../App/Widget/Dialog.py" line="1041"/>
+        <location filename="../../App/Widget/Dialog.py" line="1062"/>
+        <location filename="../../App/Widget/Dialog.py" line="1070"/>
+        <location filename="../../App/Widget/Dialog.py" line="1078"/>
+        <source>&lt;</source>
+        <translation>&lt;</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="339"/>
@@ -1643,13 +1629,13 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="370"/>
         <location filename="../../App/Widget/Dialog.py" line="378"/>
         <location filename="../../App/Widget/Dialog.py" line="386"/>
-        <location filename="../../App/Widget/Dialog.py" line="1026"/>
-        <location filename="../../App/Widget/Dialog.py" line="1036"/>
-        <location filename="../../App/Widget/Dialog.py" line="1057"/>
-        <location filename="../../App/Widget/Dialog.py" line="1065"/>
-        <location filename="../../App/Widget/Dialog.py" line="1073"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
+        <location filename="../../App/Widget/Dialog.py" line="1032"/>
+        <location filename="../../App/Widget/Dialog.py" line="1042"/>
+        <location filename="../../App/Widget/Dialog.py" line="1063"/>
+        <location filename="../../App/Widget/Dialog.py" line="1071"/>
+        <location filename="../../App/Widget/Dialog.py" line="1079"/>
+        <source>&lt;=</source>
+        <translation>&lt;=</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="340"/>
@@ -1657,71 +1643,85 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="371"/>
         <location filename="../../App/Widget/Dialog.py" line="379"/>
         <location filename="../../App/Widget/Dialog.py" line="387"/>
-        <location filename="../../App/Widget/Dialog.py" line="1027"/>
-        <location filename="../../App/Widget/Dialog.py" line="1037"/>
-        <location filename="../../App/Widget/Dialog.py" line="1058"/>
-        <location filename="../../App/Widget/Dialog.py" line="1066"/>
-        <location filename="../../App/Widget/Dialog.py" line="1074"/>
-        <source>&gt;=</source>
-        <translation>&gt;=</translation>
+        <location filename="../../App/Widget/Dialog.py" line="1033"/>
+        <location filename="../../App/Widget/Dialog.py" line="1043"/>
+        <location filename="../../App/Widget/Dialog.py" line="1064"/>
+        <location filename="../../App/Widget/Dialog.py" line="1072"/>
+        <location filename="../../App/Widget/Dialog.py" line="1080"/>
+        <source>&gt;</source>
+        <translation>&gt;</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="341"/>
         <location filename="../../App/Widget/Dialog.py" line="351"/>
-        <location filename="../../App/Widget/Dialog.py" line="363"/>
-        <location filename="../../App/Widget/Dialog.py" line="392"/>
-        <location filename="../../App/Widget/Dialog.py" line="1028"/>
-        <location filename="../../App/Widget/Dialog.py" line="1038"/>
-        <location filename="../../App/Widget/Dialog.py" line="1050"/>
-        <location filename="../../App/Widget/Dialog.py" line="1079"/>
-        <source>In</source>
-        <translation>In</translation>
+        <location filename="../../App/Widget/Dialog.py" line="372"/>
+        <location filename="../../App/Widget/Dialog.py" line="380"/>
+        <location filename="../../App/Widget/Dialog.py" line="388"/>
+        <location filename="../../App/Widget/Dialog.py" line="1034"/>
+        <location filename="../../App/Widget/Dialog.py" line="1044"/>
+        <location filename="../../App/Widget/Dialog.py" line="1065"/>
+        <location filename="../../App/Widget/Dialog.py" line="1073"/>
+        <location filename="../../App/Widget/Dialog.py" line="1081"/>
+        <source>&gt;=</source>
+        <translation>&gt;=</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="342"/>
         <location filename="../../App/Widget/Dialog.py" line="352"/>
-        <location filename="../../App/Widget/Dialog.py" line="372"/>
-        <location filename="../../App/Widget/Dialog.py" line="380"/>
-        <location filename="../../App/Widget/Dialog.py" line="388"/>
+        <location filename="../../App/Widget/Dialog.py" line="364"/>
         <location filename="../../App/Widget/Dialog.py" line="393"/>
-        <location filename="../../App/Widget/Dialog.py" line="1029"/>
-        <location filename="../../App/Widget/Dialog.py" line="1039"/>
-        <location filename="../../App/Widget/Dialog.py" line="1059"/>
-        <location filename="../../App/Widget/Dialog.py" line="1067"/>
-        <location filename="../../App/Widget/Dialog.py" line="1075"/>
-        <location filename="../../App/Widget/Dialog.py" line="1080"/>
+        <location filename="../../App/Widget/Dialog.py" line="1035"/>
+        <location filename="../../App/Widget/Dialog.py" line="1045"/>
+        <location filename="../../App/Widget/Dialog.py" line="1057"/>
+        <location filename="../../App/Widget/Dialog.py" line="1086"/>
+        <source>In</source>
+        <translation>In</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/Dialog.py" line="343"/>
+        <location filename="../../App/Widget/Dialog.py" line="353"/>
+        <location filename="../../App/Widget/Dialog.py" line="373"/>
+        <location filename="../../App/Widget/Dialog.py" line="381"/>
+        <location filename="../../App/Widget/Dialog.py" line="389"/>
+        <location filename="../../App/Widget/Dialog.py" line="394"/>
+        <location filename="../../App/Widget/Dialog.py" line="1036"/>
+        <location filename="../../App/Widget/Dialog.py" line="1046"/>
+        <location filename="../../App/Widget/Dialog.py" line="1066"/>
+        <location filename="../../App/Widget/Dialog.py" line="1074"/>
+        <location filename="../../App/Widget/Dialog.py" line="1082"/>
+        <location filename="../../App/Widget/Dialog.py" line="1087"/>
         <source>Is Null</source>
         <translation>E&apos; nullo</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="343"/>
-        <location filename="../../App/Widget/Dialog.py" line="1030"/>
+        <location filename="../../App/Widget/Dialog.py" line="344"/>
+        <location filename="../../App/Widget/Dialog.py" line="1037"/>
         <source>From list</source>
         <translation>Da lista</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="356"/>
-        <location filename="../../App/Widget/Dialog.py" line="364"/>
-        <location filename="../../App/Widget/Dialog.py" line="1043"/>
-        <location filename="../../App/Widget/Dialog.py" line="1051"/>
+        <location filename="../../App/Widget/Dialog.py" line="357"/>
+        <location filename="../../App/Widget/Dialog.py" line="365"/>
+        <location filename="../../App/Widget/Dialog.py" line="1050"/>
+        <location filename="../../App/Widget/Dialog.py" line="1058"/>
         <source>Is null</source>
         <translation>è null</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="361"/>
-        <location filename="../../App/Widget/Dialog.py" line="1048"/>
+        <location filename="../../App/Widget/Dialog.py" line="362"/>
+        <location filename="../../App/Widget/Dialog.py" line="1055"/>
         <source>Starts with</source>
         <translation>comincia con</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="362"/>
-        <location filename="../../App/Widget/Dialog.py" line="1049"/>
+        <location filename="../../App/Widget/Dialog.py" line="363"/>
+        <location filename="../../App/Widget/Dialog.py" line="1056"/>
         <source>Ends with</source>
         <translation>termina con</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="360"/>
-        <location filename="../../App/Widget/Dialog.py" line="1047"/>
+        <location filename="../../App/Widget/Dialog.py" line="361"/>
+        <location filename="../../App/Widget/Dialog.py" line="1054"/>
         <source>Contains</source>
         <translation>contiene</translation>
     </message>
@@ -1822,12 +1822,12 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>PrintDialog</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1720"/>
+        <location filename="../../App/Widget/Dialog.py" line="1727"/>
         <source>Error executing database query</source>
         <translation>Errore eseguendo la query sul database</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1723"/>
+        <location filename="../../App/Widget/Dialog.py" line="1730"/>
         <source>Database error</source>
         <translation>Errore di database</translation>
     </message>
@@ -1985,7 +1985,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>ReportDialog</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="1090"/>
+        <location filename="../../App/Widget/Dialog.py" line="1097"/>
         <source>None</source>
         <translation>Nessuno</translation>
     </message>
@@ -2088,8 +2088,8 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>SoftFilterDialog</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="427"/>
-        <location filename="../../App/Widget/Dialog.py" line="1144"/>
+        <location filename="../../App/Widget/Dialog.py" line="428"/>
+        <location filename="../../App/Widget/Dialog.py" line="1151"/>
         <source>Not</source>
         <translation>Non</translation>
     </message>
@@ -2097,12 +2097,12 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Sort</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="395"/>
+        <location filename="../../App/Widget/Dialog.py" line="396"/>
         <source>Ascending</source>
         <translation>Crescente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="396"/>
+        <location filename="../../App/Widget/Dialog.py" line="397"/>
         <source>Descending</source>
         <translation>Decrescente</translation>
     </message>
@@ -2110,58 +2110,58 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>User</name>
     <message>
-        <location filename="../../App/System/User.py" line="219"/>
+        <location filename="../../App/System/User.py" line="220"/>
         <source>It is not possible to delete a system user</source>
         <translation>Non è possibile eliminare un utente di sistema</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="265"/>
+        <location filename="../../App/System/User.py" line="266"/>
         <source>Select the image to upload</source>
         <translation>Selezionare l&apos;immagine da caricare</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="267"/>
-        <location filename="../../App/System/User.py" line="295"/>
+        <location filename="../../App/System/User.py" line="268"/>
+        <location filename="../../App/System/User.py" line="296"/>
         <source>Portable Network Graphics (*.png);;All files (*.*)</source>
         <translation>Portable Network Graphics (*.png);;Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="293"/>
+        <location filename="../../App/System/User.py" line="294"/>
         <source>Select the destination file name</source>
         <translation>Selezionare il nome del file di destinazione</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="302"/>
+        <location filename="../../App/System/User.py" line="303"/>
         <source>Image file saved</source>
         <translation>Immagine salvata</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="306"/>
+        <location filename="../../App/System/User.py" line="307"/>
         <source>Error on saving image file</source>
         <translation>Errore in salvataggio dell&apos;immagine</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="311"/>
+        <location filename="../../App/System/User.py" line="312"/>
         <source>NO IMAGE</source>
         <translation>NESSUNA IMMAGINE</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="277"/>
+        <location filename="../../App/System/User.py" line="278"/>
         <source>The selected image is too big, it wasautomaticlly resized to the max allowed size of 640x480 pixels</source>
         <translation>L&apos;immagine selezionata è troppo grande, è stata automaticamente ridimensionata alla massima dimensione permessa di 640x480 pixel</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="335"/>
+        <location filename="../../App/System/User.py" line="336"/>
         <source>Change password</source>
         <translation>Modifica password</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="385"/>
+        <location filename="../../App/System/User.py" line="386"/>
         <source>Set temporary password dialog</source>
         <translation>Imposta una password temporanea</translation>
     </message>
     <message>
-        <location filename="../../App/System/User.py" line="221"/>
+        <location filename="../../App/System/User.py" line="222"/>
         <source>Are you sure you want to delete this user ?</source>
         <translation>Sei sicuro di voler eliminare questo utente ?</translation>
     </message>
@@ -2169,14 +2169,14 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>View</name>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="785"/>
-        <location filename="../../App/Widget/Dialog.py" line="1272"/>
+        <location filename="../../App/Widget/Dialog.py" line="786"/>
+        <location filename="../../App/Widget/Dialog.py" line="1279"/>
         <source>System customization cannot be deleted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="789"/>
-        <location filename="../../App/Widget/Dialog.py" line="1276"/>
+        <location filename="../../App/Widget/Dialog.py" line="790"/>
+        <location filename="../../App/Widget/Dialog.py" line="1283"/>
         <source>Are you sure to delete the current customization ?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2184,7 +2184,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>controls</name>
     <message>
-        <location filename="../../App/Widget/Control.py" line="661"/>
+        <location filename="../../App/Widget/Control.py" line="671"/>
         <source>Type the password here</source>
         <translation>Inserire la password</translation>
     </message>

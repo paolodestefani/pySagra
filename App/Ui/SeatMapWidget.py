@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
     QScrollArea, QSizePolicy, QSpacerItem, QSpinBox,
     QStackedWidget, QVBoxLayout, QWidget)
 
+from App.Widget.Control import (ButtonColor, ButtonItemExample)
 from App.Widget.View import EnhancedTableView
 
 class Ui_SeatMapWidget(object):
@@ -216,7 +217,7 @@ class Ui_SeatMapWidget(object):
 
         self.horizontalLayout_5.addWidget(self.pushButtonChooseBackground)
 
-        self.pushButtonExample = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonExample = ButtonItemExample(self.groupBoxButtonColor)
         self.pushButtonExample.setObjectName(u"pushButtonExample")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
@@ -244,63 +245,63 @@ class Ui_SeatMapWidget(object):
         self.gridLayout_2 = QGridLayout()
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
-        self.pushButtonBGC4 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC4 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC4.setObjectName(u"pushButtonBGC4")
         self.pushButtonBGC4.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC4, 0, 3, 1, 1)
 
-        self.pushButtonBGC5 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC5 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC5.setObjectName(u"pushButtonBGC5")
         self.pushButtonBGC5.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC5, 0, 4, 1, 1)
 
-        self.pushButtonBGC2 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC2 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC2.setObjectName(u"pushButtonBGC2")
         self.pushButtonBGC2.setCheckable(False)
         self.pushButtonBGC2.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC2, 0, 1, 1, 1)
 
-        self.pushButtonBGC3 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC3 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC3.setObjectName(u"pushButtonBGC3")
         self.pushButtonBGC3.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC3, 0, 2, 1, 1)
 
-        self.pushButtonBGC1 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC1 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC1.setObjectName(u"pushButtonBGC1")
         self.pushButtonBGC1.setEnabled(True)
         self.pushButtonBGC1.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC1, 0, 0, 1, 1)
 
-        self.pushButtonBGC6 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC6 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC6.setObjectName(u"pushButtonBGC6")
         self.pushButtonBGC6.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC6, 1, 0, 1, 1)
 
-        self.pushButtonBGC8 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC8 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC8.setObjectName(u"pushButtonBGC8")
         self.pushButtonBGC8.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC8, 1, 2, 1, 1)
 
-        self.pushButtonBGC7 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC7 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC7.setObjectName(u"pushButtonBGC7")
         self.pushButtonBGC7.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC7, 1, 1, 1, 1)
 
-        self.pushButtonBGC9 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC9 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC9.setObjectName(u"pushButtonBGC9")
         self.pushButtonBGC9.setFlat(False)
 
         self.gridLayout_2.addWidget(self.pushButtonBGC9, 1, 3, 1, 1)
 
-        self.pushButtonBGC10 = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonBGC10 = ButtonColor(self.groupBoxButtonColor)
         self.pushButtonBGC10.setObjectName(u"pushButtonBGC10")
         self.pushButtonBGC10.setFlat(False)
 
@@ -344,7 +345,7 @@ class Ui_SeatMapWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 783, 547))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 98, 28))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.verticalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)

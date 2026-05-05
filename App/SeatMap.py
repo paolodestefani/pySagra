@@ -119,8 +119,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
         self.setting = SettingClass()
         # generate tables
-        self.bgcolor = '#007f00'
-        self.txcolor = '#FFFFFF'
+        self.bgcolor = '#007f00' # default background color for generated tables
+        self.txcolor = '#FFFFFF' # default text color for generated tables
         # bg colors buttons
         self.bgbc = QButtonGroup(self)
         for i, c in ((self.ui.pushButtonBGC1, '#00007f'),
@@ -133,8 +133,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                      (self.ui.pushButtonBGC8, '#478f6a'),
                      (self.ui.pushButtonBGC9, '#a33651'),
                      (self.ui.pushButtonBGC10, '#FF0000')):
-            i.bgColor = c
-            i.setStyleSheet(f"background-color: {c};")
+            i.setBackgroundColor(c)
             self.bgbc.addButton(i)
         self.ui.spinBoxRows.setValue(self.setting['table_list_rows'])
         self.ui.spinBoxColumns.setValue(self.setting['table_list_columns'])
@@ -154,7 +153,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.groupBoxMinimunSize.setVisible(False)
         # scripting init
         self.script = scriptInit(self)
-        self.updateExample()
+        #self.updateExample()
 
     @scriptMethod
     def new(self) -> None:
@@ -263,27 +262,21 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         color = QColorDialog.getColor(Qt.GlobalColor.white, self)
         if not color.isValid():
             return
-        button.setStyleSheet(f"background-color: {color.name()};")
-        if hasattr(button, 'bgColor'):
-            button.bgColor = color.name()
+        button.setBackgroundColor(color.name())
 
     def chooseBackground(self) -> None:
         color = QColorDialog.getColor(Qt.GlobalColor.white, self)
         if not color.isValid():
             return
         self.bgcolor = color.name()
-        self.updateExample()
+        self.ui.pushButtonExample.setBackgroundColor(self.bgcolor)
 
     def chooseText(self) -> None:
         color = QColorDialog.getColor(Qt.GlobalColor.black, self)
         if not color.isValid():
             return
         self.txcolor = color.name()
-        self.updateExample()
-
-    def updateExample(self) -> None:
-        ss = f"background-color: {self.bgcolor}; color: {self.txcolor};"
-        self.ui.pushButtonExample.setStyleSheet(ss)
+        self.ui.pushButtonExample.setTextColor(self.txcolor)
 
     @scriptMethod
     def generateTableNumbers(self) -> None:
@@ -297,11 +290,11 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         columnPadding = self.ui.spinBoxColumnPadding.value()
         textColor = self.txcolor
         backgroundColor = self.bgcolor
-        colors = [i.bgColor for i in (self.ui.pushButtonBGC1, self.ui.pushButtonBGC2,
-                                      self.ui.pushButtonBGC3, self.ui.pushButtonBGC4,
-                                      self.ui.pushButtonBGC5, self.ui.pushButtonBGC6,
-                                      self.ui.pushButtonBGC7, self.ui.pushButtonBGC8,
-                                      self.ui.pushButtonBGC9, self.ui.pushButtonBGC10)]
+        colors = [i.backgroundColor.name() for i in (self.ui.pushButtonBGC1, self.ui.pushButtonBGC2,
+                                              self.ui.pushButtonBGC3, self.ui.pushButtonBGC4,
+                                              self.ui.pushButtonBGC5, self.ui.pushButtonBGC6,
+                                              self.ui.pushButtonBGC7, self.ui.pushButtonBGC8,
+                                              self.ui.pushButtonBGC9, self.ui.pushButtonBGC10)]
         colorIndex = 0
         if self.ui.radioButtonRowColumn.isChecked():
             for r in range(startRow, startRow + rows):
@@ -314,12 +307,12 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     code = prefix + str(r).zfill(rowPadding) + str(c).zfill(columnPadding) + suffix
                     self.model.insertRow(self.model.rowCount())
                     modelRow = self.model.rowCount() - 1
-                    self.model.setData(self.model.createIndex(modelRow, TABLE_CODE), code)
-                    self.model.setData(self.model.createIndex(modelRow, ROW), r)
-                    self.model.setData(self.model.createIndex(modelRow, COLUMN), c)
-                    self.model.setData(self.model.createIndex(modelRow, TEXT_COLOR), textColor)
-                    self.model.setData(self.model.createIndex(modelRow, BACKGROUND_COLOR), backgroundColor)
-                    self.model.setData(self.model.createIndex(modelRow, IS_OBSOLETE), False)
+                    self.model.setData(self.model.index(modelRow, TABLE_CODE), code)
+                    self.model.setData(self.model.index(modelRow, ROW), r)
+                    self.model.setData(self.model.index(modelRow, COLUMN), c)
+                    self.model.setData(self.model.index(modelRow, TEXT_COLOR), textColor)
+                    self.model.setData(self.model.index(modelRow, BACKGROUND_COLOR), backgroundColor)
+                    self.model.setData(self.model.index(modelRow, IS_OBSOLETE), False)
 
         else:
             for c in range(1, columns + 1):
@@ -332,9 +325,9 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     code = prefix + str(c).zfill(columnPadding) + str(r).zfill(rowPadding) + suffix
                     self.model.insertRows(self.model.rowCount(), 1)
                     modelRow = self.model.rowCount() - 1
-                    self.model.setData(self.model.createIndex(modelRow, TABLE_CODE), code)
-                    self.model.setData(self.model.createIndex(modelRow, ROW), r)
-                    self.model.setData(self.model.createIndex(modelRow, COLUMN), c)
-                    self.model.setData(self.model.createIndex(modelRow, TEXT_COLOR), textColor)
-                    self.model.setData(self.model.createIndex(modelRow, BACKGROUND_COLOR), backgroundColor)
-                    self.model.setData(self.model.createIndex(modelRow, IS_OBSOLETE), False)
+                    self.model.setData(self.model.index(modelRow, TABLE_CODE), code)
+                    self.model.setData(self.model.index(modelRow, ROW), r)
+                    self.model.setData(self.model.index(modelRow, COLUMN), c)
+                    self.model.setData(self.model.index(modelRow, TEXT_COLOR), textColor)
+                    self.model.setData(self.model.index(modelRow, BACKGROUND_COLOR), backgroundColor)
+                    self.model.setData(self.model.index(modelRow, IS_OBSOLETE), False)

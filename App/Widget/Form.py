@@ -41,6 +41,7 @@ from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDataWidgetMapper
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QTableView
+#from PySide6.QtWidgets import QItemDelegate
 
 # application modules
 from App import session
@@ -49,7 +50,6 @@ from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import TableModel, QueryModel
 from App.Database.AbstractModels.TreeModel import TreeModel, TreeQueryModel
-#from App.Widget.Delegate import mapperItemDelegate
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
 from App.Widget.Dialog import MessageBoxCritical
@@ -143,7 +143,7 @@ class FormManager[T](QWidget):
         # connecting form and tableview causes 2 time execution of this method
         if self.detailRelations:  # query model don't have primary key
             for relation, masterColumn, detailColumn in self.detailRelations:
-                value = self.model.data(self.model.createIndex(row, masterColumn))
+                value = self.model.data(self.model.index(row, masterColumn))
                 relation.filter(detailColumn, value)
         self.updateEditStatus()
         # cursor restore
@@ -620,7 +620,7 @@ class FormViewManager[T](QWidget):
         "Undo pending changes and Reload data from db"
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        if self.model and hasattr(self.model, 'isEditable') and self.model.isEditable and hasattr(self.model, 'revertAll'):
+        if self.model and hasattr(self.model, 'revertAll'):
             self.model.revertAll() # also do a select()
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
@@ -725,7 +725,6 @@ class FormIndexManager[T](QWidget):
         # form mapper
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
-        #self.mapper.setItemDelegate(mapperItemDelegate(self))
 
     def setModel(self, model: QAbstractItemModel, indexModel: QueryModel) -> None:
         "Set the main form model and index model, index model can change from filter dialog"

@@ -225,7 +225,7 @@ SELECT exists(
 def get_companies_list(user: str|None = None) -> list[tuple[int, str]]:
     """Get the available company list for user or all companies"""
     # get companies list for user
-    if user and user != session['app_system_user']:
+    if user and user == session['app_system_user']:
         script = """
 -- available companies
 SELECT

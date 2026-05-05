@@ -63,7 +63,10 @@ from App.Database.Tool import delete_all_departments
 from App.Database.Tool import delete_all_tables
 from App.Database.Tool import delete_all_cash_desks
 from App.Database.Tool import delete_all_printer_classes
-from App.Database.Tool import copy_cash_desks
+from App.Database.Tool import copy_cash_desk
+from App.Database.Tool import copy_printer_class
+from App.Database.Tool import copy_table
+from App.Database.Tool import copy_department
 
 from App.Database.Company import company_list
 from App.Ui.EventToolDialog import Ui_EventToolDialog
@@ -292,6 +295,7 @@ class DeleteToolDialog(QDialog):
 
 
 class CopyToolDialog(QDialog):
+    "A dialog to copy selected objects from a selected company to the current company"
 
     def __init__(self, parent, title, icon):
         super().__init__(parent)
@@ -311,6 +315,7 @@ class CopyToolDialog(QDialog):
     
     def accept(self):
         "Proceed with the selected utility"
+        # selected company id
         company_id = self.ui.comboBoxCompany.currentData()
         if QMessageBox.question(self,
                                 _tr("Utility","Copy Tool"),
@@ -321,13 +326,27 @@ class CopyToolDialog(QDialog):
                                 ) == QMessageBox.No:
             return
         try:
-            copy_cash_desks(company_id)
+            if self.ui.checkBoxCashDesk.isChecked():
+                copy_cash_desk(company_id)
+            if self.ui.checkBoxPrinterClass.isChecked():
+                copy_printer_class(company_id)
+            if self.ui.checkBoxTable.isChecked():
+                copy_table(company_id)
+            # if self.ui.checkBoxSettings.isChecked():
+            #     copy_settings(company_id)
+            if self.ui.checkBoxDepartment.isChecked():
+                copy_department(company_id)
+            # if self.ui.checkBoxItem.isChecked():
+            #     copy_items(company_id)
+            # if self.ui.checkBoxInventory.isChecked():
+            #     copy_inventory(company_id)
+            # if self.ui.checkBoxPriceList.isChecked():
+            #     copy_price_lists(company_id)
         except PyAppDBError as er:
             QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}")
+                                _tr('MessageDialog', 'Critical'),
+                                f"Database error: {er.code}\n{er.message}")
         else:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Utility', 'Operation completed successfully'))
-

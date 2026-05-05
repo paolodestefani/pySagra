@@ -297,6 +297,10 @@ class TreeQueryModel(QAbstractItemModel):
         "Delete all model items"
         if self.rootItem:
             self.rootItem.childItems.clear()
+    
+    def submitAll(self, pkey: Any = None) -> bool:
+        "Submit all changes to the database, in this model there are no changes allowed, so just return True"
+        return True
 
 
 class TreeModel(QAbstractItemModel):

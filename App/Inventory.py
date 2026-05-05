@@ -120,7 +120,7 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         self.ui.tableViewMenu.setItemDelegateForColumn(2, StockLevelDelegate(self, 
                                                                              setting['inventory_warning_stock_level'],
                                                                              setting['inventory_critical_stock_level']))
-        self.sortFilterDialog = EventFilterDialog(self, session.get('event')) # type: ignore
+        self.sortFilterDialog = EventFilterDialog(self)
         # select initial event, ask if current event is None
         if session['event_id']:
             self.selectedEvent = session['event_id']

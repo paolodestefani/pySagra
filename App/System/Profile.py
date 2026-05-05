@@ -174,8 +174,8 @@ class ProfileForm(FormIndexManager):
         for i in difference:
             model.insertRow(model.rowCount())
             modelRow = model.rowCount() - 1
-            model.setData(model.createIndex(modelRow, ACTION), i)
-            model.setData(model.createIndex(modelRow, AUTHORIZATION), 'X')
+            model.setData(model.index(modelRow, ACTION), i)
+            model.setData(model.index(modelRow, AUTHORIZATION), 'X')
 
     def authorizationButtonClicked(self, button: QPushButton) -> None:
         "Set all action to read/write/execute"
@@ -187,7 +187,7 @@ class ProfileForm(FormIndexManager):
             auth = 'X'
         model = self.ui.tableViewActions.model()
         for row in range(model.rowCount()):
-            model.setData(model.createIndex(row, AUTHORIZATION), auth)
+            model.setData(model.index(row, AUTHORIZATION), auth)
 
     def delete(self) -> None:
         "Delete current profile"

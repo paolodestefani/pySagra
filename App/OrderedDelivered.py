@@ -90,7 +90,7 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (False, False, False, True, False, False, False, False,
-                                True, False, False, False)
+                                True, False, True, True)
         self.ui = Ui_OrderedDeliveredWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager

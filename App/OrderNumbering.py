@@ -115,7 +115,7 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         super().new()
         model = self.ui.tableView.model()
         row = model.rowCount() -1
-        index = model.createIndex(row, EVENT)
+        index = model.index(row, EVENT)
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 

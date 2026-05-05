@@ -353,7 +353,7 @@ class RelationalComboBox(QComboBox):
         "Store key/value function and update the list"
         self.sqlFunc = sqlFunc
         self.updateList()
-
+   
     def updateList(self) -> None:
         self.clear()
         if not self.sqlFunc:
@@ -376,6 +376,7 @@ class RelationalComboBox(QComboBox):
                         self.addItem(k, v)
 
     def setItemList(self, items: list) -> None:
+        self.blockSignals(True)
         self.clear()
         if items:
             if len(items[0]) == 3:  # items with icon
@@ -384,11 +385,14 @@ class RelationalComboBox(QComboBox):
             else:                   # items without icon
                 for v, k in items:
                     self.addItem(k, v)
+        self.blockSignals(False)
 
     def showPopup(self) -> None:
         "Update key/value list before show popup request"
         if self.sqlFunc:
+            self.blockSignals(True)
             self.updateList()
+            self.blockSignals(False)
         super().showPopup()
 
     def _get_modelDataInt(self) -> int|None:
@@ -396,25 +400,31 @@ class RelationalComboBox(QComboBox):
         return int(val) if val is not None else None # must return a number even if null
 
     def _set_modelDataInt(self, data: int|None) -> None:
+        if data is None:
+            self.setCurrentIndex(0) # set to null item if nullable, otherwise to first item
+            return
         index = self.findData(data)
         self.setCurrentIndex(index if index >= 0 else 0)
 
 
-    modelDataInt = Property(object, # object because can be int or None
+    modelDataInt = Property(int, # NO object, break datawidgetmapper mapping
                             fget=_get_modelDataInt,
                             fset=_set_modelDataInt,
                             notify=itemChanged,
-                            user=True)
+                            user=False)
 
     def _get_modelDataStr(self) -> str|None:
         val = self.currentData(Qt.ItemDataRole.UserRole)
-        return str(val) if val is not None else None # must return a string even if null
+        return str(val) if val is not None else "" # must return a string even if null
 
     def _set_modelDataStr(self, data: str|None) -> None:
+        if data is None:
+            self.setCurrentIndex(0) # set to null item if nullable, otherwise to first item
+            return
         index = self.findData(data, Qt.ItemDataRole.UserRole, Qt.MatchFlag.MatchExactly|Qt.MatchFlag.MatchCaseSensitive)
         self.setCurrentIndex(index if index >= 0 else 0) # can be -1 on New
 
-    modelDataStr = Property(object, # object because can be str or None
+    modelDataStr = Property(str, # NO object, break datawidgetmapper mapping
                             fget=_get_modelDataStr, 
                             fset=_set_modelDataStr, 
                             notify=itemChanged,
@@ -758,7 +768,7 @@ class ButtonSeat(QPushButton):
             painter.setPen(QPen(self.seatBackgroundColor.lighter(130), 1))
             painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
         # draw text
-        painter.setPen(QColor(self.text()))
+        painter.setPen(QColor(self.seatTextColor))
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
         painter.end()
 
@@ -910,6 +920,59 @@ class ButtonItem(QPushButton):
 
 class ButtonItemExample(QPushButton):
     "A pushbutton for settings example of color change on stock level value"
+    
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        self.textColor = QColor("#000000")
+        self.backgroundColor = QColor("#90ee90")
+        self.setText("Example Item")
+        self.setMinimumWidth(65)
+        
+    def setTextColor(self, color: str) -> None:
+        self.textColor = QColor(color)
+        self.update()
+
+    def setBackgroundColor(self, color: str) -> None:
+        self.backgroundColor = QColor(color)
+        self.update()
+
+    def paintEvent(self, event):
+        """Custom paint event to draw the button with a 3D effect with custom colors"""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        margin = 5
+        rect = option.rect.adjusted(margin, margin, -margin, -margin)
+        # GRADIEN FOR 3D EFFECT: light at the top, base color in the middle, darker at the bottom
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        if option.state & QStyle.StateFlag.State_Sunken:
+            # on pushed state, invert gradient for pressed effect: darker at the top, base color at the bottom
+            gradient.setColorAt(0, self.backgroundColor.darker(120))
+            gradient.setColorAt(1, self.backgroundColor.darker(110))
+        else:
+            # not pushed state, normal gradient with light reflection at the top and shadow at the bottom
+            gradient.setColorAt(0, self.backgroundColor.lighter(115)) # light reflection at the top
+            gradient.setColorAt(0.5, self.backgroundColor)            # central color
+            gradient.setColorAt(1, self.backgroundColor.darker(110))  # base shadow at the bottom
+        # DRAW BACKGROUND WITH GRADIENT AND BORDER
+        painter.setBrush(gradient)
+        # border pen: slightly darker than the base color for a subtle 3D border
+        border_color = self.backgroundColor.darker(150)
+        painter.setPen(QPen(border_color, 1))
+        painter.drawRoundedRect(rect, 6, 6)
+        # add a light line at the top to simulate the illuminated edge, only if enabled and not pressed
+        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
+            painter.setPen(QPen(self.backgroundColor.lighter(130), 1))
+            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+        # DRAW TEXT
+        painter.setPen(QColor(self.textColor))
+        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
+        painter.end()
+
+
+class ButtonColor(QPushButton):
+    "A button for showing example of color"
     
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)

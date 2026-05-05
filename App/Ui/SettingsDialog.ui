@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>760</width>
-    <height>597</height>
+    <height>588</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -572,7 +572,7 @@
         <attribute name="title">
          <string>Order entry control</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_22">
+        <layout class="QVBoxLayout" name="verticalLayout_25">
          <item>
           <layout class="QGridLayout" name="gridLayout_9">
            <item row="0" column="0" rowspan="2">
@@ -753,92 +753,6 @@
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QLabel" name="label_20">
-             <property name="text">
-              <string>Max covers value</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBoxMaxCovers">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimum">
-              <number>0</number>
-             </property>
-             <property name="maximum">
-              <number>999</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxInactivity">
-             <property name="text">
-              <string>Check inactivity after</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBoxInactivityTime">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="minimum">
-              <number>30</number>
-             </property>
-             <property name="maximum">
-              <number>1200</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelInactivity">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Seconds</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
            <item>
             <widget class="QGroupBox" name="groupBox_5">
@@ -873,6 +787,36 @@
                  <string>Mandatory table number</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QLabel" name="label_20">
+                  <property name="text">
+                   <string>Max covers value</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBoxMaxCovers">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum">
+                   <number>0</number>
+                  </property>
+                  <property name="maximum">
+                   <number>999</number>
+                  </property>
+                  <property name="value">
+                   <number>0</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
@@ -933,6 +877,69 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_14">
+           <item>
+            <widget class="QGroupBox" name="groupBox_13">
+             <property name="title">
+              <string>Other parmeters</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_23">
+              <item>
+               <widget class="QCheckBox" name="checkBoxMenuItemDescription">
+                <property name="text">
+                 <string>Menu description on menu items</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_12">
+             <property name="title">
+              <string>Window inactivity</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_22">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QCheckBox" name="checkBoxInactivity">
+                  <property name="text">
+                   <string>Check inactivity after</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBoxInactivityTime">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="minimum">
+                   <number>30</number>
+                  </property>
+                  <property name="maximum">
+                   <number>1200</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelInactivity">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Seconds</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
@@ -1371,76 +1378,78 @@
         <attribute name="title">
          <string>Other</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_21">
+        <layout class="QVBoxLayout" name="verticalLayout_27">
          <item>
-          <widget class="QCheckBox" name="checkBoxOrderProgress">
-           <property name="text">
-            <string>Order progress management</string>
+          <widget class="QGroupBox" name="groupBox_14">
+           <property name="title">
+            <string>Formats</string>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_21">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="4">
+               <widget class="QLineEdit" name="lineEditCurrencySymbol">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>100</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="maxLength">
+                 <number>3</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_24">
+                <property name="text">
+                 <string>Decimal places for quantity</string>
+                </property>
+                <property name="buddy">
+                 <cstring>spinBoxQuantityDecimals</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QSpinBox" name="spinBoxQuantityDecimals">
+                <property name="maximum">
+                 <number>2</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLabel" name="label_25">
+                <property name="text">
+                 <string>Currency symbol</string>
+                </property>
+                <property name="buddy">
+                 <cstring>lineEditCurrencySymbol</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
-         </item>
-         <item>
-          <layout class="QGridLayout" name="gridLayout_7">
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_25">
-             <property name="text">
-              <string>Currency symbol</string>
-             </property>
-             <property name="buddy">
-              <cstring>lineEditCurrencySymbol</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QLineEdit" name="lineEditCurrencySymbol">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="maxLength">
-              <number>3</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_24">
-             <property name="text">
-              <string>Decimal places for quantity</string>
-             </property>
-             <property name="buddy">
-              <cstring>spinBoxQuantityDecimals</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="spinBoxQuantityDecimals">
-             <property name="maximum">
-              <number>2</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
          </item>
          <item>
           <widget class="QGroupBox" name="groupBox_10">
@@ -1523,32 +1532,8 @@
              <layout class="QHBoxLayout" name="horizontalLayout_13">
               <item>
                <widget class="QLabel" name="labelOutOfStock">
-                <property name="palette">
-                 <palette>
-                  <active>
-                   <colorrole role="WindowText">
-                    <brush brushstyle="SolidPattern">
-                     <color alpha="255">
-                      <red>255</red>
-                      <green>38</green>
-                      <blue>0</blue>
-                     </color>
-                    </brush>
-                   </colorrole>
-                  </active>
-                  <inactive>
-                   <colorrole role="WindowText">
-                    <brush brushstyle="SolidPattern">
-                     <color alpha="255">
-                      <red>255</red>
-                      <green>38</green>
-                      <blue>0</blue>
-                     </color>
-                    </brush>
-                   </colorrole>
-                  </inactive>
-                  <disabled/>
-                 </palette>
+                <property name="enabled">
+                 <bool>false</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -1557,6 +1542,13 @@
                 </property>
                 <property name="text">
                  <string>Out of stock</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_11">
+                <property name="text">
+                 <string>=</string>
                 </property>
                </widget>
               </item>
@@ -1571,9 +1563,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_28">
+               <widget class="QLabel" name="label_12">
                 <property name="text">
-                 <string>&gt;</string>
+                 <string>&lt;</string>
                 </property>
                </widget>
               </item>
@@ -1586,7 +1578,7 @@
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>255</red>
-                      <green>147</green>
+                      <green>38</green>
                       <blue>0</blue>
                      </color>
                     </brush>
@@ -1597,7 +1589,7 @@
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>255</red>
-                      <green>147</green>
+                      <green>38</green>
                       <blue>0</blue>
                      </color>
                     </brush>
@@ -1637,9 +1629,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_34">
+               <widget class="QLabel" name="label_27">
                 <property name="text">
-                 <string>&gt;</string>
+                 <string>&lt;</string>
                 </property>
                </widget>
               </item>
@@ -1651,9 +1643,9 @@
                    <colorrole role="WindowText">
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
-                      <red>246</red>
-                      <green>205</green>
-                      <blue>60</blue>
+                      <red>255</red>
+                      <green>251</green>
+                      <blue>0</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -1662,9 +1654,9 @@
                    <colorrole role="WindowText">
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
-                      <red>246</red>
-                      <green>205</green>
-                      <blue>60</blue>
+                      <red>255</red>
+                      <green>251</green>
+                      <blue>0</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -1703,6 +1695,47 @@
                </widget>
               </item>
               <item>
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>&lt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_9">
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="WindowText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>0</red>
+                      <green>249</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="WindowText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>0</red>
+                      <green>249</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled/>
+                 </palette>
+                </property>
+                <property name="text">
+                 <string>Available</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_5">
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
@@ -1716,6 +1749,22 @@
                </spacer>
               </item>
              </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_15">
+           <property name="title">
+            <string>Order progress</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_26">
+            <item>
+             <widget class="QCheckBox" name="checkBoxOrderProgress">
+              <property name="text">
+               <string>Order progress management (ordered delivered)</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

@@ -331,7 +331,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButtonExample">
+                  <widget class="ButtonItemExample" name="pushButtonExample">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -377,7 +377,7 @@
                   <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                  </property>
                  <item row="0" column="3">
-                  <widget class="QPushButton" name="pushButtonBGC4">
+                  <widget class="ButtonColor" name="pushButtonBGC4">
                    <property name="text">
                     <string/>
                    </property>
@@ -387,7 +387,7 @@
                   </widget>
                  </item>
                  <item row="0" column="4">
-                  <widget class="QPushButton" name="pushButtonBGC5">
+                  <widget class="ButtonColor" name="pushButtonBGC5">
                    <property name="text">
                     <string/>
                    </property>
@@ -397,7 +397,7 @@
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QPushButton" name="pushButtonBGC2">
+                  <widget class="ButtonColor" name="pushButtonBGC2">
                    <property name="text">
                     <string/>
                    </property>
@@ -410,7 +410,7 @@
                   </widget>
                  </item>
                  <item row="0" column="2">
-                  <widget class="QPushButton" name="pushButtonBGC3">
+                  <widget class="ButtonColor" name="pushButtonBGC3">
                    <property name="text">
                     <string/>
                    </property>
@@ -420,7 +420,7 @@
                   </widget>
                  </item>
                  <item row="0" column="0">
-                  <widget class="QPushButton" name="pushButtonBGC1">
+                  <widget class="ButtonColor" name="pushButtonBGC1">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -433,7 +433,7 @@
                   </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="QPushButton" name="pushButtonBGC6">
+                  <widget class="ButtonColor" name="pushButtonBGC6">
                    <property name="text">
                     <string/>
                    </property>
@@ -443,7 +443,7 @@
                   </widget>
                  </item>
                  <item row="1" column="2">
-                  <widget class="QPushButton" name="pushButtonBGC8">
+                  <widget class="ButtonColor" name="pushButtonBGC8">
                    <property name="text">
                     <string/>
                    </property>
@@ -453,7 +453,7 @@
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QPushButton" name="pushButtonBGC7">
+                  <widget class="ButtonColor" name="pushButtonBGC7">
                    <property name="text">
                     <string/>
                    </property>
@@ -463,7 +463,7 @@
                   </widget>
                  </item>
                  <item row="1" column="3">
-                  <widget class="QPushButton" name="pushButtonBGC9">
+                  <widget class="ButtonColor" name="pushButtonBGC9">
                    <property name="text">
                     <string/>
                    </property>
@@ -473,7 +473,7 @@
                   </widget>
                  </item>
                  <item row="1" column="4">
-                  <widget class="QPushButton" name="pushButtonBGC10">
+                  <widget class="ButtonColor" name="pushButtonBGC10">
                    <property name="text">
                     <string/>
                    </property>
@@ -536,8 +536,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>783</width>
-            <height>547</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -749,6 +749,16 @@
    <class>EnhancedTableView</class>
    <extends>QTableView</extends>
    <header>App.Widget.View</header>
+  </customwidget>
+  <customwidget>
+   <class>ButtonItemExample</class>
+   <extends>QPushButton</extends>
+   <header>App.Widget.Control</header>
+  </customwidget>
+  <customwidget>
+   <class>ButtonColor</class>
+   <extends>QPushButton</extends>
+   <header>App.Widget.Control</header>
   </customwidget>
  </customwidgets>
  <resources/>

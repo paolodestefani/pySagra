@@ -217,8 +217,8 @@ WHERE company_id = system.pa_current_company();"""
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
 
-def copy_cash_desks(from_company_id: int) -> None:
-    "Copy ALL the cash desks from another company to current compani"
+def copy_cash_desk(from_company_id: int) -> None:
+    "Copy ALL the cash desks from another company to current company"
     script = """
 INSERT INTO cash_desk (
     company_id,
@@ -232,7 +232,76 @@ SElECT
     note
 FROM cash_desk
 WHERE company_id = %s;"""
-    # linked table (printer_class_printer) is automatically deleted from db cascade constraints
+    try:
+        with appconn.cursor() as cur:
+            with appconn.transaction():
+                cur.execute(script, (from_company_id,))
+    except psycopg.Error as er:
+        raise PyAppDBError(er.diag.sqlstate, str(er))
+
+
+def copy_printer_class(from_company_id: int) -> None:
+    "Copy ALL the printer classes from another company to current company"
+    script1 = """
+INSERT INTO printer_class (
+    company_id,
+    description,
+    external_code)
+SElECT
+    system.pa_current_company(),
+    description,
+    printer_class_id
+FROM printer_class
+WHERE company_id = %s;"""
+    script2 = """
+INSERT INTO printer_class_printer (
+    company_id,
+    printer_class_id,
+    computer,
+    printer)
+SELECT
+    system.pa_current_company(),
+    b.printer_class_id,
+    a.computer,
+    a.printer
+FROM printer_class_printer a
+JOIN (
+    SELECT printer_class_id, external_code 
+    FROM printer_class
+    WHERE company_id = system.pa_current_company()
+    ) b ON a.printer_class_id = b.external_code
+WHERE a.company_id = %s;"""
+    try:
+        with appconn.cursor() as cur:
+            with appconn.transaction():
+                cur.execute(script1, (from_company_id,))
+    except psycopg.Error as er:
+        raise PyAppDBError(er.diag.sqlstate, str(er))
+    
+
+def copy_table(from_company_id: int) -> None:
+    "Copy ALL the tables from another company to current company"
+    script = """
+INSERT INTO seat_map (
+    company_id,
+    table_code,
+    pos_row,
+    pos_column,
+    text_color,
+    background_color,
+    is_obsolete,
+    external_code)
+SElECT
+    system.pa_current_company(),
+    table_code,
+    pos_row,
+    pos_column,
+    text_color,
+    background_color,
+    is_obsolete,
+    seat_map_id
+FROM seat_map
+WHERE company_id = %s;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
@@ -241,5 +310,35 @@ WHERE company_id = %s;"""
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
 
-    
+def copy_department(from_company_id: int) -> None:
+    "Copy ALL the departments from another company to current company"
+    script = """
+INSERT INTO department (
+    company_id,
+    description,
+    sorting,
+    printer_class_id,
+    is_obsolete,
+    is_menu_container,
+    is_for_takeaway,
+    external_code)
+SElECT
+    system.pa_current_company(),
+    a.description,
+    a.sorting,
+    b.printer_class_id,
+    a.is_obsolete,
+    a.is_menu_container,
+    a.is_for_takeaway,
+    a.department_id
+FROM department a
+LEFT JOIN printer_class b ON a.printer_class_id = b.external_code
+WHERE a.company_id = %s;"""
+    try:
+        with appconn.cursor() as cur:
+            with appconn.transaction():
+                cur.execute(script, (from_company_id,))
+    except psycopg.Error as er:
+        raise PyAppDBError(er.diag.sqlstate, str(er))
+
     

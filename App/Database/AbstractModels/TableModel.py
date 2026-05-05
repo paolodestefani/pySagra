@@ -169,6 +169,7 @@ class QueryModel(QAbstractTableModel):
         """One column inplace sorting of the model, manage null values based on declared data type"""
         if not self.dataSet:
             return
+        self.layoutAboutToBeChanged.emit()
         data: list[list[Any]] = []
         for r in range(self.rowCount() - int(self.hasTotalsRow)):
             row = [self.dataSet[r, c] for c in range(self.columnCount())]
@@ -195,11 +196,7 @@ class QueryModel(QAbstractTableModel):
         for i, record in enumerate(data):
             for j, field in enumerate(record):
                 self.dataSet[i, j] = field
-        self.dataChanged.emit(
-            self.createIndex(0, 0),
-            self.createIndex(self.rowCount() - 1, self.columnCount() - 1),
-            [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]
-        )
+        self.layoutChanged.emit()
 
     def addWhere(self, condition: str, value: int|float|str) -> None:
         "Add where conditions before select"
@@ -273,7 +270,7 @@ class QueryModel(QAbstractTableModel):
         script += ";"
         logger.info(f"**** {self.repr} SELECT script ****\n{script}")
         logger.info(f"**** {self.repr} SELECT args ****\n{args}")
-        self.layoutAboutToBeChanged.emit()
+        self.beginResetModel()
         self.dataSet.clear()
         try:
             with appconn.cursor() as cur:
@@ -284,12 +281,8 @@ class QueryModel(QAbstractTableModel):
                         self.dataSet[i, j] = field
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
-        # notify about changes
-        self.dataChanged.emit(self.createIndex(0, 0),
-                              self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-        self.layoutChanged.emit()
-
+        self.endResetModel()
+        
     def revertAll(self) -> None:
         self.select()
 
@@ -308,7 +301,7 @@ class QueryWithParamsModel(QAbstractTableModel):
         self.dataSet: Any = dict()  # a dict of (row, column) = value
         self.rows = 0 # updated by select method
         self.parameter: dict = {} # dictionary of parameters
-        self.repr = 'Generic query with params model' # printable representation of the object,
+        self.repr = 'Generic query with parameters model' # printable representation of the object,
         # subclass must define this
         self.selectQuery: str = "" # subclass must define this
         self.columns: tuple[Any, ...] = () # subclass must define this
@@ -383,6 +376,7 @@ class QueryWithParamsModel(QAbstractTableModel):
         "One column inplace sorting of the model, manage null values base on declared data time"
         if not self.dataSet:
             return
+        self.layoutAboutToBeChanged.emit()
         data: list[list[Any]] = []
         for r in range(self.rowCount() - int(self.hasTotalsRow)):
             row = [self.dataSet[r, c] for c in range(self.columnCount())]
@@ -409,11 +403,7 @@ class QueryWithParamsModel(QAbstractTableModel):
         for i, record in enumerate(data):
             for j, field in enumerate(record):
                 self.dataSet[i, j] = field
-        self.dataChanged.emit(
-            self.createIndex(0, 0),
-            self.createIndex(self.rowCount() - 1, self.columnCount() - 1),
-            [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]
-        )
+        self.layoutChanged.emit() 
 
     def setParameter(self, parameter: str, value: int|str|QDate|QDateTime|None) -> None:
         "Set the value of a parameter in prams dictionaty"
@@ -421,7 +411,7 @@ class QueryWithParamsModel(QAbstractTableModel):
 
     def select(self) -> None:
         "Fetch rows from database and fill the dataSet"
-        self.layoutAboutToBeChanged.emit()
+        self.beginResetModel()
         script = self.selectQuery.strip()
         logger.info(f"**** {self.repr} SELECT script ****\n{script}")
         logger.info(f"**** {self.repr} SELECT params ****\n{self.parameter}")
@@ -434,14 +424,548 @@ class QueryWithParamsModel(QAbstractTableModel):
                         self.dataSet[i, j] = field
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
-        # notify about changes
-        self.dataChanged.emit(self.createIndex(0, 0),
-                              self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-        self.layoutChanged.emit()
+        self.endResetModel()
 
     def revertAll(self) -> None:
+        """Revert all changes, in this model do nothing because is readonly,
+        but is needed for proper DataWidgetMapper use"""
         self.select()
+
+
+# class TableModel(QAbstractTableModel):
+#     """Generic table model for managing one sql table
+    
+#     Structure:
+#     dataSet is a list of dictionaries, each dictionary is a record of a table
+#     the dictionary key is the column number of the model
+#     additional keys are the pkey for primary key dictionary
+#     and object_version for the concurrency management
+#     """
+#     userDataChanged = Signal()  # can not use dataChanged because is emitted even on select
+#     rowCountChanged = Signal(int)
+
+#     def __init__(self, parent: QObject | None = None) -> None:
+#         "Initialize some empty or default data structure"
+#         super().__init__(parent)
+#         self.dataSet: Any = [] # a list of dict (integer key = record column/field,
+#         #                                   'pkey' = primary key tuple,
+#         #                                   'object_version' = int)
+#         self.rows = 0 # automatic updated on select
+#         self.cols = 0 # updated on select
+#         self.whereCondition: list[tuple] = []  # list of (condition, argument)
+#         self.orderByExpression: list[str] = [] # list of string
+#         self.filterMapping: dict = {}
+#         self.toInsert: list[int] = []  # list of row number of any inserted row
+#         self.toModify: dict[int, Any] = {}  # dict of dict row number / column number of any modified field
+#         self.toDelete: list[dict[str, Any]] = []  # list of dict for any cancelled row (need to store pkey and object_version)
+#         # subclasses must define this properties
+#         self.table: str | None = None # table or view name - string, subclass must define this
+#         self.isCompanyTable = False # True if is a company table
+#         self.columns: tuple[Any, ...] = () # model columns definition (field, description, readonly, type)
+#         self.primaryKey: tuple[str, ...] = () # primary key fields name - sequence, subclass must define this
+#         self.automaticPKey = False  # set pkey filds at DEFAULT value on insert
+#         self.recordType: dict = {}  # list of field:value key for record type (a table with different record type)
+#         self.newRecordDefault: dict = {} # a record dictionary with default values for some field on insert
+#         self.filterCondition: list[tuple] = []  # reference key condition before where conditions, map master row to detail row
+#         self.limitCondition: int | None = None
+#         self.isDirty = False # setted on data changed
+#         self.isEditable = True # used in forms
+#         self.hasTotalsRow = False
+#         self.repr = 'Generic editable table model' # printable representation of the object
+        
+#     def __repr__(self) -> str:
+#         "Model representation"
+#         return self.repr
+
+#     def flags(self, index: QModelIndex|QPersistentModelIndex) -> Qt.ItemFlag:
+#         "Return standard flags or readonly for some columns"
+#         if not index.isValid():
+#             return Qt.ItemFlag.NoItemFlags
+#         f = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+#         is_bool = self.columns[index.column()][TYPE] == 'bool'
+#         is_ro = self.columns[index.column()][RO]
+#         if not is_ro:
+#             f |= Qt.ItemFlag.ItemIsEditable
+#             if is_bool:
+#                 f |= Qt.ItemFlag.ItemIsUserCheckable
+#         return f
+
+#     def data(self,
+#              index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+#              role: int = Qt.ItemDataRole.DisplayRole
+#              ) -> Any:
+#         "Returns the required data from dataSet"
+#         # sometimes dataSet could be empty
+#         if (not index.isValid() 
+#             or index.row() > self.rowCount()
+#             or index.column() > self.columnCount()):
+#             return None
+#         row = index.row()
+#         col = index.column()
+#         if len(self.dataSet) <= row:
+#             return None
+#         if not col in self.dataSet[row]:
+#             return None
+#         result = self.dataSet[row][col]
+#         match role:
+#             case Qt.ItemDataRole.EditRole:
+#                 return result
+#             case Qt.ItemDataRole.DisplayRole:
+#                 if isinstance(result, bool):
+#                     return None # do not return text for bool, checkbox is managed in CheckStateRole
+#                 return result
+#             case Qt.ItemDataRole.TextAlignmentRole:
+#                 # numbers aligned right anything else aligned left
+#                 if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
+#                     return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
+#                 else:
+#                     return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
+#             case Qt.ItemDataRole.CheckStateRole:
+#                 if isinstance(result, bool):
+#                     return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+#                 return None
+#             case _:
+#                 return None
+
+#     def setData(self, 
+#                 index: QModelIndex|QPersistentModelIndex = QModelIndex(),
+#                 value: Any = None,
+#                 role: int = Qt.ItemDataRole.EditRole
+#                 ) -> bool:
+#         "Set data in dataSet and mark row as modified"
+#         # sanity checks
+#         if (not index.isValid() 
+#             or index.row() > self.rowCount()
+#             or index.column() > self.columnCount()):
+#             return False
+#         row = index.row()
+#         col = index.column()
+#         if role == Qt.ItemDataRole.CheckStateRole:
+#             # Converte in bool confrontando con Checked (funziona sia con int che con Enum)
+#             new_value = (value == Qt.CheckState.Checked or value == Qt.CheckState.Checked.value)
+#             if self.dataSet[row][col] == new_value:
+#                 return False
+#             # save the row/column of the modified cell
+#             if (row not in self.toModify and row not in self.toInsert):
+#                 self.toModify[row] = {}
+#             if (row in self.toModify and col not in self.toModify[row]):
+#                 self.toModify[row][col] = None
+#             self.dataSet[row][col] = new_value
+#             self.dataChanged.emit(index, index, [role, Qt.ItemDataRole.DisplayRole])
+#             self.userDataChanged.emit()
+#             self.isDirty = True
+#             return True
+#         if role == Qt.ItemDataRole.EditRole:
+#             # check if different from before
+#             if self.dataSet[row][col] == value:
+#                 return False
+#             # save the row/column of the modified cell
+#             if (row not in self.toModify and row not in self.toInsert):
+#                 self.toModify[row] = {}
+#             if (row in self.toModify and col not in self.toModify[row]):
+#                 self.toModify[row][col] = None
+#             # modify the model
+#             if isinstance(value, str):
+#                 value = value or None # convert empty strings in Sql Null
+#             self.dataSet[row][col] = value
+#             self.isDirty = True
+#             self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
+#             self.userDataChanged.emit()
+#             return True
+#         return False
+
+#     def hiddenSetData(self, row: int, column: int, value: Any) -> None:
+#         "Set data without emitting dataChanged signal"
+#         row = self.filterMapping[row]
+#         self.dataSet[row][column] = value
+
+#     def submit(self) -> bool:
+#         "Update database: insert/delete/update rows, used only for commit on row changed, do nothing on manual submit"
+#         # used only for commit on row changed, do nothing on manual submit
+#         # BUT is needed for proper DataWidgetMapper use
+#         return True
+
+#     def submitAll(self, column: int|None = None, value: Any|None = None) -> bool:
+#         "Update database: insert/delete/update rows"
+#         # if a referenceKey is provided fill all the rows with reference value
+#         if not column is None :
+#             for row in self.dataSet:
+#                 row[column] = value
+
+#         cols = len([i[FIELD] for i in self.columns if i[FIELD]]) # only column of master table need insert/update/delete
+#         pkcols = range(cols, cols + len(self.primaryKey))
+#         ovcol = cols + len(self.primaryKey)
+#         self.sqlCheck = (f"SELECT {', '.join(self.primaryKey)}\n"
+#                          f"FROM {self.table}\n"
+#                          f"WHERE {' AND '.join(
+#                              [f'{i} = %({i})s' for i in self.primaryKey + (OVFIELD,)])};")
+#         try:
+#             with appconn.cursor() as cur: # manual submit, no commit (form can save multiple table models)
+
+#                 # *** UPDATE ***
+#                 for row in self.toModify:
+#                     if row in self.toInsert: # skip row to be inserted first
+#                         continue
+#                     # check if record was already modified
+#                     pkey = self.dataSet[row]['pkey'].copy() # primary key is unchanged on update
+#                     args = pkey.copy()
+#                     args[OVFIELD] = self.dataSet[row][OVFIELD]
+#                     logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
+#                     logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
+#                     cur.execute(self.sqlCheck, args)
+#                     if cur.rowcount == 0:
+#                         logger.error(f"**** {self.repr}: row modified before update ****")
+#                         raise PyAppDBConcurrencyError()
+#                     # update record
+#                     fields = ", ".join([f"{self.columns[i][FIELD]} = %({self.columns[i][FIELD]})s" for i in self.toModify[row]])
+#                     if not fields: # no real fields need update
+#                         continue
+#                     where = " AND ".join([f"{i} = %({i})s" for i in pkey])
+#                     fieldsback = ", ".join([i[FIELD] for i in self.columns if i[FIELD]] + [OVFIELD])
+#                     script = (f"UPDATE {self.table}\n"
+#                               f"SET {fields}\n"
+#                               f"WHERE {where}\n"
+#                               f"RETURNING {fieldsback};")
+#                     args = {self.columns[i][FIELD]: self.dataSet[row][i] for i in self.toModify[row] if self.columns[i][FIELD]}
+#                     args.update({k: pkey[k] for k in pkey})
+#                     logger.info(f"**** {self.repr} UPDATE script ****\n{script}")
+#                     logger.info(f"**** {self.repr} UPDATE args   ****\n{args}")
+                    
+#                     # exceptions are managed in this method globally
+#                     cur.execute(script, args)
+#                     # repopulate the modified row
+#                     for record in cur:
+#                         # selected fields
+#                         for index in range(self.cols):
+#                             self.dataSet[row][index] = record[index]
+#                             # DEBUG: Verifica cosa è tornato dal database
+#                             if isinstance(self.dataSet[row][index], QByteArray):
+#                                 logger.info(f"RICEVUTO correttamente QByteArray per colonna {index}")
+#                             else:
+#                                 logger.error(f"ERRORE: Ricevuto tipo {type(record[index])} invece di QByteArray")
+#                         # row object version
+#                         self.dataSet[row][OVFIELD] = record[-1] # OVFIELD is always the last onefield
+#                     self.dataChanged.emit(self.index(row, 0),
+#                                           self.index(row, self.columnCount() - 1),
+#                                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify de record
+#                 # clear modified record list
+#                 self.toModify.clear()
+
+#                 # *** DELETE ***
+#                 for dd in self.toDelete:
+#                     # check if record was modified
+#                     pkey = dd['pkey'].copy()  # self.toDelete[row]['pkey'].copy()
+#                     args = pkey.copy()
+#                     if self.isCompanyTable:
+#                         args['company_id'] = session['current_company']
+#                     args[OVFIELD] = dd[OVFIELD]
+#                     logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
+#                     logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
+#                     cur.execute(self.sqlCheck, args)
+#                     if cur.rowcount == 0:
+#                         logger.error(f"**** {self.repr} row modified before update ****")
+#                         raise PyAppDBConcurrencyError()
+#                     # delete record
+#                     where = " AND ".join([f"{i} = %({i})s" for i in pkey])
+#                     script = (f"DELETE FROM {self.table}\n"
+#                               f"WHERE {where};")
+#                     args.update({k: pkey[k] for k in pkey})
+#                     logger.info(f"**** {self.repr} DELETE script ****\n{script}")
+#                     logger.info(f"**** {self.repr} DELETE args   ****\n{args}")
+#                     # exceptions are managed in this method globally
+#                     cur.execute(script, args)
+#                 # clear deleted record list
+#                 self.toDelete.clear()
+
+#                 # *** INSERT ***
+#                 for row in self.toInsert:
+#                     fieldList = [i[FIELD]for i in self.columns if i[FIELD] and not i[RO]] 
+#                     # calculated fields have None as field name
+#                     # read only fields can not be inserted
+#                     if self.automaticPKey:
+#                         # remove primary key fields if present
+#                         for i in self.primaryKey:
+#                             if i in fieldList:
+#                                 fieldList.remove(i)
+#                     valueList = [f"%({i})s" for i in fieldList]
+#                     if self.recordType:
+#                         fieldList += [i for i in self.recordType]
+#                         valueList += [f"'{self.recordType[i]}'" for i in self.recordType]  # record type must be string
+#                     fields = ", ".join(fieldList)
+#                     values = ", ".join(valueList)
+#                     fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])
+#                     args = {c[FIELD]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[FIELD] and not c[RO]}
+#                     if self.recordType:
+#                         for i in self.recordType:
+#                             args[i] = self.recordType[i]
+#                     # set company after anything else, company_id may not be present in self.columns
+#                     if self.isCompanyTable:
+#                         fields += ', company_id'
+#                         values += ', %(company_id)s'
+#                         args['company_id'] = session['current_company']
+#                     script = (f"INSERT INTO {self.table}\n"
+#                               f"({fields})\n"
+#                               f"VALUES ({values})\n"
+#                               f"RETURNING {fieldsback};")
+#                     logger.info(f"**** {self.repr} INSERT script ****\n{script}")
+#                     logger.info(f"**** {self.repr} INSERT args   ****\n{args}")
+#                     # exceptions are managed in this method globally
+#                     cur.execute(script, args)
+#                     # repopulate the inserted row with returned values (in case of trigger modify the record)
+#                     for record in cur:
+#                         # selected fields
+#                         for index in range(self.cols):
+#                             self.dataSet[row][index] = record[index]
+#                         # primary key
+#                         self.dataSet[row]['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
+#                         # object version
+#                         self.dataSet[row][OVFIELD] = record[ovcol]
+#                     self.dataChanged.emit(self.index(row, 0),
+#                                           self.index(row, self.columnCount() - 1),
+#                                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify record
+#                 # clear insert record list
+#                 self.toInsert.clear()
+                
+#         except psycopg.Error as er:
+#             logger.error(f"**** {self.repr} SUBMITALL error ****\n{er}")
+#             raise PyAppDBError(er.diag.sqlstate, str(er))
+#         self.isDirty = False
+#         return True
+
+#     def revertAll(self) -> None:
+#         self.toModify.clear()
+#         self.toDelete.clear()
+#         self.toInsert.clear()
+#         self.isDirty = False
+#         self.select()
+
+#     def clearData(self) -> None:
+#         "Clear all the content of model"
+#         self.dataSet.clear()
+#         self.toModify.clear()
+#         self.toDelete.clear()
+#         self.toInsert.clear()
+#         self.isDirty = False
+#         self.rows = 0 # usually updated by select
+#         self.cols = len(self.columns) # usually updated by select
+
+#     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+#         "Returns header data for row (field header)/column (columns number) headers"
+#         if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+#             return self.columns[section][DESCRIPTION]
+#         if orientation == Qt.Orientation.Vertical:
+#             if role == Qt.ItemDataRole.DisplayRole:
+#                 return super().headerData(section, orientation, role)
+#         return None
+
+#     def rowCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
+#         "Returns the rows number of the dataSet"
+#         return self.rows
+
+#     def columnCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
+#         "Returns the columns number of the dataSet"
+#         return self.cols
+
+#     def insertRows(self, position: int, count: int, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> bool:
+#         "Insert rows in model"
+#         self.beginInsertRows(parent, position, position + count - 1)
+#         for i in range(position, position + count):
+#             self.dataSet.insert(i, {i:self.newRecordDefault.get(j[FIELD]) for i, j in enumerate(self.columns)})
+#             self.toInsert.append(i)
+#         self.rows += count
+#         self.endInsertRows()
+#         self.userDataChanged.emit()
+#         return True
+
+#     def removeRows(self, position: int, count: int, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> bool:
+#         "Remove rows from model"
+#         if self.rowCount() < 1:
+#             return True
+#         # for removed rows we can't use row number because it is renumbered
+#         # every time a row is removed. Also inserted/modified rows have to be
+#         # renumbered when a row before is removed
+#         self.beginRemoveRows(parent, position, position + count - 1)
+#         for i in range(position, position + count):
+#             # if row to be deleted was just inserted and not saved yet delete from toInsert
+#             if i in self.toInsert:
+#                 self.toInsert.remove(i)
+#             # if row to be deleted was just modified and not saved yet delete from toModify
+#             if i in self.toModify:
+#                 del self.toModify[i]
+#             # save the deleted record primary key and object version
+#             if self.dataSet[i].get('pkey'):  # could happend if insert/delete before save
+#                 self.toDelete.append({'pkey': self.dataSet[i]['pkey'].copy(),
+#                                       OVFIELD: self.dataSet[i][OVFIELD]})
+#             # if row deleted is before an inserted/modified adjust row number (-1)
+#             self.toInsert.sort()
+#             self.toInsert = [ri - 1 if ri > i else ri for ri in self.toInsert]
+#             rm = list(self.toModify.keys())
+#             rm.sort()
+#             for r in rm:
+#                 if r > i:
+#                     self.toModify[r - 1] = self.toModify[r]
+#                     del self.toModify[r]
+#         # modify the model
+#         del self.dataSet[position: position + count]
+#         self.rows -= count
+#         self.endRemoveRows()
+#         self.userDataChanged.emit()
+#         return True
+
+#     def sort(self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder) -> None:
+#         "Inplace sorting of the model, manage null values base on declared data time"
+#         if not self.dataSet:
+#             return
+#         self.layoutAboutToBeChanged.emit()
+#         # manage Null values
+#         dt = self.columns[column][TYPE]
+#         nv = {'int': 0,
+#               'str': "",
+#               'float': 0.0,
+#               'decimal': 0,
+#               'bool': False,
+#               'date': QDate(),
+#               'time': QTime(),
+#               'datetime': QDateTime()}[dt]
+#         # inplace list sorting
+#         if order == Qt.SortOrder.AscendingOrder:
+#             self.dataSet.sort(key=lambda x: x[column] or nv)
+#         else:
+#             self.dataSet.sort(key=lambda x: x[column] or nv, reverse=True)
+#         self.layoutChanged.emit()
+
+#     def filter(self, column: int|None = None, value: Any = None) -> None:
+#         "Filter records on a master/detail logic, this model is for detail"
+#         self.filterCondition.clear()
+#         if column is None: # empty master table or new record
+#             self.filterCondition.append(('True = %s', False))
+#         else:
+#             field = f"{self.columns[column][FIELD]}"
+#             self.filterCondition.append((f'{field} = %s', value))
+#         self.select()
+
+#     def filterMasterRow(self, row: int) -> None:
+#         "Filter dataset based on master row creating a dictionary of mapped rows"
+#         self.layoutAboutToBeChanged.emit()
+#         self.filterMapping.clear()
+#         self.filterMapping = {len(self.filterMapping): n for n, i in enumerate(self.dataSet) if  i['master_row'] == row}
+#         self.rows = len(self.filterMapping)
+#         # notify of changes
+#         self.dataChanged.emit(self.createIndex(0, 0),
+#                               self.createIndex(self.rowCount(), self.columnCount()),
+#                               [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
+#         self.layoutChanged.emit()
+#         self.rowCountChanged.emit(self.rows)
+    
+#     def addWhere(self, condition: str, value: str|int|float|QDate|QDateTime|None) ->None:
+#         "Add where conditions before select"
+#         self.whereCondition.append((condition, value))
+
+#     def addOrderBy(self, expression: str|list|tuple) -> None:
+#         "Add order by expression before select"
+#         if isinstance(expression, (list, tuple)):
+#             self.orderByExpression += list(expression)
+#         elif isinstance(expression, str):
+#             self.orderByExpression.append(expression)
+#         else:
+#             raise TypeError("Order by expression must be string or list/tuple of strings")
+
+#     def getPrimaryKey(self, row: int) -> str|None:
+#         if row < 0:
+#             return None
+#         return self.dataSet[row].get('pkey')
+
+#     def fieldName(self, column: int) -> str:
+#         "Return field name for column number"
+#         return self.columns[column][FIELD]
+
+#     def fieldColumn(self, fieldName: str) -> int:
+#         "Return column number for field name"
+#         i = self.columns.index([i for i in self.columns if i[FIELD] == fieldName][0]) # index the list of tuple with 1 element, [0] returns the tuple (no list)
+#         return i
+
+#     def select(self, column: int|None = None, value: str|int|float|QDate|QDateTime|None = None) -> None:
+#         "Fetch rows from DB creating the sql select statement and filling the dataset"
+#         # select fields + primary key fields + object version field
+#         # None fields (usually calculated fields) are converted to Null string
+#         fields = ", ".join([f"{i[FIELD] or 'Null'}" for i in self.columns]
+#                            + [f"{i}" for i in self.primaryKey]
+#                            + [OVFIELD])
+
+#         script = f"SELECT {fields}\nFROM {self.table}\n"
+#         args = []
+#         where = []
+#         if self.isCompanyTable:
+#             where.append(("company_id = %s", session['current_company']))
+#         if self.recordType:
+#             where += [(f'{i} = %s', f'{self.recordType[i]}') for i in self.recordType]
+#         if self.filterCondition:
+#             where += self.filterCondition
+#         if self.whereCondition:
+#             where += self.whereCondition
+#             self.whereCondition.clear() # clear where condition after use, they are intended for one select only
+#         if where:
+#             script += f"\nWHERE {' AND '.join([i[0] for i in where])}"
+#             args += [i[1] for i in where if '%s' in i[0]] # argument if required
+#         if self.orderByExpression:
+#             script += f"\nORDER BY {', '.join([i for i in self.orderByExpression])}"
+#         if self.limitCondition:
+#             script += f"\nLIMIT {self.limitCondition}"
+#         script += ";"
+#         print("* Script *\n", script)
+#         print("* Args *\n", args)
+#         cols = len(self.columns)
+#         pkcols = range(cols, cols + len(self.primaryKey))
+#         ovcol = cols + len(self.primaryKey)
+#         #self.layoutAboutToBeChanged.emit()
+#         self.beginResetModel()
+#         try:
+#             with appconn.cursor() as cur:
+#                 cur.execute(script, args)
+#                 self.rows = cur.rowcount
+#                 self.cols = cols
+#                 self.dataSet.clear()
+#                 for record in cur:
+#                     # selected fields
+#                     item: dict[int|str, Any] = {i:record[i] for i in range(cols)}    
+#                     # primary key fields
+#                     item['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
+#                     # discard item with Null primary key
+#                     if item['pkey'][self.primaryKey[0]] is None:
+#                         continue
+#                     # master column
+#                     item['master_row'] = record[1] # master row number
+#                     # row object version
+#                     item[OVFIELD] = record[ovcol]
+#                     # append on record list
+#                     self.dataSet.append(item)
+#         except psycopg.Error as er:
+#             raise PyAppDBError(er.diag.sqlstate, str(er))
+#         # create an unfiltered master row mapping
+#         self.filterMapping = {i: i  for i in range(len(self.dataSet))}
+#         # notify of changes
+#         self.endResetModel()
+        
+        
+class Record(dict):
+    def __init__(self, data: dict, pkey: dict, object_version: int, is_new: bool = False) -> None:
+        # data is a dictionary {column_index: value}
+        super().__init__(data)
+        self.pkey = pkey
+        self.object_version = object_version
+        self.is_new = is_new
+        self.is_modified = False
+        self.is_deleted = False
+                
+    def __setitem__(self, key, value):
+        """Override __setitem__ to mark the record as modified when a value is actuallychanged"""
+        # if the value is the same do not mark as modified
+        if key in self and self[key] == value:
+            return
+        super().__setitem__(key, value)
+        # if the record is not new, mark as modified
+        if not self.is_new:
+            self.is_modified = True
 
 
 class TableModel(QAbstractTableModel):
@@ -459,16 +983,12 @@ class TableModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "Initialize some empty or default data structure"
         super().__init__(parent)
-        self.dataSet: Any = [] # a list of dict (integer key = record column/field,
-        #                                   'pkey' = primary key tuple,
-        #                                   'object_version' = int)
+        self.dataSet: list[Record] = [] 
         self.rows = 0 # automatic updated on select
         self.cols = 0 # updated on select
         self.whereCondition: list[tuple] = []  # list of (condition, argument)
         self.orderByExpression: list[str] = [] # list of string
         self.filterMapping: dict = {}
-        self.toInsert: list[int] = []  # list of row number of any inserted row
-        self.toModify: dict[int, Any] = {}  # dict of dict row number / column number of any modified field
         self.toDelete: list[dict[str, Any]] = []  # list of dict for any cancelled row (need to store pkey and object_version)
         # subclasses must define this properties
         self.table: str | None = None # table or view name - string, subclass must define this
@@ -496,18 +1016,17 @@ class TableModel(QAbstractTableModel):
         f = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
         is_bool = self.columns[index.column()][TYPE] == 'bool'
         is_ro = self.columns[index.column()][RO]
-        if is_bool:
-            if not is_ro:
+        if not is_ro:
+            f |= Qt.ItemFlag.ItemIsEditable
+            if is_bool:
                 f |= Qt.ItemFlag.ItemIsUserCheckable
-        else:
-            if not is_ro:
-                f |= Qt.ItemFlag.ItemIsEditable
         return f
 
     def data(self,
              index: QModelIndex | QPersistentModelIndex = QModelIndex(),
              role: int = Qt.ItemDataRole.DisplayRole
              ) -> Any:
+        "Returns the required data from dataSet"
         # sometimes dataSet could be empty
         if (not index.isValid() 
             or index.row() > self.rowCount()
@@ -522,12 +1041,10 @@ class TableModel(QAbstractTableModel):
         result = self.dataSet[row][col]
         match role:
             case Qt.ItemDataRole.EditRole:
-                #if isinstance(result, bool):
-                #    return None # do not return text for bool, checkbox is managed in CheckStateRole
                 return result
             case Qt.ItemDataRole.DisplayRole:
                 if isinstance(result, bool):
-                    return None # Mantiene pulita la tabella se il delegato non lo facesse
+                    return None # do not return text for bool, checkbox is managed in CheckStateRole
                 return result
             case Qt.ItemDataRole.TextAlignmentRole:
                 # numbers aligned right anything else aligned left
@@ -538,317 +1055,253 @@ class TableModel(QAbstractTableModel):
             case Qt.ItemDataRole.CheckStateRole:
                 if isinstance(result, bool):
                     return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
-                #else:
                 return None
             case _:
                 return None
 
     def setData(self, 
-                index: QModelIndex|QPersistentModelIndex = QModelIndex(),
-                value: Any = None,
-                role: int = Qt.ItemDataRole.EditRole
-                ) -> bool:
-        "Set data in dataSet and mark row as modified"
-        # sanity checks
-        if (not index.isValid() 
-            or index.row() > self.rowCount()
-            or index.column() > self.columnCount()):
+            index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+            value: Any = None,
+            role: int = Qt.ItemDataRole.EditRole
+            ) -> bool:
+        """Set data in dataSet and mark row as modified"""
+        if not index.isValid() or index.row() >= len(self.dataSet):
             return False
         row = index.row()
         col = index.column()
+        record = self.dataSet[row]
+
+        # for boolean value we use CheckStateRole and convert to bool, for any other value we use EditRole
         if role == Qt.ItemDataRole.CheckStateRole:
-            # Converte in bool confrontando con Checked (funziona sia con int che con Enum)
             new_value = (value == Qt.CheckState.Checked or value == Qt.CheckState.Checked.value)
-            if self.dataSet[row][col] == new_value:
+            if record[col] == new_value:
                 return False
-            # save the row/column of the modified cell
-            if (row not in self.toModify and row not in self.toInsert):
-                self.toModify[row] = {}
-            if (row in self.toModify and col not in self.toModify[row]):
-                self.toModify[row][col] = None
-            self.dataSet[row][col] = new_value
-            # Fondamentale: emetti anche il DisplayRole per forzare il refresh del delegate
+            record[col] = new_value  # unleash Record.__setitem__
+            self.isDirty = True
             self.dataChanged.emit(index, index, [role, Qt.ItemDataRole.DisplayRole])
             self.userDataChanged.emit()
             return True
+
+        # for text and other value we use EditRole
         if role == Qt.ItemDataRole.EditRole:
-            # check if different from before
-            if self.dataSet[row][col] == value:
+            if record[col] == value:
                 return False
-            # save the row/column of the modified cell
-            if (row not in self.toModify and row not in self.toInsert):
-                self.toModify[row] = {}
-            if (row in self.toModify and col not in self.toModify[row]):
-                self.toModify[row][col] = None
-            # modify the model
+            # empty string as Null value
             if isinstance(value, str):
-                value = value or None # convert empty strings in Sql Null
-            self.dataSet[row][col] = value
+                value = value or None
+            # modify the data: Record.__setitem__ will set is_modified = True
+            record[col] = value
             self.isDirty = True
+            # notify the view that the data has changed
             self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
             self.userDataChanged.emit()
             return True
         return False
 
-    def blindSetData(self, row: int, column: int, value: Any) -> None:
+    def hiddenSetData(self, row: int, column: int, value: Any) -> None:
         "Set data without emitting dataChanged signal"
         row = self.filterMapping[row]
         self.dataSet[row][column] = value
 
     def submit(self) -> bool:
+        "Update database: insert/delete/update rows, used only for commit on row changed, do nothing on manual submit"
         # used only for commit on row changed, do nothing on manual submit
         # BUT is needed for proper DataWidgetMapper use
         return True
 
     def submitAll(self, column: int|None = None, value: Any|None = None) -> bool:
-        "Update database: insert/delete/update rows"
         # if a referenceKey is provided fill all the rows with reference value
-        if not column is None :
-            for row in self.dataSet:
-                row[column] = value
-
-        cols = len([i[FIELD] for i in self.columns if i[FIELD]]) # only column of master table need insert/update/delete
-        pkcols = range(cols, cols + len(self.primaryKey))
-        ovcol = cols + len(self.primaryKey)
-        self.sqlCheck = (f"SELECT {', '.join(self.primaryKey)}\n"
-                         f"FROM {self.table}\n"
-                         f"WHERE {' AND '.join(
-                             [f'{i} = %({i})s' for i in self.primaryKey + (OVFIELD,)])};")
+        if column is not None:
+            for record in self.dataSet:
+                record[column] = value
+        sqlCheck = (f"SELECT {', '.join(self.primaryKey)}\n"
+                    f"FROM {self.table}\n"
+                    f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.primaryKey + (OVFIELD,)])};")
         try:
-            with appconn.cursor() as cur: # manual submit, no commit (form can save multiple table models)
-
-                # *** UPDATE ***
-                for row in self.toModify:
-                    if row in self.toInsert: # skip row to be inserted first
-                        continue
-                    # check if record was already modified
-                    pkey = self.dataSet[row]['pkey'].copy() # primary key is unchanged on update
-                    args = pkey.copy()
-                    #if self.isCompanyTable:
-                    #    args['company_id'] = session['current_company']
-                    args[OVFIELD] = self.dataSet[row][OVFIELD]
-                    logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
-                    logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
-                    cur.execute(self.sqlCheck, args)
-                    if cur.rowcount == 0:
-                        logger.error(f"**** {self.repr}: row modified before update ****")
-                        raise PyAppDBConcurrencyError()
-                    # update record
-                    fields = ", ".join([f"{self.columns[i][FIELD]} = %({self.columns[i][FIELD]})s" for i in self.toModify[row]])
-                    if not fields: # no real fields need update
-                        continue
-                    where = " AND ".join([f"{i} = %({i})s" for i in pkey])
-                    fieldsback = ", ".join([i[FIELD] for i in self.columns if i[FIELD]] + [OVFIELD])
-                    script = (f"UPDATE {self.table}\n"
-                              f"SET {fields}\n"
-                              f"WHERE {where}\n"
-                              f"RETURNING {fieldsback};")
-                    args = {self.columns[i][FIELD]: self.dataSet[row][i] for i in self.toModify[row] if self.columns[i][FIELD]}
-                    args.update({k: pkey[k] for k in pkey})
-                    logger.info(f"**** {self.repr} UPDATE script ****\n{script}")
-                    logger.info(f"**** {self.repr} UPDATE args   ****\n{args}")
-                    
-                    for k, v in args.items():
-                        #print("Key:", k, "Value:", v, "Type:", type(v))
-                        cur.execute(script, args)
-                    # repopulate the modified row
-                    for record in cur:
-                        # selected fields
-                        for index in range(self.cols):
-                            self.dataSet[row][index] = record[index]
-                            # DEBUG: Verifica cosa è tornato dal database
-                            if isinstance(self.dataSet[row][index], QByteArray):
-                                logger.info(f"RICEVUTO correttamente QByteArray per colonna {index}")
-                            else:
-                                logger.error(f"ERRORE: Ricevuto tipo {type(record[index])} invece di QByteArray")
-                        # row object version
-                        self.dataSet[row][OVFIELD] = record[-1] # OVFIELD is always the last onefield
-                    self.dataChanged.emit(self.createIndex(row, 0),
-                                          self.createIndex(row, cols),
-                                          [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify de record
-                # clear modified record list
-                self.toModify.clear()
-
+            with appconn.cursor() as cur:
+                
                 # *** DELETE ***
-                for dd in self.toDelete:
-                    # check if record was modified
-                    pkey = dd['pkey'].copy()  # self.toDelete[row]['pkey'].copy()
-                    args = pkey.copy()
-                    if self.isCompanyTable:
-                        args['company_id'] = session['current_company']
-                    args[OVFIELD] = dd[OVFIELD]
-                    logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
-                    logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
-                    cur.execute(self.sqlCheck, args)
+                # toDelete contains dict with pkey and object_version for each deleted record
+                for record in self.toDelete:
+                    args = record.pkey.copy()
+                    args[OVFIELD] = record.object_version
+                    # concurrency check
+                    cur.execute(sqlCheck, args)
                     if cur.rowcount == 0:
-                        logger.error(f"**** {self.repr} row modified before update ****")
                         raise PyAppDBConcurrencyError()
-                    # delete record
-                    where = " AND ".join([f"{i} = %({i})s" for i in pkey])
-                    script = (f"DELETE FROM {self.table}\n"
-                              f"WHERE {where};")
-                    args.update({k: pkey[k] for k in pkey})
-                    logger.info(f"**** {self.repr} DELETE script ****\n{script}")
-                    logger.info(f"**** {self.repr} DELETE args   ****\n{args}")
-                    cur.execute(script, args)
-                # clear deleted record list
+                    where = " AND ".join([f"{k} = %({k})s" for k in record.pkey])
+                    script = f"DELETE FROM {self.table} WHERE {where};"
+                    cur.execute(script, record.pkey)
                 self.toDelete.clear()
 
-                # *** INSERT ***
-                for row in self.toInsert:
-                    fieldList = [i[FIELD]for i in self.columns if i[FIELD] and not i[RO]] 
-                    # calculated fields have None as field name
-                    # read only fields can not be inserted
-                    if self.automaticPKey:
-                        # remove primary key fields if present
-                        for i in self.primaryKey:
-                            if i in fieldList:
-                                fieldList.remove(i)
-                    valueList = [f"%({i})s" for i in fieldList]
-                    if self.recordType:
-                        fieldList += [i for i in self.recordType]
-                        valueList += [f"'{self.recordType[i]}'" for i in self.recordType]  # record type must be string
-                    fields = ", ".join(fieldList)
-                    values = ", ".join(valueList)
-                    fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])
-                    args = {c[FIELD]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[FIELD] and not c[RO]}
-                    if self.recordType:
-                        for i in self.recordType:
-                            args[i] = self.recordType[i]
-                    # set company after anything else, company_id may not be present in self.columns
-                    if self.isCompanyTable:
-                        fields += ', company_id'
-                        values += ', %(company_id)s'
+                # *** UPDATE and INSERT ***
+                # loop through all records, if is_new is True do insert, if is_modified is True do update, 
+                # if both are False do nothing
+                for record in self.dataSet:
+                    if record.is_new and record.is_modified:
+                        print("***** Record marked as NEW and MODIFIED, possible logical error! *****")
+                    #print(f"Processing record: is_new={record.is_new}, is_modified={record.is_modified}, pkey={record.pkey}, object_version={record.object_version}")
+                    #print(f"Record data: {record}")
+                    # --- UPDATE ---
+                    if record.is_modified and not record.is_new:
+                        args = record.pkey.copy()
+                        args[OVFIELD] = record.object_version
+                        # concurrency check
+                        cur.execute(sqlCheck, args)
+                        if cur.rowcount == 0:
+                            raise PyAppDBConcurrencyError()
+                        # list of fields to update, only non read only fields with a field name
+                        # (calculated fields have None as field name)
+                        upd_fields = [c[FIELD] for c in self.columns if c[FIELD] and not c[RO]]
+                        fields_str = ", ".join([f"{f} = %({f})s" for f in upd_fields])
+                        where_str = " AND ".join([f"{k} = %({k})s" for k in record.pkey])
+                        fieldsback = ", ".join([i[FIELD] for i in self.columns if i[FIELD]] + [OVFIELD])
+                        
+                        script = f"UPDATE {self.table} SET {fields_str} WHERE {where_str} RETURNING {fieldsback};"
+                        
+                        # mapping arguments for update, only non read only fields with a field name
+                        upd_args = {self.columns[i][FIELD]: record[i] for i in range(len(self.columns)) if self.columns[i][FIELD]}
+                        upd_args.update(record.pkey)
+                        cur.execute(script, upd_args)
+                        res = cur.fetchone()
+                        if res:
+                            # record is updated with returned values (in case of trigger modify the record)
+                            for i in range(len(self.columns)): record[i] = res[i]
+                            record.object_version = res[-1]
+                            record.is_modified = False # Reset flag
+                        # notify of changes
+                        # calculate the index of the current row in the dataset
+                        row_idx = self.dataSet.index(record) 
+                        index_start = self.index(row_idx, 0) # index of the first column of the row
+                        index_end = self.index(row_idx, self.columnCount() - 1) # index of the last column of the row
+                        self.dataChanged.emit(index_start, index_end, [Qt.ItemDataRole.DisplayRole])
+
+                    # --- INSERT ---
+                    elif record.is_new:
+                        fieldList = [i[FIELD] for i in self.columns if i[FIELD] and not i[RO]]
+                        if self.automaticPKey:
+                            for pk_f in self.primaryKey:
+                                if pk_f in fieldList: 
+                                    fieldList.remove(pk_f)
+                        if self.recordType:
+                            fieldList += [i for i in self.recordType]
+                        args = {}
+                        if self.recordType:
+                            for i in self.recordType:
+                                args[i] = self.recordType[i]
+                        # set company after anything else, company_id may not be present in self.columns
+                        if self.isCompanyTable:
+                            fieldList += ['company_id']
                         args['company_id'] = session['current_company']
-                    script = (f"INSERT INTO {self.table}\n"
-                              f"({fields})\n"
-                              f"VALUES ({values})\n"
-                              f"RETURNING {fieldsback};")
-                    logger.info(f"**** {self.repr} INSERT script ****\n{script}")
-                    logger.info(f"**** {self.repr} INSERT args   ****\n{args}")
-                    try:
-                        cur.execute(script, args)
-                    except psycopg.Warning as er:
-                        raise PyAppDBError('', str(er))
-                    # repopulate the inserted row
-                    #for record in cur: # must be one record
-                    #    pkey = record
-                    #where = " AND ".join([f'{k} = %({k})s' for k in self.primaryKey])
-                    #args = {k: v for k, v in zip(self.primaryKey, pkey)}
-                    #fields = ", ".join([f"{i[FIELD]}" for i in self.columns] +
-                    #       [f"{i}" for i in self.primaryKey] +
-                    #       [OVFIELD])
-                    #script = f"SELECT {fields}\nFROM {self.table}"
-                    #script += f"\nWHERE {where};"
-                    #logger.info(f"**** {self.repr} SELECT INSERT repopulate script ****\n{script}")
-                    #logger.info(f"**** {self.repr} SELECT INSERT repopulate args   ****\n{args}")
-                    #cur.execute(script, args)
-                    for record in cur:
-                        # selected fields
-                        for index in range(self.cols):
-                            self.dataSet[row][index] = record[index]
-                        # primary key
-                        self.dataSet[row]['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
-                        # object version
-                        self.dataSet[row][OVFIELD] = record[ovcol]
-                    self.dataChanged.emit(self.createIndex(row, 0),
-                                          self.createIndex(row, cols),
-                                          [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify record
-                # clear insert record list
-                self.toInsert.clear()
-                
+                        fields_str = ", ".join(fieldList)
+                        placeholders = ", ".join([f"%({f})s" for f in fieldList])
+                        fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])
+                        
+                        script = f"INSERT INTO {self.table} ({fields_str}) VALUES ({placeholders}) RETURNING {fieldsback};"
+                        
+                        # arguments for insert, only non read only fields with a field name
+                        ins_args = {self.columns[i][FIELD]: record[i] for i in range(len(self.columns)) if self.columns[i][FIELD] and not self.columns[i][RO]}
+                        ins_args.update(args)
+                        #print(f"**** INSERT script ****\n{script}")
+                        #print(f"**** INSERT args   ****\n{ins_args}")
+
+                        cur.execute(script, ins_args)
+                        res = cur.fetchone()
+                        if res:
+                            # repopulate the inserted record with returned values
+                            for i in range(len(self.columns)): 
+                                record[i] = res[i]
+                            pk_start = len(self.columns)
+                            record.pkey = {k: res[pk_start + i] for i, k in enumerate(self.primaryKey)}
+                            record.object_version = res[-1]
+                            record.is_new = False
+                            record.is_modified = False
+                        # notify of changes
+                        # calculate the index of the current row in the dataset
+                        row_idx = self.dataSet.index(record) 
+                        index_start = self.index(row_idx, 0) # index of the first column of the row
+                        index_end = self.index(row_idx, self.columnCount() - 1) # index of the last column of the row
+                        self.dataChanged.emit(index_start, index_end, [Qt.ItemDataRole.DisplayRole])
+
+            self.isDirty = False
+            self.userDataChanged.emit()
+            return True
+
         except psycopg.Error as er:
             raise PyAppDBError(er.diag.sqlstate, str(er))
-        self.isDirty = False
-        return True
+
 
     def revertAll(self) -> None:
-        self.toModify.clear()
         self.toDelete.clear()
-        self.toInsert.clear()
         self.isDirty = False
         self.select()
 
     def clearData(self) -> None:
         "Clear all the content of model"
         self.dataSet.clear()
-        self.toModify.clear()
         self.toDelete.clear()
-        self.toInsert.clear()
         self.isDirty = False
         self.rows = 0 # usually updated by select
         self.cols = len(self.columns) # usually updated by select
 
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> str|None:
-        if orientation == Qt.Orientation.Horizontal:
-            if role == Qt.ItemDataRole.DisplayRole:
-                return self.columns[section][DESCRIPTION]
-            else:
-                return None
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        "Returns header data for row (field header)/column (columns number) headers"
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+            return self.columns[section][DESCRIPTION]
         if orientation == Qt.Orientation.Vertical:
             if role == Qt.ItemDataRole.DisplayRole:
                 return super().headerData(section, orientation, role)
-            else:
-                return None
+        return None
 
     def rowCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
         "Returns the rows number of the dataSet"
-        return self.rows
+        return len(self.dataSet)
 
     def columnCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
         "Returns the columns number of the dataSet"
-        return self.cols
+        return len(self.columns)
 
     def insertRows(self, position: int, count: int, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> bool:
         "Insert rows in model"
         self.beginInsertRows(parent, position, position + count - 1)
+        
         for i in range(position, position + count):
-            self.dataSet.insert(i, {i:self.newRecordDefault.get(j[FIELD]) for i, j in enumerate(self.columns)})
-            self.toInsert.append(i)
-        self.rows += count
+            data_dict = {idx: self.newRecordDefault.get(col[FIELD]) 
+                        for idx, col in enumerate(self.columns)}
+            new_record = Record(data_dict, pkey=None, object_version=0)
+            new_record.is_new = True
+            self.dataSet.insert(position, new_record)
+            
         self.endInsertRows()
+        self.isDirty = True
         self.userDataChanged.emit()
-        self.rowCountChanged.emit(self.rows)
+        self.rowCountChanged.emit(len(self.dataSet))
         return True
 
     def removeRows(self, position: int, count: int, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> bool:
         "Remove rows from model"
-        if self.rowCount() < 1:
-            return True
-        # for removed rows we can't use row number because it is renumbered
-        # every time a row is removed. Also inserted/modified rows have to be
-        # renumbered when a row before is removed
+        if self.rowCount() < position + count:
+            return False
         self.beginRemoveRows(parent, position, position + count - 1)
-        for i in range(position, position + count):
-            # if row to be deleted was just inserted and not saved yet delete from toInsert
-            if i in self.toInsert:
-                self.toInsert.remove(i)
-            # if row to be deleted was just modified and not saved yet delete from toModify
-            if i in self.toModify:
-                del self.toModify[i]
-            # save the deleted record primary key and object version
-            if self.dataSet[i].get('pkey'):  # could happend if insert/delete before save
-                self.toDelete.append({'pkey': self.dataSet[i]['pkey'].copy(),
-                                      OVFIELD: self.dataSet[i][OVFIELD]})
-            # if row deleted is before an inserted/modified adjust row number (-1)
-            self.toInsert.sort()
-            self.toInsert = [ri - 1 if ri > i else ri for ri in self.toInsert]
-            rm = list(self.toModify.keys())
-            rm.sort()
-            for r in rm:
-                if r > i:
-                    self.toModify[r - 1] = self.toModify[r]
-                    del self.toModify[r]
-        # modify the model
-        del self.dataSet[position: position + count]
-        self.rows -= count
+        
+        rows_to_remove = self.dataSet[position : position + count]
+        
+        for record in rows_to_remove:
+            if not record.is_new:
+                self.toDelete.append(record)
+        del self.dataSet[position : position + count]
+        
         self.endRemoveRows()
+        self.isDirty = True
         self.userDataChanged.emit()
-        self.rowCountChanged.emit(self.rows)
+        self.rowCountChanged.emit(len(self.dataSet))
         return True
 
     def sort(self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder) -> None:
         "Inplace sorting of the model, manage null values base on declared data time"
+        if not self.dataSet:
+            return
+        self.layoutAboutToBeChanged.emit()
         # manage Null values
         dt = self.columns[column][TYPE]
         nv = {'int': 0,
@@ -864,10 +1317,7 @@ class TableModel(QAbstractTableModel):
             self.dataSet.sort(key=lambda x: x[column] or nv)
         else:
             self.dataSet.sort(key=lambda x: x[column] or nv, reverse=True)
-        # notify about changes
-        self.dataChanged.emit(self.createIndex(0, 0),
-                              self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
+        self.layoutChanged.emit()
 
     def filter(self, column: int|None = None, value: Any = None) -> None:
         "Filter records on a master/detail logic, this model is for detail"
@@ -883,9 +1333,6 @@ class TableModel(QAbstractTableModel):
         "Filter dataset based on master row creating a dictionary of mapped rows"
         self.layoutAboutToBeChanged.emit()
         self.filterMapping.clear()
-        # for n, i in enumerate(self.dataSet):
-        #     if i['master_row'] == row:
-        #         self._filterMapping[len(self._filterMapping)] = n
         self.filterMapping = {len(self.filterMapping): n for n, i in enumerate(self.dataSet) if  i['master_row'] == row}
         self.rows = len(self.filterMapping)
         # notify of changes
@@ -955,39 +1402,36 @@ class TableModel(QAbstractTableModel):
         cols = len(self.columns)
         pkcols = range(cols, cols + len(self.primaryKey))
         ovcol = cols + len(self.primaryKey)
-        self.layoutAboutToBeChanged.emit()
         try:
             with appconn.cursor() as cur:
                 cur.execute(script, args)
-                self.rows = cur.rowcount
-                #print("Selected rows:", self.rows)
-                self.cols = cols
+                
+                self.beginResetModel()
                 self.dataSet.clear()
+                self.toDelete.clear()
+
                 for record in cur:
-                    # selected fields
-                    item: dict[int|str, Any] = {i:record[i] for i in range(cols)}    
-                    # primary key fields
-                    item['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
-                    # discard item with Null primary key
-                    if item['pkey'][self.primaryKey[0]] is None:
+                    data_dict = {i: record[i] for i in range(cols)}    
+                    pkey_dict = {self.primaryKey[i - cols]: record[i] for i in pkcols}
+                    # sanity check
+                    if pkey_dict[self.primaryKey[0]] is None:
                         continue
-                    # master column
-                    item['master_row'] = record[1] # master row number
-                    # row object version
-                    item[OVFIELD] = record[ovcol]
-                    # append on record list
-                    #print("Item:", item)
-                    self.dataSet.append(item)
+                    new_record = Record(data_dict, pkey_dict, record[ovcol])
+                    new_record['master_row'] = record[1]
+                    new_record.is_modified = False
+                    self.dataSet.append(new_record)
+                    
+                self.endResetModel()
+                self.rowCountChanged.emit(len(self.dataSet))
+                self.isDirty = False
+
         except psycopg.Error as er:
+            self.endResetModel()
             raise PyAppDBError(er.diag.sqlstate, str(er))
+
         # create an unfiltered master row mapping
         self.filterMapping = {i: i  for i in range(len(self.dataSet))}
-        # notify of changes
-        self.dataChanged.emit(self.createIndex(0, 0),
-                              self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-        self.layoutChanged.emit()
-        self.rowCountChanged.emit(self.rows)
+
         
        
 class PandasModel(QAbstractTableModel):

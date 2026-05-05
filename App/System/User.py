@@ -192,6 +192,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         "New user"
         super().new()
         self.ui.lineEditUser.setEnabled(True)
+        self.ui.lineEditUserDescription.setEnabled(True)
         self.ui.lineEditUser.setFocus()
 
     def save(self) -> None:

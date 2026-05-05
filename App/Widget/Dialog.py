@@ -927,6 +927,7 @@ class SortFilterDialog(QDialog):
                         pass
                 if ng:
                     cond = f"NOT {cond}" 
+                print("WHERE ", cond, arg)
                 self.model.addWhere(cond, arg)
         if self.ui.checkBoxMaxRows.isChecked():
             self.model.limitCondition = self.ui.spinBoxMaxRows.value()

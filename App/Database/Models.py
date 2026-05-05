@@ -902,9 +902,9 @@ class DepartmentModel(TableModel):
         #self.foreignKey = {'class_id': 'id'}
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("department_id")
-        #self.newRecordDefault = {'is_obsolete': False,
-        #                         'is_not_managed': False,
-        #                         'is_for_takeaway': True}
+        self.newRecordDefault = {'is_obsolete': False,
+                                 'is_menu_container': False,
+                                 'is_for_takeaway': True}
         self.repr = 'Department table model'
         
 

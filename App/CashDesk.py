@@ -101,7 +101,7 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         super().new()
         model = self.ui.tableView.model()
         row = model.rowCount() -1
-        index = model.createIndex(row, COMPUTER)
+        index = model.index(row, COMPUTER)
         model.setData(index, QHostInfo.localHostName())
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)

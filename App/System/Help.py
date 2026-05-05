@@ -64,7 +64,7 @@ def help(action: QAction, checked: bool = False) -> None:
 def faq(action: QAction, checked: bool = False) -> None:
     "Show FAQ dialog"
     logger.info('Starting faq dialog')
-    dialog = HelpDialog(APPNAME, "help\faq.html", session['mainwin'])
+    dialog = HelpDialog(APPNAME, "help/faq.html", session['mainwin'])
     dialog.show()
     logger.info('Faq dialog shown')
 

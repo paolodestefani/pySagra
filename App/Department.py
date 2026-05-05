@@ -87,14 +87,14 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         self.ui = Ui_DepartmentWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
-        self.ui.tableView.setLayoutName('department')
+        self.ui.tableView.setLayoutName('Department')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         #self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_lookup))
         #self.ui.tableView.setItemDelegateForColumn(SORTING, IntegerDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(OBSOLETE, BooleanDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(NOMANAGE, BooleanDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TAKEAWAY, BooleanDelegate(self))
+        #self.ui.tableView.setItemDelegateForColumn(TAKEAWAY, BooleanDelegate(self))
         # scripting init
         self.script = scriptInit(self)
 
@@ -104,7 +104,7 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         super().new()
         model = self.ui.tableView.model()
         row = model.rowCount() -1
-        index = model.createIndex(row, DESCRIPTION)
+        index = model.index(row, DESCRIPTION)
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 

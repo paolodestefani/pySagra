@@ -122,12 +122,12 @@ class ReportForm(FormIndexManager):
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.ui.comboBoxL10n.setItemList(langCountryFlags())
-        self.mapper.addMapping(self.ui.comboBoxL10n, L10N) #, b"modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxL10n, L10N) # don't need b"modelDataStr" because is the default
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.ui.comboBoxClass.addItems([None] + REPORT_CLASSES)
         self.mapper.addMapping(self.ui.comboBoxClass, CLASS)
         self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
-        self.mapper.addMapping(self.ui.textEditXML, XML) #, b"plainText")
+        self.mapper.addMapping(self.ui.textEditXML, XML)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)

@@ -35,6 +35,7 @@ import logging
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QDateTime
+from PySide6.QtCore import QDate
 from PySide6.QtCore import QLocale
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
@@ -61,23 +62,20 @@ from App.Core.L10n import _tr
 ID, BARCODE, NUM, DATE, TIME, DELIVERY, TABLE, CUSTOMER, DEPARTMENT, FULLFILLMENT = range(10)
 
 
-def limitType() -> list:
-    return [('E', _tr('Status', 'Event')),
-            ('T', _tr('Status', 'Today')),
-            ('L', _tr('Status', 'Today Lunch')),
-            ('D', _tr('Status', 'Today Dinner'))]
-
-
 
 def orderProgress(action: QAction, checked: bool = False) -> None:
     "Order progress"
     logging.info('Starting order progress diaform')
     mw = session['mainwin']
+    # exit if no event available
+    if not session['event_id']:
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('OrderProgress', 'No event available, for order progress '
+                                'is necessary to setup an event for the current date'))
+        return
     title = action.text()
     auth = action.data()
-    #icon = currentAction['app_activity_order_progress'].icon()
-    #dlg = OrderProgressDialog(mw, title, icon, auth)
-    #dlg.exec()
     opf = OrderProgressForm(mw, title, auth)
     opf.reload()
     mw.addTab(title, opf)
@@ -95,28 +93,24 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False, False, False, True, False, False, False, False,
-                                True, False, True, True)
+        self.availableStatus = (False, False, False, False, False, False, False, False,
+                                False, False, False, False)
         self.ui = Ui_OrderProgressWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableViewOrder)  # required for formviewmanager
-        self.ui.tableViewOrder.setLayoutName('orderStatus')
+        self.ui.tableViewOrder.setLayoutName('OrderStatus')
         self.ui.tableViewOrder.setItemDelegate(GenericDelegate(self))
         # set default filter values
         self.ui.checkBoxAcquired.setChecked(True)
         self.ui.checkBoxInProgress.setChecked(True)
-        self.ui.comboBoxLimit.setFunction(limitType)
-        # select initial event, ask if current event is None
-        if session['event_id']:
-            self.selectedEvent = session['event_id']
-            self.updateFilterConditions(session['event_id'])
-        else:
-            self.selectedEvent = None
-            self.setFilters()
-        #self.ui.checkBoxAcquired.checkStateChanged.connect(self.updateFilterConditions)
-        #self.ui.checkBoxInProgress.checkStateChanged.connect(self.updateFilterConditions)
-        #self.ui.checkBoxProcessed.checkStateChanged.connect(self.updateFilterConditions)
-        #self.ui.comboBoxLimit.currentIndexChanged.connect(self.updateFilterConditions)
+        self.ui.dateEdit.setDate(QDate.currentDate())
+        self.ui.radioButtonDinner.setChecked(True)
+        # signal slot
+        self.ui.checkBoxAcquired.checkStateChanged.connect(self.updateFilterConditions)
+        self.ui.checkBoxInProgress.checkStateChanged.connect(self.updateFilterConditions)
+        self.ui.checkBoxProcessed.checkStateChanged.connect(self.updateFilterConditions)
+        self.ui.dateEdit.userDateChanged.connect(self.updateFilterConditions)
+        self.ui.radioButtonDinner.toggled.connect(self.updateFilterConditions)
         # scans tablewidget
         header = [_tr('OrderProgress', "ID"),
                   _tr('OrderProgress', "Barcode"),
@@ -143,36 +137,33 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         
     def reload(self):
         super().reload()
-        self.updateFilterConditions(self.selectedEvent)
+        self.updateFilterConditions()
         # focus on barcode lineedit must be after widgets is shown
         self.ui.lineEditBarcode.setFocus
-        
-    def updateFilterConditions(self, event, eventDate=None, dayPart=None):
+    
+    def updateFilterConditions(self) -> None:
         "Update model filter conditions"
-        self.selectedEvent = event
-        self.whereConditions = []
-        # stock model
-        self.model.addWhere('event_id = %s', event)
+        # event
+        self.model.addWhere('event_id = %s', session['event_id'])
         # status
-        status = []
+        status = [] 
         if self.ui.checkBoxAcquired.isChecked():
             status.append("A")
         if self.ui.checkBoxInProgress.isChecked():
             status.append("I")
         if self.ui.checkBoxProcessed.isChecked():
             status.append("P")
-        self.model.addWhere("status = ANY(%s)", [status])
-        # limit
-        if self.ui.comboBoxLimit.currentData == 'T':
-            self.model.addWhere("event_date = %s", QDateTime.currentDateTime())
-        elif self.ui.comboBoxLimit.currentData == 'L':
-            self.model.addWhere("stat_order_date = %s", QDateTime.currentDateTime())
-            self.model.addWhere("stat_order_day_part = %s", 'L')
-        elif self.ui.comboBoxLimit.currentData == 'D':
-            self.model.addWhere("stat_order_date = %s", QDateTime.currentDateTime())
+        self.model.addWhere("status = ANY(%s)", status)
+        # limit date
+        self.model.addWhere("stat_order_date = %s", self.ui.dateEdit.date())
+        # day part
+        if self.ui.radioButtonDinner.isChecked():
             self.model.addWhere("stat_order_day_part = %s", 'D')
+        else:
+            self.model.addWhere("stat_order_day_part = %s", 'L')
         # reload
         self.model.select()
+        self.ui.spinBoxRecords.setValue(self.model.rowCount())
 
     def setFilters(self):
         "Filters event and items"
@@ -266,6 +257,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, FULLFILLMENT, cell)
         self.ui.tableWidgetScans.scrollToBottom()
+        self.updateFilterConditions()
 
     def setAsUnprocessed(self):
         "Set as unprocessed the current selected line"
@@ -296,3 +288,5 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         # delete row from tablewidget
         self.ui.tableWidgetScans.removeRow(row)
         self.ui.lineEditBarcode.setFocus()
+        self.updateFilterConditions()
+        

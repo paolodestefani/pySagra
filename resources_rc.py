@@ -210939,6 +210939,1164 @@ c\xf8//\xc2/\xc8S\x8fby\xf2\xb1C\xd1\x0f\
 \xf9\xd1\xcf\xdb\xf6iV\x9a;\x9f\xec\xbd\x93;\xb9\x93\
 \xe6\xfc\x07\x16\x8d\xea\x19\xcc\x06wp\x00\x00\x00\x00I\
 END\xaeB`\x82\
+\x00\x00\x02,\
+\x00\
+\x00\x1c?x\xda\xedYMk\xdc0\x10=\xc7\xbfb\
+p/-$k\x9ac\xebu\xd9\x04\x029\x86-\xf4\
+<\xb6\xc7k\x11YR%\xd9\x8b\xff}%[v>\
+HS\xf6\x92CW\xb0\x0b#\xf1\xe6\x8dGo0\x0f\
+9om\xc7\x81\xa38lS\x12i\x91\x00\xe4-a\
+\xed\x03\x17Zf9\x15j\xdc\xe3A#\xdc\xed\x1e\xf2\
+l\xde\xf2\xb8l\x01\xe6\xa5\xacG0v\xe4\xb4M\x1b\
+)\xecU\x83\x1d\xe3\xe37\xd8i\x86\xfc\x12\xf6(\xcc\
+\xd5\x9e4k\xbe\xa7\x81\xb9\xfdZ$\x17\x17w\x9a~\
+\xf7$,\x1fag\x1e\xa9\x86\x87\x9e\x8ceR\x18\xc0\
+R\xf6\x16B\xe99'\xf3Is\xf6\xb5\xcf\xde)\xc5\
+Y\x85\x1e\x0f8 \xe3X2\xce\xec\xb8\xa0\xaf\x03\xba\
+\xe7s\xe0B\xce\x96\xd0-\x10ZM\xcd6\xfd\xd4h\
+\xa2\xb4\xb87`[f@i\xe9Jv\xe0w\x7f\xe4\
+\x19\xae\xc9\xd9S\xf6_\x88\x8e-i\xb2\xb2a\xa2N\
+\x8b_~\x01\x15\x0a\xb8\x07\xbf\xe3\xd8i!?\x91\xd7\
+\xf4JIm\xa7gd\xc2X\xe4<\xb4\xedh\x0d\xd9\
+^A\x80\xf8\x02\x03\xab\xa9~\xbbB\x9e-\x87\x11\xce\
+\xf0V\x8a\x86\x1dz=\xd1\x9d|pr =0:\
+\xa6\xc5\xad&G!\x0e\x80 \xe8\x08\x95\xec\x14\x8a\xf1\
+\xb4.QW-\xb3T\xd9^\xd33F\x1a\xdc\x84\x98\
+\x7f\xb7\x03\xacv\xe3\xf7\x9e\x94kcj\xa5*\x97\xe9\
+\xce\xb3\xb2\x00\x97\xe2\xa1\xd0\x8b\x9a\xf4\xa4\x97%\xdd\x19\
+\x90\xcd\xb4p\xd3F\xc2\x10|\xdel6_\xc2\x03\xa8\
+\xd7\x947\x1c\xa1\xfc\xb8\xffe([\x9eU\xd9\x8f\xad\
+\x1a\xa5\x8eRG\xa9\xa3\xd4Q\xea\xffEjg:*\
+\x8e\xc6lS+U\xba\x18\x90)\x9e\x0c\xee\xbc_\xdc\
+`\xf5\x08V\xba\x9f\xf2\xfe\xe3\x89!\xb8\x8d\x17~/\
+t\xf6\xae\xedK^\x1a\xacu\xe6~>w+.$\
+4\xce@/\xae\x96\x138\xaf\xe7y\x98p\x86D\x90\
+\x8d\x16$\xbe\xac\xa2\xd4Q\xea(u\x94:J}\xce\
+\x16d\xbd\x1a\x0a]\x9dpC\xf4\xfa\xbag\x1d\xbf}\
+@\xce\x9ed\x02C9B\x17o>\xe2\x0b*J\x1d\
+\xa5\x8eRG\xa9\xa3\xd4gh;\xf2\xcc\x7f\xea+\x12\
+g\x1al\xc7\x8b\xe4\x0f5\x8a\xa5\x9e\
+\x00\x00\x02U\
+\x00\
+\x00\x1c\xe6x\xda\xed\x99\xdfk\xdb0\x10\xc7\x9f\x9b\xbf\
+\xe2\xf0\xa0\xdd\xa0\x8dY\x1fW\xc7\xa3k\xd9\xd3^J\
+\xc6\xde\xcf\xf699\x90%U\x92S\xd2\xbf~\xe7\xd8\
+q\x9ate\x0d\x83>\xac\x82\x84\x5c\xc4\xfd\x90\xee{\
+1\x1f\x94l\x19\x1a\x05\x0a\xf5b\x96pH\xf2\x09@\
+\xb6$\xac:C\xcc\xc0AQ\xfe\xfd\xfa\x0e|\x0bv\
+=\xc7\x85\xc3,\xedW;\xd7t\xeb\x9b\x15\xa6Z\x83\
+\x0fkE\xb3\xa46:\x5c\xd4\xd8\xb0Z\x7f\x81k\xc7\
+\xa8\xcea\x8e\xda_\xcc\xc9q}\x95\x0c\xc9\x97\x9f\xf3\
+\xc9\xc9\xc9\xadiPW\x04\xb5\xa3\xfb\x96t\xe0'\xa5\
+z\xbf\xb4s\xec#.7\x11\xec\xad\xd1\x5c\xb0\xe2p\
+\xda\xb9\xad\xe8\x0a*R\xea\x0c\xadU\x5c\xe2#\x1bM\
+\xdb\xd8\xcb!\xb6U\xbd!\xa6\xe2\xad)_\x10\x96\x8e\
+\xeaY\xf2A6@I~\xd7\x92\x0f\x06\xac3\x92\xb8\
+i\x10Ni\xa8 \x1f\xa1\xe5`\xbef)\x8e\xa9\xd2\
+]\xae\x17\xd2>,\xc9Q05\xeb*\xc9o\xcd\x8a\
+\xc0\x1a\xef\x0d\x04gV\xe8\x08\xee\x0f\x0a\x1e\x99\xde\xb7\
+\xd6\x1a'\xca\xfdb\xd2\xd2E\xe34\x07\x04\xf4\x9e}\
+ \xfd\x88\xd2N\xe9\x0ck\x1fP\xa9\xbe5@\xa28\
+\x94F\xd7\xbch]\xbf\xf6\xe7\xb2Y\xbam\xdb\xd0\xfb\
+\x9b\xbd\xa0\xa3{,\xc7w+\xa6\x87$\xbfq4l\
+\xa6bh5\x82n\xa5\x1f k\xa4+<\xae\x07\xe8\
+\xca%\x07*C\xebh/3-\x14\x03\xad\xba\xa9\xfa\
+\xfb\xf1\x80+\x19\xdd\xd7\x0f\xc1xj;&.\xf2\xf1\
+7R\xe4\xcf\x83\xc0\x934\xbd2\xc0\x10\xc85\xacy\
+3\xb6\x082\xb4\x1b\xa9>N\xa7\xd3O\xc3\xce\xeca\
+\xf6o\xe2X\xbc\xdd\xfb|([\xbc\xab\xb2o[5\
+J\x1d\xa5\x8eRG\xa9\xa3\xd4\xff\x8b\xd4\x02%\xa5\x12\
+\xf8\x9a%\xc1\xd8d\x0b(\x1b{C\xcd\xfdz\xfeS\
+0M`\x07\x04\x01\x04U\xc0\xe2\x82\xf5\x06zv\xb9\
+\x06 \xd9\xc3\xc7\xe1\x8c\xaf\xa1\xc8\xc9>\x99\x8dC\xf8\
+2\xda\xd4X\xb2j\x84\x95\x08\x1cY!u\x01l\x92\
+\x1d\xcaKhES\x88x\x12\x1fdQ\xea(u\x94\
+:J\x1d\xa5\x8ex\xd2\xe1\xc9x\xfd4\x9c\xef_o\
+\xa1\x0eo\x94\xc6\xe9\xfcq\xf6$\xd9\x8eY\x86B\x15\
+BC\x91O\xe2\x93,J\x1d\xa5\x8eRG\xa9\xa3\xd4\
+\xef\x99O\xb2\xb4\xfb;2\x9f\x08H\x84F\xe5\x93\xdf\
+\xf0l\xe7n\
+\x00\x00\x17&\
+<\
+html lang=\x22en\x22>\x0a\
+  <head>\x0a    <ti\
+tle>pySagra help\
+</title>\x0a  </hea\
+d>\x0a  <body style\
+=\x22font-family: A\
+rial, Sans-Serif\
+;\x22>\x0a    <h1>\x0a\x09\x09p\
+ySagra documenta\
+tion\x0a    </h1>\x0a \
+   <center>\x0a    \
+  <img src=\x22qrc:\
+/pySagra\x22>\x0a    <\
+/center>\x0a    <h2\
+>\x0a      List of \
+topics:\x0a    </h2\
+>\x0a    <ul>\x0a     \
+ <li>\x0a        <a\
+ href=\x22#overview\
+\x22>Overview</a>\x0a \
+     </li>\x0a     \
+ <li>\x0a        <a\
+ href=\x22#architec\
+ture\x22>Applicatio\
+n architecture</\
+a>\x0a      </li>\x0a \
+     <li>\x0a      \
+  <a href=\x22#gui\x22\
+>User interface<\
+/a>\x0a      </li>\x0a\
+    </ul>\x0a    <h\
+2 id=\x22overview\x22>\
+\x0a      Overview\x0a\
+    </h2>\x0a    <p\
+>\x0a      <b>pySag\
+ra</b> stems fro\
+m the need to ma\
+nage the gastron\
+omic \x0a\x09  stand o\
+f my village's f\
+estival. The act\
+ivity to be mana\
+ged is\x0a\x09  theref\
+ore the order en\
+try of products,\
+ typically first\
+ courses,\x0a\x09  mai\
+n courses, drink\
+s, etc., the sub\
+sequent distribu\
+tion of \x0a\x09  the \
+orders, real wor\
+k orders, to the\
+ various departm\
+ents \x0a\x09  of the \
+stand, for examp\
+le bar, restaura\
+nt, but also piz\
+zeria,\x0a\x09  ice cr\
+eam parlor, etc.\
+ The orders are \
+placed in the\x0a\x09 \
+ cash desks and \
+must be the most\
+ quick and simpl\
+e as possible.\x0a\x09\
+  Once the order\
+ has been entere\
+d it is divided \
+by department\x0a\x09 \
+ and distributed\
+ to the departme\
+nts concerned. O\
+nce the \x0a\x09  depa\
+rtment copy is p\
+rinted the order\
+ it is considere\
+d \x0a\x09  automatica\
+lly processed. T\
+here is no manag\
+ement of order \x0a\
+\x09  fulfillment a\
+s it is superflu\
+ous for the type\
+ of activity \x0a\x09 \
+ that is carried\
+ out. Apart from\
+ this the progra\
+m allows \x0a\x09  the\
+ closure of the \
+cash register en\
+d various sales \
+\x0a\x09  statistics. \
+All lists, stati\
+stics including,\
+ they are \x0a\x09  pr\
+intable and auto\
+matically export\
+able to Excel.\x0a\x09\
+  Currently, fis\
+cal printing is \
+not managed.\x0a   \
+ </p>\x0a    <p>\x0a  \
+    The features\
+ of the applicat\
+ion can be summa\
+rized in \x0a\x09  the\
+ following point\
+s:\x0a    </p>\x0a    \
+<ul>\x0a      <li>M\
+anagement of <b>\
+ events </b>: al\
+l operations com\
+e\x0a\x09  always refe\
+rring to a speci\
+fic event (eg. S\
+agra del \x0a\x09  Pep\
+per, Beer Festiv\
+al, etc.).\x0a     \
+ </li>\x0a      <li\
+>Management of <\
+b> departments <\
+/b> (eg Bar, res\
+taurant,\x0a\x09  Pizz\
+eria, etc.). Som\
+e departments ma\
+y not be availab\
+le for\x0a\x09  specif\
+ic events.\x0a     \
+ </li>\x0a      <li\
+>Managing <b> sa\
+les </b> items, \
+distinguishing t\
+hem\x0a\x09  in elemen\
+tary items, kits\
+ (eg three of a \
+kind: sausages +\
+ ribs +\x0a\x09  chop)\
+ and menu (ex. s\
+agra menu: beer \
++ tris + fried p\
+otatoes).\x0a\x09  The\
+ kits must be co\
+mposed by themse\
+lves\x0a\x09  elementa\
+ry articles. Men\
+us may contain k\
+its.\x0a      </li>\
+\x0a      <li>Manag\
+ement of <b> var\
+iants </b> of it\
+ems (eg pizza\x0a\x09 \
+ margherita with\
+out mozzarella, \
+with salamino, e\
+tc.). The varian\
+t\x0a\x09  may provide\
+ a price increas\
+e.\x0a      </li>\x0a \
+     <li>Deliver\
+y management at \
+<b> table </b> o\
+r per\x0a\x09  <b> Tak\
+e </b>. It is po\
+ssible to check \
+the existence of\
+ the\x0a\x09  table nu\
+mber entered.\x0a  \
+    </li>\x0a      \
+<li><b>stock lev\
+el control</b>: \
+for elementary a\
+rticles\x0a\x09  which\
+ interests to mo\
+nitor it is poss\
+ible to insert t\
+he\x0a\x09  stock avai\
+lable. The progr\
+am automatically\
+ updates the\x0a\x09  \
+availability bas\
+ed on sales made\
+.\x0a      </li>\x0a  \
+    <li>Manageme\
+nt of <b>sales o\
+rders</b> throug\
+h a optimized fo\
+rm\x0a\x09  aimed at a\
+chieving the max\
+imum insertion s\
+peed with stock \
+control\x0a\x09  of th\
+e articles, tota\
+l calculation, a\
+mount cashed, ch\
+ange, etc.\x0a     \
+ </li>\x0a      <li\
+>Generation of t\
+he <b> order pri\
+nting </b> for t\
+he\x0a\x09  customer, \
+for the various \
+departments conc\
+erned and one fo\
+r\x0a\x09  covers. All\
+ these prints ar\
+e in A5 format a\
+nd optional\x0a    \
+  </li>\x0a      <l\
+i>Print of the <\
+b> cashed </b> p\
+er day and half \
+a day\x0a      </li\
+>\x0a      <li>Mana\
+gement of variou\
+s <b> sales stat\
+istics </b> even\
+\x0a\x09  comparing di\
+fferent events\x0a \
+     </li>\x0a     \
+ <li>All <b> arc\
+hives </b> (even\
+ts, departments,\
+ items,\x0a\x09  etc.)\
+ and the availab\
+le statistics ca\
+n be viewed,\x0a\x09  \
+printable A4 and\
+ <b> exportable \
+</b> in excel\x0a  \
+    </li>\x0a      \
+<li>The applicat\
+ion is <b> cross\
+-platform </b>:\x0a\
+\x09  developed and\
+ tested on Windo\
+ws and Linux, it\
+ should work\x0a\x09  \
+correctly also o\
+n Mac OSX\x0a\x09  </l\
+i>\x0a    </ul>\x0a   \
+ <p><a class=\x22to\
+p\x22 href=\x22#top\x22 t\
+itle=\x22top\x22>Back \
+to top</a></p>\x0a \
+   <h2 id=\x22archi\
+tecture\x22>\x0a      \
+Application arch\
+itecture\x0a    </h\
+2>\x0a    <p>\x0a\x09This\
+ program was dev\
+eloped with in m\
+ind\x0a\x09some specif\
+ic objectives:\x0a \
+   </p>\x0a    <ul>\
+\x0a      <li>Deepe\
+n my knowledge o\
+f the Python lan\
+guage\x0a      </li\
+>\x0a      <li>Impl\
+ement an applica\
+tion with a grap\
+hical interface \
+e\x0a\x09  based on a \
+sql database ser\
+ver\x0a      </li>\x0a\
+      <li>Implem\
+ent a multiuser \
+application with\
+ client / server\
+\x0a\x09  architecture\
+\x0a      </li>\x0a   \
+   <li>The appli\
+cation must be m\
+ulti-platform an\
+d available\x0a\x09  l\
+ow / no cost to \
+anyone who reque\
+sts it\x0a      </l\
+i>\x0a    </ul>\x0a   \
+ <p>\x0a      Conse\
+quently for the \
+realization of t\
+his application\x0a\
+\x09  have been use\
+d:\x0a    </p>\x0a    \
+<ul>\x0a      <li>T\
+he <a href=\x22http\
+s://www.python.o\
+rg\x22>Python</a> p\
+rogramming langu\
+age\x0a\x09  version 3\
+.7</li>\x0a      <l\
+i>The <a href=\x22h\
+ttps://www.qt.io\
+\x22>Qt</a> librari\
+es version 5.x\x0a \
+     </li>\x0a     \
+ <li>The Qt wrap\
+per libraries <a\
+ href=\x0a      \x22ht\
+tps://www.riverb\
+ankcomputing.com\
+/software/pyqt/d\
+ownload5\x22>PyQt</\
+a>\x0a\x09  version 5.\
+x\x0a      </li>\x0a  \
+    <li>The <a h\
+ref=\x22https://www\
+.postgresql.org\x22\
+>PostgreSQL</a> \
+database\x0a\x09  serv\
+er version 10.x \
+\x0a      </li>\x0a\x09  \
+<li>The <a href=\
+\x22http://initd.or\
+g/psycopg/\x22>psyc\
+opg</a> Python c\
+onnector\x0a\x09  to P\
+ostgreSQL versio\
+n 2.8.x \x0a      <\
+/li>\x0a      <li>T\
+he <a href=\x22http\
+s://github.com/p\
+asnox/oxygen-ico\
+ns-png\x22>oxygen i\
+cons</a>\x0a\x09  icon\
+ set\x0a      </li>\
+\x0a      <li>The p\
+ySagra icon is f\
+rom DelliOS Syst\
+em Icons set\x0a   \
+   of <a href=\x22h\
+ttp://www.wendel\
+lverli.com/\x22>Wen\
+dell\x0a      Ferna\
+ndes</a>\x0a      <\
+/li>\x0a    </ul>\x0a \
+   <p>\x0a      All\
+ the tools liste\
+d are multiplatf\
+orm and\x0a\x09  avail\
+able for free\x0a  \
+  </p>\x0a    <p><a\
+ class=\x22top\x22 hre\
+f=\x22#top\x22 title=\x22\
+top\x22>Back to top\
+</a></p>\x0a    <h2\
+ id=\x22gui\x22>\x0a     \
+ User interface\x0a\
+    </h2>\x0a    <c\
+enter>\x0a      <im\
+g src=\x22qrc:/help\
+/img/main_window\
+.png\x22>\x0a    </cen\
+ter>\x0a    <p>\x0a   \
+   The user inte\
+rface is made of\
+ (...):\x0a    </p>\
+\x0a    <p><a class\
+=\x22top\x22 href=\x22#to\
+p\x22 title=\x22top\x22>B\
+ack to top</a></\
+p>\x0a    <p>\x0a     \
+ <a href=\x22qrc:/h\
+elp/login.html\x22 \
+title=\x22login\x22>He\
+lp on Login proc\
+edure</a>\x0a    </\
+p>\x0a  </body>\x0a</h\
+tml>\x0a\
+\x00\x00\x1a\x9a\
+<\
+html lang=\x22it\x22>\x0a\
+  <head>\x0a    <ti\
+tle>Help su pySa\
+gra</title>\x0a  </\
+head>\x0a  <body st\
+yle=\x22font-family\
+: Arial, Sans-Se\
+rif;\x22>\x0a    <h1>\x0a\
+\x09\x09Documentazione\
+ su pySagra\x0a    \
+</h1>\x0a    <cente\
+r>\x0a      <img sr\
+c=\x22qrc:/pySagra\x22\
+>\x0a    </center>\x0a\
+    <h2>\x0a      E\
+lenco degli argo\
+menti:\x0a    </h2>\
+\x0a    <ul>\x0a      \
+<li>\x0a        <a \
+href=\x22#overview\x22\
+>Panoramica</a>\x0a\
+      </li>\x0a    \
+  <li>\x0a        <\
+a href=\x22#archite\
+cture\x22>Architett\
+ura dell'applica\
+zione</a>\x0a      \
+</li>\x0a      <li>\
+\x0a        <a href\
+=\x22#gui\x22>Interfac\
+cia utente</a>\x0a \
+     </li>\x0a    <\
+/ul>\x0a    <h2 id=\
+\x22overview\x22>Panor\
+amica</h2>\x0a    <\
+p>\x0a      <b>pySa\
+gra</b> nasce da\
+ll'esigenza di g\
+estire lo stand\x0a\
+      gastronomi\
+co dellla sagra \
+del mio paese. L\
+'attivit&agrave;\
+ da\x0a      gestir\
+e &egrave; quind\
+i la rilevazione\
+ degli ordini de\
+i\x0a      prodotti\
+, tipicamente pr\
+imi piatti, seco\
+ndi, bevande, ec\
+c. e\x0a      la su\
+ccessiva distrib\
+uzione delle com\
+ande, veri e pro\
+pri\x0a      ordini\
+ di lavoro, ai v\
+ari reparti dell\
+o stand, ad esem\
+pio\x0a      bar, c\
+ucina, ma anche \
+pizzeria, gelate\
+ria, ecc. L'inse\
+rimento\x0a      de\
+gli ordini avvie\
+ne nelle casse e\
+ deve essere il \
+pi&ugrave;\x0a     \
+ rapido e sempli\
+ce possibile. Un\
+a volta inserito\
+ l'ordine\x0a      \
+viene suddiviso \
+per reparto e di\
+ramato ai repart\
+i\x0a      interess\
+ati. Non c'&egra\
+ve; una vera e p\
+ropria\x0a      ges\
+tione dell'evasi\
+one degli ordini\
+ in quanto super\
+flua per\x0a      i\
+l tipo di attivi\
+t&agrave; che vi\
+ene svolta. Oltr\
+e a questo\x0a     \
+ il programma pe\
+rmette di ottene\
+re il riepilogo \
+degli incassi e\x0a\
+      varie stat\
+istiche di vendi\
+ta e consumi.\x0a  \
+  </p>\x0a    <p>\x0a \
+     Le caratter\
+istiche dell'app\
+licazione di pos\
+sono riassumere\x0a\
+      nei seguen\
+ti punti:\x0a    </\
+p>\x0a    <ul>\x0a    \
+  <li>Gestione d\
+egli <b>eventi</\
+b>: tutte le ope\
+razioni vengono\x0a\
+      sempre rif\
+erite ad uno spe\
+cifico evento (e\
+s. Sagra del\x0a   \
+   Peperone, Fes\
+ta della birra, \
+ecc.)\x0a      </li\
+>\x0a      <li>Gest\
+ione dei <b>repa\
+rti</b> (es. Bar\
+, Cucina, Pizzer\
+ia,\x0a      ecc.).\
+ Alcuni reparti \
+possono esere no\
+n disponibili pe\
+r\x0a      specific\
+i eventi.\x0a      \
+</li>\x0a      <li>\
+Gestione degli <\
+b>articoli</b> d\
+i vendita, disti\
+nguendoli\x0a      \
+in articoli elem\
+entari, <b>kit</\
+b> (es. tris: sa\
+lsicce + costici\
+ne +\x0a      braci\
+ola) e <b>men&ug\
+rave;</b> (es. m\
+en&ugrave; sagra\
+: birra + tris\x0a \
+     + patate fr\
+itte). I kit dev\
+ono essere compo\
+sti da soli\x0a    \
+  articoli eleme\
+ntari. I men&ugr\
+ave; possono con\
+tenere kit\x0a     \
+ </li>\x0a      <li\
+>Gestione delle \
+<b>varianti</b> \
+degli articoli (\
+es. pizza\x0a      \
+margherita senza\
+ mozzarella, con\
+ salamino, ecc.)\
+. La variante\x0a  \
+    pu&ograve; p\
+revedere una mag\
+giorazione di pr\
+ezzo\x0a      </li>\
+\x0a      <li>Gesti\
+one della conseg\
+na al <b>tavolo<\
+/b> o per\x0a      \
+<b>asporto</b>\x0a \
+     </li>\x0a     \
+ <li>Controllo <\
+b>esistenza</b>:\
+ per gli articol\
+i elementari\x0a   \
+   che interessa\
+ monitorare &egr\
+ave; possibile i\
+nserire la\x0a     \
+ scorta disponib\
+ile. Il programm\
+a aggiorna autom\
+aticamente la\x0a  \
+    disponibilit\
+&agrave; in base\
+ alle vendite ef\
+fettuate ed ai \x0a\
+\x09  consumi conse\
+guenti.\x0a      </\
+li>\x0a      <li>Ge\
+stione degli <b>\
+ordini di vendit\
+a</b> tramite un\
+a\x0a      maschera\
+ ottimizzata fin\
+alizzata al ragg\
+iungimento della\
+\x0a      massima v\
+elocit&agrave; d\
+i inserimento. C\
+ontrollo\x0a      d\
+ell'esistenza de\
+l tavolo indicat\
+o. Possibilit&ag\
+rave; \x0a\x09  di sel\
+ezionare il tavo\
+lo da una lista \
+di numeri esiste\
+nti.\x0a\x09  Controll\
+o della disponib\
+ilit&agrave; deg\
+li articoli inse\
+riti\x0a\x09  consider\
+ando i component\
+i per i kit ed i\
+ men&ugrave;. \x0a\x09\
+  Calcolo automa\
+tico dei totale \
+ordine, importo \
+incassato,\x0a\x09  ev\
+entuale sconto a\
+ valore (es. buo\
+ni), resto, ecc.\
+ \x0a\x09  Visualizzaz\
+ione delle varia\
+nti possibili.\x0a\x09\
+  <li>Possibilit\
+&agrave; di inse\
+rire note per re\
+parto\x0a      </li\
+>\x0a      <li>Gene\
+razione della <b\
+>stampa dell'ord\
+ine</b> per il\x0a \
+     cliente, po\
+cie specifiche p\
+er i vari repart\
+i interessati ed\
+\x0a\x09  una per i so\
+li coperti. Tutt\
+e queste stampe \
+sono opzionali\x0a\x09\
+  e disponibili \
+in vari formati\x0a\
+      </li>\x0a    \
+  <li>Stampa del\
+l'<b>incassato</\
+b> per giorno e \
+mezza giornata\x0a \
+     </li>\x0a\x09  <l\
+i>Visualizzazion\
+e e stampa conti\
+nua della dispon\
+ibilit\xc3\xa0 \x0a\x09  deg\
+li articoli o de\
+i componenti di \
+kit e men&ugrave\
+;</li>\x0a      <li\
+>Gestione di var\
+ie <b>statistich\
+e di vendita e c\
+omsuni</b> anche\
+\x0a      confronta\
+ndo eventi e per\
+iodi diversi\x0a   \
+   </li>\x0a      <\
+li>Tutti gli <b>\
+archivi</b> (eve\
+nti, reparti, ar\
+ticoli,\x0a      ec\
+c.) e le statist\
+iche disponibili\
+ sono visualizza\
+bili,\x0a      stam\
+pabili in format\
+o A4 ed <b>espor\
+tabili</b> in ex\
+cel\x0a      </li>\x0a\
+      <li>L'appl\
+icazione &egrave\
+; <b>multipiatta\
+forma</b>:\x0a     \
+ sviluppata e te\
+stata su Windows\
+ e Linux, dovreb\
+be funzionare\x0a  \
+    correttament\
+e anche su Mac O\
+SX\x0a      </li>\x0a \
+   </ul>\x0a    <p>\
+<a class=\x22top\x22 h\
+ref=\x22#top\x22 title\
+=\x22top\x22>Torna a i\
+nizio pagina</a>\
+</p>\x0a    <h2 id=\
+\x22architecture\x22>\x0a\
+      Architettu\
+ra dell'applicaz\
+ione\x0a    </h2>\x0a \
+   <p>\x0a      Que\
+sto programma &e\
+grave; stato svi\
+luppato avendo i\
+n mente\x0a      al\
+cuni specifici o\
+biettivi:\x0a    </\
+p>\x0a    <ul>\x0a    \
+  <li>Realizzare\
+ un applicazione\
+ con interfaccia\
+ grafica e\x0a     \
+ basata su un da\
+tabase server sq\
+l\x0a      </li>\x0a  \
+    <li>Realizza\
+re un applicazio\
+ne multiutente c\
+on architettura\x0a\
+      client/ser\
+ver\x0a      </li>\x0a\
+      <li>L'appl\
+icazione deve es\
+sere multipiatta\
+forma e disponib\
+ile\x0a      a bass\
+o/nullo costo a \
+chiunque la rich\
+ieda\x0a      </li>\
+\x0a    </ul>\x0a    <\
+p>\x0a      Di cons\
+eguenza per la r\
+ealizzazione di \
+questo applicati\
+vo\x0a      sono st\
+ati utilizzati:\x0a\
+    </p>\x0a    <ul\
+>\x0a      <li>il l\
+inguaggio di pro\
+grammazione <a h\
+ref=\x22https://www\
+.python.org\x22>Pyt\
+hon</a>\x0a\x09  nella\
+ versione 3.7</l\
+i>\x0a      <li>le \
+librerie <a href\
+=\x22https://www.qt\
+.io\x22>Qt</a> in\x0a \
+     versione 5.\
+x\x0a      </li>\x0a  \
+    <li>il bindi\
+ng alle librerie\
+ Qt <a href=\x0a   \
+   \x22https://www.\
+riverbankcomputi\
+ng.com/software/\
+pyqt/download5\x22>\
+PyQt</a> in vers\
+ione\x0a      5.x\x0a \
+     </li>\x0a     \
+ <li>Il server d\
+i database <a hr\
+ef=\x0a      \x22https\
+://www.postgresq\
+l.org\x22>PostgreSQ\
+L</a> nella vers\
+ione\x0a      10.x \
+o successiva\x0a   \
+   </li>\x0a\x09  <li>\
+Il connettore a \
+PostgreSQL per P\
+ython <a href=\x0a \
+     \x22http://ini\
+td.org/psycopg/\x22\
+>psycopg</a> nel\
+la versione\x0a    \
+  2.8.x o succes\
+siva\x0a      </li>\
+\x0a      <li>il se\
+t di icone <a hr\
+ef=\x0a      \x22https\
+://github.com/pa\
+snox/oxygen-icon\
+s-png\x22>oxygen ic\
+ons</a>\x0a      </\
+li>\x0a      <li>l'\
+icona di pySagra\
+ fa parte del De\
+lliOS System Ico\
+ns set\x0a      di \
+<a href=\x22http://\
+www.wendellverli\
+.com/\x22>Wendell\x0a \
+     Fernandes</\
+a>\x0a      </li>\x0a \
+   </ul>\x0a    <p>\
+\x0a      Tutti gli\
+ strumenti elenc\
+ati sono multipi\
+attaforma e\x0a    \
+  disponibili gr\
+atuitamente\x0a    \
+</p>\x0a    <p><a c\
+lass=\x22top\x22 href=\
+\x22#top\x22 title=\x22to\
+p\x22>Torna a inizi\
+o pagina</a></p>\
+\x0a    <h2 id=\x22gui\
+\x22>\x0a      Interfa\
+ccia utente\x0a    \
+</h2>\x0a    <cente\
+r>\x0a      <img sr\
+c=\x22qrc:/help/img\
+/main_window.png\
+\x22>\x0a    </center>\
+\x0a    <p>\x0a      L\
+'intefacia utent\
+e dell'applicazi\
+one &egrave; com\
+posta da\x0a      (\
+...):\x0a    </p>\x0a \
+   <p><a class=\x22\
+top\x22 href=\x22#top\x22\
+ title=\x22top\x22>Tor\
+na a inizio pagi\
+na</a></p>\x0a    <\
+p>\x0a      <a href\
+=\x22qrc:/help/logi\
+n.html\x22 title=\x22l\
+ogin\x22>Help sulla\
+ procedura di\x0a  \
+    Login</a>\x0a  \
+  </p>\x0a  </body>\
+\x0a</html>\x0a\
+\x00\x00\x07\xd7\
+<\
+html lang=\x22en\x22>\x0a\
+  <head>\x0a    <ti\
+tle>\x0a      Help \
+on login procedu\
+re\x0a    </title>\x0a\
+  </head>\x0a  <bod\
+y style=\x22font-fa\
+mily: Arial, San\
+s-Serif;\x22>\x0a    <\
+h1>pySagra on li\
+ne documentation\
+</h1>\x0a    <h2 id\
+=\x22login\x22>\x0a      \
+Login procedure\x0a\
+    </h2>\x0a    <p\
+>\x0a     When the \
+application star\
+ted for the firs\
+t time, the conn\
+ection parameter\
+s are requested\x0a\
+\x09 and the window\
+ looks like in t\
+he following fig\
+ure:\x0a\x09 <center>\x0a\
+      <img src=\x22\
+qrc:/help/img/lo\
+gin1.png\x22>\x0a    <\
+/center>\x0a    </p\
+>\x0a    <p>\x0a      \
+The parameters r\
+equired to conne\
+ct to\x0a\x09  the dat\
+abase server are\
+:\x0a    </p>\x0a    <\
+ul>\x0a      <li>\x0a \
+       <b>User:<\
+/b> type in the \
+application user\
+ name\x0a      </li\
+>\x0a      <li>\x0a   \
+     <b>Password\
+:</b> type in th\
+e user password\x0a\
+        The user\
+ password can be\
+ optional\x0a\x09\x09base\
+d on the authent\
+ication settings\
+\x0a        There a\
+re 2 built in us\
+er account:\x0a\x09\x09<u\
+l>\x0a\x09\x09\x09<li><i>sys\
+tem</i> with pas\
+sword <b>System@\
+1</b></li>\x0a\x09\x09\x09<l\
+i><i>utente</i> \
+with password <b\
+>utente</b></li>\
+\x0a\x09\x09</ul>\x0a      <\
+/li>\x0a      <li>\x0a\
+        <b> Serv\
+er: </b> enter t\
+he name of the c\
+omputer running \
+the\x0a\x09\x09role of da\
+tabase server. I\
+t is also possib\
+le to enter\x0a\x09\x09th\
+e server's ip ad\
+dress (eg 192.16\
+8.1.1). If the\x0a\x09\
+\x09program runs on\
+ the same comput\
+er where\x0a\x09\x09the d\
+atabase server i\
+s running\x0a\x09\x09You \
+can enter the co\
+mputer name 'loc\
+alhost' or the i\
+p\x0a\x09\x09127.0.0.1\x0a  \
+    </li>\x0a      \
+<li>\x0a        <b>\
+ Port: </b> type\
+ in the TCP port\
+ to use for the\x0a\
+\x09\x09connection. Ty\
+pically in Postg\
+reSQL installati\
+ons\x0a\x09\x09port 5432 \
+is used, ask the\
+ administrator\x0a\x09\
+\x09network if a di\
+fferent port is \
+used\x0a      </li>\
+\x0a      <li>\x0a    \
+    <b>Database:\
+</b> type in the\
+ database name t\
+o connect to\x0a   \
+   </li>\x0a    </u\
+l>\x0a    <p>\x0a\x09\x09The\
+ first time you \
+access a server \
+<b> ALL of these\
+ </b>\x0a\x09\x09paramete\
+rs must be sette\
+d. The subsequen\
+t times\x0a\x09\x09the sa\
+me parameters al\
+ready used succe\
+ssfully are re-p\
+roposed\x0a\x09\x09exclud\
+ing the username\
+ and password:\x0a\x09\
+\x09<center>\x0a\x09     \
+ <img src=\x22qrc:/\
+help/img/login2.\
+png\x22>\x0a\x09\x09</center\
+>\x0a\x09  Click on <i\
+>Connection deta\
+ils</i> to modif\
+y the connection\
+ prameters\x0a    <\
+/p>\x0a  </body>\x0a</\
+html>\x0a\
+\x00\x00\x09T\
+<\
+html lang=\x22it\x22>\x0a\
+  <head>\x0a    <ti\
+tle>\x0a      Help \
+sulla procedura \
+di login\x0a    </t\
+itle>\x0a  </head>\x0a\
+  <body style=\x22f\
+ont-family: Aria\
+l, Sans-Serif;\x22>\
+\x0a    <h1>\x0a      \
+Documentazione i\
+n linea su pySag\
+ra\x0a    </h1>\x0a   \
+ <h2 id=\x22login\x22>\
+\x0a      Procedura\
+ di login\x0a    </\
+h2>\x0a    <p>\x0a    \
+ Al primo avvio \
+dell'applicazion\
+e vengono richie\
+sti i parametri \
+di connessione\x0a\x09\
+ al server e la \
+finestra si pres\
+enta come in fig\
+ura:\x0a\x09 <center>\x0a\
+      <img src=\x22\
+qrc:/help/img/lo\
+gin1.png\x22>\x0a    <\
+/center>\x0a    </p\
+>\x0a    <p>\x0a      \
+I parametri rich\
+iesti per effett\
+uare la connessi\
+one al\x0a      dat\
+abase server son\
+o:\x0a    </p>\x0a    \
+<ul>\x0a      <li>\x0a\
+        <b>Utent\
+e:</b> inserire \
+il nome utente a\
+pplicativo\x0a     \
+ </li>\x0a      <li\
+>\x0a        <b>Pas\
+sword:</b> inser\
+ire la password \
+associata all'ut\
+ente\x0a        sel\
+ezionato. Pu&ogr\
+ave; essere non \
+obbligatoria in \
+base a\x0a        c\
+ome &egrave; con\
+figurato il mecc\
+anismo di autent\
+icazione \x0a\x09\x09degl\
+i utenti. Ci son\
+o 2 utenti prede\
+finiti e non mod\
+ificabili:\x0a\x09\x09<ul\
+>\x0a\x09\x09\x09<li><i>syst\
+em</i> con passw\
+ord <b>System@1<\
+/b></li>\x0a\x09\x09\x09<li>\
+<i>utente</i> co\
+n password <b>ut\
+ente</b></li>\x0a\x09\x09\
+</ul>\x0a      </li\
+>\x0a      <li>\x0a   \
+     <b>Server:<\
+/b> inserire il \
+nome del compute\
+r che svolge il\x0a\
+        ruolo di\
+ server di datab\
+ase. E' possibil\
+e inserire anche\
+\x0a        l'indir\
+izzo ip del serv\
+er (es. 192.168.\
+1.1). Se il\x0a    \
+    programma vi\
+ene eseguito sul\
+lo stesso comput\
+er dove\x0a        \
+&egrave; in esec\
+uzione il databa\
+se server &egrav\
+e;\x0a        possi\
+bile inserire il\
+ nome computer '\
+localhost' oppur\
+e l'ip\x0a        1\
+27.0.0.1\x0a      <\
+/li>\x0a      <li>\x0a\
+        <b>Porta\
+:</b> indicare l\
+a porta TCP da u\
+tilizzare per la\
+\x0a        conness\
+ione. Tipicament\
+e nelle installa\
+zioni di Postgre\
+SQL\x0a        vien\
+e utilizzata la \
+porta 5432, chie\
+dere all'amminis\
+tratore\x0a        \
+di rete nel caso\
+ si utilizzi una\
+ porta diversa\x0a \
+     </li>\x0a     \
+ <li>\x0a        <b\
+>Database:</b> i\
+ndicare il nome \
+del database al \
+quale\x0a        co\
+llegarsi\x0a      <\
+/li>\x0a    </ul>\x0a \
+   <p>\x0a      La \
+prima volta che \
+si accede ad un \
+server <b>TUTTI<\
+/b> questi\x0a     \
+ parametri devon\
+o essere valoriz\
+zati. Le volte s\
+uccessive\x0a      \
+vengono ripropos\
+ti gli stessi pa\
+rametri gi&agrav\
+e; utilizzati\x0a  \
+    con successo\
+ in precedenza a\
+d esclusione del\
+ nome utente e\x0a \
+     della passw\
+ord:\x0a\x09\x09<center>\x0a\
+\x09      <img src=\
+\x22qrc:/help/img/l\
+ogin2.png\x22>\x0a\x09\x09</\
+center>\x0a\x09  Per m\
+odificare i para\
+metri inseriti c\
+liccare sulla ca\
+sella <i>Dettagl\
+i della connessi\
+one</i>\x0a    </p>\
+\x0a  </body>\x0a</htm\
+l>\x0a\
 \x00\x00\x19\x92\
 \x89\
 PNG\x0d\x0a\x1a\x0a\x00\x00\x00\x0dIHDR\x00\
@@ -211767,794 +212925,6 @@ Gl\xc7\xfe\x8a\xaa\xda\x81*\x7f\x09\x98\xf0\xc6:\xcc\
 \x06\xf40\x95\xd96\x01\xb8+\x91\xf8\x7f\x0b =\x22\
 \xbd\x8f}Q\x00\x00\x00\x00IEND\xaeB`\x82\
 \
-\x00\x00\x16\xc2\
-<\
-html lang=\x22en\x22>\x0a\
-  <head>\x0a    <ti\
-tle>Help on pySa\
-gra</title>\x0a  </\
-head>\x0a  <body st\
-yle=\x22font-family\
-: Arial, Sans-Se\
-rif;\x22>\x0a    <h1 s\
-tyle=\x22color: #00\
-9\x22>\x0a\x09\x09pySagra on\
- line documentat\
-ion\x0a    </h1>\x0a  \
-  <center>\x0a     \
- <img src=\x22qrc:/\
-pySagra\x22>\x0a    </\
-center>\x0a    <h2>\
-\x0a      List of t\
-opics:\x0a    </h2>\
-\x0a    <ul>\x0a      \
-<li>\x0a        <a \
-href=\x22#overview\x22\
->Overview</a>\x0a  \
-    </li>\x0a      \
-<li>\x0a        <a \
-href=\x22#architect\
-ure\x22>Application\
- architecture</a\
->\x0a      </li>\x0a  \
-    <li>\x0a       \
- <a href=\x22#gui\x22>\
-User interface</\
-a>\x0a      </li>\x0a \
-   </ul>\x0a    <h2\
- id=\x22overview\x22>\x0a\
-      Overview\x0a \
-   </h2>\x0a    <p>\
-\x0a      <b>pySagr\
-a</b> stems from\
- the need to man\
-age the gastrono\
-mic \x0a\x09  stand of\
- my village's fe\
-stival. The acti\
-vity to be manag\
-ed is\x0a\x09  therefo\
-re the order ent\
-ry of products, \
-typically first \
-courses,\x0a\x09  main\
- courses, drinks\
-, etc., the subs\
-equent distribut\
-ion of \x0a\x09  the o\
-rders, real work\
- orders, to the \
-various departme\
-nts \x0a\x09  of the s\
-tand, for exampl\
-e bar, restauran\
-t, but also pizz\
-eria,\x0a\x09  ice cre\
-am parlor, etc. \
-The orders are p\
-laced in the\x0a\x09  \
-cash desks and m\
-ust be the most \
-quick and simple\
- as possible.\x0a\x09 \
- Once the order \
-has been entered\
- it is divided b\
-y department\x0a\x09  \
-and distributed \
-to the departmen\
-ts concerned. On\
-ce the \x0a\x09  depar\
-tment copy is pr\
-inted the order \
-it is considered\
- \x0a\x09  automatical\
-ly processed. Th\
-ere is no manage\
-ment of order \x0a\x09\
-  fulfillment as\
- it is superfluo\
-us for the type \
-of activity \x0a\x09  \
-that is carried \
-out. Apart from \
-this the program\
- allows \x0a\x09  the \
-closure of the c\
-ash register end\
- various sales \x0a\
-\x09  statistics. A\
-ll lists, statis\
-tics including, \
-they are \x0a\x09  pri\
-ntable and autom\
-atically exporta\
-ble to Excel.\x0a\x09 \
- Currently, fisc\
-al printing is n\
-ot managed.\x0a    \
-</p>\x0a    <p>\x0a   \
-   The features \
-of the applicati\
-on can be summar\
-ized in \x0a\x09  the \
-following points\
-:\x0a    </p>\x0a    <\
-ul>\x0a      <li>Ma\
-nagement of <b> \
-events </b>: all\
- operations come\
-\x0a\x09  always refer\
-ring to a specif\
-ic event (eg. Sa\
-gra del \x0a\x09  Pepp\
-er, Beer Festiva\
-l, etc.).\x0a      \
-</li>\x0a      <li>\
-Management of <b\
-> departments </\
-b> (eg Bar, rest\
-aurant,\x0a\x09  Pizze\
-ria, etc.). Some\
- departments may\
- not be availabl\
-e for\x0a\x09  specifi\
-c events.\x0a      \
-</li>\x0a      <li>\
-Managing <b> sal\
-es </b> items, d\
-istinguishing th\
-em\x0a\x09  in element\
-ary items, kits \
-(eg three of a k\
-ind: sausages + \
-ribs +\x0a\x09  chop) \
-and menu (ex. sa\
-gra menu: beer +\
- tris + fried po\
-tatoes).\x0a\x09  The \
-kits must be com\
-posed by themsel\
-ves\x0a\x09  elementar\
-y articles. Menu\
-s may contain ki\
-ts.\x0a      </li>\x0a\
-      <li>Manage\
-ment of <b> vari\
-ants </b> of ite\
-ms (eg pizza\x0a\x09  \
-margherita witho\
-ut mozzarella, w\
-ith salamino, et\
-c.). The variant\
-\x0a\x09  may provide \
-a price increase\
-.\x0a      </li>\x0a  \
-    <li>Delivery\
- management at <\
-b> table </b> or\
- per\x0a\x09  <b> Take\
- </b>. It is pos\
-sible to check t\
-he existence of \
-the\x0a\x09  table num\
-ber entered.\x0a   \
-   </li>\x0a      <\
-li><b>stock leve\
-l control</b>: f\
-or elementary ar\
-ticles\x0a\x09  which \
-interests to mon\
-itor it is possi\
-ble to insert th\
-e\x0a\x09  stock avail\
-able. The progra\
-m automatically \
-updates the\x0a\x09  a\
-vailability base\
-d on sales made.\
-\x0a      </li>\x0a   \
-   <li>Managemen\
-t of <b>sales or\
-ders</b> through\
- a optimized for\
-m\x0a\x09  aimed at ac\
-hieving the maxi\
-mum insertion sp\
-eed with stock c\
-ontrol\x0a\x09  of the\
- articles, total\
- calculation, am\
-ount cashed, cha\
-nge, etc.\x0a      \
-</li>\x0a      <li>\
-Generation of th\
-e <b> order prin\
-ting </b> for th\
-e\x0a\x09  customer, f\
-or the various d\
-epartments conce\
-rned and one for\
-\x0a\x09  covers. All \
-these prints are\
- in A5 format an\
-d optional\x0a     \
- </li>\x0a      <li\
->Print of the <b\
-> cashed </b> pe\
-r day and half a\
- day\x0a      </li>\
-\x0a      <li>Manag\
-ement of various\
- <b> sales stati\
-stics </b> even\x0a\
-\x09  comparing dif\
-ferent events\x0a  \
-    </li>\x0a      \
-<li>All <b> arch\
-ives </b> (event\
-s, departments, \
-items,\x0a\x09  etc.) \
-and the availabl\
-e statistics can\
- be viewed,\x0a\x09  p\
-rintable A4 and \
-<b> exportable <\
-/b> in excel\x0a   \
-   </li>\x0a      <\
-li>The applicati\
-on is <b> cross-\
-platform </b>:\x0a\x09\
-  developed and \
-tested on Window\
-s and Linux, it \
-should work\x0a\x09  c\
-orrectly also on\
- Mac OSX\x0a\x09  </li\
->\x0a    </ul>\x0a    \
-<h2 id=\x22architec\
-ture\x22>\x0a      App\
-lication archite\
-cture\x0a    </h2>\x0a\
-    <p>\x0a\x09This pr\
-ogram was develo\
-ped with in mind\
-\x0a\x09some specific \
-objectives:\x0a    \
-</p>\x0a    <ul>\x0a  \
-    <li>Deepen m\
-y knowledge of t\
-he Python langua\
-ge\x0a      </li>\x0a \
-     <li>Impleme\
-nt an applicatio\
-n with a graphic\
-al interface e\x0a\x09\
-  based on a sql\
- database server\
-\x0a      </li>\x0a   \
-   <li>Implement\
- a multiuser app\
-lication with cl\
-ient / server\x0a\x09 \
- architecture\x0a  \
-    </li>\x0a      \
-<li>The applicat\
-ion must be mult\
-i-platform and a\
-vailable\x0a\x09  low \
-/ no cost to any\
-one who requests\
- it\x0a      </li>\x0a\
-    </ul>\x0a    <p\
->\x0a      Conseque\
-ntly for the rea\
-lization of this\
- application\x0a\x09  \
-have been used:\x0a\
-    </p>\x0a    <ul\
->\x0a      <li>The \
-<a href=\x22https:/\
-/www.python.org\x22\
->Python</a> prog\
-ramming language\
-\x0a\x09  version 3.7<\
-/li>\x0a      <li>T\
-he <a href=\x22http\
-s://www.qt.io\x22>Q\
-t</a> libraries \
-version 5.x\x0a    \
-  </li>\x0a      <l\
-i>The Qt wrapper\
- libraries <a hr\
-ef=\x0a      \x22https\
-://www.riverbank\
-computing.com/so\
-ftware/pyqt/down\
-load5\x22>PyQt</a>\x0a\
-\x09  version 5.x\x0a \
-     </li>\x0a     \
- <li>The <a href\
-=\x22https://www.po\
-stgresql.org\x22>Po\
-stgreSQL</a> dat\
-abase\x0a\x09  server \
-version 10.x \x0a  \
-    </li>\x0a\x09  <li\
->The <a href=\x22ht\
-tp://initd.org/p\
-sycopg/\x22>psycopg\
-</a> Python conn\
-ector\x0a\x09  to Post\
-greSQL version 2\
-.8.x \x0a      </li\
->\x0a      <li>The \
-<a href=\x22https:/\
-/github.com/pasn\
-ox/oxygen-icons-\
-png\x22>oxygen icon\
-s</a>\x0a\x09  icon se\
-t\x0a      </li>\x0a  \
-    <li>The pySa\
-gra icon is from\
- DelliOS System \
-Icons set\x0a      \
-of <a href=\x22http\
-://www.wendellve\
-rli.com/\x22>Wendel\
-l\x0a      Fernande\
-s</a>\x0a      </li\
->\x0a    </ul>\x0a    \
-<p>\x0a      All th\
-e tools listed a\
-re multiplatform\
- and\x0a\x09  availabl\
-e for free\x0a    <\
-/p>\x0a    <h2 id=\x22\
-gui\x22>\x0a      User\
- interface\x0a    <\
-/h2>\x0a    <center\
->\x0a      <img src\
-=\x22qrc:/help/main\
-_window.png\x22>\x0a  \
-  </center>\x0a    \
-<p>\x0a      The us\
-er interface is \
-made of (...):\x0a \
-   </p>\x0a    <p>\x0a\
-      <a class=\x22\
-top\x22 href=\x22#top\x22\
- title=\x22top\x22>bac\
-k</a>\x0a    </p>\x0a \
-   <p>\x0a      <a \
-href=\x22qrc:/help/\
-login.html\x22 titl\
-e=\x22login\x22>Help o\
-n Login procedur\
-e</a>\x0a    </p>\x0a \
- </body>\x0a</html>\
-\x0a\
-\x00\x00\x1a-\
-<\
-html lang=\x22it\x22>\x0a\
-  <head>\x0a    <ti\
-tle>Help su pySa\
-gra</title>\x0a  </\
-head>\x0a  <body st\
-yle=\x22font-family\
-: Arial, Sans-Se\
-rif;\x22>\x0a    <h1 s\
-tyle=\x22color: #00\
-9\x22>\x0a\x09\x09Documentaz\
-ione in linea su\
- pySagra\x0a    </h\
-1>\x0a    <center>\x0a\
-      <img src=\x22\
-qrc:/pySagra\x22>\x0a \
-   </center>\x0a   \
- <h2>\x0a      Elen\
-co degli argomen\
-ti:\x0a    </h2>\x0a  \
-  <ul>\x0a      <li\
->\x0a        <a hre\
-f=\x22#overview\x22>Pa\
-noramica</a>\x0a   \
-   </li>\x0a      <\
-li>\x0a        <a h\
-ref=\x22#architectu\
-re\x22>Architettura\
- dell'applicazio\
-ne</a>\x0a      </l\
-i>\x0a      <li>\x0a  \
-      <a href=\x22#\
-gui\x22>Interfaccia\
- utente</a>\x0a    \
-  </li>\x0a    </ul\
->\x0a    <h2 id=\x22ov\
-erview\x22>Panorami\
-ca</h2>\x0a    <p>\x0a\
-      <b>pySagra\
-</b> nasce dall'\
-esigenza di gest\
-ire lo stand\x0a   \
-   gastronomico \
-dellla sagra del\
- mio paese. L'at\
-tivit&agrave; da\
-\x0a      gestire &\
-egrave; quindi l\
-a rilevazione de\
-gli ordini dei\x0a \
-     prodotti, t\
-ipicamente primi\
- piatti, secondi\
-, bevande, ecc. \
-e\x0a      la succe\
-ssiva distribuzi\
-one delle comand\
-e, veri e propri\
-\x0a      ordini di\
- lavoro, ai vari\
- reparti dello s\
-tand, ad esempio\
-\x0a      bar, cuci\
-na, ma anche piz\
-zeria, gelateria\
-, ecc. L'inserim\
-ento\x0a      degli\
- ordini avviene \
-nelle casse e de\
-ve essere il pi&\
-ugrave;\x0a      ra\
-pido e semplice \
-possibile. Una v\
-olta inserito l'\
-ordine\x0a      vie\
-ne suddiviso per\
- reparto e diram\
-ato ai reparti\x0a \
-     interessati\
-. Non c'&egrave;\
- una vera e prop\
-ria\x0a      gestio\
-ne dell'evasione\
- degli ordini in\
- quanto superflu\
-a per\x0a      il t\
-ipo di attivit&a\
-grave; che viene\
- svolta. Oltre a\
- questo\x0a      il\
- programma perme\
-tte di ottenere \
-il riepilogo deg\
-li incassi e\x0a   \
-   varie statist\
-iche di vendita \
-e consumi.\x0a    <\
-/p>\x0a    <p>\x0a    \
-  Le caratterist\
-iche dell'applic\
-azione di posson\
-o riassumere\x0a   \
-   nei seguenti \
-punti:\x0a    </p>\x0a\
-    <ul>\x0a      <\
-li>Gestione degl\
-i <b>eventi</b>:\
- tutte le operaz\
-ioni vengono\x0a   \
-   sempre riferi\
-te ad uno specif\
-ico evento (es. \
-Sagra del\x0a      \
-Peperone, Festa \
-della birra, ecc\
-.)\x0a      </li>\x0a \
-     <li>Gestion\
-e dei <b>reparti\
-</b> (es. Bar, C\
-ucina, Pizzeria,\
-\x0a      ecc.). Al\
-cuni reparti pos\
-sono esere non d\
-isponibili per\x0a \
-     specifici e\
-venti.\x0a      </l\
-i>\x0a      <li>Ges\
-tione degli <b>a\
-rticoli</b> di v\
-endita, distingu\
-endoli\x0a      in \
-articoli element\
-ari, <b>kit</b> \
-(es. tris: salsi\
-cce + costicine \
-+\x0a      braciola\
-) e <b>men&ugrav\
-e;</b> (es. men&\
-ugrave; sagra: b\
-irra + tris\x0a    \
-  + patate fritt\
-e). I kit devono\
- essere composti\
- da soli\x0a      a\
-rticoli elementa\
-ri. I men&ugrave\
-; possono conten\
-ere kit\x0a      </\
-li>\x0a      <li>Ge\
-stione delle <b>\
-varianti</b> deg\
-li articoli (es.\
- pizza\x0a      mar\
-gherita senza mo\
-zzarella, con sa\
-lamino, ecc.). L\
-a variante\x0a     \
- pu&ograve; prev\
-edere una maggio\
-razione di prezz\
-o\x0a      </li>\x0a  \
-    <li>Gestione\
- della consegna \
-al <b>tavolo</b>\
- o per\x0a      <b>\
-asporto</b>\x0a    \
-  </li>\x0a      <l\
-i>Controllo <b>e\
-sistenza</b>: pe\
-r gli articoli e\
-lementari\x0a      \
-che interessa mo\
-nitorare &egrave\
-; possibile inse\
-rire la\x0a      sc\
-orta disponibile\
-. Il programma a\
-ggiorna automati\
-camente la\x0a     \
- disponibilit&ag\
-rave; in base al\
-le vendite effet\
-tuate ed ai \x0a\x09  \
-consumi consegue\
-nti.\x0a      </li>\
-\x0a      <li>Gesti\
-one degli <b>ord\
-ini di vendita</\
-b> tramite una\x0a \
-     maschera ot\
-timizzata finali\
-zzata al raggiun\
-gimento della\x0a  \
-    massima velo\
-cit&agrave; di i\
-nserimento. Cont\
-rollo\x0a      dell\
-'esistenza del t\
-avolo indicato. \
-Possibilit&agrav\
-e; \x0a\x09  di selezi\
-onare il tavolo \
-da una lista di \
-numeri esistenti\
-.\x0a\x09  Controllo d\
-ella disponibili\
-t&agrave; degli \
-articoli inserit\
-i\x0a\x09  considerand\
-o i componenti p\
-er i kit ed i me\
-n&ugrave;. \x0a\x09  C\
-alcolo automatic\
-o dei totale ord\
-ine, importo inc\
-assato,\x0a\x09  event\
-uale sconto a va\
-lore (es. buoni)\
-, resto, ecc. \x0a\x09\
-  Visualizzazion\
-e delle varianti\
- possibili.\x0a\x09  <\
-li>Possibilit&ag\
-rave; di inserir\
-e note per repar\
-to\x0a      </li>\x0a \
-     <li>Generaz\
-ione della <b>st\
-ampa dell'ordine\
-</b> per il\x0a    \
-  cliente, pocie\
- specifiche per \
-i vari reparti i\
-nteressati ed\x0a\x09 \
- una per i soli \
-coperti. Tutte q\
-ueste stampe son\
-o opzionali\x0a\x09  e\
- disponibili in \
-vari formati\x0a   \
-   </li>\x0a      <\
-li>Stampa dell'<\
-b>incassato</b> \
-per giorno e mez\
-za giornata\x0a    \
-  </li>\x0a\x09  <li>V\
-isualizzazione e\
- stampa continua\
- della disponibi\
-lit\xc3\xa0 \x0a\x09  degli \
-articoli o dei c\
-omponenti di kit\
- e men&ugrave;</\
-li>\x0a      <li>Ge\
-stione di varie \
-<b>statistiche d\
-i vendita e coms\
-uni</b> anche\x0a  \
-    confrontando\
- eventi e period\
-i diversi\x0a      \
-</li>\x0a      <li>\
-Tutti gli <b>arc\
-hivi</b> (eventi\
-, reparti, artic\
-oli,\x0a      ecc.)\
- e le statistich\
-e disponibili so\
-no visualizzabil\
-i,\x0a      stampab\
-ili in formato A\
-4 ed <b>esportab\
-ili</b> in excel\
-\x0a      </li>\x0a   \
-   <li>L'applica\
-zione &egrave; <\
-b>multipiattafor\
-ma</b>:\x0a      sv\
-iluppata e testa\
-ta su Windows e \
-Linux, dovrebbe \
-funzionare\x0a     \
- correttamente a\
-nche su Mac OSX\x0a\
-      </li>\x0a    \
-</ul>\x0a    <h2 id\
-=\x22architecture\x22>\
-\x0a      Architett\
-ura dell'applica\
-zione\x0a    </h2>\x0a\
-    <p>\x0a      Qu\
-esto programma &\
-egrave; stato sv\
-iluppato avendo \
-in mente\x0a      a\
-lcuni specifici \
-obiettivi:\x0a    <\
-/p>\x0a    <ul>\x0a   \
-   <li>Realizzar\
-e un applicazion\
-e con interfacci\
-a grafica e\x0a    \
-  basata su un d\
-atabase server s\
-ql\x0a      </li>\x0a \
-     <li>Realizz\
-are un applicazi\
-one multiutente \
-con architettura\
-\x0a      client/se\
-rver\x0a      </li>\
-\x0a      <li>L'app\
-licazione deve e\
-ssere multipiatt\
-aforma e disponi\
-bile\x0a      a bas\
-so/nullo costo a\
- chiunque la ric\
-hieda\x0a      </li\
->\x0a    </ul>\x0a    \
-<p>\x0a      Di con\
-seguenza per la \
-realizzazione di\
- questo applicat\
-ivo\x0a      sono s\
-tati utilizzati:\
-\x0a    </p>\x0a    <u\
-l>\x0a      <li>il \
-linguaggio di pr\
-ogrammazione <a \
-href=\x22https://ww\
-w.python.org\x22>Py\
-thon</a>\x0a\x09  nell\
-a versione 3.7</\
-li>\x0a      <li>le\
- librerie <a hre\
-f=\x22https://www.q\
-t.io\x22>Qt</a> in\x0a\
-      versione 5\
-.x\x0a      </li>\x0a \
-     <li>il bind\
-ing alle libreri\
-e Qt <a href=\x0a  \
-    \x22https://www\
-.riverbankcomput\
-ing.com/software\
-/pyqt/download5\x22\
->PyQt</a> in ver\
-sione\x0a      5.x\x0a\
-      </li>\x0a    \
-  <li>Il server \
-di database <a h\
-ref=\x0a      \x22http\
-s://www.postgres\
-ql.org\x22>PostgreS\
-QL</a> nella ver\
-sione\x0a      10.x\
- o successiva\x0a  \
-    </li>\x0a\x09  <li\
->Il connettore a\
- PostgreSQL per \
-Python <a href=\x0a\
-      \x22http://in\
-itd.org/psycopg/\
-\x22>psycopg</a> ne\
-lla versione\x0a   \
-   2.8.x o succe\
-ssiva\x0a      </li\
->\x0a      <li>il s\
-et di icone <a h\
-ref=\x0a      \x22http\
-s://github.com/p\
-asnox/oxygen-ico\
-ns-png\x22>oxygen i\
-cons</a>\x0a      <\
-/li>\x0a      <li>l\
-'icona di pySagr\
-a fa parte del D\
-elliOS System Ic\
-ons set\x0a      di\
- <a href=\x22http:/\
-/www.wendellverl\
-i.com/\x22>Wendell\x0a\
-      Fernandes<\
-/a>\x0a      </li>\x0a\
-    </ul>\x0a    <p\
->\x0a      Tutti gl\
-i strumenti elen\
-cati sono multip\
-iattaforma e\x0a   \
-   disponibili g\
-ratuitamente\x0a   \
- </p>\x0a    <h2 id\
-=\x22gui\x22>\x0a      In\
-terfaccia utente\
-\x0a    </h2>\x0a    <\
-center>\x0a      <i\
-mg src=\x22qrc:/hel\
-p/main_window.pn\
-g\x22>\x0a    </center\
->\x0a    <p>\x0a      \
-L'intefacia uten\
-te dell'applicaz\
-ione &egrave; co\
-mposta da\x0a      \
-(...):\x0a    </p>\x0a\
-    <p>\x0a      <a\
- class=\x22top\x22 hre\
-f=\x22#top\x22 title=\x22\
-top\x22>Torna a ini\
-zio\x0a      pagina\
-</a>\x0a    </p>\x0a  \
-  <p>\x0a      <a h\
-ref=\x22qrc:/help/l\
-ogin.html\x22 title\
-=\x22login\x22>Help su\
-lla procedura di\
-\x0a      Login</a>\
-\x0a    </p>\x0a  </bo\
-dy>\x0a</html>\x0a\
 \x00\x00\xba\xa8\
 \x89\
 PNG\x0d\x0a\x1a\x0a\x00\x00\x00\x0dIHDR\x00\
@@ -219714,287 +220084,6 @@ f@\x09\xc2\x0c(A\x98\x01%\x083\xa0\x04a\x06\
 \xc1G\x98\x01%\x18f\x03\x1a0\xcc\x06\xf40\x95\xd9\
 .\x02\x08\xafH\xe4\xff\x03i\xc9N\x06L`Qi\
 \x00\x00\x00\x00IEND\xaeB`\x82\
-\x00\x00\x07\xe3\
-<\
-html lang=\x22en\x22>\x0a\
-  <head>\x0a    <ti\
-tle>\x0a      Help \
-on login procedu\
-re\x0a    </title>\x0a\
-  </head>\x0a  <bod\
-y style=\x22font-fa\
-mily: Arial, San\
-s-Serif;\x22>\x0a    <\
-h1 style=\x22color:\
- #009\x22>pySagra o\
-n line documenta\
-tion</h1>\x0a    <h\
-2 id=\x22login\x22>\x0a  \
-    Login proced\
-ure\x0a    </h2>\x0a  \
-  <p>\x0a     When \
-the application \
-started for the \
-first time, the \
-connection param\
-eters are reques\
-ted\x0a\x09 and the wi\
-ndow looks like \
-in the following\
- figure:\x0a\x09 <cent\
-er>\x0a      <img s\
-rc=\x22qrc:/help/lo\
-gin1.png\x22>\x0a    <\
-/center>\x0a    </p\
->\x0a    <p>\x0a      \
-The parameters r\
-equired to conne\
-ct to\x0a\x09  the dat\
-abase server are\
-:\x0a    </p>\x0a    <\
-ul>\x0a      <li>\x0a \
-       <b>User:<\
-/b> type in the \
-application user\
- name\x0a      </li\
->\x0a      <li>\x0a   \
-     <b>Password\
-:</b> type in th\
-e user password\x0a\
-        The user\
- password can be\
- optional\x0a\x09\x09base\
-d on the authent\
-ication settings\
-\x0a        There a\
-re 2 built in us\
-er account:\x0a\x09\x09<u\
-l>\x0a\x09\x09\x09<li><i>sys\
-tem</i> with pas\
-sword <b>System@\
-1</b></li>\x0a\x09\x09\x09<l\
-i><i>utente</i> \
-with password <b\
->utente</b></li>\
-\x0a\x09\x09</ul>\x0a      <\
-/li>\x0a      <li>\x0a\
-        <b> Serv\
-er: </b> enter t\
-he name of the c\
-omputer running \
-the\x0a\x09\x09role of da\
-tabase server. I\
-t is also possib\
-le to enter\x0a\x09\x09th\
-e server's ip ad\
-dress (eg 192.16\
-8.1.1). If the\x0a\x09\
-\x09program runs on\
- the same comput\
-er where\x0a\x09\x09the d\
-atabase server i\
-s running\x0a\x09\x09You \
-can enter the co\
-mputer name 'loc\
-alhost' or the i\
-p\x0a\x09\x09127.0.0.1\x0a  \
-    </li>\x0a      \
-<li>\x0a        <b>\
- Port: </b> type\
- in the TCP port\
- to use for the\x0a\
-\x09\x09connection. Ty\
-pically in Postg\
-reSQL installati\
-ons\x0a\x09\x09port 5432 \
-is used, ask the\
- administrator\x0a\x09\
-\x09network if a di\
-fferent port is \
-used\x0a      </li>\
-\x0a      <li>\x0a    \
-    <b>Database:\
-</b> type in the\
- database name t\
-o connect to\x0a   \
-   </li>\x0a    </u\
-l>\x0a    <p>\x0a\x09\x09The\
- first time you \
-access a server \
-<b> ALL of these\
- </b>\x0a\x09\x09paramete\
-rs must be sette\
-d. The subsequen\
-t times\x0a\x09\x09the sa\
-me parameters al\
-ready used succe\
-ssfully are re-p\
-roposed\x0a\x09\x09exclud\
-ing the username\
- and password:\x0a\x09\
-\x09<center>\x0a\x09     \
- <img src=\x22qrc:/\
-help/login2.png\x22\
->\x0a\x09\x09</center>\x0a\x09 \
- Click on <i>Con\
-nection details<\
-/i> to modify th\
-e connection pra\
-meters\x0a    </p>\x0a\
-  </body>\x0a</html\
->\x0a\
-\x00\x00\x09`\
-<\
-html lang=\x22it\x22>\x0a\
-  <head>\x0a    <ti\
-tle>\x0a      Help \
-sulla procedura \
-di login\x0a    </t\
-itle>\x0a  </head>\x0a\
-  <body style=\x22f\
-ont-family: Aria\
-l, Sans-Serif;\x22>\
-\x0a    <h1 style=\x22\
-color: #009\x22>\x0a  \
-    Documentazio\
-ne in linea su p\
-ySagra\x0a    </h1>\
-\x0a    <h2 id=\x22log\
-in\x22>\x0a      Proce\
-dura di login\x0a  \
-  </h2>\x0a    <p>\x0a\
-     Al primo av\
-vio dell'applica\
-zione vengono ri\
-chiesti i parame\
-tri di connessio\
-ne\x0a\x09 al server e\
- la finestra si \
-presenta come in\
- figura:\x0a\x09 <cent\
-er>\x0a      <img s\
-rc=\x22qrc:/help/lo\
-gin1.png\x22>\x0a    <\
-/center>\x0a    </p\
->\x0a    <p>\x0a      \
-I parametri rich\
-iesti per effett\
-uare la connessi\
-one al\x0a      dat\
-abase server son\
-o:\x0a    </p>\x0a    \
-<ul>\x0a      <li>\x0a\
-        <b>Utent\
-e:</b> inserire \
-il nome utente a\
-pplicativo\x0a     \
- </li>\x0a      <li\
->\x0a        <b>Pas\
-sword:</b> inser\
-ire la password \
-associata all'ut\
-ente\x0a        sel\
-ezionato. Pu&ogr\
-ave; essere non \
-obbligatoria in \
-base a\x0a        c\
-ome &egrave; con\
-figurato il mecc\
-anismo di autent\
-icazione \x0a\x09\x09degl\
-i utenti. Ci son\
-o 2 utenti prede\
-finiti e non mod\
-ificabili:\x0a\x09\x09<ul\
->\x0a\x09\x09\x09<li><i>syst\
-em</i> con passw\
-ord <b>System@1<\
-/b></li>\x0a\x09\x09\x09<li>\
-<i>utente</i> co\
-n password <b>ut\
-ente</b></li>\x0a\x09\x09\
-</ul>\x0a      </li\
->\x0a      <li>\x0a   \
-     <b>Server:<\
-/b> inserire il \
-nome del compute\
-r che svolge il\x0a\
-        ruolo di\
- server di datab\
-ase. E' possibil\
-e inserire anche\
-\x0a        l'indir\
-izzo ip del serv\
-er (es. 192.168.\
-1.1). Se il\x0a    \
-    programma vi\
-ene eseguito sul\
-lo stesso comput\
-er dove\x0a        \
-&egrave; in esec\
-uzione il databa\
-se server &egrav\
-e;\x0a        possi\
-bile inserire il\
- nome computer '\
-localhost' oppur\
-e l'ip\x0a        1\
-27.0.0.1\x0a      <\
-/li>\x0a      <li>\x0a\
-        <b>Porta\
-:</b> indicare l\
-a porta TCP da u\
-tilizzare per la\
-\x0a        conness\
-ione. Tipicament\
-e nelle installa\
-zioni di Postgre\
-SQL\x0a        vien\
-e utilizzata la \
-porta 5432, chie\
-dere all'amminis\
-tratore\x0a        \
-di rete nel caso\
- si utilizzi una\
- porta diversa\x0a \
-     </li>\x0a     \
- <li>\x0a        <b\
->Database:</b> i\
-ndicare il nome \
-del database al \
-quale\x0a        co\
-llegarsi\x0a      <\
-/li>\x0a    </ul>\x0a \
-   <p>\x0a      La \
-prima volta che \
-si accede ad un \
-server <b>TUTTI<\
-/b> questi\x0a     \
- parametri devon\
-o essere valoriz\
-zati. Le volte s\
-uccessive\x0a      \
-vengono ripropos\
-ti gli stessi pa\
-rametri gi&agrav\
-e; utilizzati\x0a  \
-    con successo\
- in precedenza a\
-d esclusione del\
- nome utente e\x0a \
-     della passw\
-ord:\x0a\x09\x09<center>\x0a\
-\x09      <img src=\
-\x22qrc:/help/login\
-2.png\x22>\x0a\x09\x09</cent\
-er>\x0a\x09  Per modif\
-icare i parametr\
-i inseriti clicc\
-are sulla casell\
-a <i>Dettagli de\
-lla connessione<\
-/i>\x0a    </p>\x0a  <\
-/body>\x0a</html>\x0a\
 "
 
 qt_resource_name = b"\
@@ -220342,14 +220431,26 @@ qt_resource_name = b"\
 \x0bI\x10\xbc\
 \x00o\
 \x00r\x00d\x00e\x00r\x00_\x00c\x00a\x00n\x00c\x00e\x00l\
-\x00\x0a\
-\x00\x1b<\x87\
-\x00l\
-\x00o\x00g\x00i\x00n\x002\x00.\x00p\x00n\x00g\
+\x00\x08\
+\x08D\xf6\xbc\
+\x00f\
+\x00a\x00q\x00.\x00h\x00t\x00m\x00l\
 \x00\x09\
 \x00\x14\x1c<\
 \x00m\
 \x00a\x00i\x00n\x00.\x00h\x00t\x00m\x00l\
+\x00\x03\
+\x00\x00p7\
+\x00i\
+\x00m\x00g\
+\x00\x0a\
+\x00\x1a\x90\xfc\
+\x00l\
+\x00o\x00g\x00i\x00n\x00.\x00h\x00t\x00m\x00l\
+\x00\x0a\
+\x00\x1b<\x87\
+\x00l\
+\x00o\x00g\x00i\x00n\x002\x00.\x00p\x00n\x00g\
 \x00\x0f\
 \x0b\xe6!\xc7\
 \x00m\
@@ -220358,27 +220459,23 @@ qt_resource_name = b"\
 \x00\x1e<\x87\
 \x00l\
 \x00o\x00g\x00i\x00n\x001\x00.\x00p\x00n\x00g\
-\x00\x0a\
-\x00\x1a\x90\xfc\
-\x00l\
-\x00o\x00g\x00i\x00n\x00.\x00h\x00t\x00m\x00l\
 "
 
 qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x08\x00\x00\x00\x01\
 \x00\x00\x00\x00\x00\x00\x00\x00\
-\x00\x00\x00@\x00\x02\x00\x00\x00\x0a\x00\x00\x01\x11\
+\x00\x00\x00@\x00\x02\x00\x00\x00\x07\x00\x00\x01\x11\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00N\x00\x02\x00\x00\x00\x04\x00\x00\x00\x11\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x5c\x00\x02\x00\x00\x00\x08\x00\x00\x00\x09\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00l\x00\x00\x00\x00\x00\x01\x00\x00?\xa4\
-\x00\x00\x01\x9d\xe2\xf2\xb5\xf8\
+\x00\x00\x01\x9d\xfaZ\x99\xe0\
 \x00\x00\x00\xa0\x00\x00\x00\x00\x00\x01\x00\x1f\xe7\x91\
 \x00\x00\x01\x8bX\x08O\x08\
 \x00\x00\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00\
-\x00\x00\x01\x9d\xe2\xf2\xb7I\
+\x00\x00\x01\x9d\xfaZ\x9b'\
 \x00\x00\x00 \x00\x01\x00\x00\x00\x01\x00\x00)\xba\
 \x00\x00\x01\x8bX\x08P=\
 \x00\x00\x00\x88\x00\x00\x00\x00\x00\x01\x00\x00PN\
@@ -220911,25 +221008,31 @@ qt_resource_struct = b"\
 \x00\x00\x01\x9d1|/\xb9\
 \x00\x00\x02\x0a\x00\x00\x00\x00\x00\x01\x00/[3\
 \x00\x00\x01\x9dO\xca\x22\xe7\
-\x00\x00\x0a\x0e\x00\x00\x00\x00\x00K\x003\x8e;\
-\x00\x00\x01\x8bX\x08O\xfd\
-\x00\x00\x0a\x0e\x00\x00\x00\x00\x00w\x003\xa5\x01\
-\x00\x00\x01\x8bX\x08O\xfe\
-\x00\x00\x0ad\x00\x00\x00\x00\x00K\x005~\x16\
+\x00\x00\x0a\x22\x00\x02\x00\x00\x00\x06\x00\x00\x01\x18\
+\x00\x00\x00\x00\x00\x00\x00\x00\
+\x00\x00\x0a\x0a\x00\x00\x00\x00\x00K\x003_Y\
+\x00\x00\x01\x9d\xe8H\xed\xef\
+\x00\x00\x0a\x0a\x00\x00\x00\x00\x00w\x003v\x83\
+\x00\x00\x01\x9d\xe8J>\x80\
+\x00\x00\x0a.\x00\x00\x00\x00\x00K\x003\x91!\
+\x00\x00\x01\x9d\xe8MW\x0c\
+\x00\x00\x0a.\x00\x00\x00\x00\x00w\x003\x98\xfc\
+\x00\x00\x01\x9d\xe8M\xd6\x90\
+\x00\x00\x09\xf4\x00\x01\x00\x00\x00K\x003Z\xd0\
+\x00\x00\x01\x9d\xe8?9O\
+\x00\x00\x09\xf4\x00\x01\x00\x00\x00w\x003]\x00\
+\x00\x00\x01\x9d\xe8>\xcaA\
+\x00\x00\x0aH\x00\x00\x00\x00\x00K\x003\xa2T\
 \x00\x00\x01\x8bX\x08O\xfc\
-\x00\x00\x0ad\x00\x00\x00\x00\x00w\x005\x85\xfd\
+\x00\x00\x0aH\x00\x00\x00\x00\x00w\x003\xbb\xea\
 \x00\x00\x01\x8bX\x08O\xfd\
-\x00\x00\x09\xf4\x00\x00\x00\x00\x00K\x003Z\xd0\
+\x00\x00\x0a\x86\x00\x00\x00\x00\x00K\x005C\x17\
 \x00\x00\x01\x8bX\x08O\xfc\
-\x00\x00\x09\xf4\x00\x00\x00\x00\x00w\x003tf\
+\x00\x00\x0a\x86\x00\x00\x00\x00\x00w\x005kr\
 \x00\x00\x01\x8bX\x08O\xfd\
-\x00\x00\x0aJ\x00\x00\x00\x00\x00K\x005,\x8a\
+\x00\x00\x0ab\x00\x00\x00\x00\x00K\x003\xd5\xbf\
 \x00\x00\x01\x8bX\x08O\xfc\
-\x00\x00\x0aJ\x00\x00\x00\x00\x00w\x005T\xe5\
-\x00\x00\x01\x8bX\x08O\xfd\
-\x00\x00\x0a&\x00\x00\x00\x00\x00K\x003\xbf2\
-\x00\x00\x01\x8bX\x08O\xfc\
-\x00\x00\x0a&\x00\x00\x00\x00\x00w\x004y\xde\
+\x00\x00\x0ab\x00\x00\x00\x00\x00w\x004\x90k\
 \x00\x00\x01\x8bX\x08O\xfd\
 "
 

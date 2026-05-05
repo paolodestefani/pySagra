@@ -64,15 +64,16 @@ CREATE TABLE setting (
     lunch_start_time                    integer NOT NULL DEFAULT 11,
     dinner_start_time                   integer NOT NULL DEFAULT 18,
     order_number_based_on               char(1) NOT NULL DEFAULT 'E', -- (E)vent, (D)ay, Day (P)art  
+    menu_description_on_menu_items      boolean NOT NULL DEFAULT False,
     -- order entry ui
 	order_entry_ui                      integer NOT NULL DEFAULT 0,
-    warning_background_color            char(7) DEFAULT '#F0F032',
+    warning_background_color            char(7) DEFAULT '#FFFF00',
     warning_text_color                  char(7) DEFAULT '#000000',
     warning_stock_level                 numeric(12, 2) NOT NULL DEFAULT 10,
-    critical_background_color           char(7) DEFAULT '#C80000',
+    critical_background_color           char(7) DEFAULT '#950606',
     critical_text_color                 char(7) DEFAULT '#FFFFFF',
     critical_stock_level                numeric(12, 2) NOT NULL DEFAULT 5,
-    disabled_background_color           char(7) DEFAULT '#CBCBCB',
+    disabled_background_color           char(7) DEFAULT '#C0C0C0',
     disabled_text_color                 char(7) DEFAULT '#000000',
     default_delivery_type               char(1) DEFAULT 'T', -- (T)able, take-(A)way
     default_payment_type                char(1) DEFAULT 'C', -- (C)ache or (E)lectronic

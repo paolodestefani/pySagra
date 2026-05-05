@@ -383,11 +383,28 @@ class EnhancedTableView(QTableView):
         "Insert a row in grid at the end"
         row = self.model().rowCount()
         success = self.model().insertRow(row)
-        index = self.model().createIndex(row, 0)
+        #index = self.model().createIndex(row, 0)
+        index = self.model().index(row, 0)
         self.scrollTo(index)
         self.setCurrentIndex(index)
-        self.edit(index)
+        #self.edit(index)
         return row
+    # def add(self) -> int:
+    #     "Insert a row in grid at the end"
+    #     model = self.model()
+    #     row = model.rowCount()
+        
+    #     if model.insertRow(row):
+    #         # Recuperiamo l'indice corretto dal modello
+    #         index = model.index(row, 0)
+            
+    #         self.scrollTo(index)
+    #         self.setCurrentIndex(index)
+            
+    #         # Aspettiamo il prossimo ciclo di eventi per avviare l'editing
+    #         QTimer.singleShot(0, lambda: self.edit(index))
+            
+    #     return row
 
     def remove(self) -> None:
         "Delete the current row"

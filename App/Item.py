@@ -179,17 +179,17 @@ class ItemForm(FormIndexManager):
         self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(setting['normal_text_color'] or '', _tr('Item', 'default'))] + COLORS))
         # mapper mappings
         self.ui.comboBoxType.setFunction(itemType)
-        self.mapper.addMapping(self.ui.comboBoxType, TYPE, b"modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxType, TYPE) #, "modelDataStr")
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.mapper.addMapping(self.ui.lineEditCustomerDescription, CUSTOMER_DESCRIPTION)
         self.ui.comboBoxDepartment.setFunction(department_lookup)
-        self.mapper.addMapping(self.ui.comboBoxDepartment, DEPARTMENT, b"modelDataInt")
+        self.mapper.addMapping(self.ui.comboBoxDepartment, DEPARTMENT) #, "modelDataInt")
         self.mapper.addMapping(self.ui.spinBoxRow, ROW)
         self.mapper.addMapping(self.ui.spinBoxColumn, COLUMN)
         self.mapper.addMapping(self.ui.spinBoxSorting, SORTING)
         #self.mapper.addMapping(self.ui.doubleSpinBoxPrice, PRICE, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.comboBoxNormalTextColor, NORMALTXTCOLOR, b"modelDataStr")
-        self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, NORMALBCKCOLOR, b"modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxNormalTextColor, NORMALTXTCOLOR) #, "modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, NORMALBCKCOLOR) #, "modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxVariants, VARIANTS)
         self.mapper.addMapping(self.ui.checkBoxInventoryControl, STOCK)
         self.mapper.addMapping(self.ui.checkBoxDeliveredControl, DELIVERED)
@@ -279,9 +279,9 @@ class ItemForm(FormIndexManager):
         for so, (vd, pd) in enumerate(get_variants(dlg.ui.comboBoxItems.currentData()), 1):
             model.insertRows(model.rowCount(), 1)
             modelRow = model.rowCount() - 1
-            model.setData(model.createIndex(modelRow, VDESC), vd)
-            model.setData(model.createIndex(modelRow, VSORT), so)
-            model.setData(model.createIndex(modelRow, VPRICE), pd)
+            model.setData(model.index(modelRow, VDESC), vd)
+            model.setData(model.index(modelRow, VSORT), so)
+            model.setData(model.index(modelRow, VPRICE), pd)
 
     def itemTypeChanged(self, index):
         if self.ui.comboBoxType.modelDataStr == 'K':
