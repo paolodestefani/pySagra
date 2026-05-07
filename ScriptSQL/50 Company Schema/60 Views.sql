@@ -201,42 +201,22 @@ SELECT
         CASE
             WHEN oh.delivery = 'A' AND oh.stat_order_day_part = 'L' THEN oh.total_amount
             ELSE 0
-        END)                AS tot_take_away_lunch,
+        END)                AS take_away_lunch,
     sum(
         CASE
             WHEN oh.delivery = 'A' AND oh.stat_order_day_part = 'D' THEN oh.total_amount
             ELSE 0
-        END)                AS tot_take_away_dinner,
+        END)                AS take_away_dinner,
     sum(
         CASE
             WHEN oh.delivery = 'T' AND oh.stat_order_day_part = 'L' THEN oh.total_amount
             ELSE 0
-        END)                AS tot_table_lunch,
+        END)                AS table_lunch,
     sum(
         CASE
             WHEN oh.delivery = 'T' AND oh.stat_order_day_part = 'D' THEN oh.total_amount
             ELSE 0
-        END)                AS tot_table_dinner,
-    sum(
-        CASE
-            WHEN oh.is_electronic_payment IS false AND oh.stat_order_day_part = 'L' THEN oh.total_amount
-            ELSE 0
-        END)                AS tot_cash_lunch,
-    sum(
-        CASE
-            WHEN oh.is_electronic_payment IS false AND oh.stat_order_day_part = 'D' THEN oh.total_amount
-            ELSE 0
-        END)                AS tot_cash_dinner,
-    sum(
-        CASE
-            WHEN oh.is_electronic_payment IS true AND oh.stat_order_day_part = 'L' THEN oh.total_amount
-            ELSE 0
-        END)                AS tot_electronic_lunch,
-    sum(
-        CASE
-            WHEN oh.is_electronic_payment IS true AND oh.stat_order_day_part = 'D' THEN oh.total_amount
-            ELSE 0
-        END)                AS tot_electronic_dinner,
+        END)                AS table_dinner,
     sum(
         CASE
             WHEN oh.stat_order_day_part = 'L' THEN oh.total_amount
@@ -259,18 +239,38 @@ SELECT
         END)                AS discount_dinner,
     sum(
         CASE
-            WHEN oh.stat_order_day_part = 'L' THEN oh.total_amount - oh.discount
+            WHEN oh.is_electronic_payment IS true AND oh.stat_order_day_part = 'L' THEN oh.total_amount - oh.discount
+            ELSE 0
+        END)                AS electronic_lunch,
+    sum(
+        CASE
+            WHEN oh.is_electronic_payment IS true AND oh.stat_order_day_part = 'D' THEN oh.total_amount - oh.discount
+            ELSE 0
+        END)                AS electronic_dinner,
+	sum(
+        CASE
+            WHEN oh.is_electronic_payment IS false AND oh.stat_order_day_part = 'L' THEN oh.total_amount - oh.discount
             ELSE 0
         END)                AS cash_lunch,
     sum(
         CASE
+            WHEN oh.is_electronic_payment IS false AND oh.stat_order_day_part = 'D' THEN oh.total_amount - oh.discount
+            ELSE 0
+        END)                AS cash_dinner,
+	sum(
+        CASE
+            WHEN oh.stat_order_day_part = 'L' THEN oh.total_amount - oh.discount
+            ELSE 0
+        END)                AS total_lunch,
+	sum(
+        CASE
             WHEN oh.stat_order_day_part = 'D' THEN oh.total_amount - oh.discount
             ELSE 0
-        END)                AS cash_dinner
-   FROM order_header oh
-   JOIN event ev ON oh.event_id = ev.event_id
-   GROUP BY oh.company_id, oh.event_id, ev.description, ev.start_date, ev.end_date, oh.stat_order_date
-   ORDER BY oh.company_id, ev.description, oh.stat_order_date;
+        END)                AS total_dinner
+FROM order_header oh
+JOIN event ev ON oh.event_id = ev.event_id
+GROUP BY oh.company_id, oh.event_id, ev.description, ev.start_date, ev.end_date, oh.stat_order_date
+ORDER BY oh.company_id, ev.description, oh.stat_order_date;
 
 COMMENT ON VIEW vw_sales_summary IS 
     'Sales summary view';

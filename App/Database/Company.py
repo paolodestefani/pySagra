@@ -56,13 +56,13 @@ FROM system.company;"""
 
 def company_is_in_use(company: int) -> bool:
     "Return True if the company is currently in use"
-    script = """
+    script = t"""
 SELECT company_id 
 FROM system.connection 
-WHERE company_id = %s;"""
+WHERE company_id = {company};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (company,))
+            cur.execute(script)
             return bool(cur.rowcount)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
@@ -72,11 +72,7 @@ def create_company(company_id: int, company_desc: str, company_image: bytes|None
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute('SELECT system.pa_company_create(%s, %s, %s, %s);',
-                            (company_id,
-                             company_desc,
-                             False,  # system company always false
-                             company_image))
+                cur.execute(t'SELECT system.pa_company_create({company_id}, {company_desc}, {False}, {company_image});')
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
@@ -85,24 +81,29 @@ def drop_company(company_id: int) -> None:
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute('SELECT system.pa_company_drop(%s)', (company_id,))
+                cur.execute(t'SELECT system.pa_company_drop({company_id});')
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def set_company_access(company_id: int, user_code: str, profile_code: str, menu_code: str, toolbar_code: str)-> None:
     "Set access company for one user to the given company"
-    script = """
+    script = t"""
 INSERT INTO system.app_user_company (
     company_id,
     app_user_code,
     profile_code,
     menu_code,
     toolbar_code)
-VALUES (%s, %s, %s, %s, %s);"""
+VALUES (
+    {company_id},
+    {user_code}, 
+    {profile_code}, 
+    {menu_code}, 
+    {toolbar_code});"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (company_id, user_code, profile_code, menu_code, toolbar_code))
+                cur.execute(script)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 

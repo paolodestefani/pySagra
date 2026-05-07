@@ -615,7 +615,7 @@
              <item>
               <widget class="QGroupBox" name="groupBox">
                <property name="title">
-                <string>Report</string>
+                <string>Report class / Report</string>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout">
                 <item>

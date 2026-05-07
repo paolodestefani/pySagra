@@ -633,16 +633,16 @@ def createActionDictionary(mw) -> None:
         QAction.MenuRole.TextHeuristicRole)
 
     # statistics
-    actionDefinition['app_statistics_analysis'] = (
-        _tr("Action", 'Pivot table analysis'),
-        statisticsAnalysis,
-        False,
-        'statistics_statistic',
-        None,
-        _tr("Action", 'Pivot table analysis'),
-        _tr("Action", 'Pivot table analysis'),
-        _tr("Action", 'Pivot table analysis'),
-        QAction.MenuRole.TextHeuristicRole)
+    # actionDefinition['app_statistics_analysis'] = (
+    #     _tr("Action", 'Pivot table analysis'),
+    #     statisticsAnalysis,
+    #     False,
+    #     'statistics_statistic',
+    #     None,
+    #     _tr("Action", 'Pivot table analysis'),
+    #     _tr("Action", 'Pivot table analysis'),
+    #     _tr("Action", 'Pivot table analysis'),
+    #     QAction.MenuRole.TextHeuristicRole)
 
     actionDefinition['app_statistics_print'] = (
         _tr("Action", 'Print statistics'),

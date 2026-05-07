@@ -41,16 +41,16 @@ from App.Database.Connect import appconn
 
 def get_cash_desk_description() -> str|None:
     "Get desk description for current computer name"
-    sql = """
+    script = t"""
 SELECT
     cash_desk_description
 FROM cash_desk
 WHERE
     company_id = system.pa_current_company()
-    AND computer = %s;"""
+    AND computer = {QHostInfo.localHostName()};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(sql, (QHostInfo.localHostName(),))
+            cur.execute(script)
             result = cur.fetchone()
             if result:
                 return result[0]

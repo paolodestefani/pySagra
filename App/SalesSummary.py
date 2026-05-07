@@ -60,10 +60,10 @@ from App.Widget.Dialog import EventFilterDialog
  COVERS_L, COVERS_D, COVERS,
  TAKEAWAY_L, TAKEAWAY_D, TAKEAWAY,
  TABLE_L, TABLE_D, TABLE,
- CASH_L, CASH_D, CASH,
- ELECTRONIC_L, ELECTRONIC_D, ELECTRONIC,
  AMOUNT_L, AMOUNT_D, AMOUNT,
  DISCOUNT_L, DISCOUNT_D, DISCOUNT,
+ ELECTRONIC_L, ELECTRONIC_D, ELECTRONIC,
+ CASH_L, CASH_D, CASH,
  TOTAL_L, TOTAL_D, TOTAL) = range(30)
 
 
@@ -98,7 +98,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.view = self.ui.tableView # required for formviewmanager
-        self.ui.tableView.setLayoutName('salesSummary')
+        self.ui.tableView.setLayoutName('SalesSummary')
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
         self.ui.tableView.setItemDelegateForColumn(TAKEAWAY_L, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TAKEAWAY_D, AmountDelegate(self))
@@ -106,18 +106,18 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.ui.tableView.setItemDelegateForColumn(TABLE_L, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TABLE_D, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TABLE, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(CASH_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(CASH_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(CASH, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(AMOUNT_L, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(AMOUNT_D, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(AMOUNT, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(DISCOUNT_L, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(DISCOUNT_D, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(DISCOUNT, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC_L, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC_D, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(CASH_L, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(CASH_D, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(CASH, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TOTAL_L, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TOTAL_D, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(TOTAL, AmountDelegate(self))
@@ -147,14 +147,14 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
             self.ui.tableView.setColumnHidden(TAKEAWAY_D, True)
             self.ui.tableView.setColumnHidden(TABLE_L, True)
             self.ui.tableView.setColumnHidden(TABLE_D, True)
-            self.ui.tableView.setColumnHidden(CASH_L, True)
-            self.ui.tableView.setColumnHidden(CASH_D, True)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_L, True)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_D, True)
             self.ui.tableView.setColumnHidden(AMOUNT_L, True)
             self.ui.tableView.setColumnHidden(AMOUNT_D, True)
             self.ui.tableView.setColumnHidden(DISCOUNT_L, True)
             self.ui.tableView.setColumnHidden(DISCOUNT_D, True)
+            self.ui.tableView.setColumnHidden(ELECTRONIC_L, True)
+            self.ui.tableView.setColumnHidden(ELECTRONIC_D, True)
+            self.ui.tableView.setColumnHidden(CASH_L, True)
+            self.ui.tableView.setColumnHidden(CASH_D, True)
             self.ui.tableView.setColumnHidden(TOTAL_L, True)
             self.ui.tableView.setColumnHidden(TOTAL_D, True)
         else:
@@ -166,14 +166,14 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
             self.ui.tableView.setColumnHidden(TAKEAWAY_D, False)
             self.ui.tableView.setColumnHidden(TABLE_L, False)
             self.ui.tableView.setColumnHidden(TABLE_D, False)
-            self.ui.tableView.setColumnHidden(CASH_L, False)
-            self.ui.tableView.setColumnHidden(CASH_D, False)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_L, False)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_D, False)
             self.ui.tableView.setColumnHidden(AMOUNT_L, False)
             self.ui.tableView.setColumnHidden(AMOUNT_D, False)
             self.ui.tableView.setColumnHidden(DISCOUNT_L, False)
             self.ui.tableView.setColumnHidden(DISCOUNT_D, False)
+            self.ui.tableView.setColumnHidden(ELECTRONIC_L, False)
+            self.ui.tableView.setColumnHidden(ELECTRONIC_D, False)
+            self.ui.tableView.setColumnHidden(CASH_L, False)
+            self.ui.tableView.setColumnHidden(CASH_D, False)
             self.ui.tableView.setColumnHidden(TOTAL_L, False)
             self.ui.tableView.setColumnHidden(TOTAL_D, False)
 

@@ -43,14 +43,24 @@ def create_adaptation(adapt_type: str,
                       report_id: int|None = None,
                       system: bool = False) -> int:
     "Create a new adaptation returning the id"
-    script = """
-INSERT INTO system.adaptation (type, class, description, report_id, is_system_object)
-VALUES (%s, %s, %s, %s, %s)
+    script = t"""
+INSERT INTO system.adaptation (
+    type,
+    class,
+    description,
+    report_id,
+    is_system_object)
+VALUES (
+    {adapt_type},
+    {adapt_class}, 
+    {description}, 
+    {report_id},
+    {system})
 RETURNING adaptation_id;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (adapt_type, adapt_class, description, report_id, system))
+                cur.execute(script) #, (adapt_type, adapt_class, description, report_id, system))
                 result = next(cur, None)
                 if result:
                     return result[0]
@@ -61,15 +71,15 @@ RETURNING adaptation_id;"""
 
 def is_system_object(adapt_id: int) -> int|None:
     "Check if the adaptation id is a system object"
-    script = """
+    script = t"""
 SELECT adaptation_id
 FROM system.adaptation
-WHERE adaptation_id = %s
+WHERE adaptation_id = {adapt_id}
     AND is_system_object IS true;"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (adapt_id,))
+                cur.execute(script)#, (adapt_id,))
                 if cur.rowcount > 0:
                     return True
                 else:
@@ -80,9 +90,9 @@ WHERE adaptation_id = %s
 def delete_adaptation(adapt_id: int) -> None:
     "Delete adaptation of given id"
     # also delete adaptation settings (cascade)
-    script1 = """
+    script1 = t"""
 DELETE FROM system.adaptation
-WHERE adaptation_id = %s
+WHERE adaptation_id = {adapt_id}
     AND is_system_object = false;"""
     script2 = """
 SELECT setval(
@@ -99,7 +109,7 @@ SELECT setval(
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script1, (adapt_id,))
+                cur.execute(script1)#, (adapt_id,))
                 cur.execute(script2)
                 cur.execute(script3)
     except psycopg.Error as er:
@@ -138,18 +148,20 @@ SELECT setval(
 
 def list_adaptation(adapt_type: str, adapt_class: str) -> list:
     "Get available adaptations for the given type and class"
-    script = """ 
+    script = t""" 
 SELECT
     adaptation_id,
     description,
     is_default_for_class
 FROM system.adaptation
-WHERE type = %s AND class = %s
+WHERE 
+        type  = {adapt_type}
+    AND class = {adapt_class}
 ORDER BY class_sorting;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (adapt_type, adapt_class))
+                cur.execute(script)#, (adapt_type, adapt_class))
                 return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
@@ -207,6 +219,7 @@ ORDER BY adaptation_setting_id;"""
     
 def import_adaptation(adaptations: list, adaptsettings: list) -> None:
     "Import all records in adaptation and adaptation_setting tables"
+    # for executemany t-strings are useless
     script1 = """
 DELETE FROM system.adaptation;""" # also delete adaptation settings (cascade)
     script2 = """
@@ -267,14 +280,14 @@ SELECT setval(
 
 def get_adapt_limit(adapt_id: int) -> int|None:
     "Get row count limit for adaptation_id"
-    script = """
+    script = t"""
 SELECT 
     row_count_limit
 FROM system.adaptation
-WHERE adaptation_id = %s;"""
+WHERE adaptation_id = {adapt_id};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (adapt_id,))
+            cur.execute(script)#, (adapt_id,))
             result = next(cur, None)
             if result:
                 return result[0]
@@ -285,20 +298,20 @@ WHERE adaptation_id = %s;"""
 
 def set_adapt_limit(adapt_id: int, limit: int|None) -> None:
     "Set row count limit for adaptation_id"
-    script = """
+    script = t"""
 UPDATE system.adaptation
-SET row_count_limit = %s
-WHERE adaptation_id = %s;"""
+SET row_count_limit = {limit}
+WHERE adaptation_id = {adapt_id};"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (limit, adapt_id))
+                cur.execute(script)#, (limit, adapt_id))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
 def get_adapt_setting(adapt_id: int) -> tuple[list, list, list]:
     "Get available adaptation settings for the given id"
-    script = """
+    script = t"""
 SELECT 
     element_type,
     layout_row,
@@ -307,12 +320,12 @@ SELECT
     combo2_index,
     widget_value
 FROM system.adaptation_setting
-WHERE adaptation_id = %s
+WHERE adaptation_id = {adapt_id}
 ORDER BY layout_row;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (adapt_id,))
+                cur.execute(script)#, (adapt_id,))
                 if cur.rowcount == 0:
                     return [], [], []  # no customization
                 else:
@@ -326,10 +339,11 @@ ORDER BY layout_row;"""
 
 def set_adapt_setting(adapt_id: int, columns: list[tuple]) -> None:
     "Set available adaptation settings for the given id"
+    # for executemany t-strings are useless
     # delete all settings for adapt_id
-    script1 = """
+    script1 = t"""
 DELETE FROM system.adaptation_setting
-WHERE adaptation_id = %s;"""
+WHERE adaptation_id = {adapt_id};"""
     # insert new settings
     script2 = """
 INSERT INTO system.adaptation_setting (
@@ -348,21 +362,21 @@ VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script1, (adapt_id,))
+                cur.execute(script1)#, (adapt_id,))
                 cur.executemany(script2, columns)
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
 def get_adapt_sorting(adapt_id: int) -> int:
     "Returns adaptation sorting index"
-    script = """
+    script = t"""
 SELECT class_sorting
 FROM system.adaptation
-WHERE adaptation_id = %s;"""
+WHERE adaptation_id = {adapt_id};"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (adapt_id,))
+                cur.execute(script)#, (adapt_id,))
                 result = next(cur, None)
                 if result:
                     return result[0]
@@ -373,27 +387,29 @@ WHERE adaptation_id = %s;"""
 
 def set_adapt_sorting(adapt_id: int, sorting: int) -> None:
     "Set adaptation sorting index"
-    script = """
+    script = t"""
 UPDATE system.adaptation
-SET class_sorting = %s
-WHERE adaptation_id = %s;"""
+SET class_sorting = {sorting}
+WHERE adaptation_id = {adapt_id};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (sorting, adapt_id))
+                cur.execute(script)#, (sorting, adapt_id))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
 def get_adapt_class_default(adapt_type: str, adapt_class: str) -> int|None:
     "Get the default adaptation_id for type and class"
-    script = """
+    script = t"""
 SELECT adaptation_id
 FROM system.adaptation
-WHERE type = %s AND class = %s;"""
+WHERE 
+        type  = {adapt_type} 
+    AND class = {adapt_class};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (adapt_type, adapt_class))
+                cur.execute(script)#, (adapt_type, adapt_class))
                 result = next(cur, None)
                 if result:
                     return result[0]
@@ -404,41 +420,45 @@ WHERE type = %s AND class = %s;"""
     
 def set_adapt_class_default(adapt_id: int) -> None:
     "Set the adaptation class default for type/class"
-    script1 = """
-SELECT type, class FROM system.adaptation
-WHERE adaptation_id = %s;"""
+    script1 = t"""
+SELECT type, class 
+FROM system.adaptation
+WHERE adaptation_id = {adapt_id};"""
     script2 = """
 UPDATE system.adaptation
 SET is_default_for_class = false
 WHERE type = %s AND class = %s;"""
-    script3 = """
+    script3 = t"""
 UPDATE system.adaptation
 SET is_default_for_class = true
-WHERE adaptation_id = %s;"""
+WHERE adaptation_id = {adapt_id};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script1, (adapt_id,))
+                cur.execute(script1)#, (adapt_id,))
                 result = next(cur, None)
                 if not result:
                     return None
                 adapt_type = result[0]
                 adapt_class = result[1]
                 cur.execute(script2, (adapt_type, adapt_class))
-                cur.execute(script3, (adapt_id,))
+                cur.execute(script3)#, (adapt_id,))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
     
 def get_adapt_user_default(adapt_type: str, adapt_class: str, user: str) -> int|None:
     "Get the default adaptation if any for type/class/user"
-    script = """
+    script = t"""
 SELECT adaptation_id
 FROM system.adaptation_user_default
-WHERE type = %s AND class = %s AND app_user_code = %s;"""
+WHERE 
+        type  = {adapt_type}
+    AND class = {adapt_class}
+    AND app_user_code = {user};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (adapt_type, adapt_class, user))
+                cur.execute(script)#, (adapt_type, adapt_class, user))
                 result = next(cur, None)
                 if result:
                     return result[0]
@@ -449,22 +469,28 @@ WHERE type = %s AND class = %s AND app_user_code = %s;"""
     
 def get_adapt_default(adapt_type: str, adapt_class: str, user: str) -> int|None:
     "Get the default adaptation if any for type/class/user or type/class"
-    script1 = """
+    script1 = t"""
 SELECT adaptation_id
 FROM system.adaptation_user_default
-WHERE type = %s AND class = %s AND app_user_code = %s;"""
-    script2 = """
+WHERE 
+        type = {adapt_type}
+    AND class = {adapt_class}
+    AND app_user_code = {user};"""
+    script2 = t"""
 SELECT adaptation_id
 FROM system.adaptation
-WHERE type = %s AND class = %s AND is_default_for_class IS true;"""
+WHERE 
+        type = {adapt_type}
+    AND class = {adapt_class}
+    AND is_default_for_class IS true;"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script1, (adapt_type, adapt_class, user))
+                cur.execute(script1)#, (adapt_type, adapt_class, user))
                 result = next(cur, None)
                 if result:
                     return result[0]
-                cur.execute(script2, (adapt_type, adapt_class))
+                cur.execute(script2)#, (adapt_type, adapt_class))
                 result = next(cur, None)
                 if result:
                     return result[0]
@@ -474,43 +500,55 @@ WHERE type = %s AND class = %s AND is_default_for_class IS true;"""
     
 def set_adapt_user_default(adapt_type: str, adapt_class: str, user: str, adapt_id: int) -> None:
     "Set given adaptation the default for user"
-    script1 = """
+    script1 = t"""
 DELETE FROM system.adaptation_user_default 
-WHERE type = %s AND class = %s AND app_user_code = %s;"""
-    script2 = """
-INSERT INTO system.adaptation_user_default (type, class, app_user_code, adaptation_id)
-VALUES (%s, %s, %s, %s);"""
+WHERE 
+        type = {adapt_type} 
+    AND class = {adapt_class}
+    AND app_user_code = {user};"""
+    script2 = t"""
+INSERT INTO system.adaptation_user_default (
+    type, 
+    class, 
+    app_user_code, 
+    adaptation_id)
+VALUES (
+    {adapt_type},
+    {adapt_class},
+    {user},
+    {adapt_id});"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script1, (adapt_type, adapt_class, user))
-                cur.execute(script2, (adapt_type, adapt_class, user, adapt_id))
+                cur.execute(script1)#, (adapt_type, adapt_class, user))
+                cur.execute(script2)#, (adapt_type, adapt_class, user, adapt_id))
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def get_view_columns(adaptation_id: int) -> list[tuple]:
+def get_view_columns(adapt_id: int) -> list[tuple]:
     "Returns the view definition"
-    script = """
+    script = t"""
 SELECT 	
     column_number,
     sorting,
     is_visible,
     size
 FROM system.adaptation_setting
-WHERE adaptation_id = %s
+WHERE adaptation_id = {adapt_id}
 ORDER BY sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (adaptation_id,))
+            cur.execute(script)#, (adapt_id,))
             return cur.fetchall()
     except psycopg.Error as er:
         raise PyAppDBError(er.diag.sqlstate, str(er))
 
-def set_view_columns(adaptation_id: int, columns: list[tuple]) -> None:
+def set_view_columns(adapt_id: int, columns: list[tuple]) -> None:
     "Set the view definition"
-    script1 = """
+    # for executemany t-strings are useless
+    script1 = t"""
 DELETE FROM system.adaptation_setting
-WHERE adaptation_id = %s;"""
+WHERE adaptation_id = {adapt_id};"""
     script2 = """
 INSERT INTO system.adaptation_setting (
     adaptation_id,
@@ -522,7 +560,7 @@ VALUES (%s, %s, %s, %s, %s);"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script1, (adaptation_id,))
+                cur.execute(script1)#, (adaptation_id,))
                 cur.executemany(script2, columns)
     except psycopg.Error as er:
         sqlstate = er.diag.sqlstate if er.diag else "Unknown"
