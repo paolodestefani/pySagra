@@ -25,12 +25,19 @@
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 
@@ -61,77 +68,82 @@ ORDER BY sorting;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er)) 
 
 def get_department(desc: str) -> int:
     "Returns department id of given department description"
-    script = """
+    script = t"""
 SELECT department_id 
 FROM department 
 WHERE 
     company_id = system.pa_current_company()
-    AND description = %s;"""
+    AND description = {desc};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (desc,))
+            cur.execute(script)
             return cur.fetchall()[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er)) 
 
 def get_department_desc(dep: int) -> str|None:
     "Returns department description of given department id"
-    script = """
+    script = t"""
 SELECT description 
 FROM department 
-WHERE department_id = %s;"""
+WHERE department_id = {dep};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (dep,))
+            cur.execute(script)
             result = next(cur, None)
             if result:
                 return result[0]
             else:
                 return None # should not happen
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_department_barcode(dep: int) -> str | None:
     "Returns department barcode of given department id"
-    script = """
+    script = t"""
 SELECT chr(cast(count(*) + 64 as integer)) AS n 
 FROM company.department 
-WHERE department_id <= %s
+WHERE department_id <= {dep}
     AND company_id = system.pa_current_company();"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (dep,))
+            cur.execute(script)
             result = next(cur, None)
             if result:
                 return result[0]
             else:
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_department_printer_class(dep: int) -> int | None:
     "Returns the printer class for dep department"
-    script = """
+    script = t"""
 SELECT printer_class_id
 FROM department
 WHERE 
-    department_id = %s 
+    department_id = {dep} 
     AND is_obsolete IS false 
     AND is_menu_container IS false;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (dep,))
+            cur.execute(script)
             result = next(cur, None)
             if result:
                 return result[0]
             else:                
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def department_takeaway_list()-> list[str]:
     "Returns a list of departments enabled for take away"
@@ -149,4 +161,5 @@ WHERE
             else:
                 return []
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

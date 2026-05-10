@@ -104,7 +104,7 @@ class EventForm(FormIndexManager):
         self.ui = Ui_EventWidget()
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('event')
+        self.ui.tableView.setLayoutName('EventIndex')
         # signal slot connections
         self.ui.pushButtonUpload.clicked.connect(self.upload)
         self.ui.pushButtonDownload.clicked.connect(self.download)

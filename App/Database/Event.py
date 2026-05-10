@@ -25,10 +25,11 @@
 
 This module provide all the facilities to manage events
 
-
 """
+
 # standard library
 from typing import Any
+import logging
 
 # psycopg
 import psycopg
@@ -41,60 +42,67 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 def get_event_data(event: int) -> Any:
     "Get event data"
-    sql = """
+    script = t"""
 SELECT
     description,
     start_date,
     end_date,
     price_list_id
 FROM event
-WHERE event_id = %s;"""
+WHERE event_id = {event};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(sql, (event,))
+            cur.execute(script)
             return next(cur, None)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))   
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))  
 
 def is_used(event: int) -> bool:
     "Returns True if have orders for the given event"
-    sql = """
+    script = t"""
 SELECT EXISTS(
     SELECT event_id 
     FROM order_header 
-    WHERE event_id = %s 
+    WHERE event_id = {event} 
     LIMIT 1);"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(sql, (event,))
+            cur.execute(script)
             result = next(cur, None)
             if result:
                 return result[0]
             else:
                 return False
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_event_from_date(date: QDate) -> tuple[int, str] | None:
     "Get event id from QDate or QDateTime"
-    sql = """
+    script = t"""
 SELECT 
     event_id,
     description
 FROM event
 WHERE
-    company_id = system.pa_current_company()
-    AND start_date <= %s AND end_date >= %s;"""
+        company_id = system.pa_current_company()
+    AND start_date <= {date} AND end_date >= {date};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(sql, (date, date))
+            cur.execute(script)
             result = next(cur, None)
             if result:
                 return result
             else:
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 

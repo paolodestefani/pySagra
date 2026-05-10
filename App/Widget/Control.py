@@ -792,7 +792,7 @@ class Counter(QLineEdit):
         # stylesheet for normal and limit reached states
         self.setStyleSheet("""
             QLineEdit {
-                border: 2px solid;
+                border: 1px solid;
                 border-radius: 4px;
             }
             QLineEdit[limit="true"] {

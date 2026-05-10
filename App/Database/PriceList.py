@@ -28,6 +28,9 @@ This module provide all the facilities to manage price lists
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -36,28 +39,39 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def duplicate_price_list(from_id: int, new_description: str) -> None:
     "Create a new price list copying prices from another"
     # create a new price list
-    sql1 = """
+    script1 = t"""
 INSERT INTO price_list (description) 
-VALUES (%(description)s) RETURNING price_list_id;"""
+VALUES ({new_description}) 
+RETURNING price_list_id;"""
 # copy prices from another price list
-    sql2 = """
-INSERT INTO price_list_item (price_list_id, item_id, price)
-SELECT %(new_id)s, item_id, price
+    script2 = t"""
+INSERT INTO price_list_item (
+    price_list_id,
+    item_id,
+    price)
+SELECT 
+    {new_id},
+    item_id,
+    price
 FROM price_list_item
-WHERE price_list_id = %(from_id)s;"""
+WHERE price_list_id = {from_id};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(sql1, {'description': new_description})
+                cur.execute(script1)
                 new_id = next(cur)
                 if new_id is None:
                     raise PyAppDBError("02000", "No id returned from database when creating new price list")
                 else:
                     new_id = new_id[0]
-                cur.execute(sql2, {'new_id': new_id, 'from_id': from_id})
+                cur.execute(script2)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er)) 
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

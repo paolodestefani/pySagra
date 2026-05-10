@@ -28,6 +28,9 @@ This module provide all the facilities to manage connections
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -36,6 +39,9 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def pa_setting(setting: str) -> str|None:
     "Get current value of the system setting parameter"
@@ -43,14 +49,15 @@ def pa_setting(setting: str) -> str|None:
     setting = str(setting)
     try:
         with appconn.cursor() as cur:
-            cur.execute('SELECT * FROM system.pa_setting(%s);', (setting,))
+            cur.execute(t'SELECT * FROM system.pa_setting({setting});')
             result = cur.fetchone()
             if result:
                 return result[0]
             else:
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def pa_setting_set(setting: str, value: str|None) -> None:
     "Set the privided setting parameter to value"
@@ -61,7 +68,7 @@ def pa_setting_set(setting: str, value: str|None) -> None:
     try:
         #with appconn.transaction():
         with appconn.cursor() as cur:
-            cur.execute('SELECT system.pa_setting_set(%s, %s);',
-                        (setting, value))
+            cur.execute(t'SELECT system.pa_setting_set({setting}, {value});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

@@ -163,7 +163,7 @@ class ItemForm(FormIndexManager):
         # tableView
         # set index view
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('item')
+        self.ui.tableView.setLayoutName('ItemIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
         self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_lookup))
@@ -201,20 +201,20 @@ class ItemForm(FormIndexManager):
         self.mapper.addMapping(self.ui.checkBoxObsolete, OBSOLETE)
         # tabwidget tabs and tableview
         self.ui.tableViewVariants.setModel(modelv)
-        self.ui.tableViewVariants.setLayoutName('itemVariant')
+        self.ui.tableViewVariants.setLayoutName('ItemVariant')
         self.ui.tableViewVariants.setItemDelegateForColumn(VPRICE, AmountDelegate(self))
         self.ui.tableViewVariants.setItemDelegateForColumn(VDESC, GenericDelegate(self))
         self.ui.tableViewVariants.setItemDelegateForColumn(VSORT, GenericDelegate(self))
         self.ui.tableViewComponents.setModel(modelk)
-        self.ui.tableViewComponents.setLayoutName('itemComponent')
+        self.ui.tableViewComponents.setLayoutName('ItemComponent')
         self.ui.tableViewComponents.setItemDelegateForColumn(KPART, RelationDelegate(self, kit_part_lookup))
         self.ui.tableViewComponents.setItemDelegateForColumn(KQTA, QuantityDelegate(self))
         self.ui.tableViewMenuItems.setModel(modelm)
-        self.ui.tableViewMenuItems.setLayoutName('itemMenu')
+        self.ui.tableViewMenuItems.setLayoutName('ItemMenu')
         self.ui.tableViewMenuItems.setItemDelegateForColumn(MPART, RelationDelegate(self, menu_part_lookup))
         self.ui.tableViewMenuItems.setItemDelegateForColumn(MQTA, QuantityDelegate(self))
         self.ui.tableViewPrices.setModel(modelp)
-        self.ui.tableViewPrices.setLayoutName('itemPrice')
+        self.ui.tableViewPrices.setLayoutName('ItemPrice')
         self.ui.tableViewPrices.setItemDelegateForColumn(PLIST, RelationDelegate(self, price_list_lookup))
         self.ui.tableViewPrices.setItemDelegateForColumn(PPRICE, AmountDelegate(self))
         # self.toFirst() not here because we need to set models first

@@ -87,6 +87,7 @@ from App.Widget.Delegate import HideTextDelegate
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import IntegerDelegate
 from App.Widget.TableWidget import TableWidgetItem
+from App.Widget.Dialog import MessageBoxCritical
 
 from App.Ui.ViewSettingsDialog import Ui_ViewSettingsDialog
 
@@ -572,9 +573,11 @@ class EnhancedTableView(QTableView):
         try:
             viewId = create_adaptation('I', self.layoutName, viewDesc, None)
         except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 "{}\n{}".format(er.code, er.message))
+            MessageBoxCritical(self,
+                               _tr("MessageDialog", "Database error"),
+                               er.code,
+                               er.message,
+                               er.detail)
         else:
             # recreate customization list
             self.fillCustomizationMenu()

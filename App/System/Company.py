@@ -122,7 +122,7 @@ class CompanyForm(FormIndexManager):
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         # table view
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('company')  # after setting model
+        self.ui.tableView.setLayoutName('CompanyIndex')  # after setting model
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(COMP_IMAGE, ImageDelegate(self))
         # mapper mappings
@@ -135,7 +135,7 @@ class CompanyForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # user company
         self.ui.userTableView.setModel(model2)
-        self.ui.userTableView.setLayoutName('userCompany')
+        self.ui.userTableView.setLayoutName('CompanyUser')
         self.ui.userTableView.setItemDelegateForColumn(UC_USER, RelationDelegate(self, user_lookup))
         self.ui.userTableView.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_lookup))
         self.ui.userTableView.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_lookup))

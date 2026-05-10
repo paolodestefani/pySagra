@@ -97,13 +97,13 @@ class PrinterForm(FormIndexManager):
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         # set index view, index model will be automatically connected
-        self.ui.tableView.setLayoutName('printer')
+        self.ui.tableView.setLayoutName('PrinterIndex')
         self.setIndexView(self.ui.tableView)
         # mapper mappings
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         # printers detail
         self.ui.printersTableView.setModel(pdModel)
-        self.ui.printersTableView.setLayoutName('classPrinter')
+        self.ui.printersTableView.setLayoutName('Printer')
         self.ui.printersTableView.setItemDelegateForColumn(P_COMPUTER, ReadOnlyDelegate(self))
         # get host name
         self.hostName = QHostInfo.localHostName()

@@ -28,6 +28,9 @@ used by delegates and combo boxes
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -36,6 +39,10 @@ from App import session
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 from App.Database.Report import get_report_list
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 def get_list(query):
@@ -50,7 +57,8 @@ def get_list(query):
                 records = cur.fetchall()
                 return records
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def abstract_lookup(code: str,
@@ -62,13 +70,14 @@ def abstract_lookup(code: str,
     """Get a list of code, description values from a table. 
     Condition and order by are optional.
     Null=True add a null value item at the beginning of the list"""
+    # t-strings in this context looks unusable
     script = f"SELECT {code}, {description} FROM {table}"
     if condition:
-        script += ' WHERE ' + ' AND '.join(condition)
+        script += f" WHERE {' AND '.join(condition)}"
     if order_by:
-        script += f' ORDER BY {", ".join(order_by)};'
+        script += f" ORDER BY {', '.join(order_by)};"
     else:
-        script += f' ORDER BY {code};'
+        script += f" ORDER BY {code};"
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
@@ -78,7 +87,9 @@ def abstract_lookup(code: str,
             else:
                 return records
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def abstract_with_code_lookup(code: str,
                               description: str,
@@ -89,20 +100,22 @@ def abstract_with_code_lookup(code: str,
     """Get a list of code, code + description values from table.
     Condition and order by are optional.
     Null=True add a null value item at the beginning of the list"""
+    # t-strings in this context looks unusable
     script = f"SELECT {code}, format('%5s %s', {code}, {description}) FROM {table}"
     if condition:
-        script += ' WHERE ' + ' AND '.join(condition)
+        script += f" WHERE {' AND '.join(condition)}"
     if order_by:
-        script += f' ORDER BY {", ".join(order_by)};'
+        script += f" ORDER BY {', '.join(order_by)};"
     else:
-        script += f' ORDER BY {code};'
+        script += f" ORDER BY {code};"
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
             records = cur.fetchall()
             return [(None, '')] + records if null else records
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def profile_lookup() -> list[tuple]:
@@ -111,12 +124,14 @@ def profile_lookup() -> list[tuple]:
                            'description',
                            'system.profile')
 
+
 def menu_lookup() -> list[tuple]:
     "Get menu list"
     return abstract_lookup('code',
                            'description',
                            'system.menu_toolbar',
                            condition=["type = 'M'"])
+
 
 def toolbar_lookup() -> list[tuple]:
     "Get toolbars list"
@@ -125,17 +140,20 @@ def toolbar_lookup() -> list[tuple]:
                            'system.menu_toolbar',
                            condition=["type = 'T'"])
 
+
 def user_lookup() -> list[tuple]:
     "Get users list"
     return abstract_lookup('user_code',
                            'description',
                            'system.app_user')
 
+
 def company_lookup() -> list[tuple]:
     "Get companies list"
     return abstract_with_code_lookup('company_id',
                                      'description',
                                      'system.company')
+
 
 def printer_class_lookup() -> list[tuple]:
     "Get printer classes list with null"
@@ -144,22 +162,27 @@ def printer_class_lookup() -> list[tuple]:
                            'printer_class',
                            condition=['company_id = system.pa_current_company()'], 
                            null=True)
+
     
 def customer_order_report_lookup() -> list[tuple]:
     "Get a list of all report (code, description) of customer order class"
     return [(c, d) for i, c, d in get_report_list('ORDER_CUSTOMER', session['l10n'])]
 
+
 def department_order_report_lookup() -> list[tuple]:
     "Get a list of all reports of department order class"
     return [(c, d) for i, c, d in get_report_list('ORDER_DEPARTMENT', session['l10n'])]
+
 
 def cover_order_report_lookup() -> list[tuple]:
     "Get a list of all reports of cover order class"
     return [(c, d) for i, c, d in get_report_list('ORDER_COVER', session['l10n'])]
 
+
 def stock_unload_report_lookup() -> list[tuple]:
     "Get a list of all reports of stock unload class"
     return [(c, d) for i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
+
 
 def event_lookup() -> list[tuple]:
     "Get event list"
@@ -169,12 +192,14 @@ def event_lookup() -> list[tuple]:
                            ['company_id = system.pa_current_company()'], 
                            ['end_date DESC'])
 
+
 def department_lookup() -> list[tuple]:
     "Get departments list"
     return abstract_lookup('department_id',
                            'description',
                            'department',
                            ['company_id = system.pa_current_company()'])
+
 
 def current_item_lookup() -> list[tuple]:
     "Items"
@@ -184,11 +209,13 @@ def current_item_lookup() -> list[tuple]:
                            ["is_obsolete IS false",
                             "company_id = system.pa_current_company()"])
 
+
 def item_all_lookup() -> list[tuple]:
     "Items"
     return abstract_lookup('item_id', 
                            'description', 'item', 
                            ['company_id = system.pa_current_company()'])
+
 
 def item_lookup() -> list[tuple]:
     "Items"
@@ -198,6 +225,7 @@ def item_lookup() -> list[tuple]:
                            ["item_type = 'I'",
                             "company_id = system.pa_current_company()"])
 
+
 def item_salable_lookup() -> list[tuple]:
     "Items salable"
     return abstract_lookup('item_id',
@@ -206,6 +234,7 @@ def item_salable_lookup() -> list[tuple]:
                            ["is_obsolete IS false",
                             "is_salable IS true",
                             "company_id = system.pa_current_company()"])
+
 
 def item_with_stock_control_lookup() -> list[tuple]:
     "Items with stock control"
@@ -217,6 +246,7 @@ def item_with_stock_control_lookup() -> list[tuple]:
                             "is_obsolete is false",
                             "company_id = system.pa_current_company()"])
 
+
 def item_with_variant_lookup() -> list[tuple]:
     "Items with variants"
     return abstract_lookup('item_id', 
@@ -224,6 +254,7 @@ def item_with_variant_lookup() -> list[tuple]:
                            'item', 
                            ["has_variants IS true",
                             "company_id = system.pa_current_company()"])
+
 
 def kit_part_lookup() -> list[tuple]:
     "Kit Parts"
@@ -234,6 +265,7 @@ def kit_part_lookup() -> list[tuple]:
                             "is_kit_part IS true",
                             "company_id = system.pa_current_company()"])
 
+
 def menu_part_lookup() -> list[tuple]:
     "Menu Parts"
     return abstract_lookup('item_id', 
@@ -242,6 +274,7 @@ def menu_part_lookup() -> list[tuple]:
                            ["item_type IN ('I', 'K')",
                             "is_menu_part IS true",
                             "company_id = system.pa_current_company()"])
+
 
 def price_list_lookup() -> list[tuple]:
     "Get price list list"

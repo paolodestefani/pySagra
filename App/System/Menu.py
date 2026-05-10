@@ -104,7 +104,7 @@ class MenusForm(FormIndexManager):
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('menu')
+        self.ui.tableView.setLayoutName('MenuIndex')
         self.ui.tableView.setItemDelegateForColumn(SYSTEM, BooleanDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)

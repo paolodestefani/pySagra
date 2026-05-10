@@ -60,7 +60,7 @@ CREATE TABLE python_scripting (
     method_name             varchar(48) NOT NULL,
 	trigger                 char(1) NOT NULL, -- Before/After method
     script                  text NOT NULL,
-    company_id              integer NULL, -- if not null script is company specific
+    company_id              integer NOT NULL, -- script are always company specific
 	is_active               boolean NOT NULL DEFAULT true,
     is_system_object        boolean NOT NULL DEFAULT false,
     --

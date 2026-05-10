@@ -144,7 +144,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # widget settings
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('user')
+        self.ui.tableView.setLayoutName('UserIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(V_L10N, RelationDelegate(self, langCountry))
         self.ui.tableView.setItemDelegateForColumn(V_IMAGE, ImageDelegate(self))
@@ -171,7 +171,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.mapper.addMapping(self.ui.checkBoxCanEditReports, CAN_EDIT_REPORTS)
         # user/company
         self.ui.tableViewUserCompany.setModel(ucModel)
-        self.ui.tableViewUserCompany.setLayoutName('usersUserCompany')
+        self.ui.tableViewUserCompany.setLayoutName('UserCompany')
         self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_COMPANY, RelationDelegate(self, company_lookup))
         self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_lookup))
         self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_lookup))

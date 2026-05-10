@@ -25,12 +25,19 @@
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 def get_actions() -> list[tuple]:
@@ -48,49 +55,51 @@ WHERE cn.session_id = pg_backend_pid();"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def get_menu(item: str) -> list[tuple]:
     "Returns menu definition from system.menu_toolbar_item"
-    script = """
+    script = t"""
 SELECT 
     m.child,
     m.item_type,
     m.description,
     m.action
 FROM system.menu_toolbar_item m
-WHERE m.parent = %s
+WHERE m.parent = {item}
 ORDER BY m.sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (item,))
+            cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
-
 def get_toolbar(item: str) -> list[tuple]:
     "Returns toolbar definition from system.menu_item"
-    script = """
+    script = t"""
 SELECT 
     t.child,
     t.item_type,
     t.description,
     t.action
 FROM system.menu_toolbar_item t
-WHERE t.parent = %s
+WHERE t.parent = {item}
 ORDER BY t.sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (item,))
+            cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        rlogger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_menu_tree(menu: str) -> list[tuple]:
     "Returns actions for given menu"
-    script = """
+    script = t"""
 SELECT 
     child,
     item_type,
@@ -99,24 +108,26 @@ SELECT
 FROM system.menu_toolbar m
 WHERE
     company_id = system.pa_current_company()
-    parent = %s
+    AND parent = {menu}
 ORDER BY sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (menu,))
+            cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_user_theme(theme: str) -> None:
     "Update last used theme for user"
-    sql = """
+    script = t"""
 UPDATE system.app_user 
-SET stylesheet_theme = %s 
+SET stylesheet_theme = {theme} 
 WHERE id = system.pa_current_user();"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(sql, (theme,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

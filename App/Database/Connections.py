@@ -27,12 +27,20 @@ This module provide all the facilities to manage connections
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
 # apllication modules
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
+
+
+# logger
+logger = logging.getLogger(__name__)
+
 
 
 def current_logins() -> int:
@@ -45,25 +53,28 @@ FROM system.connection;"""
             cur.execute(sql)
             return next(cur)[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def delete_connection_history(days: int) -> None:
     "Delete connection log table - all records or older then provided days"
-    script = """
+    script = t"""
 DELETE FROM system.connection_history
-WHERE cast(logout_datetime as date) <= (current_date - %s);"""
+WHERE cast(logout_datetime as date) <= (current_date - {days});"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (days,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def kill_client(cid: int) -> None:
     "Kills the client of cid process id"
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute('SELECT system.pa_kill_client(%s);', (cid,))
+                cur.execute(t'SELECT system.pa_kill_client({cid});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

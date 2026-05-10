@@ -25,15 +25,15 @@ class Ui_MessageDialog(object):
         if not MessageDialog.objectName():
             MessageDialog.setObjectName(u"MessageDialog")
         MessageDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        MessageDialog.resize(535, 455)
         MessageDialog.setSizeGripEnabled(False)
-        self.verticalLayout_4 = QVBoxLayout(MessageDialog)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.verticalLayout_4.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
-        self.verticalLayout_4.setContentsMargins(5, 5, 5, 5)
-        self.mainVerticalLayout = QVBoxLayout()
-        self.mainVerticalLayout.setObjectName(u"mainVerticalLayout")
-        self.mainVerticalLayout.setSizeConstraint(QLayout.SizeConstraint.SetNoConstraint)
+        self.verticalLayout_5 = QVBoxLayout(MessageDialog)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_5.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.verticalLayout_5.setContentsMargins(12, 12, 12, 12)
+        self.verticalLayoutMain = QVBoxLayout()
+        self.verticalLayoutMain.setObjectName(u"verticalLayoutMain")
+        self.verticalLayoutMain.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.verticalLayoutMain.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.verticalLayout_2 = QVBoxLayout()
@@ -50,16 +50,31 @@ class Ui_MessageDialog(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
 
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(20, -1, -1, -1)
+        self.labelErrorCode = QLabel(MessageDialog)
+        self.labelErrorCode.setObjectName(u"labelErrorCode")
+        self.labelErrorCode.setMinimumSize(QSize(300, 30))
+        self.labelErrorCode.setMaximumSize(QSize(16777215, 30))
+
+        self.verticalLayout_3.addWidget(self.labelErrorCode)
+
         self.labelMessage = QLabel(MessageDialog)
         self.labelMessage.setObjectName(u"labelMessage")
-        self.labelMessage.setMinimumSize(QSize(300, 100))
+        self.labelMessage.setMinimumSize(QSize(0, 100))
+        self.labelMessage.setMaximumSize(QSize(16777215, 100))
         self.labelMessage.setWordWrap(True)
 
-        self.horizontalLayout.addWidget(self.labelMessage)
+        self.verticalLayout_3.addWidget(self.labelMessage)
+
+        self.verticalLayout_3.setStretch(1, 1)
+
+        self.horizontalLayout.addLayout(self.verticalLayout_3)
 
         self.horizontalLayout.setStretch(1, 1)
 
-        self.mainVerticalLayout.addLayout(self.horizontalLayout)
+        self.verticalLayoutMain.addLayout(self.horizontalLayout)
 
         self.buttonBox = QDialogButtonBox(MessageDialog)
         self.buttonBox.setObjectName(u"buttonBox")
@@ -67,13 +82,13 @@ class Ui_MessageDialog(object):
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Abort|QDialogButtonBox.StandardButton.Ignore)
         self.buttonBox.setCenterButtons(True)
 
-        self.mainVerticalLayout.addWidget(self.buttonBox)
+        self.verticalLayoutMain.addWidget(self.buttonBox)
 
         self.checkBoxShowDetailMessage = QCheckBox(MessageDialog)
         self.checkBoxShowDetailMessage.setObjectName(u"checkBoxShowDetailMessage")
         self.checkBoxShowDetailMessage.setChecked(False)
 
-        self.mainVerticalLayout.addWidget(self.checkBoxShowDetailMessage)
+        self.verticalLayoutMain.addWidget(self.checkBoxShowDetailMessage)
 
         self.frameDetails = QFrame(MessageDialog)
         self.frameDetails.setObjectName(u"frameDetails")
@@ -85,17 +100,18 @@ class Ui_MessageDialog(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.textEditDetailMessage = QTextEdit(self.frameDetails)
         self.textEditDetailMessage.setObjectName(u"textEditDetailMessage")
-        self.textEditDetailMessage.setMinimumSize(QSize(512, 256))
+        self.textEditDetailMessage.setMinimumSize(QSize(300, 200))
+        self.textEditDetailMessage.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         self.textEditDetailMessage.setReadOnly(True)
         self.textEditDetailMessage.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.verticalLayout.addWidget(self.textEditDetailMessage)
 
 
-        self.mainVerticalLayout.addWidget(self.frameDetails)
+        self.verticalLayoutMain.addWidget(self.frameDetails)
 
 
-        self.verticalLayout_4.addLayout(self.mainVerticalLayout)
+        self.verticalLayout_5.addLayout(self.verticalLayoutMain)
 
 
         self.retranslateUi(MessageDialog)
@@ -109,6 +125,7 @@ class Ui_MessageDialog(object):
     def retranslateUi(self, MessageDialog):
         MessageDialog.setWindowTitle(QCoreApplication.translate("MessageDialog", u"Dialog", None))
         self.labelIcon.setText(QCoreApplication.translate("MessageDialog", u"icon", None))
+        self.labelErrorCode.setText(QCoreApplication.translate("MessageDialog", u"Error code", None))
         self.labelMessage.setText(QCoreApplication.translate("MessageDialog", u"Message", None))
         self.checkBoxShowDetailMessage.setText(QCoreApplication.translate("MessageDialog", u"Show detail message", None))
     # retranslateUi

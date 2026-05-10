@@ -47,6 +47,7 @@ from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QStyleFactory
+from PySide6.QtWidgets import QTabWidget
 
 # application modules
 from App import APPNAME
@@ -56,11 +57,6 @@ from App import currentAction
 from App import actionDefinition
 from App.Core.L10n import _tr
 
-# color scheme
-color_scheme = {
-    'L': Qt.ColorScheme.Light,
-    'D': Qt.ColorScheme.Dark,
-    'S': Qt.ColorScheme.Unknown} # system default
 
 
 # colors for color combo box
@@ -68,15 +64,43 @@ COLORS = [('#950606', _tr('Item', 'Dark red')),
           ('#FF0000', _tr('Item', 'Red')),
           ('#FF7700', _tr('Item', 'Orange')),
           ('#FFFF00', _tr('Item', 'Yellow')),
-          ('#007700', _tr('Item', 'Dark green')),
-          ('#00FF00', _tr('Item', 'Green')),
-          ('#4141C5', _tr('Item', 'Light blue')),
-          ('#0000FF', _tr('Item', 'Blue')),
+          ('#006400', _tr('Item', 'Dark green')),
+          ('#008000', _tr('Item', 'Green')),
+          ('#90EE90', _tr('Item', 'Light green')),
           ('#000077', _tr('Item', 'Dark blue')),
+          ('#0000FF', _tr('Item', 'Blue')),
+          ('#4141C5', _tr('Item', 'Light blue')),
+          ('#00FFFF', _tr('Item', 'Cyan/Aqua')),
+          ('#FF00FF', _tr('Item', 'Magenta / Fuchsia')),
+          ('#A52A2A', _tr('Item', 'Brown')),
           ('#000000', _tr('Item', 'Black')),
-          ('#C0C0C0', _tr('Item', 'Light gray')),
-          ('#535353', _tr('Item', 'Gray')),
+          ('#808080', _tr('Item', 'Gray')),
+          ('#D3D3D3', _tr('Item', 'Light gray')),
           ('#FFFFFF', _tr('Item', 'White'))]
+
+# color scheme
+CS = {'L': (_tr('Preferences', "Light"), Qt.ColorScheme.Light),
+      'D': (_tr('Preferences', "Dark"), Qt.ColorScheme.Dark),
+      'S': (_tr('Preferences', "System default"), Qt.ColorScheme.Unknown)}
+
+# icon theme
+IT = [('oxygen', _tr('Preferences', 'Oxygen')),
+      ('crystal_clear', _tr('Preferences', 'Crystal Clear')),
+      ('fluentui', _tr('Preferences', 'Fluent UI')),
+      ('flatwoken', _tr('Preferences', 'Flatwoken'))]
+
+# toolbutton style dictionary
+TBS = {'I': (_tr('Preferences', 'Icon only'), Qt.ToolButtonIconOnly), 
+       'T': (_tr('Preferences', 'Text only'), Qt.ToolButtonTextOnly),
+       'B': (_tr('Preferences', 'Text beside icon'), Qt.ToolButtonTextBesideIcon),
+       'U': (_tr('Preferences', 'Text under icon'), Qt.ToolButtonTextUnderIcon),
+       'S': (_tr('Preferences', 'Follow style'), Qt.ToolButtonFollowStyle)}
+
+# tab position dictionary
+TP = {'N': (_tr('Preferences', "Tabs above the pages"), QTabWidget.North), 
+      'S': (_tr('Preferences', "Tabs below the pages"), QTabWidget.South),
+      'W': (_tr('Preferences', "Tabs to the left of the pages"), QTabWidget.West),
+      'E': (_tr('Preferences', "Tabs to the right of the pages"), QTabWidget.East)} 
 
 
 class CenteredProxyStyle(QProxyStyle):
@@ -100,15 +124,21 @@ def setTheme(theme: str) -> None:
         app.setStyle(proxy_style)
         app.processEvents()
     
-def setColorScheme(color: str) -> None:
-    "Set the application color scheme"
-    QApplication.styleHints().setColorScheme(color_scheme.get(color, Qt.ColorScheme.Unknown))
     
-def setIconTheme(theme: str) -> None: # used in login, currentIcon created before currentAction
+def setColorScheme(color: str|None) -> None:
+    "Set the application color scheme"
+    if not color:
+        color = 'S'
+    QApplication.styleHints().setColorScheme(CS[color][1])
+    
+    
+def setIconTheme(theme: str|None) -> None: # used in login, currentIcon created before currentAction
     "Fill currentIcon dictionary"
+    if not theme:
+        theme = 'oxygen'
     # application icon
     currentIcon[APPNAME] = QIcon(f":/{APPNAME}")
-    it = QDirIterator(f":/icon/{theme or 'oxygen'}", QDirIterator.IteratorFlag.NoIteratorFlags)
+    it = QDirIterator(f":/icon/{theme}", QDirIterator.IteratorFlag.NoIteratorFlags)
     # in resource.qrc an alias is mandatory, the it.fileName() is the alias
     while it.hasNext():
         it.next()
@@ -116,13 +146,17 @@ def setIconTheme(theme: str) -> None: # used in login, currentIcon created befor
             pix = QPixmap(it.filePath())
             currentIcon[it.fileName()] = QIcon(pix)
 
-def setIcon(theme: str) -> None:
+
+def setIcon(theme: str|None) -> None:
     "Set action's icon"
+    if not theme:
+        theme = 'oxygen'
     currentIcon.clear()
     setIconTheme(theme)
     # updte current action's icons
     for action in currentAction:
         currentAction[action].setIcon(currentIcon[actionDefinition[action][3]])
+
 
 def setFont(ffamily: str|None = None, fsize: int = 10):
     "Set font family and font size"

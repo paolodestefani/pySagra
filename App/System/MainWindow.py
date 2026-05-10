@@ -68,14 +68,13 @@ from App import currentAction
 from App import currentIcon
 from App import APPNAME
 from App.Core.L10n import _tr
+from App.Core.Gui import TBS, TP
 from App.System.Login import ChangeCompanyDialog
 from App.System.Action import createActionDictionary
 from App.Database.Connect import appconn
 from App.Database.Gui import get_actions
 from App.Database.Gui import get_menu
 from App.Database.Gui import get_toolbar
-from App.System.Preferences import tool_button_style
-from App.System.Preferences import tab_position
 from App.Widget.Control import Counter
 
 from App.Ui.GoToDialog import Ui_GoToDialog
@@ -169,7 +168,7 @@ def createToolBar(mainWindow: QMainWindow) -> None:
     for child, itemType, description, action in get_toolbar(session['toolbar']):
         toolBar = QToolBar(description)
         toolBar.setObjectName(description)
-        toolBar.setToolButtonStyle(tool_button_style[session['tool_button_style'] or 'I'])
+        toolBar.setToolButtonStyle(TBS[session['tool_button_style'] or 'I'][1])
         for child2, itemType2, description2, action2 in get_toolbar(child):
             if itemType2 == 'S':
                 toolBar.addSeparator()
@@ -281,7 +280,7 @@ class MainWindow(QMainWindow):
         # create main window central widget
         # tab widget = central widget
         self.tabWidget = TabWidget(self)
-        self.tabWidget.setTabPosition(tab_position[session['tab_position'] or 'N'])
+        self.tabWidget.setTabPosition(TP[session['tab_position'] or 'N'][1])
         self.tabWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setMovable(True)

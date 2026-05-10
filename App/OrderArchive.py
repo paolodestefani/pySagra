@@ -136,7 +136,7 @@ class OrderForm(FormIndexManager):
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
         #self.ui.tableView.setModel(self.indexModel)
-        self.ui.tableView.setLayoutName('orderArchive')
+        self.ui.tableView.setLayoutName('OrderArchiveIndex')
         self.ui.tableView.setItemDelegateForColumn(I_TIME, TimeDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_AMOUNT, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_DISCOUNT, AmountDelegate(self))
@@ -170,7 +170,7 @@ class OrderForm(FormIndexManager):
         self.mapper.addMapping(self.ui.dateTimeEditFullfillment, FULLFILLMENT, b"modelDataDateTime")
         # details tableView
         self.ui.tableViewDetails.setModel(modelDet)
-        self.ui.tableViewDetails.setLayoutName('orderArchiveDetail')
+        self.ui.tableViewDetails.setLayoutName('OrderArchiveDetail')
         self.ui.tableViewDetails.setItemDelegateForColumn(D_ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_QUANTITY, QuantityDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_PRICE, AmountDelegate(self))
@@ -186,7 +186,7 @@ class OrderForm(FormIndexManager):
         #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_QUANTITY, QuantityDelegate(self))
         # header department tableView
         self.ui.tableViewDepartmentHeader.setModel(modelHeaDep)
-        self.ui.tableViewDepartmentHeader.setLayoutName('orderArchiveDepartmentHeader')
+        self.ui.tableViewDepartmentHeader.setLayoutName('OrderArchiveDepartment')
         #self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(P_DEPARTMENT, RelationDelegate(self, department_lookup))
         #self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(HDPRINTED, BooleanDelegate(self))
         # store setting on form creation

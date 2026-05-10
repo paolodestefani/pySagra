@@ -28,6 +28,9 @@ creating, deleting, listing, exporting, importing adaptations and their settings
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -35,6 +38,9 @@ import psycopg
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 def create_adaptation(adapt_type: str,
@@ -60,14 +66,16 @@ RETURNING adaptation_id;"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script) #, (adapt_type, adapt_class, description, report_id, system))
+                cur.execute(script)
                 result = next(cur, None)
                 if result:
                     return result[0]
                 else:                    
                     raise PyAppDBError('00000', 'Failed to create adaptation')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def is_system_object(adapt_id: int) -> int|None:
     "Check if the adaptation id is a system object"
@@ -85,7 +93,8 @@ WHERE adaptation_id = {adapt_id}
                 else:
                     return False
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def delete_adaptation(adapt_id: int) -> None:
     "Delete adaptation of given id"
@@ -113,7 +122,8 @@ SELECT setval(
                 cur.execute(script2)
                 cur.execute(script3)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def clear_adaptation() -> None:
     "Delete all adaptation"
@@ -144,7 +154,8 @@ SELECT setval(
                 for i in (script1, script2, script3, script4):
                     cur.execute(i)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def list_adaptation(adapt_type: str, adapt_class: str) -> list:
     "Get available adaptations for the given type and class"
@@ -164,7 +175,8 @@ ORDER BY class_sorting;"""
                 cur.execute(script)#, (adapt_type, adapt_class))
                 return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def export_adaptation() -> list:
     "List all adaptation records for export"
@@ -189,7 +201,8 @@ ORDER BY adaptation_id
                 cur.execute(script)
                 return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def export_adaptation_setting() -> list:
     "List all adaptation_setting records for export"
@@ -215,7 +228,8 @@ ORDER BY adaptation_setting_id;"""
                 cur.execute(script)
                 return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def import_adaptation(adaptations: list, adaptsettings: list) -> None:
     "Import all records in adaptation and adaptation_setting tables"
@@ -276,7 +290,8 @@ SELECT setval(
                 cur.execute(script6)
                 cur.execute(script7)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_adapt_limit(adapt_id: int) -> int|None:
     "Get row count limit for adaptation_id"
@@ -294,7 +309,8 @@ WHERE adaptation_id = {adapt_id};"""
             else:
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_adapt_limit(adapt_id: int, limit: int|None) -> None:
     "Set row count limit for adaptation_id"
@@ -307,7 +323,8 @@ WHERE adaptation_id = {adapt_id};"""
             with appconn.transaction():
                 cur.execute(script)#, (limit, adapt_id))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_adapt_setting(adapt_id: int) -> tuple[list, list, list]:
     "Get available adaptation settings for the given id"
@@ -335,7 +352,8 @@ ORDER BY layout_row;"""
                     s = [i for i in d if i[0] == 'S'] # Sorting
                     return p, f, s
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_adapt_setting(adapt_id: int, columns: list[tuple]) -> None:
     "Set available adaptation settings for the given id"
@@ -365,7 +383,8 @@ VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
                 cur.execute(script1)#, (adapt_id,))
                 cur.executemany(script2, columns)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_adapt_sorting(adapt_id: int) -> int:
     "Returns adaptation sorting index"
@@ -383,7 +402,8 @@ WHERE adaptation_id = {adapt_id};"""
                 else:
                     return 0
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_adapt_sorting(adapt_id: int, sorting: int) -> None:
     "Set adaptation sorting index"
@@ -396,7 +416,8 @@ WHERE adaptation_id = {adapt_id};"""
             with appconn.cursor() as cur:
                 cur.execute(script)#, (sorting, adapt_id))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_adapt_class_default(adapt_type: str, adapt_class: str) -> int|None:
     "Get the default adaptation_id for type and class"
@@ -416,7 +437,8 @@ WHERE
                 else:
                     return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def set_adapt_class_default(adapt_id: int) -> None:
     "Set the adaptation class default for type/class"
@@ -444,7 +466,8 @@ WHERE adaptation_id = {adapt_id};"""
                 cur.execute(script2, (adapt_type, adapt_class))
                 cur.execute(script3)#, (adapt_id,))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_adapt_user_default(adapt_type: str, adapt_class: str, user: str) -> int|None:
     "Get the default adaptation if any for type/class/user"
@@ -465,7 +488,8 @@ WHERE
                 else:
                     return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_adapt_default(adapt_type: str, adapt_class: str, user: str) -> int|None:
     "Get the default adaptation if any for type/class/user or type/class"
@@ -496,7 +520,8 @@ WHERE
                     return result[0]
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def set_adapt_user_default(adapt_type: str, adapt_class: str, user: str, adapt_id: int) -> None:
     "Set given adaptation the default for user"
@@ -523,7 +548,8 @@ VALUES (
                 cur.execute(script1)#, (adapt_type, adapt_class, user))
                 cur.execute(script2)#, (adapt_type, adapt_class, user, adapt_id))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_view_columns(adapt_id: int) -> list[tuple]:
     "Returns the view definition"
@@ -541,7 +567,8 @@ ORDER BY sorting;"""
             cur.execute(script)#, (adapt_id,))
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_view_columns(adapt_id: int, columns: list[tuple]) -> None:
     "Set the view definition"
@@ -563,5 +590,5 @@ VALUES (%s, %s, %s, %s, %s);"""
                 cur.execute(script1)#, (adaptation_id,))
                 cur.executemany(script2, columns)
     except psycopg.Error as er:
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(sqlstate, str(er))

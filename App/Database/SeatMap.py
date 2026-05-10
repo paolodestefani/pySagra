@@ -26,6 +26,9 @@
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -35,51 +38,66 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def table_list() -> list[tuple[str, int, int, str, str]]:
     "Returns a list of available table codes"
-    script = """
-    SELECT 
-        table_code,
-        pos_row,
-        pos_column,
-        text_color,
-        background_color
-    FROM company.seat_map
-    WHERE company_id = %s AND is_obsolete IS false;"""
+    script = t"""
+SELECT 
+    table_code,
+    pos_row,
+    pos_column,
+    text_color,
+    background_color
+FROM company.seat_map
+WHERE 
+        company_id = {session['current_company']} 
+    AND is_obsolete IS false;
+"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (session['current_company'],))
+            cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def table_delete() -> None:
     "Delete all tables"
-    script = """
-    DELETE FROM company.seat_map 
-    WHERE company_id = %s;"""
+    script = t"""
+DELETE FROM company.seat_map 
+WHERE company_id = {session['current_company']};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (session['current_company'],))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def table_exists(table_code: str) -> bool:
     "Returns True if the provided table code exists"
-    script = """
-    SELECT table_code
-    FROM seat_map
-    WHERE company_id = %s AND table_code = %s AND is_obsolete IS false;"""
+    script = t"""
+SELECT table_code
+FROM seat_map
+WHERE 
+        company_id = {session['current_company']} 
+    AND table_code = {table_code} 
+    AND is_obsolete IS false;
+"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (session['current_company'], table_code))
+                cur.execute(script)
                 if cur.rowcount == 0:
                     return False
                 else:
                     return True
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 

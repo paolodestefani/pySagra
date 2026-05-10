@@ -27,6 +27,9 @@ This module provide all the facilities to manage application profiles
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -35,25 +38,43 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def duplicate_profile(from_code: str, new_code: str, new_description: str) -> None:
     "Create a new profile copying parameters from another"
     # create a new profile
-    sql = "INSERT INTO system.profile (profile_code, description) VALUES (%s, %s);"
+    script = t"""
+INSERT INTO system.profile (
+    profile_code,
+    description) 
+VALUES (
+    {new_code},
+    {new_description});"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(sql, (new_code, new_description))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     # copy authorizations
-    sql = """INSERT INTO system.profile_action (profile_code, action, auth)
-SELECT %s, action, auth
+    script = t"""
+INSERT INTO system.profile_action (
+    profile_code,
+    action,
+    auth)
+SELECT 
+    {new_code},
+    action,
+    auth
 FROM system.profile_action
-WHERE profile_code = %s;"""
+WHERE profile_code = {from_code};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(sql, (new_code, from_code))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

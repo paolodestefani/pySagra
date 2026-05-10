@@ -5,40 +5,44 @@
   <property name="windowModality">
    <enum>Qt::WindowModality::ApplicationModal</enum>
   </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>535</width>
-    <height>455</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <property name="sizeConstraint">
     <enum>QLayout::SizeConstraint::SetFixedSize</enum>
    </property>
    <property name="leftMargin">
-    <number>5</number>
+    <number>12</number>
    </property>
    <property name="topMargin">
-    <number>5</number>
+    <number>12</number>
    </property>
    <property name="rightMargin">
-    <number>5</number>
+    <number>12</number>
    </property>
    <property name="bottomMargin">
-    <number>5</number>
+    <number>12</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="mainVerticalLayout" stretch="0,0,0,0">
+    <layout class="QVBoxLayout" name="verticalLayoutMain">
      <property name="sizeConstraint">
-      <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
+      <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+     </property>
+     <property name="leftMargin">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>5</number>
+     </property>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
+     <property name="bottomMargin">
+      <number>5</number>
      </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
@@ -67,20 +71,52 @@
         </layout>
        </item>
        <item>
-        <widget class="QLabel" name="labelMessage">
-         <property name="minimumSize">
-          <size>
-           <width>300</width>
-           <height>100</height>
-          </size>
+        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1">
+         <property name="leftMargin">
+          <number>20</number>
          </property>
-         <property name="text">
-          <string>Message</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
+         <item>
+          <widget class="QLabel" name="labelErrorCode">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Error code</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelMessage">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Message</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -135,9 +171,12 @@
          <widget class="QTextEdit" name="textEditDetailMessage">
           <property name="minimumSize">
            <size>
-            <width>512</width>
-            <height>256</height>
+            <width>300</width>
+            <height>200</height>
            </size>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::LineWrapMode::WidgetWidth</enum>
           </property>
           <property name="readOnly">
            <bool>true</bool>

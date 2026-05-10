@@ -27,6 +27,9 @@ This module provide all the facilities to manage user preferences
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -35,10 +38,13 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def load_preferences(user_code: str) -> tuple:
     "Load all preferences parameters for the given user"
-    script = """
+    script = t"""
 SELECT 
     style_theme,
     color_scheme,
@@ -48,14 +54,16 @@ SELECT
     tool_button_style,
     tab_position
 FROM system.app_user
-WHERE user_code = %s;"""
+WHERE user_code = {user_code};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (user_code,))
+                cur.execute(script)
                 return cur.fetchall()[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def save_preferences(user_code: str,
                      style: str,
@@ -67,26 +75,20 @@ def save_preferences(user_code: str,
                      tabposition: str
                      ) -> None:
     "Save all preferences for the given user"
-    script = """
+    script = t"""
 UPDATE system.app_user
-SET style_theme = %s,
-    color_scheme = %s,
-    icon_theme = %s,
-    font_family = %s,
-    font_size = %s,
-    tool_button_style= %s,
-    tab_position = %s
-WHERE user_code = %s;"""
+SET style_theme = {style},
+    color_scheme = {color},
+    icon_theme = {icon},
+    font_family = {ffamily},
+    font_size = {fsize},
+    tool_button_style= {tbstyle},
+    tab_position = {tabposition}
+WHERE user_code = {user_code};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (style,
-                                     color,
-                                     icon,
-                                     ffamily,
-                                     fsize,
-                                     tbstyle,
-                                     tabposition,
-                                     user_code))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

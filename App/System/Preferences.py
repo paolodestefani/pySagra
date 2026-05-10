@@ -43,7 +43,7 @@ from PySide6.QtWidgets import QToolBar
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDialogButtonBox
-from PySide6.QtWidgets import QTabWidget
+
 from PySide6.QtWidgets import QStyleFactory
 from PySide6.QtWidgets import QPushButton
 
@@ -54,7 +54,7 @@ from App import currentAction
 from App import actionDefinition
 from App import currentIcon
 from App.Core.L10n import _tr
-from App.Core.Gui import color_scheme
+from App.Core.Gui import CS, IT, TBS, TP
 from App.Core.Gui import setTheme
 from App.Core.Gui import setColorScheme
 from App.Core.Gui import setIcon
@@ -66,20 +66,6 @@ from App.Ui.PreferencesDialog import Ui_PreferencesDialog
 
 # logger
 logger = logging.getLogger(__name__)
-
-
-# toolbutton style dictionary
-tool_button_style = {'I': Qt.ToolButtonIconOnly, # type: ignore[attr-defined]
-                     'T': Qt.ToolButtonTextOnly, # type: ignore[attr-defined]
-                     'B': Qt.ToolButtonTextBesideIcon, # type: ignore[attr-defined]
-                     'U': Qt.ToolButtonTextUnderIcon, # type: ignore[attr-defined]
-                     'S': Qt.ToolButtonFollowStyle} # type: ignore[attr-defined]
-
-# tab position dictionary
-tab_position = {'N': QTabWidget.North, # type: ignore[attr-defined]
-                'S': QTabWidget.South, # type: ignore[attr-defined]
-                'W': QTabWidget.West, # type: ignore[attr-defined]
-                'E': QTabWidget.East} # type: ignore[attr-defined]
 
 
 def preferences(action: QAction, checked: bool = False) -> None:
@@ -108,25 +94,13 @@ class PreferencesDialog(QDialog):
         # themes - from platform available qt styles
         self.ui.comboBoxTheme.addItems(QStyleFactory.keys())
         # color scheme for dark mode
-        self.ui.comboBoxColorScheme.setItemList([('L', _tr('Preferences', "Light")),
-                                                 ('D', _tr('Preferences', "Dark")),
-                                                 (None, _tr('Preferences', "System default"))])
+        self.ui.comboBoxColorScheme.setItemList([(i[0], i[1][0]) for i in CS.items()])
         # icons - here for translation requirement (a QApplication is require for _tr() to work)
-        self.ui.comboBoxIcons.setItemList([(None, _tr('Preferences', 'Oxygen')),
-                                          ('crystal_clear', _tr('Preferences', 'Crystal Clear')),
-                                          ('fluentui', _tr('Preferences', 'Fluent UI')),
-                                          ('flatwoken', _tr('Preferences', 'Flatwoken'))])
+        self.ui.comboBoxIcons.setItemList(IT)
         # tool button style - here for translation requirement (a QApplication is require for _tr() to work)
-        self.ui.comboBoxToolButtonStyle.setItemList([('I', _tr('Preferences', 'Icon only')),
-                                                     ('T', _tr('Preferences', 'Text only')),
-                                                     ('B', _tr('Preferences', 'Text beside icon')),
-                                                     ('U', _tr('Preferences', 'Text under icon')),
-                                                     ('S', _tr('Preferences', 'Follow style'))])
+        self.ui.comboBoxToolButtonStyle.setItemList([(i[0], i[1][0]) for i in TBS.items()])
         # tab position - here for translation requirement (a QApplication is require for _tr() to work)
-        self.ui.comboBoxTabPosition.setItemList([('N', _tr('Preferences', "Tabs above the pages")),
-                                                 ('S', _tr('Preferences', "Tabs below the pages")),
-                                                 ('W', _tr('Preferences', "Tabs to the left of the pages")),
-                                                 ('E', _tr('Preferences', "Tabs to the right of the pages"))])
+        self.ui.comboBoxTabPosition.setItemList([(i[0], i[1][0]) for i in TP.items()])
         self.ui.comboBoxFontFamily.setCurrentFont(QFont('Arial'))
         self.ui.spinBoxFontSize.setValue(10)
         # load user preferences
@@ -139,15 +113,15 @@ class PreferencesDialog(QDialog):
             return
         # set widget current value
         self.ui.comboBoxTheme.setCurrentText(theme)
-        self.ui.comboBoxColorScheme.modelDataStr = color_scheme.get(color)
-        self.ui.comboBoxIcons.modelDataStr = icon
+        self.ui.comboBoxColorScheme.modelDataStr = color or 'S'
+        self.ui.comboBoxIcons.modelDataStr = icon or 'oxygen'
         if ffamily:
             self.ui.comboBoxFontFamily.setCurrentFont(QFont(ffamily))
         else:
             self.ui.checkBoxDefaultFont.setChecked(True) # Null ffamily = default
         self.ui.spinBoxFontSize.setValue(fsize or QFont().pointSize())
-        self.ui.comboBoxToolButtonStyle.modelDataStr = tool_button_style.get(tbstyle)
-        self.ui.comboBoxTabPosition.modelDataStr = tab_position.get(tabposition)
+        self.ui.comboBoxToolButtonStyle.modelDataStr = tbstyle or 'I'
+        self.ui.comboBoxTabPosition.modelDataStr = tabposition or 'N'
         
         # signal/slot
         self.ui.buttonBox.clicked.connect(self.clicked)
@@ -185,8 +159,8 @@ class PreferencesDialog(QDialog):
         setIcon(icon)
         app.setFont(font)
         for i in session['mainwin'].findChildren(QToolBar):
-            i.setToolButtonStyle(tool_button_style[tbstyle])
-        session['mainwin'].tabWidget.setTabPosition(tab_position[tabposition])
+            i.setToolButtonStyle(TBS[tbstyle][1])
+        session['mainwin'].tabWidget.setTabPosition(TP[tabposition][1])
         # save new preferences
         try:
             save_preferences(session['app_user_code'], 

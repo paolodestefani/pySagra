@@ -27,6 +27,9 @@ This module provide all the facilities to manage application users
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -35,18 +38,23 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def user_list() -> list:
-    sql = """
+    script = """
 SELECT id 
 FROM system.app_user;"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(sql)
+                cur.execute(script)
                 return [i[0] for i in cur.fetchall()]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def user_company_set(user: str,
                      company: int,
@@ -54,97 +62,50 @@ def user_company_set(user: str,
                      menu: str,
                      toolbar: str
                      ) -> None:
+    script = t'SELECT system.pa_user_company_set({user}, {company}, {profile}, {menu}, {toolbar});'
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute('SELECT system.pa_user_company_set(%s, %s, %s, %s, %s);',
-                            (user, company, profile, menu, toolbar))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def change_password(user: str, new_password: str) -> None:
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute('SELECT system.pa_password_change(%s, %s);',
-                            (user, new_password,))
+                cur.execute(t'SELECT system.pa_password_change({user}, {new_password});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        rlogger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
 
 def encrypt_password(password: str) -> str:
-    sql = "SELECT system.crypt(%s, system.gen_salt('bf'));"
+    script = t"SELECT system.crypt({password}, system.gen_salt('bf'));"
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(sql, (password,))
+                cur.execute(script)
                 result = next(cur, None)
                 if result:
                     return result[0]
                 raise PyAppDBError("00000", "Password encryption failed")
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
 
 def force_password_change(user: str) -> None:
-    sql = """
+    script = t"""
 UPDATE system.app_user
 SET is_change_password_required = true
-WHERE code = %s;"""
+WHERE code = {user};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(sql, (user,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def user_email_list(user):
-#     "Returns a list of the email accounts for user"
-#     sql = """SELECT id, description || ' - ' || sender
-#     FROM system.app_user_email
-#     WHERE app_user = %s
-#     ORDER BY sorting;"""
-#     try:
-#         with appconn.transaction():
-#             with appconn.cursor() as cur:
-#                 cur.execute(sql, (user,))
-#                 return cur.fetchall()
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def user_email_details(account):
-#     "Returns all the parameter for the account id"
-#     sql = """SELECT sender,
-#     reply_to,
-#     server,
-#     port,
-#     account_user,
-#     account_password,
-#     require_auth,
-#     require_ssl,
-#     require_tls,
-#     sender_copy
-#     FROM system.app_user_email
-#     WHERE id = %s;"""
-#     try:
-#         with appconn.transaction():
-#             with appconn.cursor() as cur:
-#                 cur.execute(sql, (account,))
-#                 return cur.fetchone()
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def user_email_signature(account):
-#     "Returns signature for the account id"
-#     sql = """SELECT signature, sender_copy
-#     FROM system.app_user_email
-#     WHERE id = %s;"""
-#     try:
-#         with appconn.transaction():
-#             with appconn.cursor() as cur:
-#                 cur.execute(sql, (account,))
-#                 return cur.fetchone() or (None, False)
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-    # if cur.rowcount:
-        # return cur.fetchone()[0] or 0 # if stock not set balance is null
-    # return 0
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

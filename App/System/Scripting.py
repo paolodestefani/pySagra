@@ -55,6 +55,7 @@ from App import session
 #from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Scripting import load_script
+from App.Database.Scripting import get_all_scripts
 from App.Database.Company import company_list
 from App.Database.Models import ScriptingIndexModel
 from App.Database.Models import ScriptingModel
@@ -186,12 +187,12 @@ class ScriptingForm(FormIndexManager):
         self.ui = Ui_ScriptingWidget()
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('scripting')
+        self.ui.tableView.setLayoutName('ScriptingIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         # fill classcombobox, methodcombobox and companycombobox
         self.ui.comboBoxClass.currentIndexChanged.connect(self.fillMethods)
         self.ui.comboBoxClass.addItems(list(SCRIPTABLE.keys()))
-        self.ui.comboBoxCompany.setItemList(company_list() + [(None, _tr('script', 'All'))])
+        self.ui.comboBoxCompany.setItemList(company_list())
         # field mapping
         self.mapper.addMapping(self.ui.comboBoxClass, CLASS)
         self.mapper.addMapping(self.ui.comboBoxMethod, METHOD)
@@ -228,9 +229,6 @@ class ScriptingForm(FormIndexManager):
     def new(self) -> None:
         "New script"
         super().new()
-        # self.ui.comboBoxClass.setEnabled(True)
-        # self.ui.comboBoxMethod.setEnabled(True)
-        # self.ui.comboBoxTrigger.setEnabled(True)
         self.ui.comboBoxClass.setCurrentIndex(-1)
         self.ui.comboBoxTrigger.setCurrentIndex(-1)
         self.ui.comboBoxClass.setFocus()
@@ -238,9 +236,6 @@ class ScriptingForm(FormIndexManager):
     def save(self) -> None:
         "Save current script"
         super().save()
-        # self.ui.comboBoxClass.setDisabled(True)
-        # self.ui.comboBoxMethod.setDisabled(True)
-        # self.ui.comboBoxTrigger.setDisabled(True)
         if (self.ui.comboBoxMethod.currentText() == '__init__' and
                 self.ui.comboBoxTrigger.currentData() == 'B'):
             msg = _tr('Scripting', "Warning: script linked to an __init__ "
@@ -264,9 +259,6 @@ class ScriptingForm(FormIndexManager):
     def reload(self) -> None:
         "reload form"
         super().reload()
-        # self.ui.comboBoxClass.setDisabled(True)
-        # self.ui.comboBoxMethod.setDisabled(True)
-        # self.ui.comboBoxTrigger.setDisabled(True)
 
     def changeFont(self, font: QFont) -> None:
         "Change editor font"
@@ -296,8 +288,9 @@ class ScriptingForm(FormIndexManager):
 
         row = self.mapper.currentIndex()
         # looks like zipfile accept qt file path with / so no need to use os.path.join
-        fileName = (f"{directory}"
-                    f"/{self.model.index(row, CLASS).data()}"
+        fileName = (f"{directory}/"
+                    f"{self.model.index(row, COMPANY).data()}"
+                    f"_{self.model.index(row, CLASS).data()}"
                     f"_{self.model.index(row, METHOD).data()}"
                     f"_{self.model.index(row, TRIGGER).data()}"
                     f".scp.zip")
@@ -307,6 +300,7 @@ class ScriptingForm(FormIndexManager):
                 zf.writestr('method', self.model.index(row, METHOD).data())
                 zf.writestr('trigger', self.model.index(row, TRIGGER).data())
                 zf.writestr('active', str(self.model.index(row, ACTIVE).data()))
+                zf.writestr('company', str(self.model.index(row, COMPANY).data()))
                 zf.writestr('pyscript', self.model.index(row, SCRIPT).data())
         except Exception as er:
             msg = _tr('Scripting', "Error on saving current script to file")
@@ -330,26 +324,22 @@ class ScriptingForm(FormIndexManager):
                                                      str(path))
         if directory == "":
             return
-        # avoid active filters
-        if hasattr(self.model, 'filterCondition'):
-            self.model.filterCondition.clear()
-        if hasattr(self.model, 'whereConditions'):
-            self.model.whereConditions.clear()
-        self.reload()
         try:
-            for row in range(self.model.rowCount()):
+            for cls, mth, trg, act, cmp, pys in get_all_scripts():
                 # looks like zipfile accept qt file path with / so no need to use os.path.join
-                fileName = (f"{directory}"
-                            f"/{self.model.index(row, CLASS).data()}"
-                            f"_{self.model.index(row, METHOD).data()}"
-                            f"_{self.model.index(row, TRIGGER).data()}"
+                fileName = (f"{directory}/"
+                            f"{cmp}"
+                            f"_{cls}"
+                            f"_{mth}"
+                            f"_{trg}"
                             f".scp.zip")
                 with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
-                    zf.writestr('class', self.model.index(row, CLASS).data())
-                    zf.writestr('method', self.model.index(row, METHOD).data())
-                    zf.writestr('trigger', self.model.index(row, TRIGGER).data())
-                    zf.writestr('active', str(self.model.index(row, ACTIVE).data()))
-                    zf.writestr('pyscript', self.model.index(row, SCRIPT).data())
+                    zf.writestr('class', cls)
+                    zf.writestr('method', mth)
+                    zf.writestr('trigger', trg)
+                    zf.writestr('active', str(act))
+                    zf.writestr('company', str(cmp))
+                    zf.writestr('pyscript', pys)
         except Exception as er:
             msg = _tr('Scripting', "Error on saving script to file")
             QMessageBox.critical(self,
@@ -381,6 +371,7 @@ class ScriptingForm(FormIndexManager):
                 mth = zf.read('method').decode('utf-8')
                 trg = zf.read('trigger').decode('utf-8')
                 act = zf.read('active').decode('utf-8')
+                cmp = zf.read('company').decode('utf-8')
                 pys = zf.read('pyscript').decode('utf-8')
         except Exception as er:
             msg = _tr('Scripting', "Error on opening a script file")
@@ -389,7 +380,7 @@ class ScriptingForm(FormIndexManager):
                                  f"{msg}\n{er}")
         else:
             try:
-                load_script(cls, mth, trg, pys, True if act == 'True' else False)
+                load_script(cls, mth, trg, True if act == 'True' else False, int(cmp), pys)
             except PyAppDBError as er:
                 QMessageBox.critical(self,
                                      _tr("MessageDialog", "Critical"),
@@ -422,6 +413,7 @@ class ScriptingForm(FormIndexManager):
                         mth = zf.read('method').decode('utf-8')
                         trg = zf.read('trigger').decode('utf-8')
                         act = zf.read('active').decode('utf-8')
+                        cmp = zf.read('company').decode('utf-8')
                         pys = zf.read('pyscript').decode('utf-8')
                 except Exception as er:
                     msg = _tr('Scripting', "Error on uploading script file:")
@@ -431,7 +423,7 @@ class ScriptingForm(FormIndexManager):
                     error = True
                 else:
                     try:
-                        load_script(cls, mth, trg, pys, True if act == 'True' else False)
+                        load_script(cls, mth, trg, True if act == 'True' else False, int(cmp), pys)
                     except PyAppDBError as er:
                         error = True
                         QMessageBox.critical(self,

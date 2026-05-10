@@ -83,7 +83,7 @@ ORDER BY sorting;"""
             cur.execute(sql, (parent,))
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 class TreeItem():

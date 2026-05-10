@@ -28,6 +28,9 @@ database
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -36,42 +39,53 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def delete_event_order(event_id: int) -> None:
     "Delete all orders of the given event"
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute('SELECT company.delete_event_order(%s);', (event_id,))
+                cur.execute(t'SELECT company.delete_event_order({event_id});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def inventory_rebuild(event_id: int) -> None:
     "Inventory rebuild for the given event"
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute('SELECT company.inventory_rebuild(%s);', (event_id,))
+                cur.execute(t'SELECT company.inventory_rebuild({event_id});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
     
 def ordered_delivered_rebuild(event_id: int) -> None:
     "Ordered delivered rebuild for the given event"
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute('SELECT company.ordered_delivered_rebuild(%s);', (event_id,))
+                cur.execute(t'SELECT company.ordered_delivered_rebuild({event_id});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def numbering_rebuild(event_id: int) -> None:
     "Numbering rebuild for the given event"
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute('SELECT company.numbering_rebuild(%s);', (event_id,))
+                cur.execute(t'SELECT company.numbering_rebuild({event_id});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def set_order_as_processed(event_id: int) -> None:
     "Set all unprocessed orders as processed ad order date"
@@ -80,9 +94,10 @@ def set_order_as_processed(event_id: int) -> None:
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute('SELECT company.set_order_as_processed(%s);', (event_id,))
+                cur.execute(t'SELECT company.set_order_as_processed({event_id});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
     
 def delete_all_orders() -> None:
@@ -100,7 +115,9 @@ WHERE company_id = system.pa_current_company();
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_web_orders() -> None:
     "Delete ALL web orders for current company"
@@ -113,7 +130,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_inventory() -> None:
     "Delete ALL stock inventory records for current company"
@@ -126,7 +145,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_events() -> None:
     "Delete ALL events for current company"
@@ -139,7 +160,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_price_lists() -> None:
     "Delete ALL price lists for current company"
@@ -152,7 +175,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_items() -> None:
     "Delete ALL items for current company"
@@ -165,7 +190,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_departments() -> None:
     "Delete ALL departments for current company"
@@ -177,7 +204,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_tables() -> None:
     "Delete ALL tables for current company"
@@ -189,7 +218,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_cash_desks() -> None:
     "Delete ALL cash desks for current company"
@@ -201,7 +232,9 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def delete_all_printer_classes() -> None:
     "Delete ALL printer classes for current company"
@@ -214,12 +247,13 @@ WHERE company_id = system.pa_current_company();"""
             with appconn.cursor() as cur:
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 
 def copy_cash_desk(from_company_id: int) -> None:
     "Copy ALL the cash desks from another company to current company"
-    script = """
+    script = t"""
 INSERT INTO cash_desk (
     company_id,
     computer,
@@ -231,18 +265,19 @@ SElECT
     cash_desk_description,
     note
 FROM cash_desk
-WHERE company_id = %s;"""
+WHERE company_id = {from_company_id};"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (from_company_id,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def copy_printer_class(from_company_id: int) -> None:
     "Copy ALL the printer classes from another company to current company"
-    script1 = """
+    script = t"""
 INSERT INTO printer_class (
     company_id,
     description,
@@ -252,36 +287,20 @@ SElECT
     description,
     printer_class_id
 FROM printer_class
-WHERE company_id = %s;"""
-    script2 = """
-INSERT INTO printer_class_printer (
-    company_id,
-    printer_class_id,
-    computer,
-    printer)
-SELECT
-    system.pa_current_company(),
-    b.printer_class_id,
-    a.computer,
-    a.printer
-FROM printer_class_printer a
-JOIN (
-    SELECT printer_class_id, external_code 
-    FROM printer_class
-    WHERE company_id = system.pa_current_company()
-    ) b ON a.printer_class_id = b.external_code
-WHERE a.company_id = %s;"""
+WHERE company_id = {from_company_id};
+"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script1, (from_company_id,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 
 def copy_table(from_company_id: int) -> None:
     "Copy ALL the tables from another company to current company"
-    script = """
+    script = t"""
 INSERT INTO seat_map (
     company_id,
     table_code,
@@ -301,18 +320,19 @@ SElECT
     is_obsolete,
     seat_map_id
 FROM seat_map
-WHERE company_id = %s;"""
+WHERE company_id = {from_company_id};"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (from_company_id,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 
 def copy_department(from_company_id: int) -> None:
     "Copy ALL the departments from another company to current company"
-    script = """
+    script = t"""
 INSERT INTO department (
     company_id,
     description,
@@ -333,12 +353,13 @@ SElECT
     a.department_id
 FROM department a
 LEFT JOIN printer_class b ON a.printer_class_id = b.external_code
-WHERE a.company_id = %s;"""
+WHERE a.company_id = {from_company_id};"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (from_company_id,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
     

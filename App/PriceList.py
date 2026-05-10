@@ -110,7 +110,7 @@ class PriceListForm(FormIndexManager):
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         #self.ui.tableView.setModel(idxModel)
-        self.ui.tableView.setLayoutName('priceList')
+        self.ui.tableView.setLayoutName('PriceListIndex')
         #self.ui.tableView.activateWindow()
         #self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         # self.ui.tableView.setSortingEnabled(True)
@@ -121,7 +121,7 @@ class PriceListForm(FormIndexManager):
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         # price list detail
         self.ui.tableViewPrices.setModel(priModel)
-        self.ui.tableViewPrices.setLayoutName('priceListDetail')
+        self.ui.tableViewPrices.setLayoutName('PriceListDetail')
         self.ui.tableViewPrices.setItemDelegateForColumn(P_ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewPrices.setItemDelegateForColumn(P_PRICE, AmountDelegate(self))
         #self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_list))

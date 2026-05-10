@@ -139,7 +139,7 @@ class ProfileForm(FormIndexManager):
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         # widget settings
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('profile')
+        self.ui.tableView.setLayoutName('ProfileIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
@@ -149,7 +149,7 @@ class ProfileForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # detail tableview
         self.ui.tableViewActions.setModel(paModel)
-        self.ui.tableViewActions.setLayoutName('profileAction')
+        self.ui.tableViewActions.setLayoutName('ProfileAction')
         #self.ui.tableViewActions.setLayout()
         self.ui.tableViewActions.setItemDelegateForColumn(ACTION, ActionDelegate(self))
         self.ui.tableViewActions.setItemDelegateForColumn(AUTHORIZATION, RelationDelegate(self, authorizations))

@@ -33,10 +33,25 @@
 #      -> PyAppDBFunctionError
 #   -> PyAppDBWarning
 #   -> PyAppDBInfo
-
-
+        
 class PyAppDatabaseException(Exception):
     "Base exception class"
+    
+    def __init__(self, 
+                 code: str|None = None,
+                 message: str|None = None,
+                 detail: str|None = None) -> None:
+        # Pass the main message to the Exception base class 
+        # so str(error) will return the message correctly
+        # avoiding the error message RecursionError
+        super().__init__(message) 
+        self.code = code
+        self.message = message or ''
+        self.detail = detail or ''
+
+    def __str__(self):
+        "Format the message if printed"
+        return f"[{self.code}] {self.message} - {self.detail}"
 
 
 class PyAppDBConnectionError(PyAppDatabaseException):
@@ -45,11 +60,6 @@ class PyAppDBConnectionError(PyAppDatabaseException):
 
 class PyAppDBError(PyAppDatabaseException):
     "Error on interacting with database server"
-
-    def __init__(self, code: str|None = None, message: str|None = None) -> None:
-        super().__init__(code, message)
-        self.code = code or ''
-        self.message = message or ''
 
 
 class PyAppDBConcurrencyError(PyAppDBError):

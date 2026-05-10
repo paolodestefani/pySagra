@@ -162,4 +162,4 @@ def printStockUnloadReport(report_id: int,
         dialog = PrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)
-        dialog.exec_()
+        dialog.exec()

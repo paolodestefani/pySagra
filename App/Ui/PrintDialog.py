@@ -514,7 +514,7 @@ class Ui_PrintDialog(object):
         self.pushButtonDelete.setText(QCoreApplication.translate("PrintDialog", u"Delete", None))
         self.pushButtonClassDefault.setText(QCoreApplication.translate("PrintDialog", u"Set as class default", None))
         self.pushButtonSetSorting.setText(QCoreApplication.translate("PrintDialog", u"Set sorting to", None))
-        self.groupBox.setTitle(QCoreApplication.translate("PrintDialog", u"Report", None))
+        self.groupBox.setTitle(QCoreApplication.translate("PrintDialog", u"Report class / Report", None))
         self.labelReportClass.setText(QCoreApplication.translate("PrintDialog", u"Class", None))
         self.groupBoxNew.setTitle(QCoreApplication.translate("PrintDialog", u"New customization", None))
         self.pushButtonNewCustomization.setText(QCoreApplication.translate("PrintDialog", u"Create", None))

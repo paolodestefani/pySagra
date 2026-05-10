@@ -26,6 +26,9 @@
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -34,38 +37,86 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 def get_script(class_id: str) -> dict:
-    "Return script bind to provided class"
-    script = """SELECT method_name, trigger, script
+    "Return script bind to provided class for current company"
+    script = t"""
+SELECT 
+    method_name,
+    trigger,
+    script
 FROM system.python_scripting
-WHERE class_name = %s AND is_active IS true;"""
+WHERE 
+        company_id = system.pa_current_company()
+    AND class_name = {class_id} 
+    AND is_active IS true;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (class_id,))
+            cur.execute(script)
             if cur.rowcount:
                 return {(m, j): s for m, j, s in cur.fetchall()}
             else:
                 return {}
     except psycopg.Error as er:
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def load_script(cls: str,
                 mth: str, 
                 trg: str, 
-                script: str, 
-                act: bool
-                ) -> None:
+                act: bool,
+                cmp: int,
+                script: str) -> None:
     "Load a python script to database overwriting if necessary"
-    sql = """INSERT INTO system.python_scripting (class_name, method_name, trigger, script, is_active)
-    VALUES (%s, %s, %s, %s, %s)
-    ON CONFLICT ON CONSTRAINT python_scripting_pkey DO
-    UPDATE SET script = %s, is_active = %s;"""
+    script = t"""
+INSERT INTO system.python_scripting (
+    class_name,
+    method_name,
+    trigger,
+    is_active,
+    company_id,
+    script)
+VALUES (
+    {cls},
+    {mth},
+    {trg},
+    {act},
+    {cmp},
+    {script})
+ON CONFLICT ON CONSTRAINT python_scripting_unique DO
+UPDATE 
+SET script = {script},
+    is_active = {act};
+"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(sql, (cls, mth, trg, script, act, script, act))
+                cur.execute(script)
     except psycopg.Error as er:
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
+
+def get_all_scripts() -> None:
+    "Get all python scripts available"
+    script = """
+SELECT 
+    class_name,
+    method_name,
+    trigger,
+    is_active,
+    company_id,
+    script
+FROM system.python_scripting;
+"""
+    try:
+        with appconn.cursor() as cur:
+            cur.execute(script)
+            return cur.fetchall()
+    except psycopg.Error as er:
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

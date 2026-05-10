@@ -172,17 +172,23 @@ class MessageBox(QDialog):
         self.ui.frameDetails.setVisible(False)
         
 def MessageBoxCritical(parent, 
-                       title: str|None = None, 
+                       title: str|None = None,
+                       ercode: str|None = None,
                        text: str|None = None, 
                        detail: str|None = None,
                        type: str = 'T') -> None:
     "Show a critical message dialog with optional detail message"
     dlg = MessageBox(parent)
     dlg.setWindowTitle(title or _tr('Dialog', "Critical error"),)
+    if ercode:
+        ermsg = _tr('Dialog', "Server error code: ") + ercode
+    else:
+        ermsg = ""
+    dlg.ui.labelErrorCode.setText(ermsg)
     dlg.ui.labelMessage.setText(text or _tr('Dialog', "Unidentified critical error"),)
     match type:
         case 'T': # text
-            dlg.ui.textEditDetailMessage.setHtml(detail or "")
+            dlg.ui.textEditDetailMessage.setPlainText(detail or "")
         case 'H': # html
             dlg.ui.textEditDetailMessage.setHtml(detail or "")
         case 'M': # Markdown

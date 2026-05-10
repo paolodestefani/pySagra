@@ -102,7 +102,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.setupUi(self)
         self.view = self.ui.tableView  # required for formviewmanager
         self.ui.tableView.setModel(model)
-        self.ui.tableView.setLayoutName('table')
+        self.ui.tableView.setLayoutName('SeatMap')
         # self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ui.tableView.activateWindow()
         self.ui.tableView.setSortingEnabled(True)

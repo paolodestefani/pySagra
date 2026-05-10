@@ -28,6 +28,9 @@ This module provide companies database functions
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -35,6 +38,9 @@ import psycopg
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 def max_company_code() -> int:
@@ -52,7 +58,8 @@ FROM system.company;"""
             else:
                 return 0
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def company_is_in_use(company: int) -> bool:
     "Return True if the company is currently in use"
@@ -65,7 +72,8 @@ WHERE company_id = {company};"""
             cur.execute(script)
             return bool(cur.rowcount)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def create_company(company_id: int, company_desc: str, company_image: bytes|None) -> None:
     "Create a new company with the given parameters"
@@ -74,7 +82,8 @@ def create_company(company_id: int, company_desc: str, company_image: bytes|None
             with appconn.transaction():
                 cur.execute(t'SELECT system.pa_company_create({company_id}, {company_desc}, {False}, {company_image});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def drop_company(company_id: int) -> None:
     "Drop company"
@@ -83,7 +92,8 @@ def drop_company(company_id: int) -> None:
             with appconn.transaction():
                 cur.execute(t'SELECT system.pa_company_drop({company_id});')
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_company_access(company_id: int, user_code: str, profile_code: str, menu_code: str, toolbar_code: str)-> None:
     "Set access company for one user to the given company"
@@ -105,7 +115,8 @@ VALUES (
             with appconn.transaction():
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def company_list() -> list[tuple]:
     "Return available companies in current database"
@@ -119,4 +130,5 @@ FROM system.company;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

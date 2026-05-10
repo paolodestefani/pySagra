@@ -172,7 +172,7 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
         self.ui.setupUi(self)
         self.view = self.ui.tableView  # required for formviewmanager
         self.ui.tableView.setModel(model)
-        self.ui.tableView.setLayoutName("connectionsHistory")
+        self.ui.tableView.setLayoutName("ConnectionsHistory")
         # set read only view
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         # automatic setting initial value

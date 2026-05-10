@@ -27,6 +27,9 @@ This module provide all the facilities to manage cash desks
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -37,6 +40,11 @@ from PySide6.QtNetwork import QHostInfo
 # application modules
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
+
+
+# logger
+logger = logging.getLogger(__name__)
+
 
 
 def get_cash_desk_description() -> str|None:
@@ -57,5 +65,6 @@ WHERE
             else:
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))   
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 

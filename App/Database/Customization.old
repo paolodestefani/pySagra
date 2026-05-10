@@ -62,7 +62,7 @@ ORDER BY itemview_adapt_id, column_number;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 #def delete_itemview_customization():
     #"Delete all itemview customizations"
@@ -97,7 +97,7 @@ VALUES (%s, %s, %s, %s);"""
                 cur.execute(script1, (vid,))
                 cur.execute(script2, (vid, vdes, vclass, vdef))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_itemview_adapt_setting(vid: int,
                                vcol: int,
@@ -119,7 +119,7 @@ VALUES (%s, %s, %s, %s, %s);"""
             with appconn.transaction():
                 cur.execute(script, (vid, vcol, vsort, vvis, vsize))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_sortfilter_adapt(setting: bool = False) -> list:
     "Returns all the sort filter customizations"
@@ -149,7 +149,7 @@ ORDER BY sortfilter_adapt_id, element_type, layout_row;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 #def delete_sortfilter_customization():
     #"Delete all itemview customizations"
@@ -184,7 +184,7 @@ VALUES (%s, %s, %s, %s);"""
                 cur.execute(script1, (sid,))
                 cur.execute(script2, (sid, sdes, sclass, sdef))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def set_sortfilter_adapt_setting(sid: int,
                                  selem: str,
@@ -210,7 +210,7 @@ VALUES (%s, %s, %s, %s, %s, %s, %s);"""
             with appconn.transaction():
                 cur.execute(script, (sid, selem, slrow, scmb1, sneg, scmb2, svv))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_report_adapt(setting: bool = False) -> list:
     "Returns all the report customizations"
@@ -239,7 +239,7 @@ ORDER BY report_adapt_id, adapt_type, layout_row;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 #def delete_report_customization():
     #"Delete all itemview customizations"
@@ -272,7 +272,7 @@ ORDER BY report_adapt_id, adapt_type, layout_row;"""
 #             with appconn.transaction():
 #                 cur.execute(script, (rid, rri, rdes, rcls))
 #     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
+#         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 # def set_report_adapt_setting(raid: int,
 #                              ratyp: str,
@@ -296,7 +296,7 @@ ORDER BY report_adapt_id, adapt_type, layout_row;"""
 #             with appconn.transaction():
 #                 cur.execute(script, (raid, ratyp, rlrow, rcmb1, rcmb2, rvv))
 #     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
+#         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def clear_adapt(adapttype: str) -> None:
     "Clear customizations"
@@ -320,7 +320,7 @@ ALTER TABLE system.report_adapt ALTER COLUMN report_adapt_id RESTART WITH 1;"""
                     case 'R':
                         cur.execute(scriptR)    
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def update_identity() -> None:
     "Update identity value to last present in all customization tables"
@@ -347,5 +347,5 @@ language plpgsql;"""
             with appconn.transaction():
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 

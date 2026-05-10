@@ -27,6 +27,9 @@ Database utilities
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -35,6 +38,10 @@ from App.Database import OVFIELD
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import PyAppDBConcurrencyError
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 class Record(dict):
@@ -75,7 +82,8 @@ class Record(dict):
                 if result:
                     self.update(result)
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
     def insert_record(self) -> None:
         "Insert a record base on primary key"
@@ -91,7 +99,8 @@ class Record(dict):
                     if result:
                         self.update(result)
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
     def update_record(self) -> None:
         "Update a record base on primary key, raise an exception if modified before"
@@ -111,7 +120,8 @@ class Record(dict):
                         if not result:
                             raise PyAppDBConcurrencyError()
             except psycopg.Error as er:
-                raise PyAppDBError(er.diag.sqlstate, str(er))
+                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         # update
         script = (f"UPDATE {self.table}\n"
                   f"SET {', '.join([f'{i} = %({i})s' for i in self if i not in self.pkey])}\n"
@@ -125,7 +135,8 @@ class Record(dict):
                     if result:
                         self.update(result)
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
     def delete_record(self) :
         "Delete one record base on primary key, raise an exception if modified before"
@@ -144,7 +155,8 @@ class Record(dict):
                         if not result:
                             raise PyAppDBConcurrencyError()
             except psycopg.Error as er:
-                raise PyAppDBError(er.diag.sqlstate, str(er))
+                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         # delete
         script = (f"DELETE FROM {self.table}\n"
                   f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])}")
@@ -153,7 +165,8 @@ class Record(dict):
                 with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
                     cur.execute(script, self)
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 class RecordSet(list):
@@ -181,7 +194,8 @@ class RecordSet(list):
                         cur.execute(script, r)
                         r.update(cur.fetchone())
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
     def select_records(self) -> None:
         "Select a record of a table based on primay key value"
@@ -196,4 +210,5 @@ class RecordSet(list):
                     for r in cur:
                         self.append(r)
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

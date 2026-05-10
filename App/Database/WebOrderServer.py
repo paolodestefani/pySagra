@@ -25,6 +25,9 @@
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -34,6 +37,9 @@ from App.Database.Connect import appconn
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 def get_web_order_server_params() -> tuple[str|None, int|None, str|None, str|None, str|None, str|None]:
@@ -47,7 +53,8 @@ SELECT
     user_password,
     file_name
 FROM web_order_server
-WHERE company_id = system.pa_current_company();"""
+WHERE company_id = system.pa_current_company();
+"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
@@ -67,7 +74,9 @@ WHERE company_id = system.pa_current_company();"""
                         None,
                         None)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def set_web_order_server_params(server: str,
                                 port: int,
@@ -76,7 +85,7 @@ def set_web_order_server_params(server: str,
                                 password: str,
                                 filename: str) -> None:
     "Set web order server connection parameters and file name"
-    script = """
+    script = t"""
 INSERT INTO web_order_server (
     company_id, 
     server_address,
@@ -87,27 +96,25 @@ INSERT INTO web_order_server (
     file_name)
 VALUES (
         system.pa_current_company(),
-        %s,
-        %s,
-        %s,
-        %s,
-        %s,
-        %s)
+        {server},
+        {port},
+        {encoding},
+        {string_encode(username)},
+        {string_encode(password)},
+        {string_encode(filename)})
 ON CONFLICT ON CONSTRAINT web_order_server_pk DO 
-UPDATE SET server_address = EXCLUDED.server_address,
+UPDATE 
+SET server_address = EXCLUDED.server_address,
     port_number = EXCLUDED.port_number,
     user_name = EXCLUDED.user_name,
     user_password = EXCLUDED.user_password,
-    file_name = EXCLUDED.file_name;"""
+    file_name = EXCLUDED.file_name;
+"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (server,
-                                     port,
-                                     encoding,
-                                     string_encode(username),
-                                     string_encode(password),
-                                     string_encode(filename)))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     

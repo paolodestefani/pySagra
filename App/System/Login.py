@@ -151,37 +151,38 @@ class LoginDialog(QDialog):
         except PyAppDBConnectionError as er:
             # for normal cursor on error message box
             QGuiApplication.restoreOverrideCursor()
-            msg = _tr("Login", "Error on connecting to database server")
             MessageBoxCritical(self,
                                _tr("MessageDialog", "Database connection"),
-                               msg,
-                               str(er))
+                               er.code,
+                               er.message,
+                               er.detail)
             self.ui.lineEditPassword.clear()
             logger.error("Database connection error %s", er)
             return
         except PyAppDBError as er:
             # for normal cursor on error message box
             QGuiApplication.restoreOverrideCursor()
-            if er.code == EWDBS: # wrong database server version
-                msg = _tr("Login", "Wrong database server version")
-            elif er.code == EWADB: # wrong application database
-                msg = _tr("Login", "Wrong application database")
-            elif er.code == EWAPV: # wrong application version
-                msg = _tr("Login", "Wrong application version")
-            elif er.code == EPWDR: # a password is required
-                msg = _tr("Login", "A password is required")
-            elif er.code in (EUKNU, EWPWD): # authentication failed (wrong user or password)
-                msg = _tr("Login", "Authentication failed (wrong user or password)")
-            else:
-                msg = f"Error:{er.code or 'undefined'}"
-
-            MessageBoxCritical(self,
-                               _tr('MessageDialog', 'Critical'),
-                               msg,
-                               str(er.message))
+            if er.code in (EPWDR, EUKNU, EWPWD): # authentication failed (wrong user or password)
+                msg = _tr("Login", "Authentication failed\nwrong user or password")
+                QMessageBox.warning(self,
+                                _tr('MessageDialog', 'Warning'),
+                                msg)
+            else: # other error codes
+                if er.code == EWDBS:
+                    msg = _tr("Login", 'Wrong database server version')
+                elif er.code == EWADB:
+                    msg = _tr("Login", 'Wrong application database')
+                elif er.code == EWAPV:
+                    msg = _tr("Login", 'Wrong application database version')
+                else:
+                    msg = er.message
+                MessageBoxCritical(self,
+                               _tr("MessageDialog", "Database error"),
+                               er.code,
+                               er.message,
+                               er.detail)
             self.ui.lineEditPassword.clear()
-            logger.critical("Connection error %s\n%s", er.code, er.message)
-            
+            logger.critical("Connection error %s\n%s", er.code, str(er))
             return
         finally:
             QGuiApplication.restoreOverrideCursor()
@@ -242,9 +243,23 @@ class LoginDialog(QDialog):
             try:
                 appconn.change_company(session['current_company'])
             except PyAppDBError as er:
-                QMessageBox.critical(None,
-                                     _tr("MessageDialog", "Critical"),
-                                     f"Database error: {er.code}\n{er.message}")
+                if er.code in (EUKNC,ENACR):    
+                    if er.code == EUKNC:
+                        msg = _tr("Login", 'Unknown company')
+                    elif er.code == ENACR:
+                        msg = _tr("Login", 'No access rights to required company')
+                    else:
+                        pass
+                    msg = f"{msg}\n{er.message}"
+                    QMessageBox.warning(None,
+                                        _tr("MessageDialog", "Critical"),
+                                        msg)
+                else:
+                    MessageBoxCritical(self,
+                               _tr("MessageDialog", "Database error"),
+                               er.code,
+                               er.message,
+                               er.detail)
                 logger.error("Database error %s", er.message)
                 return
         else:

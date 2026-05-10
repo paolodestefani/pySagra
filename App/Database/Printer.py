@@ -26,6 +26,9 @@
 
 """
 
+# standard library
+import logging
+
 # psycopg
 import psycopg
 
@@ -34,18 +37,26 @@ from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 def get_printer_name(class_id: int, computer: str) -> str|None:
     "Return the printer name of class_id"
-    script = """SELECT printer
+    script = t"""
+SELECT printer
 FROM printer_class_printer
-WHERE printer_class_id = %s AND computer = %s;"""
+WHERE 
+        printer_class_id = {class_id} 
+    AND computer = {computer};"""
     try:
             with appconn.cursor() as cur:
-                cur.execute(script, (class_id, computer))
+                cur.execute(script)
                 pn = next(cur, None)
                 if pn is not None:
                     return pn[0]
                 else:
                     return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

@@ -21,11 +21,15 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - sql report extraction
+"""Database - Report
 
-
+Database functions for raport management
 
 """
+
+# standard library
+import logging
+
 # standard library
 from typing import Callable
 
@@ -39,6 +43,10 @@ from App.Database.Connect import appconn
 from App.Report.ReportEngine import Report
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 def delete_all_reports() -> None:
     "Delete all reports, update identity"
     script = """
@@ -49,7 +57,9 @@ ALTER TABLE system.report ALTER COLUMN report_id RESTART WITH 1;"""
             with appconn.transaction():
                 cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def load_report(report_code: str,
                 l10n: str,
@@ -59,7 +69,7 @@ def load_report(report_code: str,
                 xml_data: str
                 ) -> None:
     "Load a report filling system.report"
-    script = """
+    script = t"""
 INSERT INTO system.report (
     report_code,
     l10n,
@@ -67,29 +77,31 @@ INSERT INTO system.report (
     description,
     xml_data,
     is_system_object)
-VALUES (%s, %s, %s, %s, %s, %s)
-    ON CONFLICT ON CONSTRAINT report_unique DO
-	UPDATE SET report_class = %s, description = %s, xml_data = %s, is_system_object = %s;
-    """
+VALUES (
+    {report_code}, 
+    {l10n},
+    {report_class},
+    {description},
+    {xml_data},
+    {system})
+ON CONFLICT ON CONSTRAINT report_unique DO
+UPDATE 
+SET report_class = {report_class}, 
+    description = {description},
+    xml_data = {xml_data},
+    is_system_object = {system};
+"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():
-                cur.execute(script, (report_code,
-                                     l10n,
-                                     report_class,
-                                     description,
-                                     xml_data,
-                                     system,
-                                     report_class,
-                                     description,
-                                     xml_data,
-                                     system))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def list_all_reports() -> list:
     "List all reports from system.report for exporting purposes"
-    script = f"""
+    script = t"""
 SELECT
     r.report_code,
     r.l10n,
@@ -112,141 +124,29 @@ ORDER BY v.i, report_code, l10n;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
-# def clear_report_adapt(adapt_id: int) -> None:
-#     "Clear the report customizations setting"
-#     script = """
-# DELETE FROM system.adaptation_setting
-# WHERE adaptation_id = %s;"""
-#     try:
-#         with appconn.cursor() as cur:
-#             with appconn.transaction():
-#                 cur.execute(script, (adapt_id,))
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def get_report_adapt_setting(adapt_id: int) -> tuple:
-#     "Returns the report customizations"
-#     script = """
-# SELECT 
-#     element_type,
-#     layout_row,
-#     combo1_index,
-#     negate_state,
-#     combo2_index,
-#     widget_value
-# FROM system.adaptation_setting
-# WHERE adaptation_id = %s
-# ORDER BY element_type, layout_row;"""
-#     try:
-#         with appconn.cursor() as cur:
-#             cur.execute(script, (adapt_id,))
-#             if cur.rowcount == 0:
-#                 return [], [], [] # Parameters, Filters, Sorting
-#             else:
-#                 d = cur.fetchall()
-#                 p = [i for i in d if i[0] == 'P'] # Parameters
-#                 f = [i for i in d if i[0] == 'F'] # Filters
-#                 s = [i for i in d if i[0] == 'S'] # Sorting
-#                 return p, f, s
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def set_report_adapt(adapt_id: int, columns: list[tuple]) -> None:
-#     "Set the report adaptation definition"
-#     script1 = """
-# DELETE FROM system.adaptation_setting
-# WHERE adaptation_id = %s;"""
-#     script2 = """
-# INSERT INTO system.adaptation_setting (
-#     adaptation_id, 
-#     element_type, 
-#     layout_row, 
-#     combo1_index, 
-#     negate_state,
-#     combo2_index, 
-#     widget_value)
-# VALUES (%s, %s, %s, %s, %s, %s, %s);"""
-#     try:
-#         with appconn.cursor() as cur:
-#             with appconn.transaction():
-#                 cur.execute(script1, (adapt_id,))
-#                 cur.executemany(script2, columns)
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def delete_report_adapt(adapt_id: int) -> None:
-#     "Delete report adapt"
-#     script = """
-# DELETE FROM system.adaptation
-# WHERE adaptation_id = %s;"""
-#     try:
-#         with appconn.cursor() as cur:
-#             with appconn.transaction():
-#                 cur.execute(script, (adapt_id,))
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def create_new_adapt(report_class: str, report_id: int, adapt_desc: str) -> None:
-#     "Create a new customization"
-#     script = """
-# INSERT INTO system.adaptation (type, class, report_id, description)
-# VALUES ('R', %s, %s, %s);"""
-#     try:
-#         with appconn.cursor() as cur:
-#             with appconn.transaction():
-#                 cur.execute(script, (report_class, report_id, adapt_desc))
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
+    
 def report_class_adapt_list(class_code: str, l10n: str='en_US') -> list:
     "Return id and description of all the report customizations for the input class"
-    script1 = """
+    script = t"""
 SELECT 
     ra.adaptation_id, 
     ra.description
 FROM system.adaptation ra
 JOIN system.report r ON ra.report_id = r.report_id
-WHERE r.report_class = %s AND r.l10n = %s 
+WHERE 
+        r.report_class = {class_code}
+    AND r.l10n = {l10n}
 ORDER BY ra.class_sorting;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script1, (class_code, l10n))
+            cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def report_adapt_sorting(adapt_id: int) -> int:
-#     "Returns the report customization sorting index"
-#     script = """
-# SELECT 
-#     class_sorting
-# FROM system.adaptation
-# WHERE adaptation_id = %s;"""
-#     try:
-#         with appconn.cursor() as cur:
-#             cur.execute(script, (adapt_id,))
-#             result = next(cur, None)
-#             if result:
-#                 return result[0]
-#             else:
-#                 return 0
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
-
-# def set_report_adapt_sorting(adapt_id: int, sorting: int) -> None:
-#     "Set customization sorting index"
-#     script = """
-# UPDATE system.adaptation
-# SET class_sorting = %s
-# WHERE adaptation_id = %s;"""
-#     try:
-#         with appconn.cursor() as cur:
-#             with appconn.transaction():
-#                 cur.execute(script, (sorting, adapt_id))
-#     except psycopg.Error as er:
-#         raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def get_report_list(report_class: str,
@@ -254,79 +154,84 @@ def get_report_list(report_class: str,
                     null: bool=False
                     ) -> list:
     "Return code and description of all reports of l10n localization or en_US"
-    script = """
+    script = t"""
 SELECT 
     report_id,
     report_code, 
     description
 FROM system.report
 WHERE 
-    report_class = %s AND
-    l10n = %s;"""
+        report_class = {report_class} 
+    AND l10n = {l10n};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (report_class, l10n))
+            cur.execute(script)
             records = cur.fetchall()
             return [(None, '')] + records if null else records
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def report_description(report_id: int) -> str|None:
     "Return the report description of report code of l10n localization or en_US"
-    script = """
+    script = t"""
 SELECT 
     description
 FROM system.report
-WHERE report_id = %s;"""
+WHERE report_id = {report_id};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (report_id,))
+            cur.execute(script)
             result = next(cur, None)
             if result:
                 return result[0]
             else:
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_report_id(report_code: str, l10n: str) -> int:
     "Return the report ID of report code and l10n localization or en_US"
-    script = """
+    script = t"""
 SELECT coalesce(a.report_id, b.report_id)
 FROM system.report a
 JOIN system.report b ON a.report_code = b.report_code AND b.l10n = 'en_US'
-WHERE a.report_code = %s AND a.l10n = %s;"""
+WHERE a.report_code = {report_code} AND a.l10n = {l10n};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (report_code, l10n))
+            cur.execute(script)
             result = next(cur, None)
             if result:                
                 return result[0]
             else:                
                 return 0
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def report_xml(report_id: int) -> str|None:
     "Report XML definition of the report for required report customization"
-    script = """
+    script = t"""
 SELECT 
     xml_data
 FROM system.report
-WHERE report_id = %s;"""
+WHERE report_id = {report_id};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (report_id,))
+            cur.execute(script)
             result = next(cur, None)
             if result:
                 return result[0]
             else:
                 return None
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_report_from_adapt(adapt_id: int) -> tuple|tuple[None]:
-    script = """
+    script = t"""
 SELECT 
     r.report_id,
     r.report_code,
@@ -335,13 +240,15 @@ SELECT
     r.l10n
 FROM system.report r
 JOIN system.adaptation ra ON r.report_id = ra.report_id AND ra.type = 'R'
-WHERE ra.adaptation_id = %s;"""
+WHERE ra.adaptation_id = {adapt_id};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (adapt_id,))
+            cur.execute(script)
             return next(cur, (None, None, None, None, None))
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def report_query(report: Report, condition: list|None = None, sorting: list|None = None) -> list|None:
     "Returns dataset from report query/where/order by and dynamic where/orderby clauses"
@@ -393,4 +300,5 @@ def report_query(report: Report, condition: list|None = None, sorting: list|None
             cur.execute(script, args)
             return cur.fetchall()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

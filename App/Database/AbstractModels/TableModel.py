@@ -142,7 +142,6 @@ class QueryModel(QAbstractTableModel):
             case _:
                 return None
 
-
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> str|None:
         "Returns header data for row (field header)/column (columns number) headers"
         if orientation == Qt.Orientation.Horizontal:
@@ -280,7 +279,7 @@ class QueryModel(QAbstractTableModel):
                     for j, field in enumerate(record):
                         self.dataSet[i, j] = field
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         self.endResetModel()
         
     def revertAll(self) -> None:
@@ -423,7 +422,7 @@ class QueryWithParamsModel(QAbstractTableModel):
                     for j, field in enumerate(record):
                         self.dataSet[i, j] = field
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         self.endResetModel()
 
     def revertAll(self) -> None:
@@ -728,7 +727,7 @@ class QueryWithParamsModel(QAbstractTableModel):
                 
 #         except psycopg.Error as er:
 #             logger.error(f"**** {self.repr} SUBMITALL error ****\n{er}")
-#             raise PyAppDBError(er.diag.sqlstate, str(er))
+#             raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 #         self.isDirty = False
 #         return True
 
@@ -940,7 +939,7 @@ class QueryWithParamsModel(QAbstractTableModel):
 #                     # append on record list
 #                     self.dataSet.append(item)
 #         except psycopg.Error as er:
-#             raise PyAppDBError(er.diag.sqlstate, str(er))
+#             raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 #         # create an unfiltered master row mapping
 #         self.filterMapping = {i: i  for i in range(len(self.dataSet))}
 #         # notify of changes
@@ -1228,7 +1227,7 @@ class TableModel(QAbstractTableModel):
             return True
 
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
     def revertAll(self) -> None:
@@ -1427,7 +1426,7 @@ class TableModel(QAbstractTableModel):
 
         except psycopg.Error as er:
             self.endResetModel()
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
         # create an unfiltered master row mapping
         self.filterMapping = {i: i  for i in range(len(self.dataSet))}
@@ -1471,7 +1470,7 @@ class PandasModel(QAbstractTableModel):
                 df = pd.DataFrame(cur.fetchall(), columns=columns)
                 #print(df.head())
         except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, str(er))   
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))   
         # force correct data types
         f = {self.columns[i][0]: self.columns[i][3] for i in self.columns if self.columns[i][3]}
         self._dataframe = df.astype(f)

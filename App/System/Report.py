@@ -118,7 +118,7 @@ class ReportForm(FormIndexManager):
         self.ui = Ui_ReportWidget()
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('report')
+        self.ui.tableView.setLayoutName('ReportIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.ui.comboBoxL10n.setItemList(langCountryFlags())

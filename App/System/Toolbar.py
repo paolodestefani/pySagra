@@ -101,7 +101,7 @@ class ToolbarForm(FormIndexManager):
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         self.setIndexView(self.ui.tableView)
         # widget settings
-        self.ui.tableView.setLayoutName('toolbar')
+        self.ui.tableView.setLayoutName('ToolbarIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCode, CODE)
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)

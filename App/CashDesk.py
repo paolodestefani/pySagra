@@ -85,7 +85,7 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         self.availableStatus = (True, True, True, True, False, False, False, False,
                                 False, False, False, False)
         self.setView(self.ui.tableView)  # required for formviewmanager
-        self.ui.tableView.setLayoutName('cashDesk')
+        self.ui.tableView.setLayoutName('CashDesk')
         self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
         # self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_list))
         # self.ui.tableView.setItemDelegateForColumn(SORTING, IntegerDelegate(self))

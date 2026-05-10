@@ -4,27 +4,27 @@
 <context>
     <name>ChangeCompany</name>
     <message>
-        <location filename="../../App/System/Login.py" line="298"/>
+        <location filename="../../App/System/Login.py" line="293"/>
         <source>Change company</source>
         <translation>Cambia azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="311"/>
+        <location filename="../../App/System/Login.py" line="306"/>
         <source>There are no other companies you can login</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="314"/>
+        <location filename="../../App/System/Login.py" line="309"/>
         <source>Choose a company to login</source>
         <translation type="unfinished">Selezionare un&apos;azienda a cui collegarsi</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="334"/>
+        <location filename="../../App/System/Login.py" line="329"/>
         <source>Unknown company id</source>
         <translation>ID azienda sconosciuto</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="336"/>
+        <location filename="../../App/System/Login.py" line="331"/>
         <source>No access rights to required company</source>
         <translation>NOn hai i diritti di accesso all&apos;azienda selezionata</translation>
     </message>
@@ -37,42 +37,18 @@
         <translation>{APPNAME} - Login</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="154"/>
-        <source>Error on connecting to database server</source>
-        <translation>Errore di connessione al database server</translation>
-    </message>
-    <message>
         <location filename="../../App/System/Login.py" line="166"/>
-        <source>Wrong database server version</source>
-        <translation>Versione del database server errata</translation>
+        <source>Authentication failed
+wrong user or password</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="168"/>
-        <source>Wrong application database</source>
-        <translation>Database applicativo errato</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="170"/>
-        <source>Wrong application version</source>
-        <translation>Versione dell&apos;applicazione errata</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="172"/>
-        <source>A password is required</source>
-        <translation>E&apos; necessario inserire una password</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="174"/>
-        <source>Authentication failed (wrong user or password)</source>
-        <translation>Autenticazione fallita (utente o password errati)</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="259"/>
+        <location filename="../../App/System/Login.py" line="254"/>
         <source>There is no company you can log on</source>
         <translation>Non ci sono aziende alle quali collegarci</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="282"/>
+        <location filename="../../App/System/Login.py" line="277"/>
         <source>Password change is required</source>
         <translation>E&apos; necessario modificare la password</translation>
     </message>
@@ -189,27 +165,32 @@
 <context>
     <name>MessageDialog</name>
     <message>
-        <location filename="../../App/System/Login.py" line="156"/>
+        <location filename="../../App/System/Login.py" line="155"/>
         <source>Database connection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="179"/>
-        <location filename="../../App/System/Login.py" line="246"/>
-        <location filename="../../App/System/Login.py" line="258"/>
-        <location filename="../../App/System/Login.py" line="341"/>
+        <location filename="../../App/System/Login.py" line="168"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Login.py" line="241"/>
+        <location filename="../../App/System/Login.py" line="253"/>
+        <location filename="../../App/System/Login.py" line="336"/>
         <source>Critical</source>
         <translation>Critico</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="269"/>
-        <location filename="../../App/System/Login.py" line="305"/>
-        <location filename="../../App/System/Login.py" line="356"/>
+        <location filename="../../App/System/Login.py" line="172"/>
+        <location filename="../../App/System/Login.py" line="264"/>
+        <location filename="../../App/System/Login.py" line="300"/>
+        <location filename="../../App/System/Login.py" line="351"/>
         <source>Database error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="281"/>
+        <location filename="../../App/System/Login.py" line="276"/>
         <source>Information</source>
         <translation>Informazioni</translation>
     </message>

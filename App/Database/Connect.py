@@ -92,11 +92,12 @@ class AppConnection():
                                          autocommit=True,
                                          application_name=APPNAME)
         except psycopg.OperationalError as er:
-            logging.critical("Psycopg operational error: %s", str(er))
-            raise PyAppDBConnectionError(er)
+            msg = str(er) # avoid loggin max recursion error
+            logging.critical("Psycopg operational error: %s", msg) # OperationalError miss a diag attribute
+            raise PyAppDBConnectionError(None, "Psycopg operational error on connection", msg)
         except psycopg.Error as er:
-            logging.critical("Psycopg error: %s", str(er))
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         else:
             logging.info("Database connection established")
 
@@ -119,8 +120,8 @@ SELECT EXISTS(SELECT 1
                     raise PyAppDBError(EWADB, f"Database '{par['database']}' is not an application database")
                 logging.info("DB is verified as an application database")
         except psycopg.Error as er:
-            logging.critical("Psycopg error: %s", str(er))
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         # connect to the applicationdb
         logging.info("Calling application connection function with parameters:")
         logging.info("pgminver = %s", MRV_PGSQL)
@@ -147,8 +148,8 @@ SELECT EXISTS(SELECT 1
                 session.update(next(cur))
                 logging.info("DB Application connection established")
         except psycopg.Error as er:
-            logging.error("Psycopg error: %s", str(er))
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         self._par.update(par)
 
     def change_company(self, company: int) -> None:
@@ -158,8 +159,8 @@ SELECT EXISTS(SELECT 1
                 cur.execute(t"SELECT * FROM system.pa_company_change({company});")
                 session.update(next(cur))
         except psycopg.Error as er:
-            logging.error("Psycopg error: %s", str(er))
-            raise PyAppDBError(er.diag.sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
     def cursor(self, row_factory: Optional[psycopg.rows.RowFactory[Any]] = None,
                 binary: bool = False
@@ -190,7 +191,7 @@ SELECT EXISTS(SELECT 1
             with self._conn.cursor() as cur:
                 cur.execute("SELECT system.pa_disconnect();")
         except psycopg.Error as er:
-            logging.error("Psycopg error: %s", str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
             raise PyAppDBConnectionError(er)
         # close db connection
         self._conn.close()
@@ -215,15 +216,14 @@ WHERE uc.app_user_code = {user} AND uc.company_id = {company};"""
             cur.execute(script)
             return bool(cur.rowcount)
     except psycopg.Error as er:
-        logging.error("Psycopg error: %s", str(er))
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))#
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def has_companies_available(user: str) -> bool:
     """Returns True if user have available working company(ies)"""
     if user == session['app_system_user']:
         return True
-    script = """
+    script = t"""
 SELECT exists(
         SELECT company_id 
         FROM system.app_user_company 
@@ -233,9 +233,8 @@ SELECT exists(
             cur.execute(script)
             return next(cur)[0]
     except psycopg.Error as er:
-        logging.error("Psycopg error: %s", str(er))
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_companies_list(user: str|None = None) -> list[tuple[int, str]]:
     """Get the available company list for user or all companies"""
@@ -262,9 +261,8 @@ WHERE session_id = pg_backend_pid();"""
                 cur.execute(script)
                 return cur.fetchall()
         except psycopg.Error as er:
-            logging.error("Psycopg error: %s", str(er))
-            sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-            raise PyAppDBError(sqlstate, str(er))
+            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     else: # all companies list
         script = """
 SELECT 
@@ -276,9 +274,8 @@ FROM system.company c;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        logging.error("Psycopg error: %s", str(er))
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_company_desc(company: int) -> str:
     "Get company description"
@@ -292,9 +289,8 @@ WHERE c.company_id = {company};"""
             cur.execute(script)
             return next(cur)[0]
     except psycopg.Error as er:
-        logging.error("Psycopg error: %s", str(er))
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
 def get_current_event() -> None:
     "Check if an event is available for current date, if true update session dictionary"
@@ -319,9 +315,8 @@ WHERE
                 session['event_description'] = event[1] # description
                 session['event_image'] = event[2] # image
     except psycopg.Error as er:
-        logging.error("Psycopg error: %s", str(er))
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def database_information() -> list[tuple[str, str]]:
@@ -357,7 +352,6 @@ LIMIT 1;"""
                 return [] 
             return list(zip(colnames, row))
     except psycopg.Error as er:
-        logging.error("Psycopg error: %s", str(er))
-        sqlstate = er.diag.sqlstate if er.diag else "Unknown"
-        raise PyAppDBError(sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 

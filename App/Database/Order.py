@@ -28,6 +28,7 @@
 """
 # standard library
 from typing import Any
+import logging
 
 # psycopg
 import psycopg
@@ -52,6 +53,9 @@ from App.Database.Department import get_department_barcode
 from App.Database.Event import get_event_from_date
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def get_order_number(event_id: int,
                      event_date: QDate|None = None,
@@ -68,80 +72,83 @@ WHERE company_id = system.pa_current_company();"""
             cur.execute(script)
             mode = next(cur)[0]
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
     number = 1
     match mode:
         case 'E':
             # event based numbering
-            script = """
+            script = t"""
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 
 WHERE   company_id  = system.pa_current_company()
-    AND event_id    = %s;"""
+    AND event_id    = {event_id};"""
             try:
                 with appconn.cursor() as cur:
-                    cur.execute(script, (event_id,))
+                    cur.execute(script)
                     number = next(cur)[0] or 1
             except psycopg.Error as er:
-                raise PyAppDBError(er.diag.sqlstate, str(er))
+                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
             
         case 'D':
             # day based numbering
-            script = """
+            script = t"""
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 
 WHERE company_id = system.pa_current_company()
-    AND event_id = %s
-    AND event_date = %s"""
+    AND event_id = {event_id}
+    AND event_date = {event_date}"""
             try:
                 with appconn.cursor() as cur:
-                    cur.execute(script, (event_id, event_date))
+                    cur.execute(script)
                     number = next(cur)[0] or 1
             except psycopg.Error as er:
-                raise PyAppDBError(er.diag.sqlstate, str(er))
+                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
         
         case 'P':
             # day part based numbering
-            script = """
+            script = t"""
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 
 WHERE company_id = system.pa_current_company()
-    AND event_id = %s
-    AND event_date = %s
-    AND day_part = %s;"""
+    AND event_id = {event_id}
+    AND event_date = {event_date}
+    AND day_part = {day_part};"""
             try:
                 with appconn.cursor() as cur:
-                    cur.execute(script, (event_id, event_date, day_part))
+                    cur.execute(script)
                     number = next(cur)[0] or 1
             except psycopg.Error as er:
-                raise PyAppDBError(er.diag.sqlstate, str(er))
+                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     return number
-
 
 def get_orders_issued(event_id: int, date: QDate, day_part: str) -> int:
     "Returns the issued number of orders for event, day and day part"
      # actually we don't need to filter company_id as event_id is unique across companies
-    script = """
+    script = t"""
 SELECT count(*)
 FROM order_header
 WHERE 
     company_id = system.pa_current_company()
-    AND event_id = %s 
-    AND stat_order_date = %s
-    AND stat_order_day_part = %s;"""
+    AND event_id = {event_id} 
+    AND stat_order_date = {date}
+    AND stat_order_day_part = {day_part};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (event_id, date, day_part))
+            cur.execute(script)
             return next(cur)[0] or 0
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
-
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 def get_order_header_department_details(barcode: str) -> tuple|None:
     "Returns params of the given order header department barcode"
     # actually we don't need to filter company_id as event_id is unique across companies
-    script = """
+    script = t"""
 SELECT 
     ohd.order_header_department_id,
     oh.order_header_id,
@@ -159,38 +166,40 @@ JOIN order_header oh ON ohd.order_header_id = oh.order_header_id
 JOIN department dep ON ohd.department_id = dep.department_id
 WHERE 
     ohd.company_id = system.pa_current_company()
-    AND ohd.barcode = %s;"""
+    AND ohd.barcode = {barcode};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script, (barcode,))
+            cur.execute(script)
             return cur.fetchone()
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def update_order_header_department_status(order_id: int, mark: bool=True) -> None:
     "Set to processed the given order header department id"
     # actually we don't need to filter company_id as order_id is unique across companies
     if mark:  # set datetime or null to unmark
-        script = """
+        script = t"""
 UPDATE order_header_department
 SET fullfillment_date = CURRENT_TIMESTAMP
 WHERE
     company_id = system.pa_current_company()
-    AND order_header_department_id = %s;"""
+    AND order_header_department_id = {order_id};"""
     else:
-        script = """
+        script = t"""
 UPDATE order_header_department
 SET fullfillment_date = Null
 WHERE
     company_id = system.pa_current_company()
-    AND order_header_department_id = %s;"""
+    AND order_header_department_id = {order_id};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script, (order_id,))
+                cur.execute(script)
     except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 class Order():

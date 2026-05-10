@@ -98,7 +98,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui = Ui_OrderProgressWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableViewOrder)  # required for formviewmanager
-        self.ui.tableViewOrder.setLayoutName('OrderStatus')
+        self.ui.tableViewOrder.setLayoutName('OrderProgress')
         self.ui.tableViewOrder.setItemDelegate(GenericDelegate(self))
         # set default filter values
         self.ui.checkBoxAcquired.setChecked(True)
