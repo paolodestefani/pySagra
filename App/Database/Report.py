@@ -101,7 +101,7 @@ SET report_class = {report_class},
 
 def list_all_reports() -> list:
     "List all reports from system.report for exporting purposes"
-    script = t"""
+    script = f"""
 SELECT
     r.report_code,
     r.l10n,

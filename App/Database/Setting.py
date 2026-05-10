@@ -51,8 +51,8 @@ class SettingClass():
         "Get value for key from setting table"
         # use fstring because field names are not used for cursor parameters
         # t-strings don't work as of psycopg 3.3.4
-        script = f"""
-SELECT {key}
+        script = t"""
+SELECT {key:i}
 FROM company.setting 
 WHERE company_id = system.pa_current_company();"""
         try:
@@ -68,9 +68,9 @@ WHERE company_id = system.pa_current_company();"""
 
     def __setitem__(self, key: str, value: str) -> None:
         "Set value for key in setting table"
-        script = f"""
+        script = t"""
 UPDATE company.setting
-SET {key} = {value}
+SET {key:i} = {value}
 WHERE company_id = system.pa_current_company();"""
         try:
             with appconn.transaction():
