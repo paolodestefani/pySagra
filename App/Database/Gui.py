@@ -21,7 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Gui database functions
+"""Database - Gui
+
+Database fubctions for GUI management
 
 """
 
@@ -78,6 +80,7 @@ ORDER BY m.sorting;"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
+    
 def get_toolbar(item: str) -> list[tuple]:
     "Returns toolbar definition from system.menu_item"
     script = t"""
@@ -96,6 +99,7 @@ ORDER BY t.sorting;"""
     except psycopg.Error as er:
         rlogger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def get_menu_tree(menu: str) -> list[tuple]:
     "Returns actions for given menu"
@@ -117,6 +121,7 @@ ORDER BY sorting;"""
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def set_user_theme(theme: str) -> None:
     "Update last used theme for user"

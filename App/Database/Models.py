@@ -23,6 +23,8 @@
 
 """SQL Models
 
+This module provide all the sql models derived from an abstract model
+
 """
 
 # standard library
@@ -96,9 +98,6 @@ class MenuItemTreeModel(TreeModel):
         self.childField = "child"
         self.childFieldColumn = 1
         self.repr = 'Menu item tree model'
-        # sql order by clause, plain sql string without ORDER BY
-        # self.addOrderBy("parent")
-        # self.addOrderBy("sorting")
 
 
 class ToolbarItemTreeModel(TreeModel):
@@ -127,9 +126,6 @@ class ToolbarItemTreeModel(TreeModel):
         self.childField = "child"
         self.childFieldColumn = 1
         self.repr = 'Toolbar item tree model'
-        # sql order by clause, plain sql string without ORDER BY
-        # self.addOrderBy("parent")
-        # self.addOrderBy("sorting")
 
 
 class ConnectionModel(QueryModel):
@@ -1122,32 +1118,6 @@ class MenuPartModel(TableModel):
         self.repr = 'Menu part table model'
 
 
-# class PriceListItemModel(TableModel):
-
-#     def __init__(self, parent: QObject = None) -> None:
-#         super().__init__(parent)
-#         self.table = "company.price_list_item"
-#         # model columns: (field, description, readonly, type), tuple of tuples
-#         # available types: int, bool, decimal2, str, date, datetime, None = no filter
-#         self.columns = (("price_list_item_id", _tr('Models', 'ID'), False, 'int'),
-#                         ("price_list_id", _tr('Models', 'Price list'), False, 'int'),
-#                         ("item_id", _tr('Models', 'Item'), False, 'int'),
-#                         ("price", _tr('Models', 'Price'), False, 'decimal2'),
-#                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
-#                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
-#                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-#                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
-#         # True if is a company table
-#         self.isCompanyTable = True
-#         # primary key fields, tuple or list
-#         self.primaryKey = ("price_list_item_id",)
-#         self.automaticPKey = True
-#         # master/detail relation {table field: reference field}
-#         self.foreignKey = {'item_id': 'id', 'price_list_id': 'id'}
-#         # sql order by clause, plain sql string without ORDER BY
-#         self.addOrderBy("price_list_item_id")
-
-
 class PriceListIndexModel(QueryModel):
 
     def __init__(self, parent: QObject|None = None) -> None:
@@ -1540,6 +1510,7 @@ class SalesSummaryModel(QueryWithParamsModel):
         return QueryWithParamsModel.rowCount(self) + 1
 
     def data(self, index, role=Qt.DisplayRole):
+        "Totals on last row"
         if index.row() == QueryWithParamsModel.rowCount(self): # last row
             if role == Qt.FontRole:
                 font = QFont()
@@ -1624,7 +1595,6 @@ FROM company.order_header;"""
         self.addOrderBy("order_header_id")
         # reference fields dictionary
         self.reference = {'event_id': event_lookup}
-
 
 
 class OrderHeaderModel(TableModel):
@@ -1771,32 +1741,31 @@ class OrderDepartmentTreeModel(TreeQueryModel):
 
     def __init__(self, parent: QObject|None = None) -> None:
         super().__init__(parent)
-        self.script = [
-    """
-	SELECT 
-		d.description                   AS department,
-		Null                            AS item,
-		Null                            AS variants,
-		Null                            AS quantity,
-        h.order_header_id               AS parent,
-		h.order_header_department_id    AS child
-	FROM order_header_department h
-	JOIN department d ON h.department_id = d.department_id
-	WHERE h.order_header_id = %s;""",
-    """
-	SELECT
-		Null                            AS department,
-		i.description                   AS item,
-		l.variants                      AS variants,
-		l.quantity                      AS quantity,
-        l.order_header_department_id    AS parent,
-		l.order_line_department_id      AS child
-	FROM order_line_department l
-	JOIN item i ON l.item_id = i.item_id
-    WHERE l.order_header_department_id = %s;""",
-    """
-    SELECT Null
-    WHERE Null = %s;"""]
+        self.script = ["""
+SELECT 
+    d.description                   AS department,
+    Null                            AS item,
+    Null                            AS variants,
+    Null                            AS quantity,
+    h.order_header_id               AS parent,
+    h.order_header_department_id    AS child
+FROM order_header_department h
+JOIN department d ON h.department_id = d.department_id
+WHERE h.order_header_id = %s;""",
+"""
+SELECT
+    Null                            AS department,
+    i.description                   AS item,
+    l.variants                      AS variants,
+    l.quantity                      AS quantity,
+    l.order_header_department_id    AS parent,
+    l.order_line_department_id      AS child
+FROM order_line_department l
+JOIN item i ON l.item_id = i.item_id
+WHERE l.order_header_department_id = %s;""",
+"""
+SELECT Null
+WHERE Null = %s;"""]
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("department", _tr('Models', 'Department'), False, 'str'),
@@ -1812,72 +1781,6 @@ class OrderDepartmentTreeModel(TreeQueryModel):
         # class representation
         self.repr = 'Order department tree query model'  
     
-
-
-class WebOrderHeaderModel(QueryModel):
-
-    def __init__(self, parent: QObject|None = None) -> None:
-        super().__init__(parent)
-        self.selectQuery = """
-        SELECT 
-            web_order_header_id, 
-            date_time, 
-            delivery, 
-            table_num, 
-            customer_name,
-            covers,
-            total_amount,
-            processed
-        FROM company.web_order_header;
-        """
-        # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, float, str, date, datetime, None = no filter
-        self.columns = (("web_order_header_id", _tr('Models', 'ID'), True, 'int'),
-                        ("date_time", _tr('Models', 'Date time'), True, 'datetime'),
-                        ("delivery", _tr('Models', 'Delivery'), True, 'str'),
-                        ("table_num", _tr('Models', 'Table'), True, 'str'),
-                        ("customer_name", _tr('Models', 'Customer name'), True, 'str'),
-                        ("covers", _tr('Models', 'Covers'), True, 'int'),
-                        ("total_amount", _tr('Models', 'Total amount'), True, 'decimal2'),
-                        ("processed", _tr('Models', 'Order processed'), True, 'bool'))
-        # True if is a company table
-        self.isCompanyTable = True
-        self.addOrderBy('web_order_header_id ASC')
-        # row id for master/detail filtering
-        self.primaryKey = ("web_order_header_id",)
-        self.repr = 'Web order header query model'
-
-
-class WebOrderLineModel(QueryModel):
-
-    def __init__(self, parent: QObject|None = None) -> None:
-        super().__init__(parent)
-        self.selectQuery = """
-        SELECT 
-            web_order_line_id, 
-            web_order_header_id, 
-            item_id, 
-            quantity, 
-            price
-        FROM company.web_order_line;
-        """
-        # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
-        self.columns = (("web_order_line_id", _tr('Models', 'ID'), True, 'int'),
-                        ("web_order_header_id", _tr('Models', 'Header ID'), True, 'int'),
-                        ("item_id", _tr('Models', 'Item'), True, 'int'),
-                        ("quantity", _tr('Models', 'Quantity'), True, 'decimal2'),
-                        ("price", _tr('Models', 'Price'), True, 'decimal2'))
-        # True if is a company table
-        self.isCompanyTable = True
-        # row id for master/detail filtering
-        self.primaryKey = ("web_order_line_id",)
-        # master/detail relation {table field: reference field}
-        self.foreignKey = {'web_order_header_id': 'web_order_header_id'}
-        # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("web_order_line_id")
-        self.repr = 'Web order line query model'
-
 
 class OrderHeaderPandasModel(PandasModel):
     

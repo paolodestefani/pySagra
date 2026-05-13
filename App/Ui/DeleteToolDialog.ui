@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>DeleteToolDialog</class>
  <widget class="QDialog" name="DeleteToolDialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>512</width>
-    <height>384</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Delete tool</string>
   </property>
@@ -93,38 +85,10 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="checkBoxWebOrder">
-              <property name="text">
-               <string>Web orders</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QCheckBox" name="checkBoxDepartment">
-              <property name="text">
-               <string>Departments</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="checkBoxInventory">
-              <property name="text">
-               <string>Inventory</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="1">
              <widget class="QCheckBox" name="checkBoxTable">
               <property name="text">
                <string>Tables</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QCheckBox" name="checkBoxEvent">
-              <property name="text">
-               <string>Events</string>
               </property>
              </widget>
             </item>
@@ -135,17 +99,38 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QCheckBox" name="checkBoxPriceList">
-              <property name="text">
-               <string>Price lists</string>
-              </property>
-             </widget>
-            </item>
             <item row="4" column="1">
              <widget class="QCheckBox" name="checkBoxPrinterClass">
               <property name="text">
                <string>Printer classes</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="checkBoxInventory">
+              <property name="text">
+               <string>Inventory</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QCheckBox" name="checkBoxEvent">
+              <property name="text">
+               <string>Events</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="checkBoxDepartment">
+              <property name="text">
+               <string>Departments</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QCheckBox" name="checkBoxPriceList">
+              <property name="text">
+               <string>Price lists</string>
               </property>
              </widget>
             </item>

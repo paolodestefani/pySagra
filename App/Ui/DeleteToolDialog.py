@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'DeleteToolDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.0
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,6 @@ class Ui_DeleteToolDialog(object):
     def setupUi(self, DeleteToolDialog):
         if not DeleteToolDialog.objectName():
             DeleteToolDialog.setObjectName(u"DeleteToolDialog")
-        DeleteToolDialog.resize(512, 384)
         self.verticalLayout_5 = QVBoxLayout(DeleteToolDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout = QHBoxLayout()
@@ -80,45 +79,40 @@ class Ui_DeleteToolDialog(object):
 
         self.gridLayout.addWidget(self.checkBoxItem, 0, 1, 1, 1)
 
-        self.checkBoxWebOrder = QCheckBox(self.groupBoxDelete)
-        self.checkBoxWebOrder.setObjectName(u"checkBoxWebOrder")
-
-        self.gridLayout.addWidget(self.checkBoxWebOrder, 1, 0, 1, 1)
-
-        self.checkBoxDepartment = QCheckBox(self.groupBoxDelete)
-        self.checkBoxDepartment.setObjectName(u"checkBoxDepartment")
-
-        self.gridLayout.addWidget(self.checkBoxDepartment, 1, 1, 1, 1)
-
-        self.checkBoxInventory = QCheckBox(self.groupBoxDelete)
-        self.checkBoxInventory.setObjectName(u"checkBoxInventory")
-
-        self.gridLayout.addWidget(self.checkBoxInventory, 2, 0, 1, 1)
-
         self.checkBoxTable = QCheckBox(self.groupBoxDelete)
         self.checkBoxTable.setObjectName(u"checkBoxTable")
 
         self.gridLayout.addWidget(self.checkBoxTable, 2, 1, 1, 1)
-
-        self.checkBoxEvent = QCheckBox(self.groupBoxDelete)
-        self.checkBoxEvent.setObjectName(u"checkBoxEvent")
-
-        self.gridLayout.addWidget(self.checkBoxEvent, 3, 0, 1, 1)
 
         self.checkBoxCashDesk = QCheckBox(self.groupBoxDelete)
         self.checkBoxCashDesk.setObjectName(u"checkBoxCashDesk")
 
         self.gridLayout.addWidget(self.checkBoxCashDesk, 3, 1, 1, 1)
 
-        self.checkBoxPriceList = QCheckBox(self.groupBoxDelete)
-        self.checkBoxPriceList.setObjectName(u"checkBoxPriceList")
-
-        self.gridLayout.addWidget(self.checkBoxPriceList, 4, 0, 1, 1)
-
         self.checkBoxPrinterClass = QCheckBox(self.groupBoxDelete)
         self.checkBoxPrinterClass.setObjectName(u"checkBoxPrinterClass")
 
         self.gridLayout.addWidget(self.checkBoxPrinterClass, 4, 1, 1, 1)
+
+        self.checkBoxInventory = QCheckBox(self.groupBoxDelete)
+        self.checkBoxInventory.setObjectName(u"checkBoxInventory")
+
+        self.gridLayout.addWidget(self.checkBoxInventory, 1, 0, 1, 1)
+
+        self.checkBoxEvent = QCheckBox(self.groupBoxDelete)
+        self.checkBoxEvent.setObjectName(u"checkBoxEvent")
+
+        self.gridLayout.addWidget(self.checkBoxEvent, 4, 0, 1, 1)
+
+        self.checkBoxDepartment = QCheckBox(self.groupBoxDelete)
+        self.checkBoxDepartment.setObjectName(u"checkBoxDepartment")
+
+        self.gridLayout.addWidget(self.checkBoxDepartment, 1, 1, 1, 1)
+
+        self.checkBoxPriceList = QCheckBox(self.groupBoxDelete)
+        self.checkBoxPriceList.setObjectName(u"checkBoxPriceList")
+
+        self.gridLayout.addWidget(self.checkBoxPriceList, 3, 0, 1, 1)
 
 
         self.verticalLayout_2.addLayout(self.gridLayout)
@@ -161,13 +155,12 @@ class Ui_DeleteToolDialog(object):
         self.groupBoxDelete.setTitle(QCoreApplication.translate("DeleteToolDialog", u"What to delete", None))
         self.checkBoxOrder.setText(QCoreApplication.translate("DeleteToolDialog", u"Orders", None))
         self.checkBoxItem.setText(QCoreApplication.translate("DeleteToolDialog", u"Items", None))
-        self.checkBoxWebOrder.setText(QCoreApplication.translate("DeleteToolDialog", u"Web orders", None))
-        self.checkBoxDepartment.setText(QCoreApplication.translate("DeleteToolDialog", u"Departments", None))
-        self.checkBoxInventory.setText(QCoreApplication.translate("DeleteToolDialog", u"Inventory", None))
         self.checkBoxTable.setText(QCoreApplication.translate("DeleteToolDialog", u"Tables", None))
-        self.checkBoxEvent.setText(QCoreApplication.translate("DeleteToolDialog", u"Events", None))
         self.checkBoxCashDesk.setText(QCoreApplication.translate("DeleteToolDialog", u"Cash desks", None))
-        self.checkBoxPriceList.setText(QCoreApplication.translate("DeleteToolDialog", u"Price lists", None))
         self.checkBoxPrinterClass.setText(QCoreApplication.translate("DeleteToolDialog", u"Printer classes", None))
+        self.checkBoxInventory.setText(QCoreApplication.translate("DeleteToolDialog", u"Inventory", None))
+        self.checkBoxEvent.setText(QCoreApplication.translate("DeleteToolDialog", u"Events", None))
+        self.checkBoxDepartment.setText(QCoreApplication.translate("DeleteToolDialog", u"Departments", None))
+        self.checkBoxPriceList.setText(QCoreApplication.translate("DeleteToolDialog", u"Price lists", None))
     # retranslateUi
 

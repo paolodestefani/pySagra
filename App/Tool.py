@@ -54,7 +54,7 @@ from App.Database.Tool import ordered_delivered_rebuild
 from App.Database.Tool import numbering_rebuild
 from App.Database.Tool import set_order_as_processed
 from App.Database.Tool import delete_all_orders
-from App.Database.Tool import delete_all_web_orders
+#from App.Database.Tool import delete_all_web_orders
 from App.Database.Tool import delete_all_inventory
 from App.Database.Tool import delete_all_events
 from App.Database.Tool import delete_all_price_lists
@@ -67,6 +67,7 @@ from App.Database.Tool import copy_cash_desk
 from App.Database.Tool import copy_printer_class
 from App.Database.Tool import copy_table
 from App.Database.Tool import copy_department
+from App.Database.Tool import copy_item
 
 from App.Database.Company import company_list
 from App.Ui.EventToolDialog import Ui_EventToolDialog
@@ -265,8 +266,6 @@ class DeleteToolDialog(QDialog):
         try:
             if self.ui.checkBoxOrder.isChecked():
                 delete_all_orders()
-            if self.ui.checkBoxWebOrder.isChecked():
-                delete_all_web_orders()
             if self.ui.checkBoxInventory.isChecked():
                 delete_all_inventory()
             if self.ui.checkBoxEvent.isChecked():
@@ -336,8 +335,8 @@ class CopyToolDialog(QDialog):
             #     copy_settings(company_id)
             if self.ui.checkBoxDepartment.isChecked():
                 copy_department(company_id)
-            # if self.ui.checkBoxItem.isChecked():
-            #     copy_items(company_id)
+            if self.ui.checkBoxItem.isChecked():
+                copy_item(company_id)
             # if self.ui.checkBoxInventory.isChecked():
             #     copy_inventory(company_id)
             # if self.ui.checkBoxPriceList.isChecked():

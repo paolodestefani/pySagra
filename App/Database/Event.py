@@ -21,9 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - event management
+"""Database - Event management
 
-This module provide all the facilities to manage events
+This module provides classes and functions for database management of events
 
 """
 
@@ -64,6 +64,7 @@ WHERE event_id = {event};"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))  
 
+
 def is_used(event: int) -> bool:
     "Returns True if have orders for the given event"
     script = t"""
@@ -74,8 +75,7 @@ SELECT EXISTS(
     LIMIT 1);"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0]
             else:
@@ -83,6 +83,7 @@ SELECT EXISTS(
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def get_event_from_date(date: QDate) -> tuple[int, str] | None:
     "Get event id from QDate or QDateTime"
@@ -96,8 +97,7 @@ WHERE
     AND start_date <= {date} AND end_date >= {date};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
+            result = cur.execute(script).fetchone()
             if result:
                 return result
             else:

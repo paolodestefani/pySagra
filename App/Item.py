@@ -23,7 +23,7 @@
 
 """Items
 
-This module contains items form management classes and functions
+This module provides items form management
 
 
 """
@@ -36,7 +36,6 @@ from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
-#from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QVBoxLayout
@@ -167,29 +166,20 @@ class ItemForm(FormIndexManager):
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
         self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_lookup))
-        #self.ui.tableView.setItemDelegateForColumn(I_STOCK, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(I_VARIANTS, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(I_UNLOAD, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(I_KITPART, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(I_MENUPART, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(I_SALABLE, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(I_WEBAVAILABLE, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(I_OBSOLETE, BooleanDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, [(setting['normal_background_color'] or '', _tr('Item', 'default'))] + COLORS))
         self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(setting['normal_text_color'] or '', _tr('Item', 'default'))] + COLORS))
         # mapper mappings
         self.ui.comboBoxType.setFunction(itemType)
-        self.mapper.addMapping(self.ui.comboBoxType, TYPE) #, "modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxType, TYPE)
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.mapper.addMapping(self.ui.lineEditCustomerDescription, CUSTOMER_DESCRIPTION)
         self.ui.comboBoxDepartment.setFunction(department_lookup)
-        self.mapper.addMapping(self.ui.comboBoxDepartment, DEPARTMENT) #, "modelDataInt")
+        self.mapper.addMapping(self.ui.comboBoxDepartment, DEPARTMENT)
         self.mapper.addMapping(self.ui.spinBoxRow, ROW)
         self.mapper.addMapping(self.ui.spinBoxColumn, COLUMN)
         self.mapper.addMapping(self.ui.spinBoxSorting, SORTING)
-        #self.mapper.addMapping(self.ui.doubleSpinBoxPrice, PRICE, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.comboBoxNormalTextColor, NORMALTXTCOLOR) #, "modelDataStr")
-        self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, NORMALBCKCOLOR) #, "modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxNormalTextColor, NORMALTXTCOLOR)
+        self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, NORMALBCKCOLOR)
         self.mapper.addMapping(self.ui.checkBoxVariants, VARIANTS)
         self.mapper.addMapping(self.ui.checkBoxInventoryControl, STOCK)
         self.mapper.addMapping(self.ui.checkBoxDeliveredControl, DELIVERED)

@@ -21,9 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Database - utilities
+"""Database - Utilities
 
-This module provide a set of utility functions to interact with the archive
+This module provides a set of utility functions to interact with the archive
 database
 
 """
@@ -110,21 +110,6 @@ WHERE company_id = system.pa_current_company();
 """
     # linked tables (oreder_header_department, order_detail, etc.
     # are automatically deleted from db cascade constraints
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
-    
-def delete_all_web_orders() -> None:
-    "Delete ALL web orders for current company"
-    script = """
-DELETE FROM web_order_header
-WHERE company_id = system.pa_current_company();"""
-    # linked table web_order_detail is automatically deleted from db cascade constraints
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
@@ -352,8 +337,63 @@ SElECT
     a.is_for_takeaway,
     a.department_id
 FROM department a
-LEFT JOIN printer_class b ON a.printer_class_id = b.external_code
+LEFT JOIN printer_class b ON a.printer_class_id = b.external_code AND b.company_id = {from_company_id}
 WHERE a.company_id = {from_company_id};"""
+    try:
+        with appconn.cursor() as cur:
+            with appconn.transaction():
+                cur.execute(script)
+    except psycopg.Error as er:
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
+    
+def copy_item(from_company_id: int) -> None:
+    "Copy all items from selected company to current company"
+    script = t"""
+INSERT INTO company.item (
+	item_type,
+	description,
+	customer_description,
+	department_id,
+	sorting,
+	pos_row,
+	pos_column,
+	normal_background_color,
+	normal_text_color,
+	has_variants,
+	has_inventory_control,
+	has_delivered_control,
+	is_kit_part,
+	is_menu_part,
+	is_salable,
+	is_web_available,
+	web_sorting,
+	is_obsolete
+)
+SELECT
+	i.item_type,
+	i.description,
+	i.customer_description,
+	d.department_id,
+	i.sorting,
+	i.pos_row,
+	i.pos_column,
+	i.normal_background_color,
+	i.normal_text_color,
+	i.has_variants,
+	i.has_inventory_control,
+	i.has_delivered_control,
+	i.is_kit_part,
+	i.is_menu_part,
+	i.is_salable,
+	i.is_web_available,
+	i.web_sorting,
+	i.is_obsolete
+FROM company.item i
+JOIN company.department d ON i.department_id = d.external_code 
+WHERE i.company_id = {from_company_id}
+"""
     try:
         with appconn.cursor() as cur:
             with appconn.transaction():

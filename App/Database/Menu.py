@@ -21,9 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - menus management
+"""Database - Menu management
 
-This module provide all the facilities to manage application menus
+This module provide class and functions for application menu management
 
 
 """

@@ -24,8 +24,7 @@
 
 """Departments
 
-This module is used to manage department archive
-
+This module is used to manage department archive and options
 
 """
 
@@ -89,12 +88,7 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('Department')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        #self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_lookup))
-        #self.ui.tableView.setItemDelegateForColumn(SORTING, IntegerDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(OBSOLETE, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(NOMANAGE, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(TAKEAWAY, BooleanDelegate(self))
         # scripting init
         self.script = scriptInit(self)
 

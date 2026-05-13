@@ -23,9 +23,10 @@
 
 """Database - Order management
 
-
+This module provides classes and functions for order management
 
 """
+
 # standard library
 from typing import Any
 import logging
@@ -69,8 +70,11 @@ FROM setting
 WHERE company_id = system.pa_current_company();"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            mode = next(cur)[0]
+            result = cur.execute(script).fetchone()
+            if result:
+                mode = result[0]
+            else:
+                raise PyAppDBError(None, 'Failed to retrive order numbering mode from settings')
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
@@ -126,6 +130,7 @@ WHERE company_id = system.pa_current_company()
                 raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     return number
 
+
 def get_orders_issued(event_id: int, date: QDate, day_part: str) -> int:
     "Returns the issued number of orders for event, day and day part"
      # actually we don't need to filter company_id as event_id is unique across companies
@@ -144,6 +149,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def get_order_header_department_details(barcode: str) -> tuple|None:
     "Returns params of the given order header department barcode"

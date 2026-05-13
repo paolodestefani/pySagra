@@ -55,6 +55,7 @@ from App.Ui.ConnectionWidget import Ui_ConnectionWidget
 from App.Ui.ConnectionHistoryWidget import Ui_ConnectionHistoryWidget
 from App.Core.L10n import _tr
 from App.Widget.Form import FormManager
+from App.Widget.Form import FormViewManager
 
 # logger
 logger = logging.getLogger(__name__)
@@ -84,7 +85,7 @@ def connectionHistory(action: QAction, checked: bool = False) -> None:
     logger.info('Connections history Form added to main window')
 
 
-class ConnectionForm(FormManager):
+class ConnectionForm(FormViewManager):
     "Current connections form"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
@@ -93,7 +94,7 @@ class ConnectionForm(FormManager):
         self.setModel(model)
         self.tabName = title
         self.helpLink = None
-        self.reloadConfirmation = True
+        self.reloadConfirmation = False
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
@@ -101,26 +102,20 @@ class ConnectionForm(FormManager):
                                 True, False, False, True)
         self.ui = Ui_ConnectionWidget()
         self.ui.setupUi(self)
-        self.view = self.ui.tableView  # required for formviewmanager
+        self.setView(self.ui.tableView)  # required for formviewmanager
         # button icons
-        self.ui.killClientButton.setIcon(currentIcon['system_kill'])
-        # signal slot connections
-        self.ui.killClientButton.clicked.connect(self.killClient)
-        self.ui.tableView.setModel(model)
+        #self.ui.killClientButton.setIcon(currentIcon['system_kill'])
+        #self.ui.tableView.setModel(model)
         self.ui.tableView.setLayoutName('CurrentConnection')  # must be set AFTER model
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.ui.tableView.activateWindow()
-       
-    def mapperIndexChanged(self, row: int) -> None:
-        "Mapper index changed, update view selection"
-        super().mapperIndexChanged(row)
-        # link navigation to view selection
-        self.ui.tableView.selectRow(row)
-
+        #self.ui.tableView.activateWindow()
+        # signal slot connections
+        self.ui.killClientButton.clicked.connect(self.killClient)
+     
     def killClient(self) -> None:
         "Kills selected client PID"
-        ci = self.mapper.currentIndex()
-        pid = self.model.index(ci, 0).data()
+        cir = self.view.selectionModel().currentIndex().row()
+        pid = self.model.index(cir, 0).data() # pid on column 0
         if pid is None:
             QMessageBox.warning(self,
                                 _tr('MessageDialog', 'Warning'),
@@ -153,7 +148,7 @@ class ConnectionForm(FormManager):
         self.ui.tableView.exportView()
 
 
-class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
+class ConnectionHistoryForm(FormViewManager):
     "Connections History form"
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
@@ -170,7 +165,7 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
                                 True, False, False, True)
         self.ui = Ui_ConnectionHistoryWidget()
         self.ui.setupUi(self)
-        self.view = self.ui.tableView  # required for formviewmanager
+        self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setModel(model)
         self.ui.tableView.setLayoutName("ConnectionsHistory")
         # set read only view
@@ -192,12 +187,6 @@ class ConnectionHistoryForm(FormManager[Ui_ConnectionHistoryWidget]):
         self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
         self.ui.pushButtonDeleteSetting.clicked.connect(self.deleteSetting)
         #self.updateList()
-        
-    def mapperIndexChanged(self, row: int) -> None:
-        "Mapper index changed, update view selection"
-        super().mapperIndexChanged(row)
-        # link navigation to view selection
-        self.ui.tableView.selectRow(row)
 
     def deleteOlder(self) -> None:
         "Delete records of log history table"

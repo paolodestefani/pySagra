@@ -23,6 +23,8 @@
 
 """Database - WebOrderServer module
 
+This module provides classes and functions for web order server updating
+
 """
 
 # standard library

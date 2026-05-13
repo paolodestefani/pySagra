@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'CopyToolDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.0
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_CopyToolDialog(object):
     def setupUi(self, CopyToolDialog):
         if not CopyToolDialog.objectName():
             CopyToolDialog.setObjectName(u"CopyToolDialog")
-        CopyToolDialog.resize(512, 384)
+        CopyToolDialog.resize(439, 352)
         self.verticalLayout_6 = QVBoxLayout(CopyToolDialog)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.horizontalLayout = QHBoxLayout()

@@ -21,9 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - connections management
+"""Database - Connections management
 
-This module provide all the facilities to manage connections
+This module provides all the facilities to manage connections
 
 """
 

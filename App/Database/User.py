@@ -21,9 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - users management
+"""Database - Users management
 
-This module provide all the facilities to manage application users
+This module provides classes and functions for users management
 
 """
 

@@ -21,10 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - price lists management
+"""Database - Price list management
 
-This module provide all the facilities to manage price lists
-
+This module provides classes and functions for price list database management
 
 """
 
@@ -50,7 +49,7 @@ def duplicate_price_list(from_id: int, new_description: str) -> None:
 INSERT INTO price_list (description) 
 VALUES ({new_description}) 
 RETURNING price_list_id;"""
-# copy prices from another price list
+    # copy prices from another price list
     script2 = t"""
 INSERT INTO price_list_item (
     price_list_id,
@@ -65,8 +64,7 @@ WHERE price_list_id = {from_id};"""
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script1)
-                new_id = next(cur)
+                new_id = cur.execute(script1).fetchone()
                 if new_id is None:
                     raise PyAppDBError("02000", "No id returned from database when creating new price list")
                 else:

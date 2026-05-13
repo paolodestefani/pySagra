@@ -21,9 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - User preferences
+"""Database - User preferences
 
-This module provide all the facilities to manage user preferences
+This module provides classes and functions for user preferences database management
 
 """
 

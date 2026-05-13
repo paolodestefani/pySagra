@@ -23,6 +23,8 @@
 
 """Database - Settings database management
 
+This module provides classes and functions for databse settings management
+
 """
 
 # standard library

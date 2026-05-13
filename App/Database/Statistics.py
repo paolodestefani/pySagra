@@ -21,12 +21,12 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - statistics management
+"""Database - Statistics management
 
-This module provide all the facilities to manage dynamic statistics
-
+This module provides classes and functions for statistics management
 
 """
+
 # standard library
 from typing import Any
 

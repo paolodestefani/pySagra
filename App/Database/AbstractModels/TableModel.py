@@ -1191,7 +1191,7 @@ class TableModel(QAbstractTableModel):
                         # set company after anything else, company_id may not be present in self.columns
                         if self.isCompanyTable:
                             fieldList += ['company_id']
-                        args['company_id'] = session['current_company']
+                            args['company_id'] = session['current_company']
                         fields_str = ", ".join(fieldList)
                         placeholders = ", ".join([f"%({f})s" for f in fieldList])
                         fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])

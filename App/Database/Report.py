@@ -23,7 +23,7 @@
 
 """Database - Report
 
-Database functions for raport management
+Database functions for report management
 
 """
 
@@ -99,6 +99,7 @@ SET report_class = {report_class},
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def list_all_reports() -> list:
     "List all reports from system.report for exporting purposes"
     script = f"""
@@ -172,6 +173,7 @@ WHERE
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def report_description(report_id: int) -> str|None:
     "Return the report description of report code of l10n localization or en_US"
     script = t"""
@@ -190,6 +192,7 @@ WHERE report_id = {report_id};"""
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def get_report_id(report_code: str, l10n: str) -> int:
     "Return the report ID of report code and l10n localization or en_US"
@@ -229,6 +232,7 @@ WHERE report_id = {report_id};"""
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def get_report_from_adapt(adapt_id: int) -> tuple|tuple[None]:
     script = t"""

@@ -25,7 +25,6 @@
 
 This module groups general customized controls used in forms
 
-
 """
 
 # standard library

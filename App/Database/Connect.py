@@ -21,9 +21,10 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - connection functions
+"""Database - Connection functions
 
-This module provide all the facilities to connect/dsconnect to the db server
+This module provides classes and function to connect/disconnect to the db server
+and manage connections. Also provide the database informations.
 
 """
 
@@ -219,22 +220,26 @@ WHERE uc.app_user_code = {user} AND uc.company_id = {company};"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def has_companies_available(user: str) -> bool:
     """Returns True if user have available working company(ies)"""
     if user == session['app_system_user']:
         return True
     script = t"""
-SELECT exists(
+SELECT EXISTS(
         SELECT company_id 
         FROM system.app_user_company 
         WHERE app_user_code = {user});"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            return next(cur)[0]
+            result = cur.execute(script).fetchone()
+            if result:
+                return result[0]
+            return None
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def get_companies_list(user: str|None = None) -> list[tuple[int, str]]:
     """Get the available company list for user or all companies"""
@@ -277,6 +282,7 @@ FROM system.company c;"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def get_company_desc(company: int) -> str:
     "Get company description"
     script = t"""
@@ -286,11 +292,14 @@ FROM system.company c
 WHERE c.company_id = {company};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            return next(cur)[0]
+            result = cur.execute(script).fetchone()
+            if result:
+                return result[0]
+            return None
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    
     
 def get_current_event() -> None:
     "Check if an event is available for current date, if true update session dictionary"
@@ -308,8 +317,7 @@ WHERE
     AND {QDateTime.currentDateTime()} BETWEEN start_date AND end_date"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)  # event based on client date
-            event = cur.fetchone()
+            event = cur.execute(script).fetchone()  # event based on client date
             if event:
                 session['event_id'] = event[0] # code
                 session['event_description'] = event[1] # description

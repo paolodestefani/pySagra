@@ -21,8 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Item database functions
+"""Database - Item
 
+This module provide functions for item database management
 
 """
 
@@ -60,6 +61,7 @@ ORDER BY sorting;"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def item_list(event_id: int, department_id: int) -> list[tuple]:
     "Get item list for supplied event and department"
     # actually we don't need to filter company_id as event_id and department_id are unique across companies
@@ -90,9 +92,10 @@ WHERE
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
+    
 def item_web_list(event_id: int, department_id: int) -> list[tuple]:
-    # actually we don't need to filter company_id as event_id and department_id are unique across companies
     "Get item list for supplied event for web order"
+    # actually we don't need to filter company_id as event_id and department_id are unique across companies
     script = t"""
 SELECT 
     item_id,
@@ -116,6 +119,7 @@ ORDER BY web_sorting;"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def is_menu(item_id: int) -> bool:
     "Return True if item is a menu type item"
     # actually we don't need to filter company_id as item_id is unique across companies
@@ -134,6 +138,7 @@ WHERE
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def is_kit(item_id: int) -> bool:
     "Return True if item is a kit type item"
     # actually we don't need to filter company_id as item_id is unique across companies
@@ -151,6 +156,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def is_for_takeaway(item_id: int) -> bool:
     "Return True if item is available for takeaway, based on department's flag"
@@ -171,6 +177,7 @@ WHERE
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def has_stock_management(item_id: int) -> bool:
     "Return True if item's require stock management"
     # actually we don't need to filter company_id as item_id is unique across companies
@@ -188,6 +195,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def get_menu_items(item_id: int) -> list[tuple]:
     "Return menu components"
@@ -208,6 +216,7 @@ WHERE
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def get_item_dep(item_id: int) -> int|None:
     "Return department id for item"
     # actually we don't need to filter company_id as item_id is unique across companies
@@ -220,8 +229,7 @@ WHERE
     AND item_id     = {item_id};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = cur.fetchone()
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0]
             else:
@@ -229,6 +237,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def get_item_desc(item_id: int) -> str|None:
     "Return description of item item"
@@ -242,8 +251,7 @@ WHERE
     AND item_id     = {item_id};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = cur.fetchone()
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0]
             else:                
@@ -251,6 +259,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def get_item_stock_level(event_id: int, item_id: int) -> int:
     "Return item stock level for given event of type 'A'"
@@ -265,8 +274,7 @@ WHERE
     AND item_id     = {item_id};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = cur.fetchone()
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0] or 0 # if stock not set balance is null
             else:
@@ -274,6 +282,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def kit_availability(event_id: int) -> list[tuple]:
     # actually we don't need to filter company_id as event_id is unique across companies
@@ -294,6 +303,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def menu_availability(event_id: int) -> list[tuple]:
     script = t"""

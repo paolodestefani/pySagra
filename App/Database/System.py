@@ -21,10 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - connections management
+"""Database - System settings
 
-This module provide all the facilities to manage connections
-
+This module provides classes and functions for system settings management
 
 """
 
@@ -59,6 +58,7 @@ def pa_setting(setting: str) -> str|None:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def pa_setting_set(setting: str, value: str|None) -> None:
     "Set the privided setting parameter to value"
     # all arguments must be string
@@ -66,9 +66,9 @@ def pa_setting_set(setting: str, value: str|None) -> None:
     if value is not None: # must keep None (=NULL) != string
         value = str(value)
     try:
-        #with appconn.transaction():
-        with appconn.cursor() as cur:
-            cur.execute(t'SELECT system.pa_setting_set({setting}, {value});')
+        with appconn.transaction():
+            with appconn.cursor() as cur:
+                cur.execute(t'SELECT system.pa_setting_set({setting}, {value});')
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

@@ -23,6 +23,8 @@
 
 """Database - Department
 
+Function for databse management of departments
+
 """
 
 # standard library
@@ -71,13 +73,14 @@ ORDER BY sorting;"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er)) 
 
+
 def get_department(desc: str) -> int:
     "Returns department id of given department description"
     script = t"""
 SELECT department_id 
 FROM department 
 WHERE 
-    company_id = system.pa_current_company()
+        company_id = system.pa_current_company()
     AND description = {desc};"""
     try:
         with appconn.cursor() as cur:
@@ -87,6 +90,7 @@ WHERE
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er)) 
 
+
 def get_department_desc(dep: int) -> str|None:
     "Returns department description of given department id"
     script = t"""
@@ -95,8 +99,7 @@ FROM department
 WHERE department_id = {dep};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0]
             else:
@@ -105,17 +108,18 @@ WHERE department_id = {dep};"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
     
+    
 def get_department_barcode(dep: int) -> str | None:
     "Returns department barcode of given department id"
     script = t"""
 SELECT chr(cast(count(*) + 64 as integer)) AS n 
 FROM company.department 
-WHERE department_id <= {dep}
+WHERE   
+        department_id <= {dep}
     AND company_id = system.pa_current_company();"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0]
             else:
@@ -124,19 +128,19 @@ WHERE department_id <= {dep}
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def get_department_printer_class(dep: int) -> int | None:
     "Returns the printer class for dep department"
     script = t"""
 SELECT printer_class_id
 FROM department
 WHERE 
-    department_id = {dep} 
+        department_id = {dep} 
     AND is_obsolete IS false 
     AND is_menu_container IS false;"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0]
             else:                
@@ -144,6 +148,7 @@ WHERE
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def department_takeaway_list()-> list[str]:
     "Returns a list of departments enabled for take away"

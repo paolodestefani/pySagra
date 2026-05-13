@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Lookup
+"""Database - Lookup
 
 This module provide  functions that return a code - description list of values
 used by delegates and combo boxes
@@ -54,8 +54,7 @@ def get_list(query):
         with appconn.transaction():
             with appconn.cursor() as cur:
                 cur.execute(query)
-                records = cur.fetchall()
-                return records
+                return cur.fetchall()
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))

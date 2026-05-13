@@ -24,7 +24,7 @@
 
 """Cash Desk
 
-This module is used to manage cash desk options
+This module is used to manage cash desk names
 
 """
 
@@ -87,11 +87,6 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('CashDesk')
         self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
-        # self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_list))
-        # self.ui.tableView.setItemDelegateForColumn(SORTING, IntegerDelegate(self))
-        # self.ui.tableView.setItemDelegateForColumn(OBSOLETE, BooleanDelegate(self))
-        # self.ui.tableView.setItemDelegateForColumn(NOMANAGE, BooleanDelegate(self))
-        # self.ui.tableView.setItemDelegateForColumn(TAKEAWAY, BooleanDelegate(self))
         # scripting init
         self.script = scriptInit(self)
 

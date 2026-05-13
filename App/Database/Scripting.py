@@ -21,8 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - scripting
+"""Database - Scripting
 
+This module provides classes and functions for database scripting management
 
 """
 

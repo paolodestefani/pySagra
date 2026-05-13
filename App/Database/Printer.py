@@ -21,8 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""database - printer class
+"""Database - Printer class
 
+This module provides classes and functions for database printer management
 
 """
 
@@ -51,10 +52,9 @@ WHERE
     AND computer = {computer};"""
     try:
             with appconn.cursor() as cur:
-                cur.execute(script)
-                pn = next(cur, None)
-                if pn is not None:
-                    return pn[0]
+                result = cur.execute(script).fetchone()
+                if result:
+                    return result[0]
                 else:
                     return None
     except psycopg.Error as er:

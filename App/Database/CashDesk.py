@@ -21,9 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Cash desk management
+"""Database - Cash desk management
 
-This module provide all the facilities to manage cash desks
+This module provides database functione required for manage cash desks
 
 """
 
@@ -58,8 +58,7 @@ WHERE
     AND computer = {QHostInfo.localHostName()};"""
     try:
         with appconn.cursor() as cur:
-            cur.execute(script)
-            result = cur.fetchone()
+            result = cur.execute(script).fetchone()
             if result:
                 return result[0]
             else:

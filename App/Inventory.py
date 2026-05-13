@@ -23,8 +23,7 @@
 
 """Items inventory
 
-This module provides stock inventory management form and relate classes
-
+This module provides stock inventory management
 
 """
 
@@ -86,11 +85,7 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         self.ui = Ui_InventoryWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableViewItem)  # required for formviewmanager
-        # normal item
-        #self.view = self.ui..tableViewItem
-        #self.ui.tableViewItem.setModel(model)
         self.ui.tableViewItem.setLayoutName('Inventory')
-        # self.ui.tableViewItem.horizontalHeader().setSectionsMovable(True)
         self.ui.tableViewItem.setItemDelegateForColumn(ITEM, RelationDelegate(self, item_with_stock_control_lookup))
         self.ui.tableViewItem.setItemDelegateForColumn(LOADED, QuantityDelegate(self))
         self.ui.tableViewItem.setItemDelegateForColumn(UNLOADED, QuantityDelegate(self))
@@ -106,8 +101,6 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         #self.ui.tableViewItem.selectionModel().currentChanged.connect(self.columnChanged)
         # kit availability
         self.kitModel = KitAvailabilityModel(self)
-        #self.kitModel.setParameter('event', self.ui.comboBoxevent.currentData())
-        #self.kitModel.select()
         self.ui.tableViewKit.setModel(self.kitModel)
         self.ui.tableViewKit.setLayoutName('itemsInventoryKit')
         self.ui.tableViewKit.setItemDelegateForColumn(2, StockLevelDelegate(self, 

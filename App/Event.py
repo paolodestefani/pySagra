@@ -23,8 +23,7 @@
 
 """Events
 
-This module allows events management
-
+This module provides events management
 
 """
 
@@ -109,35 +108,16 @@ class EventForm(FormIndexManager):
         self.ui.pushButtonUpload.clicked.connect(self.upload)
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
-        #self.ui.pushButtonUpdateWebOrder.clicked.connect(self.updateWebOrderServer)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
         self.ui.tableView.setItemDelegateForColumn(PRICELIST, RelationDelegate(self, price_list_lookup))
         self.ui.tableView.setItemDelegateForColumn(IMAGE, ImageDelegate(self))
-        # map view to mapper and mapper to view
-        #self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
-        #self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
-        # mapper mappings
-        #self.mapper.setItemDelegate(PMapperDelegate(self))
+        # mapper settings
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         self.mapper.addMapping(self.ui.dateTimeEditStart, DATE_START, b"modelDataDateTime")
         self.mapper.addMapping(self.ui.dateTimeEditEnd, DATE_END, b"modelDataDateTime")
         self.ui.comboBoxPriceList.setFunction(price_list_lookup)
         self.mapper.addMapping(self.ui.comboBoxPriceList, PRICELIST, b"modelDataStr")
         self.mapper.addMapping(self.ui.labelEventImage, IMAGE, b"imageBytearray")
-        #self.mapper.addMapping(self.ui.plainTextEditTableList, TABLES)
-         # restore settings
-        #st = QSettings()       
-        #self.ui.lineEditServer.setText(st.value("WebOrder/Server", ""))
-        #self.ui.spinBoxPort.setValue(st.value("WebOrder/Port", 21, type=int))
-        #self.ui.lineEditFileName.setText(st.value("WebOrder/FileName", ""))
-        # try:
-        #     self.ui.lineEditUser.setText(string_decode(st.value("WebOrder/User", "")))
-        # except cryptography.fernet.InvalidToken:
-        #     self.ui.lineEditUser.setText("")
-        # try:
-        #     self.ui.lineEditPassword.setText(string_decode(st.value("WebOrder/Password", "")))
-        # except cryptography.fernet.InvalidToken:
-        #     self.ui.lineEditPassword.setText("")
         # scripting init
         self.script = scriptInit(self)
 
@@ -261,125 +241,3 @@ class EventForm(FormIndexManager):
         "Event report"
         dialog = PrintDialog(self, 'EVENT')
         dialog.show()
-
-    # def updateWebOrderServer(self):
-    #     "Get and send web order server parameters"
-    #     # store ftp login settinggs
-    #     st = QSettings()
-    #     st.setValue("WebOrder/Server", self.ui.lineEditServer.text())
-    #     st.setValue("WebOrder/Port", self.ui.spinBoxPort.value())
-    #     st.setValue("WebOrder/FileName", self.ui.lineEditFileName.text())
-    #     st.setValue("WebOrder/User", string_encode(self.ui.lineEditUser.text()))
-    #     st.setValue("WebOrder/Password", string_encode(self.ui.lineEditPassword.text()))
-    #     # current selected event
-    #     event = int(self.mapper.model().index(self.mapper.currentIndex(), 0).data())
-    #     # file name
-    #     filename = self.ui.lineEditFileName.text()
-    #     # create XML file
-    #     root = ET.Element("event")
-    #     ET.SubElement(root, "title").text = self.ui.lineEditDescription.text()
-    #     ET.SubElement(root, "date_start").text = self.ui.dateTimeEditStart.dateTime().toString(Qt.ISODate)
-    #     ET.SubElement(root, "date_end").text = self.ui.dateTimeEditEnd.dateTime().toString(Qt.ISODate)
-
-    #     items = ET.SubElement(root, "items")        
-    #     for did, d in department_list():
-    #             dep = ET.SubElement(items, "department")
-    #             dep.set('description', d)
-    #             for i, d, p, a, v in item_web_list(event, did):
-    #                 item = ET.SubElement(dep, "item")
-    #                 ET.SubElement(item, "id").text = str(i)
-    #                 ET.SubElement(item, "description").text = d
-    #                 ET.SubElement(item, "price").text = str(p)
-    #                 ET.SubElement(item, "active").text = str(a)
-    #                 ET.SubElement(item, "variants").text = str(v)
-    #     vars = ET.SubElement(root, "itemvariants")   
-    #     for did, d in department_list():     
-    #         for i, d, p, a, v in item_web_list(event, did):
-    #             if v:
-    #                 item = ET.SubElement(vars, "item")
-    #                 item.set('id', str(i))
-    #                 for vd, vp in get_variants(i):
-    #                     vr = ET.SubElement(item, "variant")
-    #                     ET.SubElement(vr, "description").text = vd
-    #                     ET.SubElement(vr, "price").text = str(vp)
-    #     tree = ET.ElementTree(root)
-    #     ET.indent(tree, space="    ", level=0)
-    #     try:
-    #         with open(filename, 'wb') as f:
-    #             tree.write(f, encoding='utf-8', xml_declaration=True)
-    #     except Exception as er:
-    #         errors.append(str(er))
-    #     else:
-    #         info.append(_tr('Events', "File XML generated"))
-
-    #     # parse XML data file
-    #     #tree = ET.parse(filename)
-    #     #root = tree.getroot()
-    #     #event_description = root.find("title").text
-    #     #department = {}
-    #     #deps = root.find('departments')
-    #     #for dep in deps.findall('department'):
-    #     #    department[int(dep.find('id').text)] = dep.find('description').text
-    #     #dep_list = []
-    #     #for dep in root.find("items"):
-    #     #    dep_list.append(dep.attrib['description'])
-    #     #print("Reparti", dep_list)
-
-    #     #item_list = []
-    #     #for dep in root.find("items"):
-    #     #    print("Reparto", dep.attrib)
-    #     #    for child in dep:
-    #     #        print("Art", child.find('id').text)
-    #     #        print("Desc", child.find('description').text)
-    #     #        print("Prz", child.find('price').text)
-        
-    #     # parse XML data file
-    #     # session = {}
-    #     # tree = ET.parse(filename)
-    #     # root = tree.getroot()
-    #     # session['event_description'] = root.find("title").text
-    #     # session['departments'] = []
-    #     # for dep in root.find("items"):
-    #     #     session['departments'].append(dep.attrib['description'])
-    #     # session['lines'] = {}
-    #     # for dep in root.find("items"):
-    #     #     session['lines'][dep.attrib['description']]=[[
-    #     #         int(c.find('id').text),
-    #     #         c.find('description').text,
-    #     #         float(c.find('price').text),
-    #     #         True if c.find('active').text == 'True' else False]
-    #     #         for c in dep]
-
-    #     # print("Session", session)
-            
-    #     #print(department)
-    #     # send file to server
-
-       
-    #     import ftplib
-
-    #     # Fill Required Information
-    #     HOSTNAME = self.ui.lineEditServer.text()
-    #     USERNAME = self.ui.lineEditUser.text()
-    #     PASSWORD = self.ui.lineEditPassword.text()
-
-    #     # Connect FTP Server
-    #     ftp_server = ftplib.FTP(HOSTNAME, USERNAME, PASSWORD)
-
-    #     # force UTF-8 encoding
-    #     ftp_server.encoding = "utf-8"
-
-    #     # Read file in binary mode
-    #     with open(filename, "rb") as file:
-    #         # Command for Uploading the file "STOR filename"
-    #         ftp_server.storbinary(f"STOR {filename}", file)
-
-    #     # Get list of files
-    #     #ftp_server.dir()
-
-    #     # Close the Connection
-    #     ftp_server.quit()
-
-        
-
-

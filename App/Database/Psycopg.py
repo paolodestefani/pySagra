@@ -23,6 +23,7 @@
 
 """Psycopg extentions
 
+Postgres to PySide6 data type adaptation
 
 """
 
