@@ -1,105 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <event>
-    <title>SAGRA 2019</title>
-    <start_date>2019-10-11T00:00:00+02:00</start_date>
-    <end_date>2019-10-21T23:59:00+02:00</end_date>
+    <title>SAGRA DEL PEPERONE</title>
+    <start_date>2026-05-09T17:19:28+02:00</start_date>
+    <end_date>2026-12-31T23:59:59+01:00</end_date>
     <items>
-        <department description="Primi" />
-        <department description="Secondi">
-            <item>
-                <id>91</id>
-                <description>Wurstel Speziati + Patate</description>
-                <price>16.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>93</id>
-                <description>Patate Fritte</description>
-                <price>2.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>194</id>
-                <description>Costicine + Polenta</description>
-                <price>5.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>15</id>
-                <description>Salsiccia + Polenta</description>
-                <price>5.00</price>
-                <active>False</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>24</id>
-                <description>Panino Porchetta</description>
-                <price>3.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-        </department>
-        <department description="Bar">
-            <item>
-                <id>19</id>
-                <description>Acqua Frizzante 1/2</description>
-                <price>1.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>20</id>
-                <description>Acqua Naturale 1/2</description>
-                <price>1.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>195</id>
-                <description>Birra Lager 1/2</description>
-                <price>4.00</price>
-                <active>False</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>117</id>
-                <description>Birra Lager 1/4</description>
-                <price>2.50</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>5</id>
-                <description>Lattina Aranciata</description>
-                <price>2.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>21</id>
-                <description>Lattina Coca Cola</description>
-                <price>2.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>23</id>
-                <description>Lattina The Limone</description>
-                <price>2.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>22</id>
-                <description>Lattina The Pesca</description>
-                <price>2.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-        </department>
+        <department description="BAR" />
+        <department description="CUCINA" />
     </items>
     <itemvariants />
 </event>
