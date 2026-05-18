@@ -34,7 +34,7 @@ import logging
 from typing import Final, Literal, TypeAlias, Optional, Any, cast, Union
 
 # pandas
-import pandas as pd
+#import pandas as pd
 
 # psycopg
 import psycopg
@@ -987,7 +987,7 @@ class TableModel(QAbstractTableModel):
         self.cols = 0 # updated on select
         self.whereCondition: list[tuple] = []  # list of (condition, argument)
         self.orderByExpression: list[str] = [] # list of string
-        self.filterMapping: dict = {}
+        #self.filterMapping: dict = {}
         self.toDelete: list[dict[str, Any]] = []  # list of dict for any cancelled row (need to store pkey and object_version)
         # subclasses must define this properties
         self.table: str | None = None # table or view name - string, subclass must define this
@@ -1097,10 +1097,10 @@ class TableModel(QAbstractTableModel):
             return True
         return False
 
-    def hiddenSetData(self, row: int, column: int, value: Any) -> None:
-        "Set data without emitting dataChanged signal"
-        row = self.filterMapping[row]
-        self.dataSet[row][column] = value
+    # def hiddenSetData(self, row: int, column: int, value: Any) -> None:
+    #     "Set data without emitting dataChanged signal"
+    #     row = self.filterMapping[row]
+    #     self.dataSet[row][column] = value
 
     def submit(self) -> bool:
         "Update database: insert/delete/update rows, used only for commit on row changed, do nothing on manual submit"
@@ -1328,18 +1328,18 @@ class TableModel(QAbstractTableModel):
             self.filterCondition.append((f'{field} = %s', value))
         self.select()
 
-    def filterMasterRow(self, row: int) -> None:
-        "Filter dataset based on master row creating a dictionary of mapped rows"
-        self.layoutAboutToBeChanged.emit()
-        self.filterMapping.clear()
-        self.filterMapping = {len(self.filterMapping): n for n, i in enumerate(self.dataSet) if  i['master_row'] == row}
-        self.rows = len(self.filterMapping)
-        # notify of changes
-        self.dataChanged.emit(self.createIndex(0, 0),
-                              self.createIndex(self.rowCount(), self.columnCount()),
-                              [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-        self.layoutChanged.emit()
-        self.rowCountChanged.emit(self.rows)
+    # def filterMasterRow(self, row: int) -> None:
+    #     "Filter dataset based on master row creating a dictionary of mapped rows"
+    #     self.layoutAboutToBeChanged.emit()
+    #     self.filterMapping.clear()
+    #     self.filterMapping = {len(self.filterMapping): n for n, i in enumerate(self.dataSet) if  i['master_row'] == row}
+    #     self.rows = len(self.filterMapping)
+    #     # notify of changes
+    #     self.dataChanged.emit(self.createIndex(0, 0),
+    #                           self.createIndex(self.rowCount(), self.columnCount()),
+    #                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
+    #     self.layoutChanged.emit()
+    #     self.rowCountChanged.emit(self.rows)
     
     def addWhere(self, condition: str, value: str|int|float|QDate|QDateTime|None) ->None:
         "Add where conditions before select"
@@ -1429,7 +1429,7 @@ class TableModel(QAbstractTableModel):
             raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
         # create an unfiltered master row mapping
-        self.filterMapping = {i: i  for i in range(len(self.dataSet))}
+        #self.filterMapping = {i: i  for i in range(len(self.dataSet))}
 
         
        

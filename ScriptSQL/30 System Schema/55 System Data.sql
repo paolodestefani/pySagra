@@ -243,10 +243,18 @@ VALUES
 ('t_default_it', 'tae', 'Modifica', 2, 'T', Null),
 ('t_default_it', 'tdqa', 'Accesso rapido', 4, 'T', Null);
 
--- system.usersapp_user
+-- app users
 INSERT INTO app_user (user_code, description, user_password, is_admin, is_system_object, can_edit_views, can_edit_sortfilters, can_edit_reports, l10n) 
 VALUES 
 ('system', '{pyAppName} system administrator', system.crypt('System@1', system.gen_salt('bf')), True, True, True, True, True, 'en_US'),
+('sistema', 'Amministratore del sistema {pyAppName}', system.crypt('System@1', system.gen_salt('bf')), True, True, True, True, True, 'it_IT'),
 ('pySagraWeb', '{pyAppName} web order entry system user', system.crypt('pySagraWeb', system.gen_salt('bf')), False, True, False, False, False, 'en_US');
 
--- 
+-- user company settings
+INSERT INTO app_user_company (app_user_code, company_id, profile_code, menu_code, toolbar_code) 
+VALUES
+('system', 10, 'full', 'm_full_en', 't_full_en'),
+('system', 20, 'full', 'm_full_en', 't_full_en'),
+('sistema', 10, 'full', 'm_full_it', 't_full_en'),
+('sistema', 20, 'full', 'm_full_it', 't_full_en');
+

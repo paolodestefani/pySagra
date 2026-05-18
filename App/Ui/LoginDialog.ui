@@ -323,6 +323,12 @@
          <property name="acceptDrops">
           <bool>false</bool>
          </property>
+         <property name="toolTip">
+          <string>Insert the password for application user</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
          <property name="whatsThis">
           <string>Insert the password for application user</string>
          </property>
@@ -352,6 +358,12 @@
        </item>
        <item row="0" column="1">
         <widget class="QLineEdit" name="lineEditUser">
+         <property name="toolTip">
+          <string>Insert the application user name</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
          <property name="whatsThis">
           <string>Insert the application user name</string>
          </property>
@@ -379,6 +391,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="pushButtonLogin">
+         <property name="toolTip">
+          <string>Click to connect to the server and start the application</string>
+         </property>
          <property name="whatsThis">
           <string>Click to connect to the server and start the application</string>
          </property>
@@ -389,6 +404,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonCancel">
+         <property name="toolTip">
+          <string>Cancel and close the login dialog</string>
+         </property>
          <property name="whatsThis">
           <string>Cancel and close the login dialog</string>
          </property>
@@ -401,6 +419,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxMore">
+       <property name="toolTip">
+        <string>Show/hide the connection parameters</string>
+       </property>
        <property name="whatsThis">
         <string>Show/hide the connection parameters</string>
        </property>
@@ -425,6 +446,9 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="3" column="1">
            <widget class="QSpinBox" name="spinBoxPort">
+            <property name="toolTip">
+             <string>Insert the db server IP port</string>
+            </property>
             <property name="whatsThis">
              <string>Insert the db server IP port</string>
             </property>
@@ -451,6 +475,9 @@
           </item>
           <item row="4" column="1">
            <widget class="QLineEdit" name="lineEditDatabase">
+            <property name="toolTip">
+             <string>Insert the database name</string>
+            </property>
             <property name="whatsThis">
              <string>Insert the database name</string>
             </property>
@@ -464,6 +491,9 @@
           </item>
           <item row="2" column="1">
            <widget class="QLineEdit" name="lineEditServer">
+            <property name="toolTip">
+             <string>Insert the database server name or IP address</string>
+            </property>
             <property name="whatsThis">
              <string>Insert the database server name or IP address</string>
             </property>
@@ -477,6 +507,9 @@
           </item>
           <item row="5" column="1">
            <widget class="QLineEdit" name="lineEditDBUser">
+            <property name="toolTip">
+             <string>Insert the database user name</string>
+            </property>
             <property name="whatsThis">
              <string>Insert the database user name</string>
             </property>
@@ -500,6 +533,9 @@
           </item>
           <item row="6" column="1">
            <widget class="QLineEdit" name="lineEditDBPassword">
+            <property name="toolTip">
+             <string>Insert the database user password</string>
+            </property>
             <property name="whatsThis">
              <string>Insert the database user password</string>
             </property>

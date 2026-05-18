@@ -34,7 +34,7 @@ import csv
 import decimal
 
 # pandas
-import pandas as pd
+#import pandas as pd
 
 # PySide6
 #from PySide6.QtCore import QObject

@@ -50,6 +50,7 @@ from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QSyntaxHighlighter
 from PySide6.QtGui import QTextCharFormat
 from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -57,7 +58,6 @@ from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
-#from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Report import delete_all_reports
 from App.Database.Report import load_report
@@ -72,7 +72,6 @@ from App.Ui.ReportWidget import Ui_ReportWidget
 from App.Core.L10n import _tr
 from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
-from App.Core.SyntaxHighlighter import XMLHighlighter
 
 
 # logger
@@ -94,9 +93,13 @@ def report(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    # cursor wait
+    QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     rf = ReportForm(mw, title, auth)
     rf.applySortFilter()
     mw.addTab(title, rf)
+    # cursor restore
+    QGuiApplication.restoreOverrideCursor()
     logger.info('Report Form added to main window')
 
 
@@ -153,9 +156,9 @@ class ReportForm(FormIndexManager):
         self.ui.spinBoxFontSize.valueChanged.connect(self.changeFontSize)
         self.ui.pushButtonInsertImage.clicked.connect(self.insertImage)
 
-    def mapperIndexChanged(self, row: int) -> None:
+    def mapperIndexChanged(self, index: int) -> None:
         "Change form settings on change record"
-        super().mapperIndexChanged(row)
+        super().mapperIndexChanged(index)
         if self.ui.checkBoxSystem.isChecked():
             self.ui.lineEditCode.setDisabled(True)
             self.ui.comboBoxL10n.setDisabled(True)
@@ -414,3 +417,89 @@ class ReportForm(FormIndexManager):
         dialog = PrintDialog(self, reportId=rid, l10n=lcn)
         dialog.show()
 
+
+#
+# Syntax Highligter for XML source
+#
+
+class XMLHighlighter(QSyntaxHighlighter):
+
+    def __init__(self, parent: QObject) -> None:
+        super(XMLHighlighter, self).__init__(parent)
+        self._mappings = {}
+        # multiline comments
+        self.commentFormat = QTextCharFormat()
+        self.commentStartExpression = re.compile(r"<!--")
+        self.commentEndExpression = re.compile(r"-->")
+        # color configuration
+        if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
+            # Dark theme
+            self.commentFormat.setForeground(QColorConstants.Svg.lime)
+            fmt_element = self._create_format(QColorConstants.Svg.deepskyblue)
+            fmt_attribute = self._create_format(QColorConstants.Svg.tomato)
+            fmt_value = self._create_format(QColorConstants.Svg.violet)
+            fmt_text = self._create_format(QColorConstants.Svg.lightcyan, bold=True)
+            fmt_entity = self._create_format(QColorConstants.Svg.orange)
+        else:
+            # Light theme
+            self.commentFormat.setForeground(Qt.GlobalColor.darkGreen)
+            fmt_element = self._create_format(Qt.GlobalColor.blue)
+            fmt_attribute = self._create_format(Qt.GlobalColor.red)
+            fmt_value = self._create_format(Qt.GlobalColor.darkMagenta)
+            fmt_text = self._create_format(Qt.GlobalColor.black, bold=True)
+            fmt_entity = self._create_format(Qt.GlobalColor.darkYellow)
+        # Ordered mapping to avoid overwrite conflicts
+        self._mappings = {
+            r">[^\n]*<": fmt_text,
+            r"<[\s]*[/]?[\s]*([^\n]\w*)(?=[\s/>])": fmt_element,
+            r"\w+(?=\=)": fmt_attribute,
+            r"\"[^\n\"]+\"(?=[\s/>])": fmt_value,
+            r"&[a-zA-Z0-9#]+;": fmt_entity  # recognizes &amp;, &lt;, &#123;, ecc.
+        }
+
+    def _create_format(self, color, bold=False):
+        fmt = QTextCharFormat()
+        fmt.setForeground(color)
+        if bold:
+            fmt.setFontWeight(QFont.Weight.Bold)
+        return fmt
+
+    def highlightBlock(self, text: str) -> None:
+        # 1. set standard rules (tag, attributes, strings, entity)
+        for pattern, format in self._mappings.items():
+            for match in re.finditer(pattern, text):
+                start, end = match.span()
+                self.setFormat(start, end - start, format)
+        # 2. special rules for multiline comments overwrite anything else
+        self.setCurrentBlockState(0)
+        start_index = 0
+        # If the previous block ended inside a comment, we look for the end in this block.
+        if self.previousBlockState() == 1:
+            end_match = self.commentEndExpression.search(text)
+            if not end_match:
+                # The comment continues across the current line
+                self.setCurrentBlockState(1)
+                self.setFormat(0, len(text), self.commentFormat)
+                return
+            else:
+                # The comment ends on this line
+                end_index = end_match.end()
+                self.setFormat(0, end_index, self.commentFormat)
+                start_index = end_index
+        # Search for new comments starting on the current line
+        while start_index < len(text):
+            start_match = self.commentStartExpression.search(text, start_index)
+            if not start_match:
+                break
+            start_pos = start_match.start()
+            end_match = self.commentEndExpression.search(text, start_pos)
+            if not end_match:
+                # The comment opens but does not close on this line
+                self.setCurrentBlockState(1)
+                self.setFormat(start_pos, len(text) - start_pos, self.commentFormat)
+                break
+            else:
+                # The comment opens and closes on the same line
+                end_pos = end_match.end()
+                self.setFormat(start_pos, end_pos - start_pos, self.commentFormat)
+                start_index = end_pos

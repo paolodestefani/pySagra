@@ -1644,7 +1644,7 @@
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>255</red>
-                      <green>251</green>
+                      <green>147</green>
                       <blue>0</blue>
                      </color>
                     </brush>
@@ -1655,7 +1655,7 @@
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>255</red>
-                      <green>251</green>
+                      <green>147</green>
                       <blue>0</blue>
                      </color>
                     </brush>
@@ -1702,7 +1702,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_9">
+               <widget class="QLabel" name="labelAvailable">
                 <property name="palette">
                  <palette>
                   <active>
@@ -1710,8 +1710,8 @@
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>249</green>
-                      <blue>0</blue>
+                      <green>153</green>
+                      <blue>51</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -1721,8 +1721,8 @@
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>249</green>
-                      <blue>0</blue>
+                      <green>153</green>
+                      <blue>51</blue>
                      </color>
                     </brush>
                    </colorrole>

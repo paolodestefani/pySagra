@@ -657,7 +657,7 @@ FROM system.python_scripting;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (
-            ("sscript_id", _tr('Models', 'ID'), True, 'int'),
+            ("script_id", _tr('Models', 'ID'), True, 'int'),
             ("class_name", _tr('Models', 'Class name'), False, 'str'),
             ("method_name", _tr('Models', 'Method name'), False, 'str'),
             ("trigger", _tr('Models', 'Trigger'), False, 'str'),
@@ -672,7 +672,7 @@ FROM system.python_scripting;"""
         self.isCompanyTable = False
         self.repr = 'Scripting index query model'
         # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy(("class_name DESC", "method_name", "trigger"))
+        self.addOrderBy("class_name DESC, method_name, trigger")
         
                 
 class ScriptingModel(TableModel):

@@ -32,16 +32,12 @@ This module provides application setting dialog
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QAction
-from PySide6.QtGui import QColor
 from PySide6.QtGui import QFont
-from PySide6.QtGui import QPalette
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QColorDialog
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QPushButton
@@ -87,7 +83,7 @@ class SettingsDialog(QDialog):
     def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: str) -> None:
         super().__init__(parent)
         self.ui = Ui_SettingsDialog()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self)        
         self.setWindowTitle(title)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))

@@ -768,15 +768,20 @@ class FormIndexManager[T](QWidget):
         "Reload form model and detail relations on mapper index change"
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        #self.blockSignals(True)
         #QGuiApplication.processEvents() # not working...
-        if hasattr(self.model, 'filter'):
-            self.model.filter(0, self.indexModel.index(index, 0).data())
+        if not hasattr(self.model, 'filter'):
+            return
+
+        self.model.filter(0, self.indexModel.index(index, 0).data())    
         self.mapper.toFirst()
         for relation, masterColumn, detailColumn in self.detailRelations:
             value = self.model.index(self.mapper.currentIndex(), masterColumn).data()
             relation.filter(detailColumn, value)
+        
         self.updateEditStatus()
         #print("Mapper model rows:", self.mapper.model().rowCount())
+        #self.blockSignals(False)
         # cursor restore
         QGuiApplication.restoreOverrideCursor()
 

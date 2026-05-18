@@ -157,15 +157,16 @@ referenceList = {'eventList': event_lookup,
 
 
 class MessageBox(QDialog):
-    "Custom message wxpanding dialog"
+    "Custom message expanding dialog"
 
     def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
         self.ui = Ui_MessageDialog()
         self.ui.setupUi(self)
         app = cast(QApplication, QCoreApplication.instance())
-        if app:
-            sty = app.style()
+        if not app:
+            return
+        sty = app.style()
         icon = sty.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
         self.ui.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
         self.ui.checkBoxShowDetailMessage.setChecked(False)
@@ -175,26 +176,20 @@ def MessageBoxCritical(parent,
                        title: str|None = None,
                        ercode: str|None = None,
                        text: str|None = None, 
-                       detail: str|None = None,
-                       type: str = 'T') -> None:
+                       detail: str|None = None
+                       ) -> None:
     "Show a critical message dialog with optional detail message"
     dlg = MessageBox(parent)
     dlg.setWindowTitle(title or _tr('Dialog', "Critical error"),)
-    if ercode:
-        ermsg = _tr('Dialog', "Server error code: ") + ercode
-    else:
-        ermsg = ""
-    dlg.ui.labelErrorCode.setText(ermsg)
+    dlg.ui.labelErrorCode.setText(ercode or '')
     dlg.ui.labelMessage.setText(text or _tr('Dialog', "Unidentified critical error"),)
-    match type:
-        case 'T': # text
-            dlg.ui.textEditDetailMessage.setPlainText(detail or "")
-        case 'H': # html
-            dlg.ui.textEditDetailMessage.setHtml(detail or "")
-        case 'M': # Markdown
-            dlg.ui.textEditDetailMessage.setMarkdown(detail or "")
-        case _: # should not happen
-            pass
+    if detail:
+        detail = f"""
+```python
+{detail.strip()}
+```
+"""
+    dlg.ui.textEditDetailMessage.setMarkdown(detail or "")
     ret = dlg.exec()
     # clicking on Abort should be equal to dialog.rejected
     if ret == QDialog.DialogCode.Rejected:

@@ -43,56 +43,32 @@ from PySide6.QtCore import QLocale
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QSize
-from PySide6.QtCore import QPoint
-from PySide6.QtCore import QUuid
-from PySide6.QtCore import QUrl
-from PySide6.QtCore import QRegularExpression
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
 from PySide6.QtCore import QEvent
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QTimerEvent
 from PySide6.QtGui import QKeyEvent
-from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtGui import QResizeEvent
 from PySide6.QtGui import QPixmap
-from PySide6.QtGui import QImage
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QColor
 from PySide6.QtGui import QPainter
-from PySide6.QtGui import QPalette
 from PySide6.QtGui import QPen
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QFontMetrics
-from PySide6.QtGui import QFontDatabase
-from PySide6.QtGui import QTextDocument
 from PySide6.QtGui import QStandardItemModel
 from PySide6.QtGui import QStandardItem
-from PySide6.QtGui import QCursor
-from PySide6.QtGui import QAction
-from PySide6.QtGui import QActionGroup
 from PySide6.QtWidgets import QStyledItemDelegate
 from PySide6.QtWidgets import QStyleOptionViewItem
-from PySide6.QtWidgets import QCompleter
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QComboBox
-from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QSpinBox
 from PySide6.QtWidgets import QDoubleSpinBox
-from PySide6.QtWidgets import QDateEdit
 from PySide6.QtWidgets import QDateTimeEdit
 from PySide6.QtWidgets import QLineEdit
-from PySide6.QtWidgets import QFontComboBox
-from PySide6.QtWidgets import QTextEdit
 from PySide6.QtWidgets import QDataWidgetMapper
-from PySide6.QtWidgets import QMainWindow
-from PySide6.QtWidgets import QToolBar
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QInputDialog
-from PySide6.QtWidgets import QTableView
-from PySide6.QtWidgets import QHeaderView
-from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QSizePolicy
@@ -113,10 +89,12 @@ from App.Database.Setting import Setting
 
 
 class LabelImage(QLabel):
+    "A QLabel used for display/store and return an image"
 
     imageChanged=Signal()
 
     def _get_imageBytearray(self) -> QByteArray|None:
+        "Return imgage bytearray from label"
         ba = QByteArray()
         buf = QBuffer(ba)
         buf.open(QIODeviceBase.OpenModeFlag.WriteOnly)
@@ -127,6 +105,7 @@ class LabelImage(QLabel):
             return None
 
     def _set_imageBytearray(self, ba: QByteArray|None) -> None:
+        "Set/display an image on label"
         if ba:
             pix = QPixmap()
             pix.loadFromData(ba)
@@ -141,6 +120,7 @@ class LabelImage(QLabel):
                               user=True)
 
     def clear(self) -> None:
+        "Clear the label"
         super().clear()
         self.setText(_tr("Controls", "NO IMAGE"))
         
@@ -343,7 +323,14 @@ class RelationalComboBox(QComboBox):
         super().__init__(parent)
         self.sqlFunc: Callable|None = None
         self.nullable = False
-        self.currentIndexChanged.connect(self.itemChanged.emit)
+        # Modifica questa riga usando una funzione lambda di controllo
+        self.currentIndexChanged.connect(self._on_index_changed)
+
+    def _on_index_changed(self, index: int) -> None:
+        # Se l'indice è -1 significa che la combo è stata svuotata da codice (es. clear)
+        # Non dobbiamo emettere il segnale per il mapper in questo caso
+        if index != -1:
+            self.itemChanged.emit(index)
 
     def setNullable(self, nullable: bool) -> None:
         self.nullable = nullable
@@ -375,6 +362,8 @@ class RelationalComboBox(QComboBox):
                         self.addItem(k, v)
 
     def setItemList(self, items: list) -> None:
+        # Disconnetti temporaneamente il trasferimento del segnale
+        self.currentIndexChanged.disconnect(self._on_index_changed)
         self.blockSignals(True)
         self.clear()
         if items:
@@ -385,6 +374,8 @@ class RelationalComboBox(QComboBox):
                 for v, k in items:
                     self.addItem(k, v)
         self.blockSignals(False)
+        # Riconnetti il segnale
+        self.currentIndexChanged.connect(self._on_index_changed)
 
     def showPopup(self) -> None:
         "Update key/value list before show popup request"
@@ -432,9 +423,10 @@ class RelationalComboBox(QComboBox):
 
 class DataWidgetMapper(QDataWidgetMapper):
     """
-    Optimized version: Uses standard behavior but forces immediate commit
+    Optimized version of a QDataWidgetMapper: Uses standard behavior but forces immediate commit
     for widgets that don't lose focus correctly on macOS.
     """
+    
     def addMapping(self, widget: QWidget, section: int, propertyName: QByteArray|bytes|bytearray|memoryview|None = None) -> None:
         if propertyName is None:
             super().addMapping(widget, section)
@@ -444,7 +436,8 @@ class DataWidgetMapper(QDataWidgetMapper):
         delegate = self.itemDelegate()
         
         if isinstance(widget, QComboBox):
-            widget.currentIndexChanged.connect(lambda: delegate.commitData.emit(widget))
+            #widget.currentIndexChanged.connect(lambda: delegate.commitData.emit(widget))
+            widget.activated.connect(lambda: delegate.commitData.emit(widget))
             
         elif isinstance(widget, QCheckBox):
             # this forces the commit immediatly for checkboxes, 
@@ -453,7 +446,7 @@ class DataWidgetMapper(QDataWidgetMapper):
 
 
 class ColorComboBox(QComboBox):
-    """QComboBox that uses userData + itemText for key-value foreign key
+    """A QComboBox that uses userData + itemText for key-value foreign key
     or set/get items from a (k, v) list"""
 
     itemChanged=Signal()
@@ -726,7 +719,7 @@ class ColorSetComboBox(QComboBox):
         
 class ButtonSeat(QPushButton):
     """A QPushButton with a custom paint event to create a 3D effect and custom colors, 
-    used for seat selection in order dialog"""
+    used for seat selection in order dialog or seat map management"""
     def __init__(self, 
                  parent: QWidget,
                  text: str,
@@ -770,46 +763,6 @@ class ButtonSeat(QPushButton):
         painter.setPen(QColor(self.seatTextColor))
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
         painter.end()
-
-
-class Counter(QLineEdit):
-    """A QLabel with a custom style to show the current record number and 
-    total records count, with a red border when a limit is reached"""
-    def __init__(self, parent: QWidget) -> None:
-        super().__init__(parent)
-        # default font with bold for better visibility
-        font = QFont() 
-        font.setBold(True)
-        self.setFont(font)
-        self.setFixedWidth(120)
-        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setReadOnly(True)
-        self.setStatusTip(_tr('MainWindow', 
-                              "Current view's record "
-                              "counter, shows current record number and total records count"))
-        self.setToolTip(_tr('MainWindow', "Current view's record counter"))
-        # stylesheet for normal and limit reached states
-        self.setStyleSheet("""
-            QLineEdit {
-                border: 1px solid;
-                border-radius: 4px;
-            }
-            QLineEdit[limit="true"] {
-                border-color: red;
-            }
-        """)
-        
-    def setValues(self, current: int, total: int, limit: int|None) -> None:
-        "Set the current and total values for the counter"
-        if current >= 0:
-            self.setText(f"{QLocale().toString(current)}/{QLocale().toString(total)}")
-        else:
-            self.setText("-- / --")
-        # show if limit was reached
-        self.setProperty("limit", bool(limit and total >= limit))
-        # force style update to apply the new stylesheet based on the limit property
-        self.style().unpolish(self)
-        self.style().polish(self)
 
 
 class ButtonItem(QPushButton):

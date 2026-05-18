@@ -39,20 +39,16 @@ import platform
 
 # check component version modules
 from sys import version_info
-from psycopg import version
 from psycopg import __version__ as psycopg_version
 from PySide6 import __version__ as pyside6_version
 from PySide6.QtCore import qVersion 
 
 # PySide6
 from PySide6.QtCore import QOperatingSystemVersion
-from PySide6.QtCore import Qt
 from PySide6.QtCore import QLocale
 from PySide6.QtCore import QTranslator
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDialog
 
 # minimum required version of application components
@@ -80,26 +76,18 @@ from App.System.MainWindow import MainWindow
 logger = logging.getLogger(__name__)
 
 
-
 def logUnhandledException(ex_cls: type[BaseException], ex: BaseException, tb: types.TracebackType | None) -> None:
     "Function to get and log unhadked exceptions"
     logger.critical(''.join(traceback.format_tb(tb)))
     logger.critical('%s', ex_cls)
     logger.critical('%s', ex)
     # normal cursor
-    QApplication.restoreOverrideCursor()
-    # message is html (qt ritch text)
-    exs = (str(ex)
-           .replace("&", "&amp;")
-           .replace("<", "&lt;")
-           .replace(">", "&gt;")
-           .replace('"', "&quot;"))
-    msg = f"""<pre>{''.join(traceback.format_tb(tb))}</pre><b>{exs}</b>"""
+    QApplication.restoreOverrideCursor() # good in any case
     MessageBoxCritical(session.get('mainwin'),
                        "Unhadled exception",
                        "Uncaught exception occurred, see details for more information",
-                       msg,
-                       'H')
+                       str(ex),
+                       ''.join(traceback.format_tb(tb)))
 
 # -------------------------------------------------------------------------- #
 

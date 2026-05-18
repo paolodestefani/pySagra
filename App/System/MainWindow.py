@@ -75,9 +75,9 @@ from App.Database.Connect import appconn
 from App.Database.Gui import get_actions
 from App.Database.Gui import get_menu
 from App.Database.Gui import get_toolbar
-from App.Widget.Control import Counter
+#from App.Widget.Control import Counter
 
-from App.Ui.GoToDialog import Ui_GoToDialog
+#from App.Ui.GoToDialog import Ui_GoToDialog
 
 # logger
 logger = logging.getLogger(__name__)
@@ -263,6 +263,45 @@ class TabWidget(QTabWidget):
                          Qt.AlignmentFlag.AlignCenter,
                          evds)
 
+
+class Counter(QLineEdit):
+    """A QLabel with a custom style to show the current record number and 
+    total records count, with a red border when a limit is reached"""
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        # default font with bold for better visibility
+        font = QFont() 
+        font.setBold(True)
+        self.setFont(font)
+        self.setFixedWidth(120)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setReadOnly(True)
+        self.setStatusTip(_tr('MainWindow', 
+                              "Current view's record "
+                              "counter, shows current record number and total records count"))
+        self.setToolTip(_tr('MainWindow', "Current view's record counter"))
+        # stylesheet for normal and limit reached states
+        self.setStyleSheet("""
+            QLineEdit {
+                border: 1px solid;
+                border-radius: 4px;
+            }
+            QLineEdit[limit="true"] {
+                border-color: red;
+            }
+        """)
+        
+    def setValues(self, current: int, total: int, limit: int|None) -> None:
+        "Set the current and total values for the counter"
+        if current >= 0:
+            self.setText(f"{QLocale().toString(current)}/{QLocale().toString(total)}")
+        else:
+            self.setText("-- / --")
+        # show if limit was reached
+        self.setProperty("limit", bool(limit and total >= limit))
+        # force style update to apply the new stylesheet based on the limit property
+        self.style().unpolish(self)
+        self.style().polish(self)
 
 
 # -------------------------------------------------------------------------- #

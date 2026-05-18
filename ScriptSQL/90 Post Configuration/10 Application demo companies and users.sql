@@ -240,10 +240,8 @@ VALUES
 ('avanza', 'Avanzamento ordini', system.crypt('avanza', system.gen_salt('bf')), False, False, False, False, False, 'it_IT');
 
 -- additional profile/menu for users
-INSERT INTO system.app_user_company (app_user_code, company_id, profile_code, menu_code, toolbar_code) 
+INSERT INTO app_user_company (app_user_code, company_id, profile_code, menu_code, toolbar_code) 
 VALUES
-('system', 10, 'full', 'm_full_en', 't_full_en'),
-('system', 20, 'full', 'm_full_en', 't_full_en'),
 ('utente', 10, 'default', 'm_default_it', 't_default_it'),
 ('utente', 20, 'default', 'm_default_it', 't_default_it'),
 ('cassa', 10, 'cashier', 'm_cashier_it', 't_cashier_it'),

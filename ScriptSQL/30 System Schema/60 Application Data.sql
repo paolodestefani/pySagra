@@ -191,8 +191,3 @@ VALUES
 -- IT toolbars
 -- default toolbars
 ('tdqa', 'tdqaord', Null, 1, 'T', 'app_activity_order_entry');
-
--- END OF SCRIPT
-
-
-

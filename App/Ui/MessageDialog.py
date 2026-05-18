@@ -25,6 +25,7 @@ class Ui_MessageDialog(object):
         if not MessageDialog.objectName():
             MessageDialog.setObjectName(u"MessageDialog")
         MessageDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        MessageDialog.resize(399, 461)
         MessageDialog.setSizeGripEnabled(False)
         self.verticalLayout_5 = QVBoxLayout(MessageDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
@@ -64,6 +65,10 @@ class Ui_MessageDialog(object):
         self.labelMessage.setObjectName(u"labelMessage")
         self.labelMessage.setMinimumSize(QSize(0, 100))
         self.labelMessage.setMaximumSize(QSize(16777215, 100))
+        font = QFont()
+        font.setBold(True)
+        self.labelMessage.setFont(font)
+        self.labelMessage.setTextFormat(Qt.TextFormat.MarkdownText)
         self.labelMessage.setWordWrap(True)
 
         self.verticalLayout_3.addWidget(self.labelMessage)
@@ -103,6 +108,7 @@ class Ui_MessageDialog(object):
         self.textEditDetailMessage.setMinimumSize(QSize(300, 200))
         self.textEditDetailMessage.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         self.textEditDetailMessage.setReadOnly(True)
+        self.textEditDetailMessage.setAcceptRichText(False)
         self.textEditDetailMessage.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.verticalLayout.addWidget(self.textEditDetailMessage)
@@ -128,5 +134,13 @@ class Ui_MessageDialog(object):
         self.labelErrorCode.setText(QCoreApplication.translate("MessageDialog", u"Error code", None))
         self.labelMessage.setText(QCoreApplication.translate("MessageDialog", u"Message", None))
         self.checkBoxShowDetailMessage.setText(QCoreApplication.translate("MessageDialog", u"Show detail message", None))
+        self.textEditDetailMessage.setHtml(QCoreApplication.translate("MessageDialog", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
     # retranslateUi
 

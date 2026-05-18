@@ -1060,7 +1060,7 @@ class Ui_SettingsDialog(object):
         self.labelWarning = QLabel(self.groupBox_3)
         self.labelWarning.setObjectName(u"labelWarning")
         palette1 = QPalette()
-        brush1 = QBrush(QColor(255, 251, 0, 255))
+        brush1 = QBrush(QColor(255, 147, 0, 255))
         brush1.setStyle(Qt.BrushStyle.SolidPattern)
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush1)
         palette1.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush1)
@@ -1087,16 +1087,16 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_13.addWidget(self.label_28)
 
-        self.label_9 = QLabel(self.groupBox_3)
-        self.label_9.setObjectName(u"label_9")
+        self.labelAvailable = QLabel(self.groupBox_3)
+        self.labelAvailable.setObjectName(u"labelAvailable")
         palette2 = QPalette()
-        brush2 = QBrush(QColor(0, 249, 0, 255))
+        brush2 = QBrush(QColor(0, 153, 51, 255))
         brush2.setStyle(Qt.BrushStyle.SolidPattern)
         palette2.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush2)
         palette2.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush2)
-        self.label_9.setPalette(palette2)
+        self.labelAvailable.setPalette(palette2)
 
-        self.horizontalLayout_13.addWidget(self.label_9)
+        self.horizontalLayout_13.addWidget(self.labelAvailable)
 
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -1267,7 +1267,7 @@ class Ui_SettingsDialog(object):
         self.labelWarning.setText(QCoreApplication.translate("SettingsDialog", u"Warning", None))
         self.label_35.setText(QCoreApplication.translate("SettingsDialog", u"<=", None))
         self.label_28.setText(QCoreApplication.translate("SettingsDialog", u"<", None))
-        self.label_9.setText(QCoreApplication.translate("SettingsDialog", u"Available", None))
+        self.labelAvailable.setText(QCoreApplication.translate("SettingsDialog", u"Available", None))
         self.groupBox_15.setTitle(QCoreApplication.translate("SettingsDialog", u"Order progress", None))
         self.checkBoxOrderProgress.setText(QCoreApplication.translate("SettingsDialog", u"Order progress management (ordered delivered)", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab5), QCoreApplication.translate("SettingsDialog", u"Other", None))

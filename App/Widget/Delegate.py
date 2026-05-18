@@ -25,7 +25,6 @@
 
 This module contains custom general delegates
 
-
 """
 
 # standard library
@@ -58,10 +57,7 @@ from PySide6.QtGui import QPalette
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QWidget   
 from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QAbstractItemDelegate
 from PySide6.QtWidgets import QStyledItemDelegate
-from PySide6.QtWidgets import QItemDelegate
-from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QComboBox
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QSpinBox
@@ -878,7 +874,7 @@ class StockLevelDelegate(QuantityDelegate):
         self.warning_level = warning
         self.critical_level = critical
         self.normalColor = Qt.GlobalColor.darkGreen
-        self.warningColor = Qt.GlobalColor.yellow
+        self.warningColor = QColor('orange')
         self.criticalColor = Qt.GlobalColor.red
         self.outOfStockColor = Qt.GlobalColor.gray
 
