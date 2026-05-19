@@ -45,6 +45,7 @@ from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QPainter
 from PySide6.QtGui import QColor
+from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QPaintEvent
 from PySide6.QtWidgets import QComboBox
 from PySide6.QtWidgets import QWidget
@@ -218,11 +219,11 @@ class TabWidget(QTabWidget):
         painter = QPainter(self)
         # colors
         if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Light:
-            color1 = QColor('#BBBBBB')
-            color2 = QColor('#221155')
+            color1 = QColorConstants.LightGray #QColor('#BBBBBB')
+            color2 = QColorConstants.DarkBlue # QColor('#221155')
         else:
-            color1 = QColor('#777722')
-            color2 = QColor('#F0F040')
+            color1 = QColorConstants.DarkYellow #  QColor('#777722')
+            color2 = QColorConstants.Yellow #QColor('#F0F040')
         # company
         x = (self.width() - img.width()) // 2
         y = (self.height() - img.height()) // 2
@@ -272,6 +273,7 @@ class Counter(QLineEdit):
         # default font with bold for better visibility
         font = QFont() 
         font.setBold(True)
+        font.setPointSizeF(font.pointSizeF() * 1.2) # increase font size of the counter
         self.setFont(font)
         self.setFixedWidth(120)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -285,8 +287,10 @@ class Counter(QLineEdit):
             QLineEdit {
                 border: 1px solid;
                 border-radius: 4px;
+                padding: 2px;
             }
             QLineEdit[limit="true"] {
+                border: 2px solid;
                 border-color: red;
             }
         """)

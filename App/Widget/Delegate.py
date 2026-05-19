@@ -52,6 +52,7 @@ from PySide6.QtGui import QKeyEvent
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QColor
+from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QPalette
 from PySide6.QtGui import QPainter
@@ -299,7 +300,7 @@ class ColorComboDelegate(QStyledItemDelegate):
                      ) -> QWidget:
         color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
         if not color.isValid():
-            color = QColor(Qt.GlobalColor.white)
+            color = QColor(QColorConstants.White)
         cb = ColorComboBox(parent)
         cb.setColorList(self.colors)
         return cb
@@ -873,10 +874,10 @@ class StockLevelDelegate(QuantityDelegate):
         super().__init__(parent, bold=bold)
         self.warning_level = warning
         self.critical_level = critical
-        self.normalColor = Qt.GlobalColor.darkGreen
-        self.warningColor = QColor('orange')
-        self.criticalColor = Qt.GlobalColor.red
-        self.outOfStockColor = Qt.GlobalColor.gray
+        self.normalColor = QColorConstants.DarkGreen
+        self.warningColor = QColorConstants.Svg.orange
+        self.criticalColor = QColorConstants.Red
+        self.outOfStockColor = QColorConstants.Gray
 
     def paint(self, 
               painter: QPainter,

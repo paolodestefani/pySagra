@@ -140,12 +140,12 @@ class XMLHighlighter(QSyntaxHighlighter):
             fmt_entity = self._create_format(QColorConstants.Svg.orange)
         else:
             # Light theme
-            self.commentFormat.setForeground(Qt.GlobalColor.darkGreen)
-            fmt_element = self._create_format(Qt.GlobalColor.blue)
-            fmt_attribute = self._create_format(Qt.GlobalColor.red)
-            fmt_value = self._create_format(Qt.GlobalColor.darkMagenta)
-            fmt_text = self._create_format(Qt.GlobalColor.black, bold=True)
-            fmt_entity = self._create_format(Qt.GlobalColor.darkYellow)
+            self.commentFormat.setForeground(QColorConstants.DarkGreen)
+            fmt_element = self._create_format(QColorConstants.Blue)
+            fmt_attribute = self._create_format(QColorConstants.Red)
+            fmt_value = self._create_format(QColorConstants.DarkMagenta)
+            fmt_text = self._create_format(QColorConstants.Black, bold=True)
+            fmt_entity = self._create_format(QColorConstants.DarkYellow)
         # Ordered mapping to avoid overwrite conflicts
         self._mappings = {
             r">[^\n]*<": fmt_text,

@@ -53,6 +53,7 @@ from PySide6.QtGui import QResizeEvent
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QColor
+from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QPainter
 from PySide6.QtGui import QPen
 from PySide6.QtGui import QFont
@@ -683,24 +684,24 @@ class ColorSetComboBox(QComboBox):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.colors = ((Qt.GlobalColor.transparent, _tr("Controls", "Transparent")),
-                       (Qt.GlobalColor.black, _tr("Controls", "Black")),
-                       (Qt.GlobalColor.red, _tr("Controls", "Red")),
-                       (Qt.GlobalColor.darkRed, _tr("Controls", "Dark red")),
-                       (Qt.GlobalColor.green, _tr("Controls", "Green")),
-                       (Qt.GlobalColor.darkGreen, _tr("Controls", "Dark green")),
-                       (Qt.GlobalColor.blue, _tr("Controls", "Blue")),
-                       (Qt.GlobalColor.darkBlue, _tr("Controls", "Dark blue")),
-                       (Qt.GlobalColor.cyan, _tr("Controls", "Cyan")),
-                       (Qt.GlobalColor.darkCyan, _tr("Controls", "Dark cyan")),
-                       (Qt.GlobalColor.magenta, _tr("Controls", "Magenta")),
-                       (Qt.GlobalColor.darkMagenta, _tr("Controls", "Dark magenta")),
-                       (Qt.GlobalColor.yellow, _tr("Controls", "Yellow")),
-                       (Qt.GlobalColor.darkYellow, _tr("Controls", "Dark yellow")),
-                       (Qt.GlobalColor.gray, _tr("Controls", "Gray")),
-                       (Qt.GlobalColor.darkGray, _tr("Controls", "Dark gray")),
-                       (Qt.GlobalColor.lightGray, _tr("Controls", "Light gray")),
-                       (Qt.GlobalColor.white, _tr("Controls", "White")))
+        self.colors = ((QColorConstants.Transparent, _tr("Controls", "Transparent")),
+                       (QColorConstants.Black, _tr("Controls", "Black")),
+                       (QColorConstants.Red, _tr("Controls", "Red")),
+                       (QColorConstants.DarkRed, _tr("Controls", "Dark red")),
+                       (QColorConstants.Green, _tr("Controls", "Green")),
+                       (QColorConstants.DarkGreen, _tr("Controls", "Dark green")),
+                       (QColorConstants.Blue, _tr("Controls", "Blue")),
+                       (QColorConstants.DarkBlue, _tr("Controls", "Dark blue")),
+                       (QColorConstants.Cyan, _tr("Controls", "Cyan")),
+                       (QColorConstants.DarkCyan, _tr("Controls", "Dark cyan")),
+                       (QColorConstants.Magenta, _tr("Controls", "Magenta")),
+                       (QColorConstants.DarkMagenta, _tr("Controls", "Dark magenta")),
+                       (QColorConstants.Yellow, _tr("Controls", "Yellow")),
+                       (QColorConstants.DarkYellow, _tr("Controls", "Dark yellow")),
+                       (QColorConstants.Gray, _tr("Controls", "Gray")),
+                       (QColorConstants.DarkGray, _tr("Controls", "Dark gray")),
+                       (QColorConstants.LightGray, _tr("Controls", "Light gray")),
+                       (QColorConstants.White, _tr("Controls", "White")))
         self.qtColors = tuple((i[0] for i in self.colors))
         for c, d in self.colors:
             pix = QPixmap(32, 24)
@@ -875,8 +876,8 @@ class ButtonItemExample(QPushButton):
     
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.textColor = QColor("#000000")
-        self.backgroundColor = QColor("#90ee90")
+        self.textColor = QColorConstants.Black # QColor("#000000")
+        self.backgroundColor = QColorConstants.Svg.lightgreen # QColor("#90ee90")
         self.setText("Example Item")
         self.setMinimumWidth(65)
         
@@ -928,8 +929,8 @@ class ButtonColor(QPushButton):
     
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.textColor = QColor("#000000")
-        self.backgroundColor = QColor("#90ee90")
+        self.textColor = QColorConstants.Black # QColor("#000000")
+        self.backgroundColor = QColorConstants.Svg.lightgreen # QColor("#90ee90")
         self.setText("Example Item")
         self.setMinimumWidth(65)
         
