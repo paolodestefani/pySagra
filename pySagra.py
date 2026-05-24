@@ -133,7 +133,7 @@ if __name__ == "__main__":
                         help="Log to console if available, overcome logging to a file")  # only if a console is available
     args = parser.parse_args()
     # LOGGING TO TEXT FILEs
-    # an empty (None) logfile cause logging to <cwd>\logfile.log
+    # an empty (None) logfile cause logging to <cwd>/logfile.log
     if args.logfile:
         # check log file access
         try:

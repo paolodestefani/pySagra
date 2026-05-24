@@ -3,7 +3,7 @@
  <class>HelpDialog</class>
  <widget class="QDialog" name="HelpDialog">
   <property name="windowModality">
-   <enum>Qt::NonModal</enum>
+   <enum>Qt::WindowModality::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -77,7 +77,7 @@
      <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -130,10 +130,10 @@
         <number>1</number>
        </property>
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="tickPosition">
-        <enum>QSlider::NoTicks</enum>
+        <enum>QSlider::TickPosition::NoTicks</enum>
        </property>
       </widget>
      </item>

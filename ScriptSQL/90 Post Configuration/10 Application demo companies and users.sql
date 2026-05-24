@@ -231,6 +231,14 @@ SELECT
 system.pa_company_create(10, 'Demo 1', true, Null),
 system.pa_company_create(20, 'Demo 2', true, Null);
 
+-- user company settings
+INSERT INTO app_user_company (app_user_code, company_id, profile_code, menu_code, toolbar_code) 
+VALUES
+('system', 10, 'full', 'm_full_en', 't_full_en'),
+('system', 20, 'full', 'm_full_en', 't_full_en'),
+('sistema', 10, 'full', 'm_full_it', 't_full_en'),
+('sistema', 20, 'full', 'm_full_it', 't_full_en');
+
 -- USERS
 -- create application users
 INSERT INTO app_user (user_code, description, user_password, is_admin, is_system_object, can_edit_views, can_edit_sortfilters, can_edit_reports, l10n) 

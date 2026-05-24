@@ -183,11 +183,12 @@ def has_stock_management(item_id: int) -> bool:
     # actually we don't need to filter company_id as item_id is unique across companies
     script = t"""
 SELECT 
-    has_inventory_control 
+    item_id 
 FROM item 
 WHERE
         company_id  = system.pa_current_company()
-    AND item_id     = {item_id};"""
+    AND item_id     = {item_id}
+    AND has_inventory_control IS true;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)

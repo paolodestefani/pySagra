@@ -244,8 +244,8 @@ SELECT EXISTS(
 def get_companies_list(user: str|None = None) -> list[tuple[int, str]]:
     """Get the available company list for user or all companies"""
     # get companies list for user
-    if user and user == session['app_system_user']:
-        script = t"""
+    #if user and user == session['app_system_user']:
+    script = t"""
 -- available companies
 SELECT
     uc.company_id AS company_id,
@@ -261,19 +261,6 @@ SELECT
 FROM system.connection n
 JOIN system.company c ON n.company_id = c.company_id 
 WHERE session_id = pg_backend_pid();"""
-        try:
-            with appconn.cursor() as cur:
-                cur.execute(script)
-                return cur.fetchall()
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    else: # all companies list
-        script = """
-SELECT 
-    c.company_id, 
-    c.description
-FROM system.company c;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)
@@ -281,6 +268,19 @@ FROM system.company c;"""
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+#     else: # all companies list
+#         script = """
+# SELECT 
+#     c.company_id, 
+#     c.description
+# FROM system.company c;"""
+#     try:
+#         with appconn.cursor() as cur:
+#             cur.execute(script)
+#             return cur.fetchall()
+#     except psycopg.Error as er:
+#         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+#         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
 def get_company_desc(company: int) -> str:

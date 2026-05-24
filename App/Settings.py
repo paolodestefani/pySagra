@@ -304,14 +304,14 @@ class SettingsDialog(QDialog):
         self.setting['table_list_font_size'] = self.ui.spinBoxTableListFontSize.value()
         self.setting['use_table_list'] = self.ui.checkBoxUseTableList.isChecked()
         # colors
-        self.setting['normal_background_color'] = self.ui.colorComboBoxBackground.currentColor()
-        self.setting['normal_text_color'] = self.ui.colorComboBoxText.currentColor()
-        self.setting['warning_background_color'] = self.ui.colorComboBoxWB.currentColor()
-        self.setting['warning_text_color'] = self.ui.colorComboBoxWT.currentColor()
-        self.setting['critical_background_color'] = self.ui.colorComboBoxCB.currentColor()
-        self.setting['critical_text_color'] = self.ui.colorComboBoxCT.currentColor()
-        self.setting['disabled_background_color'] = self.ui.colorComboBoxDB.currentColor()
-        self.setting['disabled_text_color'] = self.ui.colorComboBoxDT.currentColor()
+        self.setting['normal_background_color'] = self.ui.colorComboBoxBackground.modelDataStr
+        self.setting['normal_text_color'] = self.ui.colorComboBoxText.modelDataStr
+        self.setting['warning_background_color'] = self.ui.colorComboBoxWB.modelDataStr
+        self.setting['warning_text_color'] = self.ui.colorComboBoxWT.modelDataStr
+        self.setting['critical_background_color'] = self.ui.colorComboBoxCB.modelDataStr
+        self.setting['critical_text_color'] = self.ui.colorComboBoxCT.modelDataStr
+        self.setting['disabled_background_color'] = self.ui.colorComboBoxDB.modelDataStr
+        self.setting['disabled_text_color'] = self.ui.colorComboBoxDT.modelDataStr
         # reports
         self.setting['print_customer_copy'] = self.ui.checkBoxCustomerCopy.isChecked()
         self.setting['print_department_copy'] = self.ui.checkBoxDepartmentCopy.isChecked()

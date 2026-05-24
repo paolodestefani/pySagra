@@ -67,8 +67,8 @@ CREATE TABLE item (
     sorting                 integer NOT NULL DEFAULT 1,
     pos_row                 integer,
     pos_column              integer,
-	normal_background_color char(7) DEFAULT '#4141c5',
-    normal_text_color       char(7) DEFAULT '#FFFFFF',
+	normal_background_color char(7) DEFAULT '#4169e1', -- royal blue
+    normal_text_color       char(7) DEFAULT '#FFFFFF', -- white
     has_variants            boolean NOT NULL DEFAULT false,
     has_inventory_control   boolean NOT NULL DEFAULT true,
     has_delivered_control   boolean NOT NULL DEFAULT false,

@@ -258,7 +258,7 @@ class TreeQueryModel(QAbstractItemModel):
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self.columns[section][0]
+            return self.columns[section][1] # field description
         return None
 
     def index(self, row, column, parent=QModelIndex()):

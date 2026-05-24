@@ -24,7 +24,7 @@ class Ui_HelpDialog(object):
     def setupUi(self, HelpDialog):
         if not HelpDialog.objectName():
             HelpDialog.setObjectName(u"HelpDialog")
-        HelpDialog.setWindowModality(Qt.NonModal)
+        HelpDialog.setWindowModality(Qt.WindowModality.NonModal)
         HelpDialog.resize(1042, 549)
         HelpDialog.setSizeGripEnabled(True)
         self.verticalLayout = QVBoxLayout(HelpDialog)
@@ -78,8 +78,8 @@ class Ui_HelpDialog(object):
         self.horizontalSliderZoom.setMinimum(1)
         self.horizontalSliderZoom.setMaximum(7)
         self.horizontalSliderZoom.setPageStep(1)
-        self.horizontalSliderZoom.setOrientation(Qt.Horizontal)
-        self.horizontalSliderZoom.setTickPosition(QSlider.NoTicks)
+        self.horizontalSliderZoom.setOrientation(Qt.Orientation.Horizontal)
+        self.horizontalSliderZoom.setTickPosition(QSlider.TickPosition.NoTicks)
 
         self.horizontalLayout.addWidget(self.horizontalSliderZoom)
 

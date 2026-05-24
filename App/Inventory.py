@@ -36,9 +36,11 @@ from PySide6.QtCore import QDate
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtCore import QSettings
 
 # application modules
 from App import session
+from App.Database.Lookup import event_lookup
 from App.Database.Setting import Setting
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import QuantityDelegate
@@ -85,7 +87,11 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         self.ui = Ui_InventoryWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableViewItem)  # required for formviewmanager
+        st = QSettings()
+        if st.value("Inventory/SplitterSizes", None):
+            self.ui.splitter.setSizes(st.value("Inventory/SplitterSizes"))
         self.ui.tableViewItem.setLayoutName('Inventory')
+        self.ui.tableViewItem.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_lookup))
         self.ui.tableViewItem.setItemDelegateForColumn(ITEM, RelationDelegate(self, item_with_stock_control_lookup))
         self.ui.tableViewItem.setItemDelegateForColumn(LOADED, QuantityDelegate(self))
         self.ui.tableViewItem.setItemDelegateForColumn(UNLOADED, QuantityDelegate(self))
@@ -159,3 +165,8 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
     def setFilters(self):
         "Filters event and items"
         self.sortFilterDialog.show()
+        
+    def close(self, *args, **kwargs) -> bool: # avoid signature change for event handler
+        st = QSettings()
+        st.setValue("Inventory/SplitterSizes", self.ui.splitter.sizes())
+        super().close()

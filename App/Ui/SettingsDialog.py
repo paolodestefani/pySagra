@@ -431,6 +431,9 @@ class Ui_SettingsDialog(object):
         self.horizontalSliderLunch.setPageStep(8)
         self.horizontalSliderLunch.setValue(11)
         self.horizontalSliderLunch.setOrientation(Qt.Orientation.Horizontal)
+        self.horizontalSliderLunch.setInvertedAppearance(False)
+        self.horizontalSliderLunch.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.horizontalSliderLunch.setTickInterval(1)
 
         self.gridLayout_3.addWidget(self.horizontalSliderLunch, 0, 1, 1, 1)
 
@@ -451,7 +454,11 @@ class Ui_SettingsDialog(object):
         self.horizontalSliderDinner.setMaximum(24)
         self.horizontalSliderDinner.setPageStep(8)
         self.horizontalSliderDinner.setValue(18)
+        self.horizontalSliderDinner.setSliderPosition(18)
         self.horizontalSliderDinner.setOrientation(Qt.Orientation.Horizontal)
+        self.horizontalSliderDinner.setInvertedAppearance(False)
+        self.horizontalSliderDinner.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.horizontalSliderDinner.setTickInterval(1)
 
         self.gridLayout_3.addWidget(self.horizontalSliderDinner, 1, 1, 1, 1)
 

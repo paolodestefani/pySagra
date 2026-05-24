@@ -127,7 +127,7 @@ class AboutDialog(QDialog):
             f'<li><a href="https://doc.qt.io/qtforpython-6/">Qt for Python</a> {pySideRef}</li>'
             f'<li><a href="https://github.com/KDE/oxygen-icons">Oxygen icons</a> {oxygenRef} <a href="https://www.iconarchive.com/">Icon Archive</a></li>'
             f'</ul>'
-            f'<p>{iconRef} <a href="https://dellustrations.com/ )">Dellustrations</a></p>'
+            f'<p>{iconRef} <a href="https://dellustrations.com">Dellustrations</a></p>'
             f'<p>{gifRef} <a href="https://pixabay.com/users/placidplace-25572496/">Placidplace</a></p>'
             f'<p>{licence1}</p>'
             f'<p>{licence2}</p>'

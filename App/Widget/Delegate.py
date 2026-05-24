@@ -32,7 +32,7 @@ from decimal import Decimal
 from typing import Any, cast
 
 # PySide6
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QRectF, Qt
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QIODevice
@@ -47,7 +47,7 @@ from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QSize
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QMouseEvent, QPen
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
@@ -239,9 +239,54 @@ class GenericDelegate(QStyledItemDelegate):
 #                                          painter)
 #         painter.restore()
         
+# class ColorDelegate(QStyledItemDelegate):
+    
+#     def paint(self, painter, option, index):
+#         # Recupera il colore dal modello
+#         color_val = index.data(Qt.ItemDataRole.DisplayRole)
+#         color = QColor(color_val) if color_val else QColor(Qt.GlobalColor.white)
+        
+#         painter.save()
+#         opts = QStyleOptionViewItem(option)
+#         self.initStyleOption(opts, index)
+        
+#         # 1. Rimuove il testo per evitare di vedere il codice HEX
+#         opts.text = ""
+        
+#         # 2. Imposta il colore di sfondo
+#         opts.backgroundBrush = QBrush(color)
+        
+#         # Su Windows, per far vedere bene la selezione, Qt disegna un rettangolo tratteggiato.
+#         # drawControl gestirà correttamente sia lo sfondo colorato che il focus.
+#         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem, opts, painter)
+#         painter.restore()
+
+#     def editorEvent(self, event, model, option, index):
+#         # Usiamo MouseButtonRelease: è lo standard più sicuro tra Win/Mac
+#         # per evitare che il dialogo appaia mentre il mouse è ancora premuto
+#         if event.type() == QEvent.Type.MouseButtonRelease:
+#             # Opzionale: puoi limitare l'apertura solo se viene cliccato il tasto sinistro
+#             if event.button() == Qt.MouseButton.LeftButton:
+#                 current_str = index.data(Qt.ItemDataRole.DisplayRole)
+#                 current_color = QColor(current_str) if current_str else QColor(Qt.GlobalColor.green)
+                
+#                 # Nel tuo editorEvent
+#                 new_color = QColorDialog.getColor(current_color, option.widget, "Seleziona Colore")
+                
+#                 if new_color.isValid():
+#                     # Aggiorna il modello
+#                     model.setData(index, new_color.name(), Qt.ItemDataRole.EditRole)
+#                     return True
+#         return False
+
+#     def createEditor(self, parent, option, index):
+#         # Fondamentale: impedisce a Windows di creare la QLineEdit di default
+#         # che apparirebbe sopra il tuo colore.
+#         return None
+    
 class ColorDelegate(QStyledItemDelegate):
     
-    def paint(self, painter, option, index):
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index) -> None:
         # Recupera il colore dal modello
         color_val = index.data(Qt.ItemDataRole.DisplayRole)
         color = QColor(color_val) if color_val else QColor(Qt.GlobalColor.white)
@@ -253,12 +298,32 @@ class ColorDelegate(QStyledItemDelegate):
         # 1. Rimuove il testo per evitare di vedere il codice HEX
         opts.text = ""
         
-        # 2. Imposta il colore di sfondo
-        opts.backgroundBrush = QBrush(color)
-        
-        # Su Windows, per far vedere bene la selezione, Qt disegna un rettangolo tratteggiato.
-        # drawControl gestirà correttamente sia lo sfondo colorato che il focus.
+        # 2. Lasciamo che lo stile disegni lo sfondo di sistema (gestendo selezione e focus)
+        # Rimosso: opts.backgroundBrush = QBrush(color)
         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem, opts, painter)
+        
+        # 3. Disegna il rettangolo arrotondato sopra lo sfondo con gli stessi parametri
+        if color.isValid():
+            # Attiva l'antialiasing per curve morbide
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            
+            # Stesso margine di 3 pixel per mantenere la coerenza visiva
+            margin = 3.0
+            rect = QRectF(
+                option.rect.x() + margin,
+                option.rect.y() + margin,
+                option.rect.width() - (margin * 2),
+                option.rect.height() - (margin * 2)
+            )
+            
+            # Imposta colore e bordo nero da 1px
+            painter.setBrush(QBrush(color))
+            painter.setPen(QPen(Qt.GlobalColor.black, 1))
+            
+            # Stesso raggio di arrotondamento a 4 pixel
+            corner_radius = 4.0
+            painter.drawRoundedRect(rect, corner_radius, corner_radius)
+        
         painter.restore()
 
     def editorEvent(self, event, model, option, index):
@@ -283,7 +348,6 @@ class ColorDelegate(QStyledItemDelegate):
         # Fondamentale: impedisce a Windows di creare la QLineEdit di default
         # che apparirebbe sopra il tuo colore.
         return None
-
 
 
 class ColorComboDelegate(QStyledItemDelegate):
@@ -323,19 +387,61 @@ class ColorComboDelegate(QStyledItemDelegate):
         ccb = cast(ColorComboBox, editor)
         model.setData(index, ccb.currentData(Qt.ItemDataRole.UserRole), Qt.ItemDataRole.EditRole)
 
+    # def paint(self, 
+    #           painter: QPainter,
+    #           option: QStyleOptionViewItem,
+    #           index: QModelIndex|QPersistentModelIndex
+    #           ) -> None:
+    #     color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
+    #     painter.save()
+    #     styleOption = QStyleOptionViewItem(option)
+    #     styleOption.backgroundBrush = QBrush(color)
+    #     QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
+    #                                      styleOption,
+    #                                      painter)
+    #     painter.restore()
+    
     def paint(self, 
-              painter: QPainter,
-              option: QStyleOptionViewItem,
-              index: QModelIndex|QPersistentModelIndex
-              ) -> None:
+            painter: QPainter,
+            option: QStyleOptionViewItem,
+            index: QModelIndex | QPersistentModelIndex
+            ) -> None:
+        
         color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
+        
         painter.save()
+        
+        # 1. Disegna lo sfondo standard della cella (gestisce selezione, hover, ecc.)
         styleOption = QStyleOptionViewItem(option)
-        styleOption.backgroundBrush = QBrush(color)
+        # Rimuoviamo l'assegnazione del backgroundBrush qui per non colorare l'intera cella quadrata
         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
-                                         styleOption,
-                                         painter)
+                                        styleOption,
+                                        painter)
+        
+        # 2. Se il colore è valido, disegna il rettangolo arrotondato sopra lo sfondo
+        if color.isValid():
+            # Attiva l'antialiasing per evitare bordi seghettati sulle curve
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            
+            # Definisci un margine (es. 3 pixel) per staccare il colore dai bordi della cella
+            margin = 3.0
+            rect = QRectF(
+                option.rect.x() + margin,
+                option.rect.y() + margin,
+                option.rect.width() - (margin * 2),
+                option.rect.height() - (margin * 2)
+            )
+            
+            # Imposta il colore di riempimento e un leggero bordo nero (puoi usare Qt.PenStyle.NoPen se non vuoi il bordo)
+            painter.setBrush(QBrush(color))
+            painter.setPen(QPen(Qt.GlobalColor.black, 1))
+            
+            # Raggio di arrotondamento degli angoli
+            corner_radius = 4.0
+            painter.drawRoundedRect(rect, corner_radius, corner_radius)
+            
         painter.restore()
+
 
 
 class ImageDelegate(QStyledItemDelegate):
@@ -758,6 +864,9 @@ class DecimalDelegate(QStyledItemDelegate):
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
             val = index.data(Qt.ItemDataRole.DisplayRole)
+        # don't print anything if no value
+        if val is None:
+            return
         if self.currency:
             option.text = session['qlocale'].toCurrencyString(float(index.data() or 0.0), ' ')  # no currency symbol
         else:
@@ -809,7 +918,7 @@ class QuantityDelegate(DecimalDelegate):
                          maximum=99999.9,
                          currency=False,
                          bold=bold)
-
+           
 
 class AmountDelegate(DecimalDelegate):
     "Delegate for currency values"

@@ -17,8 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFontComboBox,
     QGroupBox, QHBoxLayout, QHeaderView, QLabel,
-    QPlainTextEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QSpinBox, QStackedWidget, QVBoxLayout, QWidget)
+    QLineEdit, QPlainTextEdit, QPushButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QStackedWidget, QVBoxLayout,
+    QWidget)
 
 from App.Widget.Control import RelationalComboBox
 from App.Widget.View import EnhancedTableView
@@ -27,7 +28,7 @@ class Ui_ScriptingWidget(object):
     def setupUi(self, ScriptingWidget):
         if not ScriptingWidget.objectName():
             ScriptingWidget.setObjectName(u"ScriptingWidget")
-        ScriptingWidget.resize(908, 585)
+        ScriptingWidget.resize(874, 567)
         self.verticalLayout_6 = QVBoxLayout(ScriptingWidget)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_6.setContentsMargins(5, 5, 5, 5)
@@ -37,8 +38,10 @@ class Ui_ScriptingWidget(object):
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.form = QWidget()
         self.form.setObjectName(u"form")
-        self.verticalLayout_3 = QVBoxLayout(self.form)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_7 = QVBoxLayout(self.form)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.groupBox = QGroupBox(self.form)
@@ -93,9 +96,17 @@ class Ui_ScriptingWidget(object):
 
         self.horizontalLayout_3.addWidget(self.groupBox_4)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.groupBox_6 = QGroupBox(self.form)
+        self.groupBox_6.setObjectName(u"groupBox_6")
+        self.verticalLayout_4 = QVBoxLayout(self.groupBox_6)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.lineEditDescription = QLineEdit(self.groupBox_6)
+        self.lineEditDescription.setObjectName(u"lineEditDescription")
 
-        self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
+        self.verticalLayout_4.addWidget(self.lineEditDescription)
+
+
+        self.horizontalLayout_3.addWidget(self.groupBox_6)
 
         self.checkBoxActive = QCheckBox(self.form)
         self.checkBoxActive.setObjectName(u"checkBoxActive")
@@ -103,13 +114,14 @@ class Ui_ScriptingWidget(object):
         self.horizontalLayout_3.addWidget(self.checkBoxActive)
 
 
-        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
 
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.groupBox_5 = QGroupBox(self.form)
         self.groupBox_5.setObjectName(u"groupBox_5")
-        self.verticalLayout_2 = QVBoxLayout(self.groupBox_5)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(5, 5, 5, 5)
+        self.horizontalLayout_4 = QHBoxLayout(self.groupBox_5)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.textEditScript = QPlainTextEdit(self.groupBox_5)
         self.textEditScript.setObjectName(u"textEditScript")
         font = QFont()
@@ -117,10 +129,29 @@ class Ui_ScriptingWidget(object):
         font.setPointSize(10)
         self.textEditScript.setFont(font)
 
-        self.verticalLayout_2.addWidget(self.textEditScript)
+        self.horizontalLayout_4.addWidget(self.textEditScript)
 
 
-        self.verticalLayout_3.addWidget(self.groupBox_5)
+        self.horizontalLayout_6.addWidget(self.groupBox_5)
+
+        self.groupBox_7 = QGroupBox(self.form)
+        self.groupBox_7.setObjectName(u"groupBox_7")
+        self.verticalLayout_3 = QVBoxLayout(self.groupBox_7)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.plainTextEditNote = QPlainTextEdit(self.groupBox_7)
+        self.plainTextEditNote.setObjectName(u"plainTextEditNote")
+
+        self.verticalLayout_3.addWidget(self.plainTextEditNote)
+
+
+        self.horizontalLayout_6.addWidget(self.groupBox_7)
+
+        self.horizontalLayout_6.setStretch(0, 1)
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
+
+
+        self.verticalLayout_7.addLayout(self.verticalLayout_2)
 
         self.stackedWidget.addWidget(self.form)
         self.view = QWidget()
@@ -212,8 +243,10 @@ class Ui_ScriptingWidget(object):
         self.groupBox_3.setTitle(QCoreApplication.translate("ScriptingWidget", u"Method", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ScriptingWidget", u"Trigger", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("ScriptingWidget", u"Company", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("ScriptingWidget", u"Description", None))
         self.checkBoxActive.setText(QCoreApplication.translate("ScriptingWidget", u"Active", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("ScriptingWidget", u"Python script", None))
+        self.groupBox_7.setTitle(QCoreApplication.translate("ScriptingWidget", u"Note", None))
         self.label_5.setText(QCoreApplication.translate("ScriptingWidget", u"Font", None))
         self.pushButtonDownload.setText(QCoreApplication.translate("ScriptingWidget", u"Download ...", None))
         self.pushButtonUpload.setText(QCoreApplication.translate("ScriptingWidget", u"Upload ...", None))

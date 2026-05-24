@@ -89,8 +89,8 @@ from App.Report.Order import printOrderDepartmentReport
 # model order detail
 (D_ID, D_IDHEADER, D_ITEM, D_VARIANTS, D_QUANTITY, D_PRICE, D_AMOUNT) = range(7)
 
-# model order detail department
-(M_ID, M_IDHEADER, M_EVENT, M_DATE, M_DAYPART, M_ITEM, M_VARIANTS, M_QUANTITY) = range(8)
+# tree model order detail department
+(M_DEP, M_ITEM, M_VARIANTS, M_QUANTITY, M_PARENT, M_CHILD) = range(6)
 
 
 def orderArchive(action: QAction, checked: bool = False) -> None:
@@ -142,8 +142,6 @@ class OrderForm(FormIndexManager):
         self.ui.tableView.setItemDelegateForColumn(I_DISCOUNT, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_CASH, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_CHANGE, AmountDelegate(self))
-        # update tableview span
-        self.mapper.currentIndexChanged.connect(self.updateDepartmentViewSpan)
         # mapper mappings
         # self.mapper.setItemDelegate(PMapperDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCashDesk, CASHDESK)
@@ -171,24 +169,24 @@ class OrderForm(FormIndexManager):
         # details tableView
         self.ui.tableViewDetails.setModel(modelDet)
         self.ui.tableViewDetails.setLayoutName('OrderArchiveDetail')
+        #self.ui.tableViewDetails.setItemDelegate(GenericDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_QUANTITY, QuantityDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_PRICE, AmountDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_AMOUNT, AmountDelegate(self))
-        # details department tableView
+        # details department treeView
         self.ui.treeViewDepartmentDetails.setModel(modelTreeDep)
         self.ui.treeViewDepartmentDetails.setItemDelegate(GenericDelegate(self))
-        #self.ui.treeViewDepartmentDetails.hideColumn(0)
-        #self.ui.treeViewDepartmentDetails.hideColumn(1)
-        #self.ui.tableViewDepartmentDetails.setLayoutName('orderArchiveDepartmentDetail')
-        #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_DEPARTMENT, RelationDelegate(self, department_lookup))
-        #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_ITEM, RelationDelegate(self, item_all_lookup))
-        #self.ui.tableViewDepartmentDetails.setItemDelegateForColumn(M_QUANTITY, QuantityDelegate(self))
+        self.ui.treeViewDepartmentDetails.header().resizeSection(M_DEP, 250) # department
+        self.ui.treeViewDepartmentDetails.header().resizeSection(M_ITEM, 300) # item
+        self.ui.treeViewDepartmentDetails.header().resizeSection(M_VARIANTS, 300) # variants
+        self.ui.treeViewDepartmentDetails.setItemDelegateForColumn(M_QUANTITY, QuantityDelegate(self))
+        self.ui.treeViewDepartmentDetails.hideColumn(M_PARENT)
+        self.ui.treeViewDepartmentDetails.hideColumn(M_CHILD)
         # header department tableView
         self.ui.tableViewDepartmentHeader.setModel(modelHeaDep)
         self.ui.tableViewDepartmentHeader.setLayoutName('OrderArchiveDepartment')
-        #self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(P_DEPARTMENT, RelationDelegate(self, department_lookup))
-        #self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(HDPRINTED, BooleanDelegate(self))
+        self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(P_DEPARTMENT, RelationDelegate(self, department_lookup))
         # store setting on form creation
         self.setting = Setting()
         # enable/disable widget satus
@@ -207,28 +205,6 @@ class OrderForm(FormIndexManager):
         self.toFirst()
         # scripting init
         self.script = scriptInit(self)
-
-    def updateDepartmentViewSpan(self):
-        "Set span (aggregate department rows) for department details"
-        return
-        model = self.ui.tableViewDepartmentDetails.model()
-        rows = model.rowCount()
-        # reset span
-        for i in range(rows):
-            self.ui.tableViewDepartmentDetails.setSpan(i, M_DEPARTMENT, 1, 1)
-        # set new span
-        rowStart, rowCount = 0, 1
-        for i in range(rows):
-            if model.index(i, M_DEPARTMENT).data() == model.index(i + 1, M_DEPARTMENT).data():
-                rowCount += 1
-            else:
-                if rowCount > 1:
-                    self.ui.tableViewDepartmentDetails.setSpan(rowStart, M_DEPARTMENT, rowCount, 1)
-                    rowStart = i + 1
-                    rowCount = 1
-
-        #self.ui.tableViewDepartmentDetails.setSpan(0, 5, 4, 1)
-        #self.ui.tableViewDepartmentDetails.setSpan(4, 5, 2, 1)
 
     def updateFormWidgets(self):
         "Enable/disable widgets"
@@ -263,7 +239,6 @@ class OrderForm(FormIndexManager):
     @scriptMethod
     def reload(self):
         super().reload()
-        #print("DATI INDICE", type(self.indexModel.data(self.indexModel.index(0, 5))))
 
     @scriptMethod
     def print(self):

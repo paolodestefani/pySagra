@@ -1,179 +1,148 @@
 <html lang="it">
   <head>
-    <title>Help su pySagra</title>
+    <title>
+      Help sulla procedura di login
+    </title>
   </head>
-  <body style="font-family: Arial, Sans-Serif;">
+  <body>
     <h1>
-		Documentazione su pySagra
+      Documentazione in linea su pySagra
     </h1>
-    <center>
-      <img src="qrc:/pySagra">
-    </center>
-    <h2>
-      Elenco degli argomenti:
-    </h2>
-    <ul>
-      <li>
-        <a href="#overview">Panoramica</a>
-      </li>
-      <li>
-        <a href="#architecture">Architettura dell'applicazione</a>
-      </li>
-      <li>
-        <a href="#gui">Interfaccia utente</a>
-      </li>
-    </ul>
-    <h2 id="overview">Panoramica</h2>
-    <p>
-      <b>pySagra</b> nasce dall'esigenza di gestire lo stand
-      gastronomico dellla sagra del mio paese. L'attivit&agrave; da
-      gestire &egrave; quindi la rilevazione degli ordini dei
-      prodotti, tipicamente primi piatti, secondi, bevande, ecc. e
-      la successiva distribuzione delle comande, veri e propri
-      ordini di lavoro, ai vari reparti dello stand, ad esempio
-      bar, cucina, ma anche pizzeria, gelateria, ecc. L'inserimento
-      degli ordini avviene nelle casse e deve essere il pi&ugrave;
-      rapido e semplice possibile. Una volta inserito l'ordine
-      viene suddiviso per reparto e diramato ai reparti
-      interessati. Non c'&egrave; una vera e propria
-      gestione dell'evasione degli ordini in quanto superflua per
-      il tipo di attivit&agrave; che viene svolta. Oltre a questo
-      il programma permette di ottenere il riepilogo degli incassi e
-      varie statistiche di vendita e consumi.
-    </p>
-    <p>
-      Le caratteristiche dell'applicazione di possono riassumere
-      nei seguenti punti:
-    </p>
-    <ul>
-      <li>Gestione degli <b>eventi</b>: tutte le operazioni vengono
-      sempre riferite ad uno specifico evento (es. Sagra del
-      Peperone, Festa della birra, ecc.)
-      </li>
-      <li>Gestione dei <b>reparti</b> (es. Bar, Cucina, Pizzeria,
-      ecc.). Alcuni reparti possono esere non disponibili per
-      specifici eventi.
-      </li>
-      <li>Gestione degli <b>articoli</b> di vendita, distinguendoli
-      in articoli elementari, <b>kit</b> (es. tris: salsicce + costicine +
-      braciola) e <b>men&ugrave;</b> (es. men&ugrave; sagra: birra + tris
-      + patate fritte). I kit devono essere composti da soli
-      articoli elementari. I men&ugrave; possono contenere kit
-      </li>
-      <li>Gestione delle <b>varianti</b> degli articoli (es. pizza
-      margherita senza mozzarella, con salamino, ecc.). La variante
-      pu&ograve; prevedere una maggiorazione di prezzo
-      </li>
-      <li>Gestione della consegna al <b>tavolo</b> o per
-      <b>asporto</b>
-      </li>
-      <li>Controllo <b>esistenza</b>: per gli articoli elementari
-      che interessa monitorare &egrave; possibile inserire la
-      scorta disponibile. Il programma aggiorna automaticamente la
-      disponibilit&agrave; in base alle vendite effettuate ed ai 
-	  consumi conseguenti.
-      </li>
-      <li>Gestione degli <b>ordini di vendita</b> tramite una
-      maschera ottimizzata finalizzata al raggiungimento della
-      massima velocit&agrave; di inserimento. Controllo
-      dell'esistenza del tavolo indicato. Possibilit&agrave; 
-	  di selezionare il tavolo da una lista di numeri esistenti.
-	  Controllo della disponibilit&agrave; degli articoli inseriti
-	  considerando i componenti per i kit ed i men&ugrave;. 
-	  Calcolo automatico dei totale ordine, importo incassato,
-	  eventuale sconto a valore (es. buoni), resto, ecc. 
-	  Visualizzazione delle varianti possibili.
-	  <li>Possibilit&agrave; di inserire note per reparto
-      </li>
-      <li>Generazione della <b>stampa dell'ordine</b> per il
-      cliente, pocie specifiche per i vari reparti interessati ed
-	  una per i soli coperti. Tutte queste stampe sono opzionali
-	  e disponibili in vari formati
-      </li>
-      <li>Stampa dell'<b>incassato</b> per giorno e mezza giornata
-      </li>
-	  <li>Visualizzazione e stampa continua della disponibilità 
-	  degli articoli o dei componenti di kit e men&ugrave;</li>
-      <li>Gestione di varie <b>statistiche di vendita e comsuni</b> anche
-      confrontando eventi e periodi diversi
-      </li>
-      <li>Tutti gli <b>archivi</b> (eventi, reparti, articoli,
-      ecc.) e le statistiche disponibili sono visualizzabili,
-      stampabili in formato A4 ed <b>esportabili</b> in excel
-      </li>
-      <li>L'applicazione &egrave; <b>multipiattaforma</b>:
-      sviluppata e testata su Windows e Linux, dovrebbe funzionare
-      correttamente anche su Mac OSX
-      </li>
-    </ul>
-    <p><a class="top" href="#top" title="top">Torna a inizio pagina</a></p>
-    <h2 id="architecture">
-      Architettura dell'applicazione
-    </h2>
-    <p>
-      Questo programma &egrave; stato sviluppato avendo in mente
-      alcuni specifici obiettivi:
-    </p>
-    <ul>
-      <li>Realizzare un applicazione con interfaccia grafica e
-      basata su un database server sql
-      </li>
-      <li>Realizzare un applicazione multiutente con architettura
-      client/server
-      </li>
-      <li>L'applicazione deve essere multipiattaforma e disponibile
-      a basso/nullo costo a chiunque la richieda
-      </li>
-    </ul>
-    <p>
-      Di conseguenza per la realizzazione di questo applicativo
-      sono stati utilizzati:
-    </p>
-    <ul>
-      <li>il linguaggio di programmazione <a href="https://www.python.org">Python</a>
-	  nella versione 3.7</li>
-      <li>le librerie <a href="https://www.qt.io">Qt</a> in
-      versione 5.x
-      </li>
-      <li>il binding alle librerie Qt <a href=
-      "https://www.riverbankcomputing.com/software/pyqt/download5">PyQt</a> in versione
-      5.x
-      </li>
-      <li>Il server di database <a href=
-      "https://www.postgresql.org">PostgreSQL</a> nella versione
-      10.x o successiva
-      </li>
-	  <li>Il connettore a PostgreSQL per Python <a href=
-      "http://initd.org/psycopg/">psycopg</a> nella versione
-      2.8.x o successiva
-      </li>
-      <li>il set di icone <a href=
-      "https://github.com/pasnox/oxygen-icons-png">oxygen icons</a>
-      </li>
-      <li>l'icona di pySagra fa parte del DelliOS System Icons set
-      di <a href="http://www.wendellverli.com/">Wendell
-      Fernandes</a>
-      </li>
-    </ul>
-    <p>
-      Tutti gli strumenti elencati sono multipiattaforma e
-      disponibili gratuitamente
-    </p>
-    <p><a class="top" href="#top" title="top">Torna a inizio pagina</a></p>
-    <h2 id="gui">
-      Interfaccia utente
-    </h2>
-    <center>
-      <img src="qrc:/help/img/main_window.png">
-    </center>
-    <p>
-      L'intefacia utente dell'applicazione &egrave; composta da
-      (...):
-    </p>
-    <p><a class="top" href="#top" title="top">Torna a inizio pagina</a></p>
-    <p>
-      <a href="qrc:/help/login.html" title="login">Help sulla procedura di
-      Login</a>
-    </p>
-  </body>
+<center><img src="qrc:/pySagra"></center>
+
+<p>Elenco degli argomenti:</p>
+<ul>
+    <li><a href="#overview">Panoramica</a></li>
+    <li><a href="#framework">Architettura del sistema</a></li>
+    <li><a href="#user_interface">Interfaccia utente</a></li>
+</ul>
+
+<h2 id="overview">Panoramica</h2>
+<p>Una delle caratteristiche folcloristiche di tutta l'Italia è
+la presenza delle *Sagre*. Come chiarisce wikipedia la
+sagra è una festa popolare di carattere locale e cadenza annuale,
+che nasce tradizionalmente da una festa religiosa, celebrata
+in occasione di una consacrazione o per commemorare un santo 
+(in genere il santo patrono), ma anche utilizzata per festeggiare
+il raccolto o promuovere un prodotto enogastronomico locale. Durante una 
+sagra hanno luogo in genere la fiera locale, il mercato e vari 
+festeggiamenti. Il luogo più importante della sagra, almeno
+dal punto di vista culinario, è lo stand gastronomico.  
+*pySagra* nasce dall'esigenza di gestire lo stand gastronomico 
+della sagra del mio paese. L'attività da gestire parte dalla 
+rilevazione degli ordini dei prodotti, tipicamente primi piatti,
+secondi, bevande, ecc. e la successiva distribuzione delle comande,
+veri e propri ordini di 'produzione', ai vari reparti dello stand,
+ad esempio bar, cucina, ma anche pizzeria, gelateria, ecc. 
+L'inserimento degli ordini avviene nelle casse e deve essere il più
+rapido e semplice possibile. Una volta inserito, l'ordine
+viene suddiviso per reparto e diramato ai reparti interessati.
+La gestione dell'evasione degli ordini e delle scorte dei prodotti è
+normalmente superflua per il tipo di attività svolta che 
+privilegia la velocità di gestione dell'ordine e della consegna delle pietanze.
+A fine giornata o al termine della sagra si verificano i risutati
+tramite un riepilogo degli incassi e varie statistiche di
+vendita e consumi.</p> 
+<p>Il programma permette di gestire tutti questi aspetti, dal caricamento
+dell'ordine alla consegna dei prodotti ed alle statistiche finali.</p>
+<p>Le caratteristiche dell'applicazione di possono riassumere
+nei seguenti punti:</p>
+<ul>
+<li>Gestione degli <b>eventi</b>: tutte le operazioni vengono sempre
+ riferite ad uno specifico evento (es. Sagra del Peperone,
+  Festa della birra, ecc.).</li>
+<li>Gestione dei <b>reparti</b> (es. Bar, Cucina, Pizzeria, ecc.).
+ Alcuni reparti possono esere non disponibili per specifici eventi.</li>
+<li>Gestione degli <b>articoli</b> di vendita e consumo, distinguendoli
+in articoli elementari, <b>kit</b> - articoli composti (es. tris:
+ salsicce + costicine + braciola) e <b>men&ugrave;</b> - raggruppamenti
+  di articoli di vari reparti (es. men&ugrave; sagra: birra + tris
+  + patate fritte). I kit devono essere composti da soli
+      articoli elementari. I men&ugrave; possono contenere kit.</li>
+<li>Gestione delle <b>varianti</b> degli articoli (es. pizza
+margherita senza mozzarella, con salamino, ecc.). La variante
+pu&oacute; prevedere una maggiorazione di prezzo.</li>
+<li>Gestione della consegna al <b>tavolo</b> o per <b>asporto</b>.</li>
+<li>Controllo <b>giacenza</b>: per gli articoli elementari
+che interessa monitorare &egrave; possibile inserire la
+scorta disponibile. Il programma aggiorna automaticamente la
+disponibilit&agrave; in base alle vendite effettuate ed ai 
+consumi conseguenti.</li>
+<li>Controllo del <b>ordinato - consegnato</b>: per gli
+articoli che interessa monitorare &egrave; possibile tracciare 
+la quantit&agrave; impegnata e la successiva consegna gestendo anche
+l'evasione dell'ordine. Il programma aggiorna automaticamente lo
+stato dell'ordine (inserito, in lavorazione, evaso) in base alle
+consegne effettuate.</li>
+<li>Gestione degli <b>ordini di vendita</b> tramite una maschera
+ di caricamento ottimizzata e finalizzata al raggiungimento della
+massima velocit&agrave; di inserimento. Controllo dell'esistenza del
+ tavolo indicato. Possibilità di selezionare il tavolo da
+ una lista-mappa dei tavoli esistenti. Controllo della 
+ disponibilit&agrave; degli articoli inseriti considerando i 
+ componenti per i kit ed i men&ugrave;. Calcolo automatico di 
+ totale ordine, importo incassato, eventuale sconto a valore
+  (es. buoni), resto, ecc. Visualizzazione delle varianti possibili.</li>
+<li>Possibilità di inserire note per reparto</li>
+<li>Gli ordini possono essere inseriti anche in un'applicazione
+web che genera un QR Code inseribile in cassa per l'acquisizione veloce
+e seguito solo dal pagamento.</li>
+<li>Generazione della <b>stampa dell'ordine</b> per il cliente, 
+stampe specifiche per i vari reparti interessati ed una per i
+ soli coperti. Tutte queste stampe sono opzionali e disponibili in vari formati</li>
+<li>Stampa dell'<b>incassato</b> per giorno e mezza giornata</li>
+<li>Visualizzazione e stampa continua della disponibilit&agrave; 
+degli articoli o dei componenti di kit e men&ugrave;.</li>
+<li>Gestione di varie <b>statistiche di vendita e comsuni</b> anche
+confrontando eventi e periodi diversi</li>
+<li>Tutti gli <b>archivi</b> (eventi, reparti, articoli,
+ecc.) e le statistiche disponibili sono visualizzabili,
+stampabili in formato A4 ed <b>esportabili</b> in CSV/Excel</li>
+<li>L'applicazione &egrave; <b>multipiattaforma</b>: sviluppata e testata
+ su Mac OSX e Windows, dovrebbe funzionare correttamente anche su Linux.</li> 
+ </ul>
+
+<p><a class="top" href="#top" title="top">Back to top</a></p>
+
+<h2 id="framework">Architettura dell'applicazione</h2>
+<p>Questo programma è stato sviluppato avendo in mente
+alcuni specifici obiettivi:</p>
+<ul>
+    <li>Realizzare un applicazione con interfaccia grafica e basata su
+ un database server SQL</li>
+ <li>Realizzare un applicazione multiutente con architettura
+client/server</li>
+<li>L'applicazione deve essere multipiattaforma e disponibile
+a basso/nessun costo a chiunque la richieda</li>
+</ul>
+<p>Per la realizzazione di questo applicativo in base alle premesse
+precedenti sono stati scelti questi strumenti:</p>
+<ul>
+    <li>il linguaggio di programmazione <a href="https://www.python.org/">Python</a>
+nella versione 3.14</li>
+<li>le librerie <a href="https://www.qt.io/">Qt</a> in versione 6.x</li>
+<li>il binding alle librerie Qt <a href="https://doc.qt.io/qtforpython-6/">Qt for Python</a> in versione 6.x</li>
+<li>Il server di database <a href="https://www.postgresql.org">PostgreSQL</a> nella versione
+ 18.x o successiva</li>
+<li>Il connettore a PostgreSQL per Python <a href="https://www.psycopg.org/">Psycopg</a> nella versione
+3.3.x o successiva</li>
+<li>il set di icone predefinito è <a href="https://github.com/KDE/oxygen-icons">oxygen</a> 
+    ma sono disponibili anche altri iconpaks scaricati da 
+    <a href="https://www.iconarchive.com">Iconarchive</a></li>
+<li>l'icona di pySagra fa parte del DelliOS System Icons set
+di <a href="https://dellustrations.com">dellustrations.com</a></li>
+</ul>
+<p>Tutti gli strumenti elencati sono multipiattaforma e
+disponibili gratuitamente</p>
+
+<p><a class="top" href="#top" title="top">Back to top</a></p>
+    
+<h2 id="user_interface">Interfaccia utente</h2>
+<p>L'intefacia utente dell'applicazione:</p>
+<img src="qrc:/help/img/main_window.png">
+<a href="qrc:/help/login.html" title="login">Help on Login procedure</a>
+
+<p><a class="top" href="#top" title="top">Back to top</a></p>
+ </body>
 </html>
+

@@ -63,7 +63,7 @@ def get_order_number(event_id: int,
                      day_part: str|None = None
                      ) -> int:
     "Returns the next available order number"
-    script = """
+    script = t"""
 SELECT
     order_number_based_on
 FROM setting
@@ -82,7 +82,7 @@ WHERE company_id = system.pa_current_company();"""
     number = 1
     match mode:
         case 'E':
-            # event based numbering
+            # event based numbering, get the max value of any day/daypart
             script = t"""
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 
@@ -97,7 +97,7 @@ WHERE   company_id  = system.pa_current_company()
                 raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
             
         case 'D':
-            # day based numbering
+            # day based numbering, get the max of L or D
             script = t"""
 SELECT max(coalesce(current_value, 0)) + 1 
 FROM numbering 

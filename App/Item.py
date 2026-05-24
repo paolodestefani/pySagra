@@ -155,7 +155,7 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonAddPri.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemovePri.setIcon(currentIcon['edit_remove'])
         # setting
-        setting = SettingClass()
+        self.setting = SettingClass()
         # signal slot connections
         self.ui.checkBoxVariants.toggled[bool].connect(self.ui.tabVariants.setEnabled)
         self.ui.comboBoxType.currentIndexChanged.connect(self.itemTypeChanged)
@@ -166,8 +166,8 @@ class ItemForm(FormIndexManager):
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
         self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_lookup))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, [(setting['normal_background_color'] or '', _tr('Item', 'default'))] + COLORS))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(setting['normal_text_color'] or '', _tr('Item', 'default'))] + COLORS))
+        self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, [(self.setting['normal_background_color'] or '', _tr('Item', 'default'))] + COLORS))
+        self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(self.setting['normal_text_color'] or '', _tr('Item', 'default'))] + COLORS))
         # mapper mappings
         self.ui.comboBoxType.setFunction(itemType)
         self.mapper.addMapping(self.ui.comboBoxType, TYPE)
@@ -214,8 +214,11 @@ class ItemForm(FormIndexManager):
         self.ui.checkBoxSalable.toggled.connect(self.salableToggled)
         self.ui.checkBoxWebAvailable.toggled.connect(self.ui.spinBoxWebSorting.setEnabled)
         # set colors
-        self.ui.comboBoxNormalTextColor.setColorList([(setting['normal_text_color'], _tr('Item', 'default'))] + COLORS)
-        self.ui.comboBoxNormalBackgroundColor.setColorList([(setting['normal_background_color'], _tr('Item', 'default'))] + COLORS)
+        #self.ui.comboBoxNormalTextColor.setColorList([(setting['normal_text_color'], _tr('Item', 'default'))] + COLORS)
+        self.ui.comboBoxNormalTextColor.setColorList(COLORS)
+        self.ui.comboBoxNormalTextColor.setCurrentColor(self.setting['normal_text_color'])
+        self.ui.comboBoxNormalBackgroundColor.setColorList(COLORS)
+        self.ui.comboBoxNormalBackgroundColor.setCurrentColor(self.setting['normal_background_color'])
         # signal/slot connections for add/remove buttons
         self.ui.pushButtonAddVar.clicked.connect(self.ui.tableViewVariants.add)
         self.ui.pushButtonRemoveVar.clicked.connect(self.ui.tableViewVariants.remove)
@@ -306,6 +309,8 @@ class ItemForm(FormIndexManager):
     def new(self):
         "Set focus on item descriptionon new record"
         super().new()
+        self.ui.comboBoxNormalTextColor.setCurrentColor(self.setting['normal_text_color'])
+        self.ui.comboBoxNormalBackgroundColor.setCurrentColor(self.setting['normal_background_color'])
         self.ui.lineEditDescription.setFocus()
 
     @scriptMethod

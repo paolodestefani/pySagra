@@ -646,6 +646,8 @@ SELECT
     class_name,
     method_name,
     trigger,
+    description,
+    note,
     company_id,
     is_active,
     script,
@@ -661,6 +663,8 @@ FROM system.python_scripting;"""
             ("class_name", _tr('Models', 'Class name'), False, 'str'),
             ("method_name", _tr('Models', 'Method name'), False, 'str'),
             ("trigger", _tr('Models', 'Trigger'), False, 'str'),
+            ("description", _tr('Models', 'Description'), False, 'str'),
+            ("note", _tr('Models', 'Note'), False, 'str'),
             ("company_id", _tr('Models', 'Company'), False, 'int'),
             ("is_active", _tr('Models', 'Active'), False, 'bool'),
             ("script", _tr('Models', 'Python script'), False, 'str'),
@@ -687,6 +691,8 @@ class ScriptingModel(TableModel):
             ("class_name", _tr('Models', 'Class name'), False, 'str'),
             ("method_name", _tr('Models', 'Method name'), False, 'str'),
             ("trigger", _tr('Models', 'Trigger'), False, 'str'),
+            ("description", _tr('Models', 'Description'), False, 'str'),
+            ("note", _tr('Models', 'Note'), False, 'str'),
             ("company_id", _tr('Models', 'Company'), False, 'int'),
             ("is_active", _tr('Models', 'Active'), False, 'bool'),
             ("script", _tr('Models', 'Python script'), False, 'str'),
@@ -1534,35 +1540,38 @@ class OrderHeaderIndexModel(QueryModel):
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
-    order_header_id,
-    event_id,
-    date_time,
-    order_number,
-    order_date,
-    order_time,
-    stat_order_date,
-    stat_order_day_part,
-    cash_desk,
-    delivery,
-    is_electronic_payment,
-    table_num,
-    customer_name,
-    covers,
-    total_amount,
-    discount,
-    cash,
-    change,
-    status,
-    fullfillment_date,
-    created_by,
-    created_at,
-    updated_by,
-    updated_at
-FROM company.order_header;"""
+    h.order_header_id,
+    h.event_id,
+	e.description AS event_description,
+    h.date_time,
+    h.order_number,
+    h.order_date,
+    h.order_time,
+    h.stat_order_date,
+    h.stat_order_day_part,
+    h.cash_desk,
+    h.delivery,
+    h.is_electronic_payment,
+    h.table_num,
+    h.customer_name,
+    h.covers,
+    h.total_amount,
+    h.discount,
+    h.cash,
+    h.change,
+    h.status,
+    h.fullfillment_date,
+    h.created_by,
+    h.created_at,
+    h.updated_by,
+    h.updated_at
+FROM order_header h
+JOIN event e ON h.event_id = e.event_id;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal, str, date, datetime, time, None = no filter
         self.columns = (("order_header_id", _tr('Models', 'ID'), True, 'int'),
                         ("event_id", _tr('Models', 'Event'), True, 'int'),
+                        ("event_description", _tr('Models', 'Event description'), True, 'str'),
                         ("date_time", _tr('Models', 'Order date/time'), True, 'datetime'),
                         ("order_number", _tr('Models', 'Order number'), True, 'int'),
                         ("order_date", _tr('Models', 'Order date'), True, 'date'),
@@ -1587,6 +1596,7 @@ FROM company.order_header;"""
                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
         # True if is a company table
         self.isCompanyTable = True
+        self.companyField = "h.company_id"
         # class representation
         self.repr = 'Order header index query model'
         # limit number of rows fetched

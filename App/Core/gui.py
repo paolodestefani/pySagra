@@ -36,6 +36,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtCore import QDirIterator
 from PySide6.QtGui import QColor
+from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QPixmap
@@ -60,23 +61,23 @@ from App.Core.L10n import _tr
 
 
 # colors for color combo box
-COLORS = [('#950606', _tr('Item', 'Dark red')),
-          ('#FF0000', _tr('Item', 'Red')),
-          ('#FF7700', _tr('Item', 'Orange')),
-          ('#FFFF00', _tr('Item', 'Yellow')),
-          ('#006400', _tr('Item', 'Dark green')),
-          ('#008000', _tr('Item', 'Green')),
-          ('#90EE90', _tr('Item', 'Light green')),
-          ('#000077', _tr('Item', 'Dark blue')),
-          ('#0000FF', _tr('Item', 'Blue')),
-          ('#4141C5', _tr('Item', 'Light blue')),
-          ('#00FFFF', _tr('Item', 'Cyan/Aqua')),
-          ('#FF00FF', _tr('Item', 'Magenta / Fuchsia')),
-          ('#A52A2A', _tr('Item', 'Brown')),
-          ('#000000', _tr('Item', 'Black')),
-          ('#808080', _tr('Item', 'Gray')),
-          ('#D3D3D3', _tr('Item', 'Light gray')),
-          ('#FFFFFF', _tr('Item', 'White'))]
+COLORS = [(QColorConstants.DarkRed,  _tr('Item', 'Dark red')), # ('#950606', _tr('Item', 'Dark red')),
+          (QColorConstants.Red, _tr('Item', 'Red')), # '#FF0000'
+          (QColorConstants.Svg.orange, _tr('Item', 'Orange')), # '#FF7700'
+          (QColorConstants.Yellow, _tr('Item', 'Yellow')), # '#FFFF00'
+          (QColorConstants.DarkGreen, _tr('Item', 'Dark green')), # '#006400'
+          (QColorConstants.Green, _tr('Item', 'Green')), # '#008000'
+          (QColorConstants.Svg.lightgreen, _tr('Item', 'Light green')), # '#90EE90'
+          (QColorConstants.DarkBlue, _tr('Item', 'Dark blue')), # '#000077'
+          (QColorConstants.Blue, _tr('Item', 'Blue')), # '#0000FF'
+          (QColorConstants.Svg.royalblue, _tr('Item', 'Royal blue')),
+          (QColorConstants.Cyan, _tr('Item', 'Cyan/Aqua')), # '#00FFFF'
+          (QColorConstants.Magenta, _tr('Item', 'Magenta / Fuchsia')), # '#FF00FF'
+          (QColorConstants.Svg.brown, _tr('Item', 'Brown')), # '#A52A2A'
+          (QColorConstants.Black, _tr('Item', 'Black')), # '#000000'
+          (QColorConstants.Gray, _tr('Item', 'Gray')), # '#808080'
+          (QColorConstants.LightGray, _tr('Item', 'Light gray')), # '#D3D3D3'
+          (QColorConstants.White, _tr('Item', 'White'))] # '#FFFFFF'
 
 # color scheme
 CS = {'L': (_tr('Preferences', "Light"), Qt.ColorScheme.Light),

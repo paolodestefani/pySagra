@@ -1,7 +1,7 @@
 <RCC>
   <qresource>
-    <file alias="pySagra">pySagra.png</file>
-    <file alias="login_gif">login.gif</file>
+    <file alias="pySagra">icon/pySagra.png</file>
+    <file alias="login_gif">icon/login.gif</file>
   </qresource>
   <qresource>
     <file alias="login_it.qm">translation/login_it.qm</file>

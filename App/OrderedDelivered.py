@@ -99,6 +99,7 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.ui.tableView.activateWindow()
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
+        self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_lookup))
         self.ui.tableView.setItemDelegateForColumn(DAY_PART, RelationDelegate(self, dayPartMapping))
         self.ui.tableView.setItemDelegateForColumn(ORDERED, QuantityDelegate(self, bold=True))
         self.ui.tableView.setItemDelegateForColumn(DELIVERED, QuantityDelegate(self, bold=True))

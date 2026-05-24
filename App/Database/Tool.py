@@ -122,7 +122,7 @@ WHERE company_id = system.pa_current_company();
 def delete_all_inventory() -> None:
     "Delete ALL stock inventory records for current company"
     script = """
-DELETE FROM stock_inventory
+DELETE FROM inventory
 WHERE company_id = system.pa_current_company();"""
     # linked table web_order_detail is automatically deleted from db cascade constraints
     try:
@@ -196,7 +196,7 @@ WHERE company_id = system.pa_current_company();"""
 def delete_all_tables() -> None:
     "Delete ALL tables for current company"
     script = """
-DELETE FROM numbered_table
+DELETE FROM seat_map
 WHERE company_id = system.pa_current_company();"""
     try:
         with appconn.transaction():

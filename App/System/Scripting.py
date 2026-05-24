@@ -148,8 +148,9 @@ SCRIPTABLE = {'CashDeskForm': ['__init__',
                                  'apply',
                                  'accept']}
 
-(ID, CLASS, METHOD, TRIGGER, COMPANY, ACTIVE, SCRIPT,
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(11)
+(ID, CLASS, METHOD, TRIGGER, DESCRIPTION, NOTE,
+ COMPANY, ACTIVE, SCRIPT, 
+ USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(13)
 
 def runOptions() -> list[tuple[str, str]]:
     return [('B', _tr('script', 'Before')),
@@ -198,6 +199,8 @@ class ScriptingForm(FormIndexManager):
         self.mapper.addMapping(self.ui.comboBoxMethod, METHOD)
         self.ui.comboBoxTrigger.setItemList(runOptions())
         self.mapper.addMapping(self.ui.comboBoxTrigger, TRIGGER)#, b"modelDataStr")
+        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
+        self.mapper.addMapping(self.ui.plainTextEditNote, NOTE)
         self.mapper.addMapping(self.ui.comboBoxCompany, COMPANY, b"modelDataInt")#, b"modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxActive, ACTIVE)
         self.mapper.addMapping(self.ui.textEditScript, SCRIPT)#, b"plainText")

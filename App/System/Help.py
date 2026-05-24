@@ -35,9 +35,9 @@ from PySide6.QtCore import QUrl
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QEvent
-from PySide6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor, QTextDocument
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QTextBrowser, QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QMessageBox
 
@@ -101,7 +101,7 @@ class HelpDialog(QDialog):
         self.ui.toolButtonBack.clicked.connect(self.ui.textBrowserContent.backward)
         self.ui.toolButtonHome.clicked.connect(self.ui.textBrowserContent.home)
         self.ui.toolButtonForward.clicked.connect(self.ui.textBrowserContent.forward)
-        self.ui.textBrowserContent.setSource(QUrl(f"qrc:/{source}"))
+        self.ui.textBrowserContent.setSource(QUrl(f"qrc:/{source}"))        
         self.setWindowTitle(f"{title}")
         # action for find text
         findDesc = _tr('Help', 'Find')

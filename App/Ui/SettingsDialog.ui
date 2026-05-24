@@ -616,6 +616,15 @@
                   <property name="orientation">
                    <enum>Qt::Orientation::Horizontal</enum>
                   </property>
+                  <property name="invertedAppearance">
+                   <bool>false</bool>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>1</number>
+                  </property>
                  </widget>
                 </item>
                 <item row="0" column="2">
@@ -646,8 +655,20 @@
                   <property name="value">
                    <number>18</number>
                   </property>
+                  <property name="sliderPosition">
+                   <number>18</number>
+                  </property>
                   <property name="orientation">
                    <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="invertedAppearance">
+                   <bool>false</bool>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TickPosition::TicksBelow</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>1</number>
                   </property>
                  </widget>
                 </item>
