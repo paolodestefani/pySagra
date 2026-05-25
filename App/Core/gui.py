@@ -64,6 +64,8 @@ from App.Core.L10n import _tr
 COLORS = [(QColorConstants.DarkRed,  _tr('Item', 'Dark red')), # ('#950606', _tr('Item', 'Dark red')),
           (QColorConstants.Red, _tr('Item', 'Red')), # '#FF0000'
           (QColorConstants.Svg.orange, _tr('Item', 'Orange')), # '#FF7700'
+          (QColorConstants.Svg.coral, _tr('Item', 'Coral')), # '#FF7F50'
+          (QColorConstants.Svg.gold, _tr('Item', 'Gold')), # '#FFD700'
           (QColorConstants.Yellow, _tr('Item', 'Yellow')), # '#FFFF00'
           (QColorConstants.DarkGreen, _tr('Item', 'Dark green')), # '#006400'
           (QColorConstants.Green, _tr('Item', 'Green')), # '#008000'
@@ -71,9 +73,10 @@ COLORS = [(QColorConstants.DarkRed,  _tr('Item', 'Dark red')), # ('#950606', _tr
           (QColorConstants.DarkBlue, _tr('Item', 'Dark blue')), # '#000077'
           (QColorConstants.Blue, _tr('Item', 'Blue')), # '#0000FF'
           (QColorConstants.Svg.royalblue, _tr('Item', 'Royal blue')),
+          (QColorConstants.Svg.skyblue, _tr('Item', 'Sky blue')), # '#87CEEB'
           (QColorConstants.Cyan, _tr('Item', 'Cyan/Aqua')), # '#00FFFF'
           (QColorConstants.Magenta, _tr('Item', 'Magenta / Fuchsia')), # '#FF00FF'
-          (QColorConstants.Svg.brown, _tr('Item', 'Brown')), # '#A52A2A'
+          (QColorConstants.Svg.purple, _tr('Item', 'Purple')), # '#800080'
           (QColorConstants.Black, _tr('Item', 'Black')), # '#000000'
           (QColorConstants.Gray, _tr('Item', 'Gray')), # '#808080'
           (QColorConstants.LightGray, _tr('Item', 'Light gray')), # '#D3D3D3'

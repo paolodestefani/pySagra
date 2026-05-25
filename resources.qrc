@@ -71,7 +71,7 @@
     <file alias="order_ok">icon/oxygen/dialog-ok-apply.png</file>
     <file alias="order_cancel">icon/oxygen/dialog-close.png</file>
     <file alias="order_note">icon/oxygen/knotes.png</file>
-    <file alias="order_flag">icon/oxygen/flag-yellow.png</file>
+    <file alias="order_flag">icon/oxygen/mail-tagged.png</file>
     <file alias="activities_order">icon/oxygen/pim-tasks.png</file>
     <file alias="activities_inventory">icon/oxygen/document-preview-archive.png</file>
 	<file alias="activities_order_progress">icon/oxygen/user-away-extended.png</file>
