@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 def duplicate_price_list(from_id: int, new_description: str) -> None:
     "Create a new price list copying prices from another"
     # create a new price list
+    new_id = None
     script1 = t"""
 INSERT INTO price_list (description) 
 VALUES ({new_description}) 

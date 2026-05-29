@@ -29,6 +29,7 @@ This module provides classes and functions for database scripting management
 
 # standard library
 import logging
+from typing import Any
 
 # psycopg
 import psycopg
@@ -73,7 +74,7 @@ def load_script(cls: str,
                 cmp: int,
                 script: str) -> None:
     "Load a python script to database overwriting if necessary"
-    script = t"""
+    sql = t"""
 INSERT INTO system.python_scripting (
     class_name,
     method_name,
@@ -96,13 +97,13 @@ SET script = {script},
     try:
         with appconn.transaction():
             with appconn.cursor() as cur:
-                cur.execute(script)
+                cur.execute(sql)
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 
-def get_all_scripts() -> None:
+def get_all_scripts() -> Any | None:
     "Get all python scripts available"
     script = """
 SELECT 

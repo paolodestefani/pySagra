@@ -27,45 +27,111 @@ Definition of database exceptions
 
 """
 
+# standard library
+from contextlib import contextmanager
+import logging
+from typing import Generator
+from typing import Optional
+
+import psycopg
+
+logger = logging.getLogger(__name__)
+
+
 # Exceptions hierarchy
 #
 # PyAppDatabaseException
+#   -> PyAppDBWarning
+#   -> PyAppDBInfo
 #   -> PyAppDBError
 #      -> PyAppDBConnectionError
 #      -> PyAppDBFunctionError
-#   -> PyAppDBWarning
-#   -> PyAppDBInfo
-        
+#      -> PyAppDBConcurrencyError
+
+
 class PyAppDatabaseException(Exception):
-    "Base exception class"
+    "Base exception class for all database interactions"
     
     def __init__(self, 
-                 code: str|None = None,
-                 message: str|None = None,
-                 detail: str|None = None) -> None:
-        # Pass the main message to the Exception base class 
-        # so str(error) will return the message correctly
-        # avoiding the error message RecursionError
+                 code: Optional[str] = None,
+                 message: Optional[str] = None,
+                 detail: Optional[str] = None) -> None:
+        # Passiamo il messaggio a Exception. str(error) eviterà cicli infiniti.
         super().__init__(message) 
-        self.code = code
-        self.message = message or ''
-        self.detail = detail or ''
+        self.code: str = code or 'UNKNOWN'
+        self.message: str = message or ''
+        self.detail: str = detail or ''
 
-    def __str__(self):
+    def __str__(self) -> str:
         "Format the message if printed"
-        return f"[{self.code}] {self.message} - {self.detail}"
+        if self.detail:
+            return f"[{self.code}] {self.message} - {self.detail}"
+        return f"[{self.code}] {self.message}"
 
 
-class PyAppDBConnectionError(PyAppDatabaseException):
-    "Errors on connectiong to database server"
+# --- Level 1: main exceptions ---
+
+class PyAppDBWarning(PyAppDatabaseException):
+    "Warnings from database server"
+
+
+class PyAppDBInfo(PyAppDatabaseException):
+    "Informational messages from database server"
 
 
 class PyAppDBError(PyAppDatabaseException):
-    "Error on interacting with database server"
+    "Generic error on interacting with database server"
+
+
+# --- Level 2: specific errors (inherit from PyAppDBError) ---
+
+class PyAppDBConnectionError(PyAppDBError):
+    "Errors on connecting to database server"
+
+
+class PyAppDBFunctionError(PyAppDBError):
+    "Errors execution database functions or procedures"
 
 
 class PyAppDBConcurrencyError(PyAppDBError):
     "Error on row modified before update/delete"
 
-    def __init__(self):
-        super().__init__('CCER', 'Row modified before update/delete')
+    def __init__(self, 
+                 code: str = 'CCER', 
+                 message: str = 'Row modified before update/delete', 
+                 detail: Optional[str] = None) -> None:
+        # Manteniamo la firma compatibile con la classe base usando i parametri di default
+        super().__init__(code=code, message=message, detail=detail)
+
+
+# Context manager to capture psycopg errors and raise custom exceptions
+
+@contextmanager
+def db_exception_context() -> Generator[None, None, None]:
+    """
+    Context manager to catch native psycopg 3 errors, 
+    log them centrally, and raise a custom PyAppDBError exception.
+    """
+    try:
+        yield
+    except psycopg.Error as er:
+        # Extract SQLSTATE (e.g., '23505'). Fallback to 'UNKNOWN' if missing.
+        sqlstate: str = er.sqlstate or 'UNKNOWN'
+        
+        # In psycopg 3, the attribute is 'diag', which returns a Diagnostic object
+        diag = er.diag
+        
+        # Safely extract messages ensuring Mypy knows they can be strings
+        primary_msg: str = diag.message_primary if diag and diag.message_primary else str(er)
+        detail_msg: str = diag.message_detail if diag and diag.message_detail else ''
+
+        # Structural logging for developers
+        logger.error(
+            "*** DATABASE ERROR ***\nSQL State: %s\nPrimary: %s\nDetail: %s", 
+            sqlstate, 
+            primary_msg, 
+            detail_msg
+        )
+        
+        # Raise the custom exception for the GUI layer
+        raise PyAppDBError(code=sqlstate, message=primary_msg, detail=detail_msg) from er

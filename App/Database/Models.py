@@ -55,7 +55,7 @@ from App.Database.Connect import appconn
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import QueryWithParamsModel
 from App.Database.AbstractModels.TableModel import TableModel
-from App.Database.AbstractModels.TableModel import PandasModel
+#from App.Database.AbstractModels.TableModel import PandasModel
 from App.Database.AbstractModels.TreeModel import TreeQueryModel
 from App.Database.AbstractModels.TreeModel import TreeModel
 from App.Database.Company import company_is_in_use
@@ -1257,7 +1257,7 @@ class InventoryModel(TableModel):
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("inventory_id", _tr('Models', 'ID'), True, 'int'),
-                        ("event_id", _tr('Models', 'event'), False, 'int'),
+                        ("event_id", _tr('Models', 'Event'), False, 'int'),
                         ("item_id", _tr('Models', 'Item'), False, 'int'),
                         ("loaded", _tr('Models', 'Load'), False, 'decimal2'),
                         ("unloaded", _tr('Models', 'Unload'), True, 'decimal2'),
@@ -1792,70 +1792,70 @@ WHERE Null = %s;"""]
         self.repr = 'Order department tree query model'  
     
 
-class OrderHeaderPandasModel(PandasModel):
+# class OrderHeaderPandasModel(PandasModel):
     
-    def __init__(self, parent: QObject|None = None) -> None: 
-        super().__init__(parent)
-        self.table = "company.bi_order_header"
-        # model columns: {field: (description, pivot value, pivot axis, type, format)}, dict
-        # available types are pandas dtype: 
-        # int64, boolean, float64, string, datetime64[ns], None (=auto/generic object)
-        # available formats:
-        # int (0 decimal, right aligned), decimal2 (2 decimals, right aligned), 
-        # str (left aligned), bool (centered), 
-        # date (locale date), datetime (locale date time), time (locale time), None = no specific format
-        self.columns = {#"company_id": (_tr('Models', 'Company ID'), False, 'int64', 'int'),
-                        "event": (_tr('Models', 'Event'), False, True, 'string', 'int'),
-                        "order_number": (_tr('Models', 'Order number'), False, True, 'int64', 'int'),
-                        "order_date": (_tr('Models', 'Order date'), False, True, 'datetime64[ns]', 'date'),
-                        "order_time": (_tr('Models', 'Order time'), False, True, 'datetime64[ns]', 'time'),
-                        "order_date_time": (_tr('Models', 'Order date time'), False, True, 'datetime64[ns]', 'datetime'),
-                        "fullfillment_date": (_tr('Models', 'Fullfilment date'), False, True, 'datetime64[ns]', 'datetime'),
-                        "stat_order_date": (_tr('Models', 'Stat order date'), False, True, 'datetime64[ns]', 'date'),
-                        "stat_order_day_part": (_tr('Models', 'Stat order day part'), False, True, 'string', 'str'),
-                        "cash_desk": (_tr('Models', 'Cash desk'), False, True, 'string', 'str'),
-                        "delivery": (_tr('Models', 'Delivery'), False, True, 'string', 'str'),
-                        "payment": (_tr('Models', 'Payment'), False, True, 'string', 'str'),
-                        "web_order": (_tr('Models', 'Web order'), False, True, 'boolean', 'bool'),
-                        "table_num": (_tr('Models', 'Table number'), False, True, 'string', 'str'),
-                        "customer_name": (_tr('Models', 'Customer name'), False, True, 'string', 'str'),
-                        "customer_contact": (_tr('Models', 'Customer contact'), False, True, 'string', 'str'),
-                        "covers": (_tr('Models', 'Covers'), True, False, 'int64', 'int'),
-                        "total_amount": (_tr('Models', 'Total amount'), True, False, 'float64', 'decimal2'),
-                        "discount": (_tr('Models', 'Discount'), True, False, 'float64', 'decimal2'),
-                        "cash": (_tr('Models', 'Cash'), True, False, 'float64')}
-        # True if is a company table
-        self.isCompanyTable = True
-        self.repr = 'Order header pandas model'
+#     def __init__(self, parent: QObject|None = None) -> None: 
+#         super().__init__(parent)
+#         self.table = "company.bi_order_header"
+#         # model columns: {field: (description, pivot value, pivot axis, type, format)}, dict
+#         # available types are pandas dtype: 
+#         # int64, boolean, float64, string, datetime64[ns], None (=auto/generic object)
+#         # available formats:
+#         # int (0 decimal, right aligned), decimal2 (2 decimals, right aligned), 
+#         # str (left aligned), bool (centered), 
+#         # date (locale date), datetime (locale date time), time (locale time), None = no specific format
+#         self.columns = {#"company_id": (_tr('Models', 'Company ID'), False, 'int64', 'int'),
+#                         "event": (_tr('Models', 'Event'), False, True, 'string', 'int'),
+#                         "order_number": (_tr('Models', 'Order number'), False, True, 'int64', 'int'),
+#                         "order_date": (_tr('Models', 'Order date'), False, True, 'datetime64[ns]', 'date'),
+#                         "order_time": (_tr('Models', 'Order time'), False, True, 'datetime64[ns]', 'time'),
+#                         "order_date_time": (_tr('Models', 'Order date time'), False, True, 'datetime64[ns]', 'datetime'),
+#                         "fullfillment_date": (_tr('Models', 'Fullfilment date'), False, True, 'datetime64[ns]', 'datetime'),
+#                         "stat_order_date": (_tr('Models', 'Stat order date'), False, True, 'datetime64[ns]', 'date'),
+#                         "stat_order_day_part": (_tr('Models', 'Stat order day part'), False, True, 'string', 'str'),
+#                         "cash_desk": (_tr('Models', 'Cash desk'), False, True, 'string', 'str'),
+#                         "delivery": (_tr('Models', 'Delivery'), False, True, 'string', 'str'),
+#                         "payment": (_tr('Models', 'Payment'), False, True, 'string', 'str'),
+#                         "web_order": (_tr('Models', 'Web order'), False, True, 'boolean', 'bool'),
+#                         "table_num": (_tr('Models', 'Table number'), False, True, 'string', 'str'),
+#                         "customer_name": (_tr('Models', 'Customer name'), False, True, 'string', 'str'),
+#                         "customer_contact": (_tr('Models', 'Customer contact'), False, True, 'string', 'str'),
+#                         "covers": (_tr('Models', 'Covers'), True, False, 'int64', 'int'),
+#                         "total_amount": (_tr('Models', 'Total amount'), True, False, 'float64', 'decimal2'),
+#                         "discount": (_tr('Models', 'Discount'), True, False, 'float64', 'decimal2'),
+#                         "cash": (_tr('Models', 'Cash'), True, False, 'float64')}
+#         # True if is a company table
+#         self.isCompanyTable = True
+#         self.repr = 'Order header pandas model'
         
 
-class OrderLinePandasModel(PandasModel):
+# class OrderLinePandasModel(PandasModel):
     
-    def __init__(self, parent: QObject|None = None) -> None: 
-        super().__init__(parent)
-        self.table = "company.bi_order_line"
-        # model columns: {field: (description, pivot value, type)}, dict
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
-        self.columns = {#"company_id": (_tr('Models', 'Company ID'), False, 'int'),
-                        "event": (_tr('Models', 'Event description'), False, True, 'str'),
-                        "order_number": (_tr('Models', 'Order number'), False, True, 'int'),
-                        "order_date": (_tr('Models', 'Order date'), False, True, 'date'),
-                        "order_time": (_tr('Models', 'Order time'), False, True, 'time'),
-                        "stat_order_date": (_tr('Models', 'Stat order date'), False, True, 'date'),
-                        "stat_order_day_part": (_tr('Models', 'Stat order day part'), False, True, 'str'),
-                        "delivery": (_tr('Models', 'Delivery'), False, True, 'str'),
-                        "payment": (_tr('Models', 'Payment'), False, True, 'str'),
-                        "table_number": (_tr('Models', 'Table number'), False, True, 'str'),
-                        "customer_name": (_tr('Models', 'Customer name'), False, True, 'str'),
-                        "department": (_tr('Models', 'Department'), False, True, 'str'),
-                        "item_type": (_tr('Models', 'Item type'), False, True, 'str'),
-                        "item": (_tr('Models', 'Item'), False, True, 'str'),
-                        "variants": (_tr('Models', 'Variants'), False, True, 'str'),
-                        "item_with_variants": (_tr('Models', 'Item with variants'), False, True, 'str'),
-                        "quantity": (_tr('Models', 'Quantity'), True, False, 'int'),
-                        "price": (_tr('Models', 'Price'), True, False, 'decimal2'),
-                        "amount": (_tr('Models', 'Amount'), True, False, 'decimal2')}
-        # True if is a company table
-        self.isCompanyTable = True
-        self.repr = 'Order line pandas model'
+#     def __init__(self, parent: QObject|None = None) -> None: 
+#         super().__init__(parent)
+#         self.table = "company.bi_order_line"
+#         # model columns: {field: (description, pivot value, type)}, dict
+#         # available types: int, bool, decimal2, str, date, datetime, None = no filter
+#         self.columns = {#"company_id": (_tr('Models', 'Company ID'), False, 'int'),
+#                         "event": (_tr('Models', 'Event description'), False, True, 'str'),
+#                         "order_number": (_tr('Models', 'Order number'), False, True, 'int'),
+#                         "order_date": (_tr('Models', 'Order date'), False, True, 'date'),
+#                         "order_time": (_tr('Models', 'Order time'), False, True, 'time'),
+#                         "stat_order_date": (_tr('Models', 'Stat order date'), False, True, 'date'),
+#                         "stat_order_day_part": (_tr('Models', 'Stat order day part'), False, True, 'str'),
+#                         "delivery": (_tr('Models', 'Delivery'), False, True, 'str'),
+#                         "payment": (_tr('Models', 'Payment'), False, True, 'str'),
+#                         "table_number": (_tr('Models', 'Table number'), False, True, 'str'),
+#                         "customer_name": (_tr('Models', 'Customer name'), False, True, 'str'),
+#                         "department": (_tr('Models', 'Department'), False, True, 'str'),
+#                         "item_type": (_tr('Models', 'Item type'), False, True, 'str'),
+#                         "item": (_tr('Models', 'Item'), False, True, 'str'),
+#                         "variants": (_tr('Models', 'Variants'), False, True, 'str'),
+#                         "item_with_variants": (_tr('Models', 'Item with variants'), False, True, 'str'),
+#                         "quantity": (_tr('Models', 'Quantity'), True, False, 'int'),
+#                         "price": (_tr('Models', 'Price'), True, False, 'decimal2'),
+#                         "amount": (_tr('Models', 'Amount'), True, False, 'decimal2')}
+#         # True if is a company table
+#         self.isCompanyTable = True
+#         self.repr = 'Order line pandas model'
         

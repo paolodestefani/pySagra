@@ -56,6 +56,7 @@ FROM system.connection;"""
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
+
 def delete_connection_history(days: int) -> None:
     "Delete connection log table - all records or older then provided days"
     script = t"""
@@ -68,6 +69,7 @@ WHERE cast(logout_datetime as date) <= (current_date - {days});"""
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+
 
 def kill_client(cid: int) -> None:
     "Kills the client of cid process id"

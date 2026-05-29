@@ -210923,420 +210923,605 @@ t\xf6\xae\xedK^\x1a\xacu\xe6~>w+.$\
 @\xce\x9ed\x02C9B\x17o>\xe2\x0b*J\x1d\
 \xa5\x8eRG\xa9\xa3\xd4gh;\xf2\xcc\x7f\xea+\x12\
 g\x1al\xc7\x8b\xe4\x0f5\x8a\xa5\x9e\
-\x00\x00\x02U\
-\x00\
-\x00\x1c\xe6x\xda\xed\x99\xdfk\xdb0\x10\xc7\x9f\x9b\xbf\
-\xe2\xf0\xa0\xdd\xa0\x8dY\x1fW\xc7\xa3k\xd9\xd3^J\
-\xc6\xde\xcf\xf699\x90%U\x92S\xd2\xbf~\xe7\xd8\
-q\x9ate\x0d\x83>\xac\x82\x84\x5c\xc4\xfd\x90\xee{\
-1\x1f\x94l\x19\x1a\x05\x0a\xf5b\x96pH\xf2\x09@\
-\xb6$\xac:C\xcc\xc0AQ\xfe\xfd\xfa\x0e|\x0bv\
-=\xc7\x85\xc3,\xedW;\xd7t\xeb\x9b\x15\xa6Z\x83\
-\x0fkE\xb3\xa46:\x5c\xd4\xd8\xb0Z\x7f\x81k\xc7\
-\xa8\xcea\x8e\xda_\xcc\xc9q}\x95\x0c\xc9\x97\x9f\xf3\
-\xc9\xc9\xc9\xadiPW\x04\xb5\xa3\xfb\x96t\xe0'\xa5\
-z\xbf\xb4s\xec#.7\x11\xec\xad\xd1\x5c\xb0\xe2p\
-\xda\xb9\xad\xe8\x0a*R\xea\x0c\xadU\x5c\xe2#\x1bM\
-\xdb\xd8\xcb!\xb6U\xbd!\xa6\xe2\xad)_\x10\x96\x8e\
-\xeaY\xf2A6@I~\xd7\x92\x0f\x06\xac3\x92\xb8\
-i\x10Ni\xa8 \x1f\xa1\xe5`\xbef)\x8e\xa9\xd2\
-]\xae\x17\xd2>,\xc9Q05\xeb*\xc9o\xcd\x8a\
-\xc0\x1a\xef\x0d\x04gV\xe8\x08\xee\x0f\x0a\x1e\x99\xde\xb7\
-\xd6\x1a'\xca\xfdb\xd2\xd2E\xe34\x07\x04\xf4\x9e}\
- \xfd\x88\xd2N\xe9\x0ck\x1fP\xa9\xbe5@\xa28\
-\x94F\xd7\xbch]\xbf\xf6\xe7\xb2Y\xbam\xdb\xd0\xfb\
-\x9b\xbd\xa0\xa3{,\xc7w+\xa6\x87$\xbfq4l\
-\xa6bh5\x82n\xa5\x1f k\xa4+<\xae\x07\xe8\
-\xca%\x07*C\xebh/3-\x14\x03\xad\xba\xa9\xfa\
-\xfb\xf1\x80+\x19\xdd\xd7\x0f\xc1xj;&.\xf2\xf1\
-7R\xe4\xcf\x83\xc0\x934\xbd2\xc0\x10\xc85\xacy\
-3\xb6\x082\xb4\x1b\xa9>N\xa7\xd3O\xc3\xce\xeca\
-\xf6o\xe2X\xbc\xdd\xfb|([\xbc\xab\xb2o[5\
-J\x1d\xa5\x8eRG\xa9\xa3\xd4\xff\x8b\xd4\x02%\xa5\x12\
-\xf8\x9a%\xc1\xd8d\x0b(\x1b{C\xcd\xfdz\xfeS\
-0M`\x07\x04\x01\x04U\xc0\xe2\x82\xf5\x06zv\xb9\
-\x06 \xd9\xc3\xc7\xe1\x8c\xaf\xa1\xc8\xc9>\x99\x8dC\xf8\
-2\xda\xd4X\xb2j\x84\x95\x08\x1cY!u\x01l\x92\
-\x1d\xcaKhES\x88x\x12\x1fdQ\xea(u\x94\
-:J\x1d\xa5\x8ex\xd2\xe1\xc9x\xfd4\x9c\xef_o\
-\xa1\x0eo\x94\xc6\xe9\xfcq\xf6$\xd9\x8eY\x86B\x15\
-BC\x91O\xe2\x93,J\x1d\xa5\x8eRG\xa9\xa3\xd4\
-\xef\x99O\xb2\xb4\xfb;2\x9f\x08H\x84F\xe5\x93\xdf\
-\xf0l\xe7n\
-\x00\x00\x17&\
+\x00\x00\x09\xee\
+<\
+html lang=\x22it\x22>\x0a\
+  <head>\x0a    <ti\
+tle>FAQ su pySag\
+ra</title>\x0a  </h\
+ead>\x0a  <body sty\
+le=\x22font-family:\
+ Arial, Sans-Ser\
+if;\x22>\x0a    <h1>\x0a\x09\
+\x09Domande frequen\
+ti su pySagra\x0a  \
+  </h1>\x0a    <h2>\
+\x0a\x09\x09Disponibilit&\
+agrave; dell'app\
+licazione\x0a    </\
+h2>\x0a    <ul>\x0a   \
+   <li>\x0a        \
+<a href=\x22#free\x22>\
+Questo programma\
+ &egrave; gratui\
+to?</a>\x0a      </\
+li>\x0a      <li>\x0a \
+       <a href=\x22\
+#wheretofind\x22>Do\
+ve posso trovare\
+ questo programm\
+a?</a>\x0a      </l\
+i>\x0a      <li>\x0a  \
+      <a href=\x22#\
+support\x22>Viene f\
+ornita assistenz\
+a sull'installaz\
+ione e la config\
+urazione?</a>\x0a  \
+    </li>\x0a    </\
+ul>\x0a    <h2>\x0a\x09\x09C\
+onfigurazione\x0a  \
+  </h2>\x0a    <ul>\
+\x0a      <li>\x0a    \
+    <a href=\x22#co\
+mpany\x22>Creazione\
+ di una nuova az\
+ienda</a>\x0a      \
+</li>\x0a      <li>\
+\x0a        <a href\
+=\x22#events\x22>Creaz\
+ione degli event\
+i</a>\x0a      </li\
+>\x0a      <li>\x0a   \
+     <a href=\x22#i\
+nventory\x22>Invent\
+ario ed articoli\
+ composti</a>\x0a  \
+    </li>\x0a    </\
+ul>\x0a    <h2 id=\x22\
+free\x22>Questo pro\
+gramma &egrave; \
+gratuito?</h2>\x0a \
+   <p>\x0a      <b>\
+pySagra</b> &egr\
+ave; gratuito se\
+condo i termini \
+della licenza GP\
+L versione 3 o s\
+uccessiva. Ovvia\
+mente se volete\x0a\
+       condivide\
+re con me una bi\
+rra ed una salsi\
+ccia la cosa sar\
+ebbe molto gradi\
+ta!\x0a    </p>\x0a   \
+ <p><a class=\x22to\
+p\x22 href=\x22#top\x22 t\
+itle=\x22top\x22>Torna\
+ a inizio pagina\
+</a></p>\x0a    <h2\
+ id=\x22wheretofind\
+\x22>\x0a      Dove po\
+sso trovare ques\
+to programma?\x0a  \
+ </h2>\x0a    <p>\x0a \
+     Questo prog\
+ramma &egrave; f\
+acilmente reperi\
+bile in internet\
+. In <a href=\x22ht\
+tps://github.com\
+/paolodestefani/\
+pySagra\x22>github.\
+com</a>\x0a      &e\
+grave; possibile\
+ scaricarsi i so\
+rgenti dell'appl\
+icazione. Sono d\
+isponibili anche\
+ dei pacchetti p\
+er Winodows e Ma\
+cOS\x0a      genera\
+ti tramite pyins\
+taller.\x0a    </p>\
+\x0a    <p><a class\
+=\x22top\x22 href=\x22#to\
+p\x22 title=\x22top\x22>T\
+orna a inizio pa\
+gina</a></p>\x0a   \
+ <h2 id=\x22support\
+\x22>\x0a      Viene f\
+ornita assistenz\
+a sull'installaz\
+ione e la config\
+urazione?\x0a    </\
+h2>\x0a    <p>\x0a    \
+  L'assistenza &\
+egrave; fornita \
+da me (...)\x0a    \
+</p>\x0a    <p><a c\
+lass=\x22top\x22 href=\
+\x22#top\x22 title=\x22to\
+p\x22>Torna a inizi\
+o pagina</a></p>\
+\x0a    <h2 id=\x22com\
+pany\x22>\x0a      Com\
+e creare una nuo\
+va azienda?\x0a    \
+</h2>\x0a    <p>\x0a  \
+    Per creare u\
+na nuova azienda\
+ seguire questi \
+passaggi\x0a    </p\
+>\x0a    <h2 id=\x22ev\
+ents\x22>\x0a      Com\
+e creare una nuo\
+vo evento?\x0a    <\
+/h2>\x0a    <p>\x0a   \
+   Per creare un\
+a nuovo evento s\
+eguire questi pa\
+ssaggi\x0a    </p>\x0a\
+    <h2 id=\x22inve\
+ntory\x22>\x0a      Co\
+me gestisco gli \
+articoli compost\
+i?\x0a    </h2>\x0a   \
+ <p>\x0a      Per g\
+estire in Invent\
+ario gli articol\
+i composti &egra\
+ve; necessario s\
+puntare\x0a       \x22\
+Gestione inventa\
+rio\x22 sia sull'ar\
+ticolo composto \
+(kit o menu) che\
+ su ogni suo com\
+ponente\x0a      pe\
+r il quale inter\
+essi la gestione\
+.\x0a    </p>\x0a  </b\
+ody>\x0a</html>\x0a\
+\x00\x00\x1b'\
 <\
 html lang=\x22en\x22>\x0a\
   <head>\x0a    <ti\
-tle>pySagra help\
-</title>\x0a  </hea\
-d>\x0a  <body style\
-=\x22font-family: A\
-rial, Sans-Serif\
-;\x22>\x0a    <h1>\x0a\x09\x09p\
-ySagra documenta\
-tion\x0a    </h1>\x0a \
-   <center>\x0a    \
-  <img src=\x22qrc:\
-/pySagra\x22>\x0a    <\
-/center>\x0a    <h2\
->\x0a      List of \
-topics:\x0a    </h2\
->\x0a    <ul>\x0a     \
- <li>\x0a        <a\
- href=\x22#overview\
-\x22>Overview</a>\x0a \
-     </li>\x0a     \
- <li>\x0a        <a\
- href=\x22#architec\
-ture\x22>Applicatio\
-n architecture</\
-a>\x0a      </li>\x0a \
-     <li>\x0a      \
-  <a href=\x22#gui\x22\
->User interface<\
-/a>\x0a      </li>\x0a\
-    </ul>\x0a    <h\
-2 id=\x22overview\x22>\
-\x0a      Overview\x0a\
-    </h2>\x0a    <p\
->\x0a      <b>pySag\
-ra</b> stems fro\
-m the need to ma\
-nage the gastron\
-omic \x0a\x09  stand o\
-f my village's f\
-estival. The act\
-ivity to be mana\
-ged is\x0a\x09  theref\
-ore the order en\
-try of products,\
- typically first\
- courses,\x0a\x09  mai\
-n courses, drink\
-s, etc., the sub\
-sequent distribu\
-tion of \x0a\x09  the \
-orders, real wor\
-k orders, to the\
- various departm\
-ents \x0a\x09  of the \
-stand, for examp\
-le bar, restaura\
-nt, but also piz\
-zeria,\x0a\x09  ice cr\
-eam parlor, etc.\
- The orders are \
-placed in the\x0a\x09 \
- cash desks and \
-must be the most\
- quick and simpl\
-e as possible.\x0a\x09\
-  Once the order\
- has been entere\
-d it is divided \
-by department\x0a\x09 \
- and distributed\
- to the departme\
-nts concerned. O\
-nce the \x0a\x09  depa\
-rtment copy is p\
-rinted the order\
- it is considere\
-d \x0a\x09  automatica\
-lly processed. T\
-here is no manag\
-ement of order \x0a\
-\x09  fulfillment a\
-s it is superflu\
-ous for the type\
- of activity \x0a\x09 \
- that is carried\
- out. Apart from\
- this the progra\
-m allows \x0a\x09  the\
- closure of the \
-cash register en\
-d various sales \
-\x0a\x09  statistics. \
-All lists, stati\
-stics including,\
- they are \x0a\x09  pr\
-intable and auto\
-matically export\
-able to Excel.\x0a\x09\
-  Currently, fis\
-cal printing is \
-not managed.\x0a   \
- </p>\x0a    <p>\x0a  \
-    The features\
- of the applicat\
-ion can be summa\
-rized in \x0a\x09  the\
- following point\
-s:\x0a    </p>\x0a    \
-<ul>\x0a      <li>M\
-anagement of <b>\
- events </b>: al\
-l operations com\
-e\x0a\x09  always refe\
-rring to a speci\
-fic event (eg. S\
-agra del \x0a\x09  Pep\
-per, Beer Festiv\
-al, etc.).\x0a     \
- </li>\x0a      <li\
->Management of <\
-b> departments <\
-/b> (eg Bar, res\
-taurant,\x0a\x09  Pizz\
-eria, etc.). Som\
-e departments ma\
-y not be availab\
-le for\x0a\x09  specif\
-ic events.\x0a     \
- </li>\x0a      <li\
->Managing <b> sa\
-les </b> items, \
-distinguishing t\
-hem\x0a\x09  in elemen\
-tary items, kits\
- (eg three of a \
-kind: sausages +\
- ribs +\x0a\x09  chop)\
- and menu (ex. s\
-agra menu: beer \
-+ tris + fried p\
-otatoes).\x0a\x09  The\
- kits must be co\
-mposed by themse\
-lves\x0a\x09  elementa\
-ry articles. Men\
-us may contain k\
-its.\x0a      </li>\
-\x0a      <li>Manag\
-ement of <b> var\
-iants </b> of it\
-ems (eg pizza\x0a\x09 \
- margherita with\
-out mozzarella, \
-with salamino, e\
-tc.). The varian\
-t\x0a\x09  may provide\
- a price increas\
-e.\x0a      </li>\x0a \
-     <li>Deliver\
-y management at \
-<b> table </b> o\
-r per\x0a\x09  <b> Tak\
-e </b>. It is po\
-ssible to check \
+tle>\x0a      Help \
+on login procedu\
+re\x0a    </title>\x0a\
+  </head>\x0a  <bod\
+y>\x0a    <h1>\x0a    \
+  Online documen\
+tation for pySag\
+ra\x0a    </h1>\x0a<ce\
+nter><img src=\x22q\
+rc:/pySagra\x22></c\
+enter>\x0a\x0a<p>Table\
+ of contents:</p\
+>\x0a<ul>\x0a    <li><\
+a href=\x22#overvie\
+w\x22>Overview</a><\
+/li>\x0a    <li><a \
+href=\x22#framework\
+\x22>System Archite\
+cture</a></li>\x0a \
+   <li><a href=\x22\
+#user_interface\x22\
+>User Interface<\
+/a></li>\x0a</ul>\x0a\x0a\
+<h2 id=\x22overview\
+\x22>Overview</h2>\x0a\
+<p>One of the tr\
+aditional and cu\
+ltural character\
+istics across It\
+aly is\x0athe prese\
+nce of <b>Sagre<\
+/b> (local festi\
+vals). As clarif\
+ied by Wikipedia\
+, a\x0asagra is a p\
+opular local fes\
+tival held annua\
+lly.\x0aIt traditio\
+nally originates\
+ from a religiou\
+s celebration, h\
+eld\x0aon the occas\
+ion of a consecr\
+ation or to comm\
+emorate a saint \
+\x0a(usually the pa\
+tron saint), but\
+ it is also used\
+ to celebrate\x0ath\
+e harvest or to \
+promote a local \
+food and wine pr\
+oduct. During a \
+\x0asagra, a local \
+fair, a market, \
+and various cele\
+brations usually\
+ take place. \x0aTh\
+e most important\
+ area of the fes\
+tival, at least\x0a\
+from a culinary \
+perspective, is \
+the food stand. \
+ \x0a<b>pySagra</b>\
+ was born from t\
+he need to manag\
+e the food stand\
+ \x0aof my hometown\
+'s festival. The\
+ management work\
+flow starts from\
+ \x0ataking product\
+ orders, typical\
+ly first courses\
+,\x0asecond courses\
+, drinks, etc., \
+and the subseque\
+nt distribution \
+of order tickets\
+,\x0awhich act as a\
+ctual <i>product\
+ion</i> orders, \
+to the various d\
+epartments of th\
+e stand,\x0asuch as\
+ the bar, the ki\
+tchen, as well a\
+s the pizzeria, \
+ice cream statio\
+n, etc. \x0aOrder e\
+ntry takes place\
+ at the cash reg\
+isters and must \
+be as \x0afast and \
+simple as possib\
+le. Once entered\
+, the order\x0ais d\
+ivided by depart\
+ment and routed \
+to the relevant \
+stations.\x0aManagi\
+ng order fulfill\
+ment and product\
+ stock is\x0ausuall\
+y unnecessary fo\
+r this type of a\
+ctivity, which \x0a\
+prioritizes the \
+speed of order h\
+andling and food\
+ delivery.\x0aAt th\
+e end of the day\
+ or at the concl\
+usion of the fes\
+tival, results a\
+re verified\x0athro\
+ugh a revenue su\
+mmary and variou\
+s sales and cons\
+umption statisti\
+cs.</p> \x0a<p>The \
+program allows m\
+anaging all thes\
+e aspects, from \
+order loading\x0ato\
+ product deliver\
+y and final stat\
+istics.</p>\x0a<p>T\
+he features of t\
+he application c\
+an be summarized\
+\x0ain the followin\
+g points:</p>\x0a<u\
+l>\x0a<li><b>Event<\
+/b> management: \
+all operations a\
+re always\x0a refer\
+enced to a speci\
+fic event (e.g.,\
+ Pepper Festival\
+,\x0a  Beer Festiva\
+l, etc.).</li>\x0a<\
+li><b>Department\
+</b> management \
+(e.g., Bar, Kitc\
+hen, Pizzeria, e\
+tc.).\x0a Some depa\
+rtments may be u\
+navailable for s\
+pecific events.<\
+/li>\x0a<li>Managem\
+ent of sales and\
+ consumption <b>\
+items</b>, disti\
+nguishing them\x0ai\
+nto basic items,\
+ <b>kits</b> - c\
+omposite items (\
+e.g., trio platt\
+er:\x0a sausages + \
+ribs + pork chop\
+) and <b>menus</\
+b> - groupings\x0a \
+ of items from v\
+arious departmen\
+ts (e.g., festiv\
+al menu: beer + \
+trio platter\x0a  +\
+ french fries). \
+Kits must consis\
+t only of\x0a      \
+basic items. Men\
+us can contain k\
+its.</li>\x0a<li>Ma\
+nagement of item\
+ <b>variants</b>\
+ (e.g., pizza\x0ama\
+rgherita without\
+ mozzarella, wit\
+h spicy salami, \
+etc.). The varia\
+nt\x0acan include a\
+ price surcharge\
+.</li>\x0a<li>Manag\
+ement of <b>dine\
+-in (table)</b> \
+or <b>takeout</b\
+> delivery.</li>\
+\x0a<li><b>Stock</b\
+> control: for b\
+asic items\x0athat \
+need monitoring,\
+ it is possible \
+to input the\x0aava\
+ilable stock. Th\
+e program automa\
+tically updates \
+the\x0aavailability\
+ based on sales \
+made and subsequ\
+ent consumption.\
+</li>\x0a<li><b>Ord\
+ered - Delivered\
+</b> control: fo\
+r\x0aitems that nee\
+d monitoring, it\
+ is possible to \
+track \x0athe commi\
+tted quantity an\
+d the subsequent\
+ delivery, also \
+managing\x0aorder f\
+ulfillment. The \
+program automati\
+cally updates th\
+e\x0aorder status (\
+entered, process\
+ing, fulfilled) \
+based on the\x0adel\
+iveries made.</l\
+i>\x0a<li><b>Sales \
+order</b> manage\
+ment via a loadi\
+ng screen\x0a optim\
+ized and designe\
+d to achieve the\
+\x0amaximum entry s\
+peed. Check for \
 the existence of\
- the\x0a\x09  table nu\
-mber entered.\x0a  \
-    </li>\x0a      \
-<li><b>stock lev\
-el control</b>: \
-for elementary a\
-rticles\x0a\x09  which\
- interests to mo\
-nitor it is poss\
-ible to insert t\
-he\x0a\x09  stock avai\
-lable. The progr\
-am automatically\
- updates the\x0a\x09  \
-availability bas\
-ed on sales made\
-.\x0a      </li>\x0a  \
-    <li>Manageme\
-nt of <b>sales o\
-rders</b> throug\
-h a optimized fo\
-rm\x0a\x09  aimed at a\
-chieving the max\
-imum insertion s\
-peed with stock \
-control\x0a\x09  of th\
-e articles, tota\
-l calculation, a\
-mount cashed, ch\
-ange, etc.\x0a     \
- </li>\x0a      <li\
->Generation of t\
-he <b> order pri\
-nting </b> for t\
-he\x0a\x09  customer, \
-for the various \
-departments conc\
-erned and one fo\
-r\x0a\x09  covers. All\
- these prints ar\
-e in A5 format a\
-nd optional\x0a    \
-  </li>\x0a      <l\
-i>Print of the <\
-b> cashed </b> p\
-er day and half \
-a day\x0a      </li\
->\x0a      <li>Mana\
-gement of variou\
-s <b> sales stat\
-istics </b> even\
-\x0a\x09  comparing di\
-fferent events\x0a \
-     </li>\x0a     \
- <li>All <b> arc\
-hives </b> (even\
-ts, departments,\
- items,\x0a\x09  etc.)\
- and the availab\
-le statistics ca\
-n be viewed,\x0a\x09  \
-printable A4 and\
- <b> exportable \
-</b> in excel\x0a  \
-    </li>\x0a      \
-<li>The applicat\
-ion is <b> cross\
--platform </b>:\x0a\
-\x09  developed and\
- tested on Windo\
-ws and Linux, it\
- should work\x0a\x09  \
-correctly also o\
-n Mac OSX\x0a\x09  </l\
-i>\x0a    </ul>\x0a   \
- <p><a class=\x22to\
-p\x22 href=\x22#top\x22 t\
-itle=\x22top\x22>Back \
-to top</a></p>\x0a \
-   <h2 id=\x22archi\
-tecture\x22>\x0a      \
-Application arch\
-itecture\x0a    </h\
-2>\x0a    <p>\x0a\x09This\
- program was dev\
-eloped with in m\
-ind\x0a\x09some specif\
-ic objectives:\x0a \
-   </p>\x0a    <ul>\
-\x0a      <li>Deepe\
-n my knowledge o\
-f the Python lan\
-guage\x0a      </li\
->\x0a      <li>Impl\
-ement an applica\
-tion with a grap\
-hical interface \
-e\x0a\x09  based on a \
-sql database ser\
-ver\x0a      </li>\x0a\
-      <li>Implem\
-ent a multiuser \
-application with\
- client / server\
-\x0a\x09  architecture\
-\x0a      </li>\x0a   \
-   <li>The appli\
-cation must be m\
-ulti-platform an\
-d available\x0a\x09  l\
-ow / no cost to \
-anyone who reque\
-sts it\x0a      </l\
-i>\x0a    </ul>\x0a   \
- <p>\x0a      Conse\
-quently for the \
-realization of t\
-his application\x0a\
-\x09  have been use\
-d:\x0a    </p>\x0a    \
-<ul>\x0a      <li>T\
-he <a href=\x22http\
-s://www.python.o\
-rg\x22>Python</a> p\
-rogramming langu\
-age\x0a\x09  version 3\
-.7</li>\x0a      <l\
-i>The <a href=\x22h\
-ttps://www.qt.io\
-\x22>Qt</a> librari\
-es version 5.x\x0a \
-     </li>\x0a     \
- <li>The Qt wrap\
-per libraries <a\
- href=\x0a      \x22ht\
-tps://www.riverb\
-ankcomputing.com\
-/software/pyqt/d\
-ownload5\x22>PyQt</\
-a>\x0a\x09  version 5.\
-x\x0a      </li>\x0a  \
-    <li>The <a h\
+ the\x0aindicated t\
+able. Possibilit\
+y to select the \
+table from\x0aan in\
+teractive layout\
+ map of existing\
+ tables. Check f\
+or the \x0aavailabi\
+lity of the ente\
+red items, consi\
+dering the \x0acomp\
+onents for kits \
+and menus. Autom\
+atic calculation\
+ of \x0aorder total\
+, amount receive\
+d, any value dis\
+counts\x0a  (e.g., \
+vouchers), chang\
+e due, etc. Disp\
+lay of possible \
+variants.</li>\x0a<\
+li>Possibility t\
+o insert notes p\
+er department</l\
+i>\x0a<li>Orders ca\
+n also be entere\
+d in a web appli\
+cation\x0athat gene\
+rates a QR Code \
+that can be scan\
+ned at the cash \
+register for qui\
+ck acquisition,\x0a\
+followed only by\
+ payment.</li>\x0a<\
+li>Generation of\
+ the <b>order pr\
+intout</b> for t\
+he customer, \x0asp\
+ecific printouts\
+ for the various\
+ departments inv\
+olved, and one f\
+or\x0a table covers\
+ only. All these\
+ printouts are o\
+ptional and avai\
+lable in various\
+ formats</li>\x0a<l\
+i>Printout of <b\
+>revenue</b> by \
+day and half-day\
+</li>\x0a<li>Contin\
+uous display and\
+ printing of ite\
+m availability \x0a\
+or the component\
+s of kits and me\
+nus.</li>\x0a<li>Ma\
+nagement of vari\
+ous <b>sales and\
+ consumption sta\
+tistics</b>, inc\
+luding\x0acomparing\
+ different event\
+s and periods</l\
+i>\x0a<li>All <b>re\
+cords</b> (event\
+s, departments, \
+items,\x0aetc.) and\
+ available stati\
+stics can be vie\
+wed,\x0aprinted in \
+A4 format, and <\
+b>exported</b> t\
+o CSV/Excel</li>\
+\x0a<li>The applica\
+tion is <b>cross\
+-platform</b>: d\
+eveloped and tes\
+ted\x0a on Mac OSX \
+and Windows, it \
+should also func\
+tion correctly o\
+n Linux.</li> \x0a \
+</ul>\x0a\x0a<p><a cla\
+ss=\x22top\x22 href=\x22#\
+top\x22 title=\x22top\x22\
+>Back to top</a>\
+</p>\x0a\x0a<h2 id=\x22fr\
+amework\x22>Applica\
+tion Architectur\
+e</h2>\x0a<p>This p\
+rogram was devel\
+oped with\x0asome s\
+pecific goals in\
+ mind:</p>\x0a<ul>\x0a\
+    <li>Create a\
+n application wi\
+th a graphical i\
+nterface based o\
+n\x0a an SQL databa\
+se server</li>\x0a \
+<li>Create a mul\
+ti-user applicat\
+ion with a clien\
+t/server archite\
+cture</li>\x0a<li>T\
+he application m\
+ust be cross-pla\
+tform and availa\
+ble\x0aat low or no\
+ cost to anyone \
+who requests it<\
+/li>\x0a</ul>\x0a<p>To\
+ build this appl\
+ication based on\
+ the previous pr\
+emises,\x0athe foll\
+owing tools were\
+ chosen:</p>\x0a<ul\
+>\x0a    <li>the <a\
+ href=\x22https://w\
+ww.python.org/\x22>\
+Python</a> progr\
+amming language\x0a\
+in version 3.14<\
+/li>\x0a<li>the <a \
+href=\x22https://ww\
+w.qt.io/\x22>Qt</a>\
+ libraries in ve\
+rsion 6.x</li>\x0a<\
+li>the binding t\
+o the Qt librari\
+es <a href=\x22http\
+s://doc.qt.io/qt\
+forpython-6/\x22>Qt\
+ for Python</a> \
+in version 6.x</\
+li>\x0a<li>The <a h\
 ref=\x22https://www\
 .postgresql.org\x22\
 >PostgreSQL</a> \
-database\x0a\x09  serv\
-er version 10.x \
-\x0a      </li>\x0a\x09  \
-<li>The <a href=\
-\x22http://initd.or\
-g/psycopg/\x22>psyc\
-opg</a> Python c\
-onnector\x0a\x09  to P\
-ostgreSQL versio\
-n 2.8.x \x0a      <\
-/li>\x0a      <li>T\
-he <a href=\x22http\
-s://github.com/p\
-asnox/oxygen-ico\
-ns-png\x22>oxygen i\
-cons</a>\x0a\x09  icon\
- set\x0a      </li>\
-\x0a      <li>The p\
-ySagra icon is f\
-rom DelliOS Syst\
-em Icons set\x0a   \
-   of <a href=\x22h\
-ttp://www.wendel\
-lverli.com/\x22>Wen\
-dell\x0a      Ferna\
-ndes</a>\x0a      <\
-/li>\x0a    </ul>\x0a \
-   <p>\x0a      All\
- the tools liste\
-d are multiplatf\
-orm and\x0a\x09  avail\
-able for free\x0a  \
-  </p>\x0a    <p><a\
+database server \
+in version\x0a 18.x\
+ or later</li>\x0a<\
+li>The PostgreSQ\
+L connector for \
+Python <a href=\x22\
+https://www.psyc\
+opg.org/\x22>Psycop\
+g</a> in version\
+\x0a3.3.x or later<\
+/li>\x0a<li>the def\
+ault icon set is\
+ <a href=\x22https:\
+//github.com/KDE\
+/oxygen-icons\x22>o\
+xygen</a> \x0a    b\
+ut other icon pa\
+cks downloaded f\
+rom \x0a    <a href\
+=\x22https://www.ic\
+onarchive.com\x22>I\
+conarchive</a> a\
+re also availabl\
+e</li>\x0a<li>the p\
+ySagra icon is p\
+art of the Delli\
+OS System Icons \
+set\x0aby <a href=\x22\
+https://dellustr\
+ations.com\x22>dell\
+ustrations.com</\
+a></li>\x0a</ul>\x0a<p\
+>All the listed \
+tools are cross-\
+platform and\x0aava\
+ilable free of c\
+harge</p>\x0a\x0a<p><a\
  class=\x22top\x22 hre\
 f=\x22#top\x22 title=\x22\
 top\x22>Back to top\
-</a></p>\x0a    <h2\
- id=\x22gui\x22>\x0a     \
- User interface\x0a\
-    </h2>\x0a    <c\
-enter>\x0a      <im\
-g src=\x22qrc:/help\
-/img/main_window\
-.png\x22>\x0a    </cen\
-ter>\x0a    <p>\x0a   \
-   The user inte\
-rface is made of\
- (...):\x0a    </p>\
-\x0a    <p><a class\
-=\x22top\x22 href=\x22#to\
-p\x22 title=\x22top\x22>B\
-ack to top</a></\
-p>\x0a    <p>\x0a     \
- <a href=\x22qrc:/h\
-elp/login.html\x22 \
-title=\x22login\x22>He\
-lp on Login proc\
-edure</a>\x0a    </\
-p>\x0a  </body>\x0a</h\
-tml>\x0a\
-\x00\x00\x1d\x11\
+</a></p>\x0a    \x0a<h\
+2 id=\x22user_inter\
+face\x22>User Inter\
+face</h2>\x0a<p>The\
+ application's u\
+ser interface:</\
+p>\x0a<img src=\x22qrc\
+:/help/img/main_\
+window.png\x22>\x0a<a \
+href=\x22qrc:/help/\
+login.html\x22 titl\
+e=\x22login\x22>Help o\
+n Login procedur\
+e</a>\x0a\x0a<p><a cla\
+ss=\x22top\x22 href=\x22#\
+top\x22 title=\x22top\x22\
+>Back to top</a>\
+</p>\x0a </body>\x0a</\
+html>\x0a\
+\x00\x00\x1dV\
 <\
 html lang=\x22it\x22>\x0a\
   <head>\x0a    <ti\
@@ -211370,440 +211555,444 @@ mica</h2>\x0a<p>Una\
  delle caratteri\
 stiche folcloris\
 tiche di tutta l\
-'Italia \xc3\xa8\x0ala pr\
-esenza delle *Sa\
-gre*. Come chiar\
-isce wikipedia l\
-a\x0asagra \xc3\xa8 una f\
-esta popolare di\
- carattere local\
-e e cadenza annu\
-ale,\x0ache nasce t\
-radizionalmente \
-da una festa rel\
-igiosa, celebrat\
-a\x0ain occasione d\
-i una consacrazi\
-one o per commem\
-orare un santo \x0a\
-(in genere il sa\
-nto patrono), ma\
- anche utilizzat\
-a per festeggiar\
-e\x0ail raccolto o \
-promuovere un pr\
-odotto enogastro\
-nomico locale. D\
-urante una \x0asagr\
-a hanno luogo in\
- genere la fiera\
- locale, il merc\
-ato e vari \x0afest\
-eggiamenti. Il l\
-uogo pi\xc3\xb9 import\
-ante della sagra\
-, almeno\x0adal pun\
-to di vista culi\
-nario, \xc3\xa8 lo sta\
-nd gastronomico.\
-  \x0a*pySagra* nas\
-ce dall'esigenza\
- di gestire lo s\
-tand gastronomic\
-o \x0adella sagra d\
-el mio paese. L'\
-attivit\xc3\xa0 da ges\
-tire parte dalla\
- \x0arilevazione de\
-gli ordini dei p\
-rodotti, tipicam\
-ente primi piatt\
-i,\x0asecondi, beva\
-nde, ecc. e la s\
-uccessiva distri\
-buzione delle co\
-mande,\x0averi e pr\
-opri ordini di '\
-produzione', ai \
-vari reparti del\
-lo stand,\x0aad ese\
-mpio bar, cucina\
-, ma anche pizze\
-ria, gelateria, \
-ecc. \x0aL'inserime\
-nto degli ordini\
- avviene nelle c\
-asse e deve esse\
-re il pi\xc3\xb9\x0arapid\
-o e semplice pos\
-sibile. Una volt\
-a inserito, l'or\
-dine\x0aviene suddi\
-viso per reparto\
- e diramato ai r\
-eparti interessa\
-ti.\x0aLa gestione \
-dell'evasione de\
-gli ordini e del\
-le scorte dei pr\
-odotti \xc3\xa8\x0anormal\
-mente superflua \
-per il tipo di a\
-ttivit\xc3\xa0 svolta \
-che \x0aprivilegia \
-la velocit\xc3\xa0 di \
-gestione dell'or\
-dine e della con\
-segna delle piet\
-anze.\x0aA fine gio\
-rnata o al termi\
-ne della sagra s\
-i verificano i r\
-isutati\x0atramite \
-un riepilogo deg\
-li incassi e var\
-ie statistiche d\
-i\x0avendita e cons\
-umi.</p> \x0a<p>Il \
-programma permet\
-te di gestire tu\
-tti questi aspet\
-ti, dal caricame\
-nto\x0adell'ordine \
-alla consegna de\
-i prodotti ed al\
-le statistiche f\
-inali.</p>\x0a<p>Le\
- caratteristiche\
- dell'applicazio\
-ne di possono ri\
-assumere\x0anei seg\
-uenti punti:</p>\
-\x0a<ul>\x0a<li>Gestio\
-ne degli <b>even\
-ti</b>: tutte le\
- operazioni veng\
-ono sempre\x0a rife\
-rite ad uno spec\
-ifico evento (es\
-. Sagra del Pepe\
-rone,\x0a  Festa de\
-lla birra, ecc.)\
-.</li>\x0a<li>Gesti\
-one dei <b>repar\
-ti</b> (es. Bar,\
- Cucina, Pizzeri\
-a, ecc.).\x0a Alcun\
-i reparti posson\
-o esere non disp\
-onibili per spec\
-ifici eventi.</l\
-i>\x0a<li>Gestione \
-degli <b>articol\
-i</b> di vendita\
- e consumo, dist\
-inguendoli\x0ain ar\
-ticoli elementar\
-i, <b>kit</b> - \
-articoli compost\
-i (es. tris:\x0a sa\
-lsicce + costici\
-ne + braciola) e\
- <b>men&ugrave;<\
-/b> - raggruppam\
-enti\x0a  di artico\
-li di vari repar\
-ti (es. men&ugra\
-ve; sagra: birra\
- + tris\x0a  + pata\
-te fritte). I ki\
-t devono essere \
-composti da soli\
-\x0a      articoli \
-elementari. I me\
-n&ugrave; posson\
-o contenere kit.\
+'Italia &egrave;\
+\x0ala presenza del\
+le <b>Sagre</b>.\
+ Come chiarisce \
+wikipedia la\x0asag\
+ra &egrave; una \
+festa popolare d\
+i carattere loca\
+le e cadenza ann\
+uale,\x0ache nasce \
+tradizionalmente\
+ da una festa re\
+ligiosa, celebra\
+ta\x0ain occasione \
+di una consacraz\
+ione o per comme\
+morare un santo \
+\x0a(in genere il s\
+anto patrono), m\
+a anche utilizza\
+ta per festeggia\
+re\x0ail raccolto o\
+ promuovere un p\
+rodotto enogastr\
+onomico locale. \
+Durante una \x0asag\
+ra hanno luogo i\
+n genere la fier\
+a locale, il mer\
+cato e vari \x0afes\
+teggiamenti. Il \
+luogo pi\xc3\xb9 impor\
+tante della sagr\
+a, almeno\x0adal pu\
+nto di vista cul\
+inario, &egrave;\
+ lo stand gastro\
+nomico.  \x0a<b>pyS\
+agra</b> nasce d\
+all'esigenza di \
+gestire lo stand\
+ gastronomico \x0ad\
+ella sagra del m\
+io paese. L'atti\
+vit&agrave; da g\
+estire parte dal\
+la \x0arilevazione \
+degli ordini dei\
+ prodotti, tipic\
+amente primi pia\
+tti,\x0asecondi, be\
+vande, ecc. e la\
+ successiva dist\
+ribuzione delle \
+comande,\x0averi e \
+propri ordini di\
+ <i>produzione</\
+i>, ai vari repa\
+rti dello stand,\
+\x0aad esempio bar,\
+ cucina, ma anch\
+e pizzeria, gela\
+teria, ecc. \x0aL'i\
+nserimento degli\
+ ordini avviene \
+nelle casse e de\
+ve essere il pi\xc3\
+\xb9\x0arapido e sempl\
+ice possibile. U\
+na volta inserit\
+o, l'ordine\x0avien\
+e suddiviso per \
+reparto e dirama\
+to ai reparti in\
+teressati.\x0aLa ge\
+stione dell'evas\
+ione degli ordin\
+i e delle scorte\
+ dei prodotti &e\
+grave;\x0anormalmen\
+te superflua per\
+ il tipo di atti\
+vit\xc3\xa0 svolta che\
+ \x0aprivilegia la \
+velocit&agrave; \
+di gestione dell\
+'ordine e della \
+consegna delle p\
+ietanze.\x0aA fine \
+giornata o al te\
+rmine della sagr\
+a si verificano \
+i risutati\x0atrami\
+te un riepilogo \
+degli incassi e \
+varie statistich\
+e di\x0avendita e c\
+onsumi.</p> \x0a<p>\
+Il programma per\
+mette di gestire\
+ tutti questi as\
+petti, dal caric\
+amento\x0adell'ordi\
+ne alla consegna\
+ dei prodotti ed\
+ alle statistich\
+e finali.</p>\x0a<p\
+>Le caratteristi\
+che dell'applica\
+zione di possono\
+ riassumere\x0anei \
+seguenti punti:<\
+/p>\x0a<ul>\x0a<li>Ges\
+tione degli <b>e\
+venti</b>: tutte\
+ le operazioni v\
+engono sempre\x0a r\
+iferite ad uno s\
+pecifico evento \
+(es. Sagra del P\
+eperone,\x0a  Festa\
+ della birra, ec\
+c.).</li>\x0a<li>Ge\
+stione dei <b>re\
+parti</b> (es. B\
+ar, Cucina, Pizz\
+eria, ecc.).\x0a Al\
+cuni reparti pos\
+sono esere non d\
+isponibili per s\
+pecifici eventi.\
 </li>\x0a<li>Gestio\
-ne delle <b>vari\
-anti</b> degli a\
-rticoli (es. piz\
-za\x0amargherita se\
-nza mozzarella, \
-con salamino, ec\
-c.). La variante\
-\x0apu&oacute; prev\
-edere una maggio\
-razione di prezz\
-o.</li>\x0a<li>Gest\
-ione della conse\
-gna al <b>tavolo\
-</b> o per <b>as\
-porto</b>.</li>\x0a\
-<li>Controllo <b\
->giacenza</b>: p\
-er gli articoli \
-elementari\x0ache i\
-nteressa monitor\
-are &egrave; pos\
-sibile inserire \
-la\x0ascorta dispon\
-ibile. Il progra\
-mma aggiorna aut\
-omaticamente la\x0a\
-disponibilit&agr\
-ave; in base all\
-e vendite effett\
-uate ed ai \x0acons\
-umi conseguenti.\
-</li>\x0a<li>Contro\
-llo del <b>ordin\
-ato - consegnato\
-</b>: per gli\x0aar\
-ticoli che inter\
-essa monitorare \
-&egrave; possibi\
-le tracciare \x0ala\
- quantit&agrave;\
- impegnata e la \
-successiva conse\
-gna gestendo anc\
-he\x0al'evasione de\
-ll'ordine. Il pr\
-ogramma aggiorna\
- automaticamente\
- lo\x0astato dell'o\
-rdine (inserito,\
- in lavorazione,\
- evaso) in base \
-alle\x0aconsegne ef\
-fettuate.</li>\x0a<\
-li>Gestione degl\
-i <b>ordini di v\
-endita</b> trami\
-te una maschera\x0a\
- di caricamento \
-ottimizzata e fi\
-nalizzata al rag\
-giungimento dell\
-a\x0amassima veloci\
-t&agrave; di ins\
-erimento. Contro\
-llo dell'esisten\
-za del\x0a tavolo i\
-ndicato. Possibi\
-lit\xc3\xa0 di selezio\
-nare il tavolo d\
-a\x0a una lista-map\
-pa dei tavoli es\
-istenti. Control\
-lo della \x0a dispo\
-nibilit&agrave; \
-degli articoli i\
-nseriti consider\
-ando i \x0a compone\
-nti per i kit ed\
- i men&ugrave;. \
-Calcolo automati\
-co di \x0a totale o\
-rdine, importo i\
-ncassato, eventu\
-ale sconto a val\
-ore\x0a  (es. buoni\
-), resto, ecc. V\
-isualizzazione d\
-elle varianti po\
-ssibili.</li>\x0a<l\
-i>Possibilit\xc3\xa0 d\
-i inserire note \
-per reparto</li>\
-\x0a<li>Gli ordini \
-possono essere i\
-nseriti anche in\
- un'applicazione\
-\x0aweb che genera \
-un QR Code inser\
-ibile in cassa p\
-er l'acquisizion\
-e veloce\x0ae segui\
-to solo dal paga\
-mento.</li>\x0a<li>\
-Generazione dell\
-a <b>stampa dell\
-'ordine</b> per \
-il cliente, \x0asta\
-mpe specifiche p\
-er i vari repart\
-i interessati ed\
- una per i\x0a soli\
- coperti. Tutte \
-queste stampe so\
-no opzionali e d\
-isponibili in va\
-ri formati</li>\x0a\
-<li>Stampa dell'\
-<b>incassato</b>\
- per giorno e me\
-zza giornata</li\
->\x0a<li>Visualizza\
-zione e stampa c\
-ontinua della di\
+ne degli <b>arti\
+coli</b> di vend\
+ita e consumo, d\
+istinguendoli\x0ain\
+ articoli elemen\
+tari, <b>kit</b>\
+ - articoli comp\
+osti (es. tris:\x0a\
+ salsicce + cost\
+icine + braciola\
+) e <b>men&ugrav\
+e;</b> - raggrup\
+pamenti\x0a  di art\
+icoli di vari re\
+parti (es. men&u\
+grave; sagra: bi\
+rra + tris\x0a  + p\
+atate fritte). I\
+ kit devono esse\
+re composti da s\
+oli\x0a      artico\
+li elementari. I\
+ men&ugrave; pos\
+sono contenere k\
+it.</li>\x0a<li>Ges\
+tione delle <b>v\
+arianti</b> degl\
+i articoli (es. \
+pizza\x0amargherita\
+ senza mozzarell\
+a, con salamino,\
+ ecc.). La varia\
+nte\x0apu&oacute; p\
+revedere una mag\
+giorazione di pr\
+ezzo.</li>\x0a<li>G\
+estione della co\
+nsegna al <b>tav\
+olo</b> o per <b\
+>asporto</b>.</l\
+i>\x0a<li>Controllo\
+ <b>giacenza</b>\
+: per gli artico\
+li elementari\x0ach\
+e interessa moni\
+torare &egrave; \
+possibile inseri\
+re la\x0ascorta dis\
+ponibile. Il pro\
+gramma aggiorna \
+automaticamente \
+la\x0adisponibilit&\
+agrave; in base \
+alle vendite eff\
+ettuate ed ai \x0ac\
+onsumi conseguen\
+ti.</li>\x0a<li>Con\
+trollo del <b>or\
+dinato - consegn\
+ato</b>: per gli\
+\x0aarticoli che in\
+teressa monitora\
+re &egrave; poss\
+ibile tracciare \
+\x0ala quantit&agra\
+ve; impegnata e \
+la successiva co\
+nsegna gestendo \
+anche\x0al'evasione\
+ dell'ordine. Il\
+ programma aggio\
+rna automaticame\
+nte lo\x0astato del\
+l'ordine (inseri\
+to, in lavorazio\
+ne, evaso) in ba\
+se alle\x0aconsegne\
+ effettuate.</li\
+>\x0a<li>Gestione d\
+egli <b>ordini d\
+i vendita</b> tr\
+amite una masche\
+ra\x0a di caricamen\
+to ottimizzata e\
+ finalizzata al \
+raggiungimento d\
+ella\x0amassima vel\
+ocit&agrave; di \
+inserimento. Con\
+trollo dell'esis\
+tenza del\x0a tavol\
+o indicato. Poss\
+ibilit\xc3\xa0 di sele\
+zionare il tavol\
+o da\x0a una lista-\
+mappa dei tavoli\
+ esistenti. Cont\
+rollo della \x0a di\
 sponibilit&agrav\
-e; \x0adegli artico\
-li o dei compone\
-nti di kit e men\
-&ugrave;.</li>\x0a<\
-li>Gestione di v\
-arie <b>statisti\
-che di vendita e\
- comsuni</b> anc\
-he\x0aconfrontando \
-eventi e periodi\
- diversi</li>\x0a<l\
-i>Tutti gli <b>a\
-rchivi</b> (even\
-ti, reparti, art\
-icoli,\x0aecc.) e l\
-e statistiche di\
-sponibili sono v\
-isualizzabili,\x0as\
-tampabili in for\
-mato A4 ed <b>es\
-portabili</b> in\
- CSV/Excel</li>\x0a\
-<li>L'applicazio\
-ne &egrave; <b>m\
-ultipiattaforma<\
-/b>: sviluppata \
-e testata\x0a su Ma\
-c OSX e Windows,\
- dovrebbe funzio\
-nare correttamen\
-te anche su Linu\
-x.</li> \x0a </ul>\x0a\
+e; degli articol\
+i inseriti consi\
+derando i \x0a comp\
+onenti per i kit\
+ ed i men&ugrave\
+;. Calcolo autom\
+atico di \x0a total\
+e ordine, import\
+o incassato, eve\
+ntuale sconto a \
+valore\x0a  (es. bu\
+oni), resto, ecc\
+. Visualizzazion\
+e delle varianti\
+ possibili.</li>\
+\x0a<li>Possibilit&\
+agrave; di inser\
+ire note per rep\
+arto</li>\x0a<li>Gl\
+i ordini possono\
+ essere inseriti\
+ anche in un'app\
+licazione\x0aweb ch\
+e genera un QR C\
+ode inseribile i\
+n cassa per l'ac\
+quisizione veloc\
+e\x0ae seguito solo\
+ dal pagamento.<\
+/li>\x0a<li>Generaz\
+ione della <b>st\
+ampa dell'ordine\
+</b> per il clie\
+nte, \x0astampe spe\
+cifiche per i va\
+ri reparti inter\
+essati ed una pe\
+r i\x0a soli copert\
+i. Tutte queste \
+stampe sono opzi\
+onali e disponib\
+ili in vari form\
+ati</li>\x0a<li>Sta\
+mpa dell'<b>inca\
+ssato</b> per gi\
+orno e mezza gio\
+rnata</li>\x0a<li>V\
+isualizzazione e\
+ stampa continua\
+ della disponibi\
+lit&agrave; \x0adeg\
+li articoli o de\
+i componenti di \
+kit e men&ugrave\
+;.</li>\x0a<li>Gest\
+ione di varie <b\
+>statistiche di \
+vendita e comsun\
+i</b> anche\x0aconf\
+rontando eventi \
+e periodi divers\
+i</li>\x0a<li>Tutti\
+ gli <b>archivi<\
+/b> (eventi, rep\
+arti, articoli,\x0a\
+ecc.) e le stati\
+stiche disponibi\
+li sono visualiz\
+zabili,\x0astampabi\
+li in formato A4\
+ ed <b>esportabi\
+li</b> in CSV/Ex\
+cel</li>\x0a<li>L'a\
+pplicazione &egr\
+ave; <b>multipia\
+ttaforma</b>: sv\
+iluppata e testa\
+ta\x0a su Mac OSX e\
+ Windows, dovreb\
+be funzionare co\
+rrettamente anch\
+e su Linux.</li>\
+ \x0a </ul>\x0a\x0a<p><a \
+class=\x22top\x22 href\
+=\x22#top\x22 title=\x22t\
+op\x22>Back to top<\
+/a></p>\x0a\x0a<h2 id=\
+\x22framework\x22>Arch\
+itettura dell'ap\
+plicazione</h2>\x0a\
+<p>Questo progra\
+mma &egrave; sta\
+to sviluppato av\
+endo in mente\x0aal\
+cuni specifici o\
+biettivi:</p>\x0a<u\
+l>\x0a    <li>Reali\
+zzare un applica\
+zione con interf\
+accia grafica e \
+basata su\x0a un da\
+tabase server SQ\
+L</li>\x0a <li>Real\
+izzare un applic\
+azione multiuten\
+te con architett\
+ura\x0aclient/serve\
+r</li>\x0a<li>L'app\
+licazione deve e\
+ssere multipiatt\
+aforma e disponi\
+bile\x0aa basso/nes\
+sun costo a chiu\
+nque la richieda\
+</li>\x0a</ul>\x0a<p>P\
+er la realizzazi\
+one di questo ap\
+plicativo in bas\
+e alle premesse\x0a\
+precedenti sono \
+stati scelti que\
+sti strumenti:</\
+p>\x0a<ul>\x0a    <li>\
+il linguaggio di\
+ programmazione \
+<a href=\x22https:/\
+/www.python.org/\
+\x22>Python</a>\x0anel\
+la versione 3.14\
+</li>\x0a<li>le lib\
+rerie <a href=\x22h\
+ttps://www.qt.io\
+/\x22>Qt</a> in ver\
+sione 6.x</li>\x0a<\
+li>il binding al\
+le librerie Qt <\
+a href=\x22https://\
+doc.qt.io/qtforp\
+ython-6/\x22>Qt for\
+ Python</a> in v\
+ersione 6.x</li>\
+\x0a<li>Il server d\
+i database <a hr\
+ef=\x22https://www.\
+postgresql.org\x22>\
+PostgreSQL</a> n\
+ella versione\x0a 1\
+8.x o successiva\
+</li>\x0a<li>Il con\
+nettore a Postgr\
+eSQL per Python \
+<a href=\x22https:/\
+/www.psycopg.org\
+/\x22>Psycopg</a> n\
+ella versione\x0a3.\
+3.x o successiva\
+</li>\x0a<li>il set\
+ di icone predef\
+inito &egrave; <\
+a href=\x22https://\
+github.com/KDE/o\
+xygen-icons\x22>oxy\
+gen</a> \x0a    ma \
+sono disponibili\
+ anche altri ico\
+npaks scaricati \
+da \x0a    <a href=\
+\x22https://www.ico\
+narchive.com\x22>Ic\
+onarchive</a></l\
+i>\x0a<li>l'icona d\
+i pySagra fa par\
+te del DelliOS S\
+ystem Icons set\x0a\
+di <a href=\x22http\
+s://dellustratio\
+ns.com\x22>dellustr\
+ations.com</a></\
+li>\x0a</ul>\x0a<p>Tut\
+ti gli strumenti\
+ elencati sono m\
+ultipiattaforma \
+e\x0adisponibili gr\
+atuitamente</p>\x0a\
 \x0a<p><a class=\x22to\
 p\x22 href=\x22#top\x22 t\
 itle=\x22top\x22>Back \
-to top</a></p>\x0a\x0a\
-<h2 id=\x22framewor\
-k\x22>Architettura \
-dell'applicazion\
-e</h2>\x0a<p>Questo\
- programma \xc3\xa8 st\
-ato sviluppato a\
-vendo in mente\x0aa\
-lcuni specifici \
-obiettivi:</p>\x0a<\
-ul>\x0a    <li>Real\
-izzare un applic\
-azione con inter\
-faccia grafica e\
- basata su\x0a un d\
-atabase server S\
-QL</li>\x0a <li>Rea\
-lizzare un appli\
-cazione multiute\
-nte con architet\
-tura\x0aclient/serv\
-er</li>\x0a<li>L'ap\
-plicazione deve \
-essere multipiat\
-taforma e dispon\
-ibile\x0aa basso/ne\
-ssun costo a chi\
-unque la richied\
-a</li>\x0a</ul>\x0a<p>\
-Per la realizzaz\
-ione di questo a\
-pplicativo in ba\
-se alle premesse\
-\x0aprecedenti sono\
- stati scelti qu\
-esti strumenti:<\
-/p>\x0a<ul>\x0a    <li\
->il linguaggio d\
-i programmazione\
- <a href=\x22https:\
-//www.python.org\
-/\x22>Python</a>\x0ane\
-lla versione 3.1\
-4</li>\x0a<li>le li\
-brerie <a href=\x22\
-https://www.qt.i\
-o/\x22>Qt</a> in ve\
-rsione 6.x</li>\x0a\
-<li>il binding a\
-lle librerie Qt \
-<a href=\x22https:/\
-/doc.qt.io/qtfor\
-python-6/\x22>Qt fo\
-r Python</a> in \
-versione 6.x</li\
->\x0a<li>Il server \
-di database <a h\
-ref=\x22https://www\
-.postgresql.org\x22\
->PostgreSQL</a> \
-nella versione\x0a \
-18.x o successiv\
-a</li>\x0a<li>Il co\
-nnettore a Postg\
-reSQL per Python\
- <a href=\x22https:\
-//www.psycopg.or\
-g/\x22>Psycopg</a> \
-nella versione\x0a3\
-.3.x o successiv\
-a</li>\x0a<li>il se\
-t di icone prede\
-finito \xc3\xa8 <a hre\
-f=\x22https://githu\
-b.com/KDE/oxygen\
--icons\x22>oxygen</\
-a> \x0a    ma sono \
-disponibili anch\
-e altri iconpaks\
- scaricati da \x0a \
-   <a href=\x22http\
-s://www.iconarch\
-ive.com\x22>Iconarc\
-hive</a></li>\x0a<l\
-i>l'icona di pyS\
-agra fa parte de\
-l DelliOS System\
- Icons set\x0adi <a\
- href=\x22https://d\
-ellustrations.co\
-m\x22>dellustration\
-s.com</a></li>\x0a<\
-/ul>\x0a<p>Tutti gl\
-i strumenti elen\
-cati sono multip\
-iattaforma e\x0adis\
-ponibili gratuit\
-amente</p>\x0a\x0a<p><\
-a class=\x22top\x22 hr\
-ef=\x22#top\x22 title=\
-\x22top\x22>Back to to\
-p</a></p>\x0a    \x0a<\
-h2 id=\x22user_inte\
-rface\x22>Interfacc\
-ia utente</h2>\x0a<\
-p>L'intefacia ut\
-ente dell'applic\
-azione:</p>\x0a<img\
- src=\x22qrc:/help/\
-img/main_window.\
-png\x22>\x0a<a href=\x22q\
-rc:/help/login.h\
-tml\x22 title=\x22logi\
-n\x22>Help on Login\
- procedure</a>\x0a\x0a\
-<p><a class=\x22top\
-\x22 href=\x22#top\x22 ti\
-tle=\x22top\x22>Back t\
-o top</a></p>\x0a <\
-/body>\x0a</html>\x0a\x0a\
-\
+to top</a></p>\x0a \
+   \x0a<h2 id=\x22user\
+_interface\x22>Inte\
+rfaccia utente</\
+h2>\x0a<p>L'intefac\
+ia utente dell'a\
+pplicazione:</p>\
+\x0a<img src=\x22qrc:/\
+help/img/main_wi\
+ndow.png\x22>\x0a<a hr\
+ef=\x22qrc:/help/lo\
+gin.html\x22 title=\
+\x22login\x22>Help on \
+Login procedure<\
+/a>\x0a\x0a<p><a class\
+=\x22top\x22 href=\x22#to\
+p\x22 title=\x22top\x22>B\
+ack to top</a></\
+p>\x0a </body>\x0a</ht\
+ml>\x0a\x0a\
 \x00\x00\x07\xd7\
 <\
 html lang=\x22en\x22>\x0a\
@@ -220458,11 +220647,11 @@ qt_resource_struct = b"\
 \x00\x00\x00\x5c\x00\x02\x00\x00\x00\x08\x00\x00\x00\x09\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00l\x00\x00\x00\x00\x00\x01\x00\x00<u\
-\x00\x00\x01\x9eX\xff\xaa\xee\
+\x00\x00\x01\x9ek\x22[D\
 \x00\x00\x00\xa0\x00\x00\x00\x00\x00\x01\x00\x1f\xe1\xd4\
 \x00\x00\x01\x8bX\x08O\x08\
 \x00\x00\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00\
-\x00\x00\x01\x9eX\xff\xacc\
+\x00\x00\x01\x9ek\x22\x5c\xc0\
 \x00\x00\x00 \x00\x01\x00\x00\x00\x01\x00\x00&\x8b\
 \x00\x00\x01\x8bX\x08P=\
 \x00\x00\x00\x88\x00\x00\x00\x00\x00\x01\x00\x00J\x91\
@@ -220997,29 +221186,29 @@ qt_resource_struct = b"\
 \x00\x00\x01\x9dO\xca\x22\xe7\
 \x00\x00\x0a\x22\x00\x02\x00\x00\x00\x06\x00\x00\x01\x18\
 \x00\x00\x00\x00\x00\x00\x00\x00\
-\x00\x00\x0a\x0a\x00\x00\x00\x00\x00K\x003\x5c\x0a\
-\x00\x00\x01\x9d\xe8H\xed\xef\
-\x00\x00\x0a\x0a\x00\x00\x00\x00\x00w\x003s4\
-\x00\x00\x01\x9eW\x0b\x0c\xe4\
-\x00\x00\x0a.\x00\x00\x00\x00\x00K\x003\x90I\
+\x00\x00\x0a\x0a\x00\x00\x00\x00\x00K\x003c\xa3\
+\x00\x00\x01\x9el\xc7%\x82\
+\x00\x00\x0a\x0a\x00\x00\x00\x00\x00w\x003~\xce\
+\x00\x00\x01\x9el\xc4p!\
+\x00\x00\x0a.\x00\x00\x00\x00\x00K\x003\x9c(\
 \x00\x00\x01\x9d\xe8MW\x0c\
-\x00\x00\x0a.\x00\x00\x00\x00\x00w\x003\x98$\
+\x00\x00\x0a.\x00\x00\x00\x00\x00w\x003\xa4\x03\
 \x00\x00\x01\x9d\xe8M\xd6\x90\
 \x00\x00\x09\xf4\x00\x01\x00\x00\x00K\x003W\x81\
 \x00\x00\x01\x9d\xe8?9O\
-\x00\x00\x09\xf4\x00\x01\x00\x00\x00w\x003Y\xb1\
-\x00\x00\x01\x9d\xe8>\xcaA\
-\x00\x00\x0aH\x00\x00\x00\x00\x00K\x003\xa1|\
+\x00\x00\x09\xf4\x00\x00\x00\x00\x00w\x003Y\xb1\
+\x00\x00\x01\x9ek!\xfcF\
+\x00\x00\x0aH\x00\x00\x00\x00\x00K\x003\xad[\
 \x00\x00\x01\x8bX\x08O\xfc\
-\x00\x00\x0aH\x00\x00\x00\x00\x00w\x003\xbb\x12\
+\x00\x00\x0aH\x00\x00\x00\x00\x00w\x003\xc6\xf1\
 \x00\x00\x01\x8bX\x08O\xfd\
-\x00\x00\x0a\x86\x00\x00\x00\x00\x00K\x005B?\
+\x00\x00\x0a\x86\x00\x00\x00\x00\x00K\x005N\x1e\
 \x00\x00\x01\x8bX\x08O\xfc\
-\x00\x00\x0a\x86\x00\x00\x00\x00\x00w\x005j\x9a\
+\x00\x00\x0a\x86\x00\x00\x00\x00\x00w\x005vy\
 \x00\x00\x01\x8bX\x08O\xfd\
-\x00\x00\x0ab\x00\x00\x00\x00\x00K\x003\xd4\xe7\
+\x00\x00\x0ab\x00\x00\x00\x00\x00K\x003\xe0\xc6\
 \x00\x00\x01\x8bX\x08O\xfc\
-\x00\x00\x0ab\x00\x00\x00\x00\x00w\x004\x8f\x93\
+\x00\x00\x0ab\x00\x00\x00\x00\x00w\x004\x9br\
 \x00\x00\x01\x8bX\x08O\xfd\
 "
 

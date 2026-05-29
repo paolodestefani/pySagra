@@ -28,8 +28,6 @@ This module contains generic and reusable tree models for database tables
 """
 
 # standard library
-import operator
-import decimal
 from typing import Any
 
 # psycopg
@@ -38,24 +36,14 @@ import psycopg
 # PySide6
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QObject
-from PySide6.QtCore import QDate
-from PySide6.QtCore import QTime
-from PySide6.QtCore import QDateTime
 from PySide6.QtCore import Signal
 from PySide6.QtCore import QAbstractItemModel
-from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QModelIndex
-from PySide6.QtGui import QFont
 
 # application modules
-from App import session
-from App import currentIcon
-from App import actionDefinition
 from App.Database import OVFIELD
 from App.Database.Exceptions import PyAppDBError
-from App.Database.Psycopg import DEFAULT
 from App.Database.Connect import appconn
-from App.Database.Company import company_is_in_use
 from App.Core.L10n import _tr
 
 

@@ -88,6 +88,7 @@ from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import IntegerDelegate
 from App.Widget.TableWidget import TableWidgetItem
 from App.Widget.Dialog import MessageBoxCritical
+from App.Widget.Utils import gui_exception_context
 
 from App.Ui.ViewSettingsDialog import Ui_ViewSettingsDialog
 
@@ -278,33 +279,33 @@ class EnhancedTableView(QTableView):
         self.customContextMenuRequested.connect(self.showContextMenu)
 
     def fillCustomizationMenu(self) -> None:
+        """Populate the customizations context menu with database layouts"""
         if not self.layoutName:
             return
-        # clear everything
-        for i in self.ag.actions():
-            self.ag.removeAction(i)
+        # Clear existing actions from the action group and menu
+        for action in self.ag.actions():
+            self.ag.removeAction(action)
         self.cmCustomizations.clear()
-        # create actions and menu
-        try:
+        # Define a clear, localized title for this operation's error dialog
+        title: str = _tr("Menu", "Error loading menu customizations")
+        # The context manager wraps all database operations inside this method
+        with gui_exception_context(self, title):
+            # 1. Fetch available adaptations from the database
             result = list_adaptation('I', self.layoutName)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 "{}\n{}".format(er.code, er.message))
-            return
-        for i, d, c in result:
-            a = QAction(d, self)
-            a.setCheckable(True)
-            a.setData(str(i))
-            if c:
-                a.setChecked(True)
-            self.ag.addAction(a)
-            self.cmCustomizations.addAction(a)
-        # initial default layout
-        dl = get_adapt_default('I', self.layoutName, session['user'])
-        for a in self.ag.actions():
-            if a.data() == str(dl):
-                a.setChecked(True)
+            # Populate the menu with the retrieved database records
+            for adapt_id, description, is_class_default in result:
+                action = QAction(description, self)
+                action.setCheckable(True)
+                action.setData(str(adapt_id))
+                if is_class_default:
+                    action.setChecked(True)
+                self.ag.addAction(action)
+                self.cmCustomizations.addAction(action)
+            # 2. Fetch and apply the initial default layout for the current user
+            default_layout_id = get_adapt_default('I', self.layoutName, session['user'])
+            for action in self.ag.actions():
+                if action.data() == str(default_layout_id):
+                    action.setChecked(True)
 
     def setModel(self, model: QAbstractItemModel|None) -> None:
         super().setModel(model)
@@ -320,38 +321,36 @@ class EnhancedTableView(QTableView):
         QTimer.singleShot(0, lambda: self.setStoredLayout(target_action))
 
     def setStoredLayout(self, action: QAction) -> None:
-        if not action: # no customization available
+        """Apply a layout definition stored in the database to the table view"""
+        if not action:  # No customization available
             return
-        viewId = int(action.data())
-        # reset layout first (first time store the state)
-        if self.horizontalHeaderState:
-            self.horizontalHeader().restoreState(self.horizontalHeaderState)
-        else:
-            self.horizontalHeaderState = self.horizontalHeader().saveState()
-        # set columns implementation: column, sorting index, visible, size
-        try:
-            result = get_view_columns(viewId)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 "{}\n{}".format(er.code, er.message))
-            return
-        
-        self.setSortingEnabled(False)
+        view_id = int(action.data())
         header = self.horizontalHeader()
-        for c, i, v, s in result:
-            # check if column exists
-            if c >= header.count():
-                continue
-            # show/hide
-            self.setColumnHidden(c, not v)
-            # width
-            if v and s > 0:
-                self.setColumnWidth(c, s)
-            # set position
-            ci = header.visualIndex(c)
-            if ci != i:
-                header.moveSection(ci, i)
+        # Reset layout first (or store the initial state on the first run)
+        if self.horizontalHeaderState:
+            header.restoreState(self.horizontalHeaderState)
+        else:
+            self.horizontalHeaderState = header.saveState()
+        title: str = _tr("Menu", "Error applying stored layout")
+        # The context manager handles database queries and structural translation cleanly
+        with gui_exception_context(self, title):
+            # Fetch columns implementation: column_number, sorting, is_visible, size
+            result = get_view_columns(view_id)
+            # Disable sorting temporarily to prevent heavy UI updates during layout shifts
+            self.setSortingEnabled(False)
+            for col_num, sorting_idx, is_visible, size in result:
+                # Boundary check: ensure the stored column index exists in the current view
+                if col_num >= header.count():
+                    continue   
+                # Toggle column visibility
+                self.setColumnHidden(col_num, not is_visible)
+                # Apply column width if visible and has a valid size
+                if is_visible and size > 0:
+                    self.setColumnWidth(col_num, size)  
+                # Reorder columns dynamically by moving sections if index mismatches
+                visual_idx = header.visualIndex(col_num)
+                if visual_idx != sorting_idx:
+                    header.moveSection(visual_idx, sorting_idx)
         
     def showContextMenu(self, pos) -> None:
         self.cm.exec(self.mapToGlobal(pos))
@@ -529,134 +528,158 @@ class EnhancedTableView(QTableView):
         dialog.exec_()
 
     def updateViewLayout(self) -> None:
-        "Save current view layout to database"
+        """Save the current table view layout customization to the database"""
         if not self.layoutName:
             return
-        if not self.ag.checkedAction():  # no layout setted
+        checked_action = self.ag.checkedAction()
+        if not checked_action:  # No layout set
             return
-        viewId = int(self.ag.checkedAction().data())
-        if not viewId:
-            return
-        columns = [(viewId,
-                    i,
-                    self.horizontalHeader().visualIndex(i),
-                    not self.isColumnHidden(i),
-                    self.columnWidth(i),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None)
-                   for i in range(self.horizontalHeader().count())]
-        try:
-            set_adapt_setting(viewId, columns)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 "{}\n{}".format(er.code, er.message))
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("View", "Layout customization saved"))
+        view_id = int(checked_action.data())
+        if not view_id:
+            return 
+        header = self.horizontalHeader()
+        # Build the structural parameters list matching the adaptation_setting table columns
+        columns = [
+            (
+                view_id,
+                col_idx,
+                header.visualIndex(col_idx),
+                not self.isColumnHidden(col_idx),
+                self.columnWidth(col_idx),
+                None, None, None, None, None, None  # Fill padding for optional fields
+            )
+            for col_idx in range(header.count())
+        ]
+        title: str = _tr("Menu", "Error saving view layout")
+        # The context manager handles database failures cleanly
+        with gui_exception_context(self, title):
+            # Execute the rewrite operation in the database layer
+            set_adapt_setting(view_id, columns)
+            # If execution reaches this point, the transaction succeeded
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Layout customization saved")
+            )
 
     def saveViewLayoutAs(self) -> None:
-        "Create a new layout customization"
+        """Create a new layout customization with a user-defined description"""
         if not self.layoutName:
             return
-        viewDesc, ok = QInputDialog.getText(self,
-                                            _tr("View", "New layout customization"),
-                                            _tr("View", "Insert new customizazion description"))
-        if not ok or viewDesc == '':
+        view_desc, ok = QInputDialog.getText(
+            self,
+            _tr("View", "New layout customization"),
+            _tr("View", "Insert new customization description")
+        )
+        if not ok or view_desc == '':
             return
-        # create new customization
-        try:
-            viewId = create_adaptation('I', self.layoutName, viewDesc, None)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                               _tr("MessageDialog", "Database error"),
-                               er.code,
-                               er.message,
-                               er.detail)
-        else:
-            # recreate customization list
+        title: str = _tr("Menu", "Error creating new layout")
+        # The context manager intercepts database errors during the entire sequence
+        with gui_exception_context(self, title):
+            # Create a new adaptation record and retrieve the generated view_id
+            # Omitting optional arguments since report_id defaults to None and system to False
+            view_id = create_adaptation('I', self.layoutName, view_desc)
+            # If execution reaches this point, the insert succeeded.
+            # Recreate the customization menu to include the new item.
             self.fillCustomizationMenu()
-            # set new customization as current
-            for a in self.ag.actions():
-                if a.data() == str(viewId):
-                    a.setChecked(True)
-                    break
-            # update layout settings
+            # Set the newly created customization as the currently active one
+            for action in self.ag.actions():
+                if action.data() == str(view_id):
+                    action.setChecked(True)
+                    break      
+            # Save the current column positioning and sizes into the newly created layout
             self.updateViewLayout()
 
-    def deleteViewLayout(self, action: QAction|None = None) -> None:
-        "Delete current view layout from database"
-        viewId = int(self.ag.checkedAction().data())
-        if is_system_object(viewId):
-            QMessageBox.warning(self,
-                                _tr("MessageDialog", "Warning"),
-                                _tr("View", "System layout cannot be deleted"))
+    def deleteViewLayout(self, action: QAction | None = None) -> None:
+        """Delete the currently active custom view layout from the database"""
+        # Note: action parameter is kept for signature compatibility with triggers, 
+        # but the active layout is determined by the checked action in the group.
+        checked_action = self.ag.checkedAction()
+        if not checked_action:
             return
-        if QMessageBox.question(self,
-                                _tr("MessageDialog", "Question"),
-                                _tr("View", "Are you sure to delete the current layout ?"),
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
-            return
-        try:
-            delete_adaptation(viewId)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 "{}\n{}".format(er.code, er.message))
-        else:
-            # recreate customization list
+        view_id = int(checked_action.data())
+        title: str = _tr("Menu", "Error deleting layout")
+        # Wrap the check and deletion flow inside the context manager
+        with gui_exception_context(self, title):
+            # Prevent users from accidentally deleting protected system-level objects
+            if is_system_object(view_id):
+                QMessageBox.warning(
+                    self,
+                    _tr("MessageDialog", "Warning"),
+                    _tr("View", "System layout cannot be deleted")
+                )
+                return
+            # Prompt user with a standard confirmation dialog before dropping records
+            confirm = QMessageBox.question(
+                self,
+                _tr("MessageDialog", "Question"),
+                _tr("View", "Are you sure you want to delete the current layout?"),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            if confirm == QMessageBox.StandardButton.No:
+                return
+            # Execute the cascade delete operation in the database layer
+            delete_adaptation(view_id)
+            # If execution reaches this point, the database deletion succeeded.
+            # Rebuild the UI menus and notify the user.
             self.fillCustomizationMenu()
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("View", "Current layout deleted"))
-
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Current layout deleted")
+            )
+                
     def setUserDefaultLayout(self) -> None:
-        "Set curent layout as default for user"
+        """Set the current layout customization as the default for the logged-in user"""
         if not self.layoutName:
             return
-        if not self.ag.checkedAction():  # no layout setted
-            QMessageBox.warning(self,
-                                _tr("MessageDialog", "Warning"),
-                                _tr("View", "No configuration has been set"))
+        checked_action = self.ag.checkedAction()
+        if not checked_action:  # No layout currently active
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "Warning"),
+                _tr("View", "No configuration has been set")
+            )
             return
-        viewId = int(self.ag.checkedAction().data())
-        try:
-            set_adapt_user_default('I', self.layoutName, session['user'], viewId)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 "{}\n{}".format(er.code, er.message))
-        else:
-            # recreate customization list
+        view_id = int(checked_action.data())
+        title: str = _tr("Menu", "Error setting user default layout")
+        # The context manager traps exceptions and avoids code execution splitting via try/except/else
+        with gui_exception_context(self, title):
+            # Execute the rewrite operation inside the database layer
+            set_adapt_user_default('I', self.layoutName, session['user'], view_id)
+            
+            # If execution reaches this point, the transaction succeeded.
+            # Rebuild the UI menus and notify the user.
             self.fillCustomizationMenu()
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("View", "Current layout setted as user default"))
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Current layout set as user default")
+            )
 
     def setClassDefaultLayout(self) -> None:
-        "Set curent layout as default for view class"
+        """Set the current layout customization as the global default for this view class"""
         if not self.layoutName:
             return
-        if not self.ag.checkedAction():  # no layout setted
-            QMessageBox.warning(self,
-                                _tr("MessageDialog", "Warning"),
-                                _tr("View", "No configuration has been set"))
+        checked_action = self.ag.checkedAction()
+        if not checked_action:  # No layout currently active
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "Warning"),
+                _tr("View", "No configuration has been set")
+            )
             return
-        viewId = int(self.ag.checkedAction().data())
-        try:
-            set_adapt_class_default(viewId)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 "{}\n{}".format(er.code, er.message))
-        else:
-            # recreate customization list
+        view_id = int(checked_action.data())
+        title: str = _tr("Menu", "Error setting class default layout")
+        # Safe sequential execution flow protected by the GUI error boundary context
+        with gui_exception_context(self, title):
+            # Execute the multi-stage update process inside the database layer
+            set_adapt_class_default(view_id)
+            # If execution reaches this point, the transaction succeeded.
+            # Rebuild the UI menus and notify the user.
             self.fillCustomizationMenu()
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("View", "Current layout setted as class default"))
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Current layout set as class default")
+            )

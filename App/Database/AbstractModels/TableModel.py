@@ -28,10 +28,9 @@ This module contains generic and reusable table models for database tables
 """
 
 # standard library
-import operator
 import decimal
 import logging
-from typing import Final, Literal, TypeAlias, Optional, Any, cast, Union
+from typing import Any, cast
 
 # pandas
 #import pandas as pd
@@ -49,21 +48,17 @@ from PySide6.QtCore import Signal
 from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
-from PySide6.QtCore import QByteArray
 
 # application modules
 from App import session
 from App.Database import OVFIELD
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import PyAppDBConcurrencyError
-from App.Database.Psycopg import DEFAULT
 from App.Database.Connect import appconn
-from App.Database.Company import company_is_in_use
 from App.Core.L10n import _tr
 
 # logger
 logger = logging.getLogger(__name__)
-
 
 
 UPDATED, INSERTED, DELETED = range(3)
@@ -429,525 +424,10 @@ class QueryWithParamsModel(QAbstractTableModel):
         """Revert all changes, in this model do nothing because is readonly,
         but is needed for proper DataWidgetMapper use"""
         self.select()
-
-
-# class TableModel(QAbstractTableModel):
-#     """Generic table model for managing one sql table
-    
-#     Structure:
-#     dataSet is a list of dictionaries, each dictionary is a record of a table
-#     the dictionary key is the column number of the model
-#     additional keys are the pkey for primary key dictionary
-#     and object_version for the concurrency management
-#     """
-#     userDataChanged = Signal()  # can not use dataChanged because is emitted even on select
-#     rowCountChanged = Signal(int)
-
-#     def __init__(self, parent: QObject | None = None) -> None:
-#         "Initialize some empty or default data structure"
-#         super().__init__(parent)
-#         self.dataSet: Any = [] # a list of dict (integer key = record column/field,
-#         #                                   'pkey' = primary key tuple,
-#         #                                   'object_version' = int)
-#         self.rows = 0 # automatic updated on select
-#         self.cols = 0 # updated on select
-#         self.whereCondition: list[tuple] = []  # list of (condition, argument)
-#         self.orderByExpression: list[str] = [] # list of string
-#         self.filterMapping: dict = {}
-#         self.toInsert: list[int] = []  # list of row number of any inserted row
-#         self.toModify: dict[int, Any] = {}  # dict of dict row number / column number of any modified field
-#         self.toDelete: list[dict[str, Any]] = []  # list of dict for any cancelled row (need to store pkey and object_version)
-#         # subclasses must define this properties
-#         self.table: str | None = None # table or view name - string, subclass must define this
-#         self.isCompanyTable = False # True if is a company table
-#         self.columns: tuple[Any, ...] = () # model columns definition (field, description, readonly, type)
-#         self.primaryKey: tuple[str, ...] = () # primary key fields name - sequence, subclass must define this
-#         self.automaticPKey = False  # set pkey filds at DEFAULT value on insert
-#         self.recordType: dict = {}  # list of field:value key for record type (a table with different record type)
-#         self.newRecordDefault: dict = {} # a record dictionary with default values for some field on insert
-#         self.filterCondition: list[tuple] = []  # reference key condition before where conditions, map master row to detail row
-#         self.limitCondition: int | None = None
-#         self.isDirty = False # setted on data changed
-#         self.isEditable = True # used in forms
-#         self.hasTotalsRow = False
-#         self.repr = 'Generic editable table model' # printable representation of the object
-        
-#     def __repr__(self) -> str:
-#         "Model representation"
-#         return self.repr
-
-#     def flags(self, index: QModelIndex|QPersistentModelIndex) -> Qt.ItemFlag:
-#         "Return standard flags or readonly for some columns"
-#         if not index.isValid():
-#             return Qt.ItemFlag.NoItemFlags
-#         f = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
-#         is_bool = self.columns[index.column()][TYPE] == 'bool'
-#         is_ro = self.columns[index.column()][RO]
-#         if not is_ro:
-#             f |= Qt.ItemFlag.ItemIsEditable
-#             if is_bool:
-#                 f |= Qt.ItemFlag.ItemIsUserCheckable
-#         return f
-
-#     def data(self,
-#              index: QModelIndex | QPersistentModelIndex = QModelIndex(),
-#              role: int = Qt.ItemDataRole.DisplayRole
-#              ) -> Any:
-#         "Returns the required data from dataSet"
-#         # sometimes dataSet could be empty
-#         if (not index.isValid() 
-#             or index.row() > self.rowCount()
-#             or index.column() > self.columnCount()):
-#             return None
-#         row = index.row()
-#         col = index.column()
-#         if len(self.dataSet) <= row:
-#             return None
-#         if not col in self.dataSet[row]:
-#             return None
-#         result = self.dataSet[row][col]
-#         match role:
-#             case Qt.ItemDataRole.EditRole:
-#                 return result
-#             case Qt.ItemDataRole.DisplayRole:
-#                 if isinstance(result, bool):
-#                     return None # do not return text for bool, checkbox is managed in CheckStateRole
-#                 return result
-#             case Qt.ItemDataRole.TextAlignmentRole:
-#                 # numbers aligned right anything else aligned left
-#                 if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
-#                     return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-#                 else:
-#                     return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-#             case Qt.ItemDataRole.CheckStateRole:
-#                 if isinstance(result, bool):
-#                     return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
-#                 return None
-#             case _:
-#                 return None
-
-#     def setData(self, 
-#                 index: QModelIndex|QPersistentModelIndex = QModelIndex(),
-#                 value: Any = None,
-#                 role: int = Qt.ItemDataRole.EditRole
-#                 ) -> bool:
-#         "Set data in dataSet and mark row as modified"
-#         # sanity checks
-#         if (not index.isValid() 
-#             or index.row() > self.rowCount()
-#             or index.column() > self.columnCount()):
-#             return False
-#         row = index.row()
-#         col = index.column()
-#         if role == Qt.ItemDataRole.CheckStateRole:
-#             # Converte in bool confrontando con Checked (funziona sia con int che con Enum)
-#             new_value = (value == Qt.CheckState.Checked or value == Qt.CheckState.Checked.value)
-#             if self.dataSet[row][col] == new_value:
-#                 return False
-#             # save the row/column of the modified cell
-#             if (row not in self.toModify and row not in self.toInsert):
-#                 self.toModify[row] = {}
-#             if (row in self.toModify and col not in self.toModify[row]):
-#                 self.toModify[row][col] = None
-#             self.dataSet[row][col] = new_value
-#             self.dataChanged.emit(index, index, [role, Qt.ItemDataRole.DisplayRole])
-#             self.userDataChanged.emit()
-#             self.isDirty = True
-#             return True
-#         if role == Qt.ItemDataRole.EditRole:
-#             # check if different from before
-#             if self.dataSet[row][col] == value:
-#                 return False
-#             # save the row/column of the modified cell
-#             if (row not in self.toModify and row not in self.toInsert):
-#                 self.toModify[row] = {}
-#             if (row in self.toModify and col not in self.toModify[row]):
-#                 self.toModify[row][col] = None
-#             # modify the model
-#             if isinstance(value, str):
-#                 value = value or None # convert empty strings in Sql Null
-#             self.dataSet[row][col] = value
-#             self.isDirty = True
-#             self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-#             self.userDataChanged.emit()
-#             return True
-#         return False
-
-#     def hiddenSetData(self, row: int, column: int, value: Any) -> None:
-#         "Set data without emitting dataChanged signal"
-#         row = self.filterMapping[row]
-#         self.dataSet[row][column] = value
-
-#     def submit(self) -> bool:
-#         "Update database: insert/delete/update rows, used only for commit on row changed, do nothing on manual submit"
-#         # used only for commit on row changed, do nothing on manual submit
-#         # BUT is needed for proper DataWidgetMapper use
-#         return True
-
-#     def submitAll(self, column: int|None = None, value: Any|None = None) -> bool:
-#         "Update database: insert/delete/update rows"
-#         # if a referenceKey is provided fill all the rows with reference value
-#         if not column is None :
-#             for row in self.dataSet:
-#                 row[column] = value
-
-#         cols = len([i[FIELD] for i in self.columns if i[FIELD]]) # only column of master table need insert/update/delete
-#         pkcols = range(cols, cols + len(self.primaryKey))
-#         ovcol = cols + len(self.primaryKey)
-#         self.sqlCheck = (f"SELECT {', '.join(self.primaryKey)}\n"
-#                          f"FROM {self.table}\n"
-#                          f"WHERE {' AND '.join(
-#                              [f'{i} = %({i})s' for i in self.primaryKey + (OVFIELD,)])};")
-#         try:
-#             with appconn.cursor() as cur: # manual submit, no commit (form can save multiple table models)
-
-#                 # *** UPDATE ***
-#                 for row in self.toModify:
-#                     if row in self.toInsert: # skip row to be inserted first
-#                         continue
-#                     # check if record was already modified
-#                     pkey = self.dataSet[row]['pkey'].copy() # primary key is unchanged on update
-#                     args = pkey.copy()
-#                     args[OVFIELD] = self.dataSet[row][OVFIELD]
-#                     logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
-#                     logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
-#                     cur.execute(self.sqlCheck, args)
-#                     if cur.rowcount == 0:
-#                         logger.error(f"**** {self.repr}: row modified before update ****")
-#                         raise PyAppDBConcurrencyError()
-#                     # update record
-#                     fields = ", ".join([f"{self.columns[i][FIELD]} = %({self.columns[i][FIELD]})s" for i in self.toModify[row]])
-#                     if not fields: # no real fields need update
-#                         continue
-#                     where = " AND ".join([f"{i} = %({i})s" for i in pkey])
-#                     fieldsback = ", ".join([i[FIELD] for i in self.columns if i[FIELD]] + [OVFIELD])
-#                     script = (f"UPDATE {self.table}\n"
-#                               f"SET {fields}\n"
-#                               f"WHERE {where}\n"
-#                               f"RETURNING {fieldsback};")
-#                     args = {self.columns[i][FIELD]: self.dataSet[row][i] for i in self.toModify[row] if self.columns[i][FIELD]}
-#                     args.update({k: pkey[k] for k in pkey})
-#                     logger.info(f"**** {self.repr} UPDATE script ****\n{script}")
-#                     logger.info(f"**** {self.repr} UPDATE args   ****\n{args}")
-                    
-#                     # exceptions are managed in this method globally
-#                     cur.execute(script, args)
-#                     # repopulate the modified row
-#                     for record in cur:
-#                         # selected fields
-#                         for index in range(self.cols):
-#                             self.dataSet[row][index] = record[index]
-#                             # DEBUG: Verifica cosa è tornato dal database
-#                             if isinstance(self.dataSet[row][index], QByteArray):
-#                                 logger.info(f"RICEVUTO correttamente QByteArray per colonna {index}")
-#                             else:
-#                                 logger.error(f"ERRORE: Ricevuto tipo {type(record[index])} invece di QByteArray")
-#                         # row object version
-#                         self.dataSet[row][OVFIELD] = record[-1] # OVFIELD is always the last onefield
-#                     self.dataChanged.emit(self.index(row, 0),
-#                                           self.index(row, self.columnCount() - 1),
-#                                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify de record
-#                 # clear modified record list
-#                 self.toModify.clear()
-
-#                 # *** DELETE ***
-#                 for dd in self.toDelete:
-#                     # check if record was modified
-#                     pkey = dd['pkey'].copy()  # self.toDelete[row]['pkey'].copy()
-#                     args = pkey.copy()
-#                     if self.isCompanyTable:
-#                         args['company_id'] = session['current_company']
-#                     args[OVFIELD] = dd[OVFIELD]
-#                     logger.info(f"**** {self.repr} SELECT CHECK script ****\n{self.sqlCheck}")
-#                     logger.info(f"**** {self.repr} SELECT CHEK  args   ****\n{args}")
-#                     cur.execute(self.sqlCheck, args)
-#                     if cur.rowcount == 0:
-#                         logger.error(f"**** {self.repr} row modified before update ****")
-#                         raise PyAppDBConcurrencyError()
-#                     # delete record
-#                     where = " AND ".join([f"{i} = %({i})s" for i in pkey])
-#                     script = (f"DELETE FROM {self.table}\n"
-#                               f"WHERE {where};")
-#                     args.update({k: pkey[k] for k in pkey})
-#                     logger.info(f"**** {self.repr} DELETE script ****\n{script}")
-#                     logger.info(f"**** {self.repr} DELETE args   ****\n{args}")
-#                     # exceptions are managed in this method globally
-#                     cur.execute(script, args)
-#                 # clear deleted record list
-#                 self.toDelete.clear()
-
-#                 # *** INSERT ***
-#                 for row in self.toInsert:
-#                     fieldList = [i[FIELD]for i in self.columns if i[FIELD] and not i[RO]] 
-#                     # calculated fields have None as field name
-#                     # read only fields can not be inserted
-#                     if self.automaticPKey:
-#                         # remove primary key fields if present
-#                         for i in self.primaryKey:
-#                             if i in fieldList:
-#                                 fieldList.remove(i)
-#                     valueList = [f"%({i})s" for i in fieldList]
-#                     if self.recordType:
-#                         fieldList += [i for i in self.recordType]
-#                         valueList += [f"'{self.recordType[i]}'" for i in self.recordType]  # record type must be string
-#                     fields = ", ".join(fieldList)
-#                     values = ", ".join(valueList)
-#                     fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])
-#                     args = {c[FIELD]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[FIELD] and not c[RO]}
-#                     if self.recordType:
-#                         for i in self.recordType:
-#                             args[i] = self.recordType[i]
-#                     # set company after anything else, company_id may not be present in self.columns
-#                     if self.isCompanyTable:
-#                         fields += ', company_id'
-#                         values += ', %(company_id)s'
-#                         args['company_id'] = session['current_company']
-#                     script = (f"INSERT INTO {self.table}\n"
-#                               f"({fields})\n"
-#                               f"VALUES ({values})\n"
-#                               f"RETURNING {fieldsback};")
-#                     logger.info(f"**** {self.repr} INSERT script ****\n{script}")
-#                     logger.info(f"**** {self.repr} INSERT args   ****\n{args}")
-#                     # exceptions are managed in this method globally
-#                     cur.execute(script, args)
-#                     # repopulate the inserted row with returned values (in case of trigger modify the record)
-#                     for record in cur:
-#                         # selected fields
-#                         for index in range(self.cols):
-#                             self.dataSet[row][index] = record[index]
-#                         # primary key
-#                         self.dataSet[row]['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
-#                         # object version
-#                         self.dataSet[row][OVFIELD] = record[ovcol]
-#                     self.dataChanged.emit(self.index(row, 0),
-#                                           self.index(row, self.columnCount() - 1),
-#                                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]) # if any trigger modify record
-#                 # clear insert record list
-#                 self.toInsert.clear()
-                
-#         except psycopg.Error as er:
-#             logger.error(f"**** {self.repr} SUBMITALL error ****\n{er}")
-#             raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-#         self.isDirty = False
-#         return True
-
-#     def revertAll(self) -> None:
-#         self.toModify.clear()
-#         self.toDelete.clear()
-#         self.toInsert.clear()
-#         self.isDirty = False
-#         self.select()
-
-#     def clearData(self) -> None:
-#         "Clear all the content of model"
-#         self.dataSet.clear()
-#         self.toModify.clear()
-#         self.toDelete.clear()
-#         self.toInsert.clear()
-#         self.isDirty = False
-#         self.rows = 0 # usually updated by select
-#         self.cols = len(self.columns) # usually updated by select
-
-#     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
-#         "Returns header data for row (field header)/column (columns number) headers"
-#         if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
-#             return self.columns[section][DESCRIPTION]
-#         if orientation == Qt.Orientation.Vertical:
-#             if role == Qt.ItemDataRole.DisplayRole:
-#                 return super().headerData(section, orientation, role)
-#         return None
-
-#     def rowCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
-#         "Returns the rows number of the dataSet"
-#         return self.rows
-
-#     def columnCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
-#         "Returns the columns number of the dataSet"
-#         return self.cols
-
-#     def insertRows(self, position: int, count: int, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> bool:
-#         "Insert rows in model"
-#         self.beginInsertRows(parent, position, position + count - 1)
-#         for i in range(position, position + count):
-#             self.dataSet.insert(i, {i:self.newRecordDefault.get(j[FIELD]) for i, j in enumerate(self.columns)})
-#             self.toInsert.append(i)
-#         self.rows += count
-#         self.endInsertRows()
-#         self.userDataChanged.emit()
-#         return True
-
-#     def removeRows(self, position: int, count: int, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> bool:
-#         "Remove rows from model"
-#         if self.rowCount() < 1:
-#             return True
-#         # for removed rows we can't use row number because it is renumbered
-#         # every time a row is removed. Also inserted/modified rows have to be
-#         # renumbered when a row before is removed
-#         self.beginRemoveRows(parent, position, position + count - 1)
-#         for i in range(position, position + count):
-#             # if row to be deleted was just inserted and not saved yet delete from toInsert
-#             if i in self.toInsert:
-#                 self.toInsert.remove(i)
-#             # if row to be deleted was just modified and not saved yet delete from toModify
-#             if i in self.toModify:
-#                 del self.toModify[i]
-#             # save the deleted record primary key and object version
-#             if self.dataSet[i].get('pkey'):  # could happend if insert/delete before save
-#                 self.toDelete.append({'pkey': self.dataSet[i]['pkey'].copy(),
-#                                       OVFIELD: self.dataSet[i][OVFIELD]})
-#             # if row deleted is before an inserted/modified adjust row number (-1)
-#             self.toInsert.sort()
-#             self.toInsert = [ri - 1 if ri > i else ri for ri in self.toInsert]
-#             rm = list(self.toModify.keys())
-#             rm.sort()
-#             for r in rm:
-#                 if r > i:
-#                     self.toModify[r - 1] = self.toModify[r]
-#                     del self.toModify[r]
-#         # modify the model
-#         del self.dataSet[position: position + count]
-#         self.rows -= count
-#         self.endRemoveRows()
-#         self.userDataChanged.emit()
-#         return True
-
-#     def sort(self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder) -> None:
-#         "Inplace sorting of the model, manage null values base on declared data time"
-#         if not self.dataSet:
-#             return
-#         self.layoutAboutToBeChanged.emit()
-#         # manage Null values
-#         dt = self.columns[column][TYPE]
-#         nv = {'int': 0,
-#               'str': "",
-#               'float': 0.0,
-#               'decimal': 0,
-#               'bool': False,
-#               'date': QDate(),
-#               'time': QTime(),
-#               'datetime': QDateTime()}[dt]
-#         # inplace list sorting
-#         if order == Qt.SortOrder.AscendingOrder:
-#             self.dataSet.sort(key=lambda x: x[column] or nv)
-#         else:
-#             self.dataSet.sort(key=lambda x: x[column] or nv, reverse=True)
-#         self.layoutChanged.emit()
-
-#     def filter(self, column: int|None = None, value: Any = None) -> None:
-#         "Filter records on a master/detail logic, this model is for detail"
-#         self.filterCondition.clear()
-#         if column is None: # empty master table or new record
-#             self.filterCondition.append(('True = %s', False))
-#         else:
-#             field = f"{self.columns[column][FIELD]}"
-#             self.filterCondition.append((f'{field} = %s', value))
-#         self.select()
-
-#     def filterMasterRow(self, row: int) -> None:
-#         "Filter dataset based on master row creating a dictionary of mapped rows"
-#         self.layoutAboutToBeChanged.emit()
-#         self.filterMapping.clear()
-#         self.filterMapping = {len(self.filterMapping): n for n, i in enumerate(self.dataSet) if  i['master_row'] == row}
-#         self.rows = len(self.filterMapping)
-#         # notify of changes
-#         self.dataChanged.emit(self.createIndex(0, 0),
-#                               self.createIndex(self.rowCount(), self.columnCount()),
-#                               [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-#         self.layoutChanged.emit()
-#         self.rowCountChanged.emit(self.rows)
-    
-#     def addWhere(self, condition: str, value: str|int|float|QDate|QDateTime|None) ->None:
-#         "Add where conditions before select"
-#         self.whereCondition.append((condition, value))
-
-#     def addOrderBy(self, expression: str|list|tuple) -> None:
-#         "Add order by expression before select"
-#         if isinstance(expression, (list, tuple)):
-#             self.orderByExpression += list(expression)
-#         elif isinstance(expression, str):
-#             self.orderByExpression.append(expression)
-#         else:
-#             raise TypeError("Order by expression must be string or list/tuple of strings")
-
-#     def getPrimaryKey(self, row: int) -> str|None:
-#         if row < 0:
-#             return None
-#         return self.dataSet[row].get('pkey')
-
-#     def fieldName(self, column: int) -> str:
-#         "Return field name for column number"
-#         return self.columns[column][FIELD]
-
-#     def fieldColumn(self, fieldName: str) -> int:
-#         "Return column number for field name"
-#         i = self.columns.index([i for i in self.columns if i[FIELD] == fieldName][0]) # index the list of tuple with 1 element, [0] returns the tuple (no list)
-#         return i
-
-#     def select(self, column: int|None = None, value: str|int|float|QDate|QDateTime|None = None) -> None:
-#         "Fetch rows from DB creating the sql select statement and filling the dataset"
-#         # select fields + primary key fields + object version field
-#         # None fields (usually calculated fields) are converted to Null string
-#         fields = ", ".join([f"{i[FIELD] or 'Null'}" for i in self.columns]
-#                            + [f"{i}" for i in self.primaryKey]
-#                            + [OVFIELD])
-
-#         script = f"SELECT {fields}\nFROM {self.table}\n"
-#         args = []
-#         where = []
-#         if self.isCompanyTable:
-#             where.append(("company_id = %s", session['current_company']))
-#         if self.recordType:
-#             where += [(f'{i} = %s', f'{self.recordType[i]}') for i in self.recordType]
-#         if self.filterCondition:
-#             where += self.filterCondition
-#         if self.whereCondition:
-#             where += self.whereCondition
-#             self.whereCondition.clear() # clear where condition after use, they are intended for one select only
-#         if where:
-#             script += f"\nWHERE {' AND '.join([i[0] for i in where])}"
-#             args += [i[1] for i in where if '%s' in i[0]] # argument if required
-#         if self.orderByExpression:
-#             script += f"\nORDER BY {', '.join([i for i in self.orderByExpression])}"
-#         if self.limitCondition:
-#             script += f"\nLIMIT {self.limitCondition}"
-#         script += ";"
-#         print("* Script *\n", script)
-#         print("* Args *\n", args)
-#         cols = len(self.columns)
-#         pkcols = range(cols, cols + len(self.primaryKey))
-#         ovcol = cols + len(self.primaryKey)
-#         #self.layoutAboutToBeChanged.emit()
-#         self.beginResetModel()
-#         try:
-#             with appconn.cursor() as cur:
-#                 cur.execute(script, args)
-#                 self.rows = cur.rowcount
-#                 self.cols = cols
-#                 self.dataSet.clear()
-#                 for record in cur:
-#                     # selected fields
-#                     item: dict[int|str, Any] = {i:record[i] for i in range(cols)}    
-#                     # primary key fields
-#                     item['pkey'] = {self.primaryKey[i - cols]: record[i] for i in pkcols}
-#                     # discard item with Null primary key
-#                     if item['pkey'][self.primaryKey[0]] is None:
-#                         continue
-#                     # master column
-#                     item['master_row'] = record[1] # master row number
-#                     # row object version
-#                     item[OVFIELD] = record[ovcol]
-#                     # append on record list
-#                     self.dataSet.append(item)
-#         except psycopg.Error as er:
-#             raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-#         # create an unfiltered master row mapping
-#         self.filterMapping = {i: i  for i in range(len(self.dataSet))}
-#         # notify of changes
-#         self.endResetModel()
         
         
 class Record(dict):
-    def __init__(self, data: dict, pkey: dict, object_version: int, is_new: bool = False) -> None:
+    def __init__(self, data: dict, pkey: dict|None, object_version: int, is_new: bool = False) -> None:
         # data is a dictionary {column_index: value}
         super().__init__(data)
         self.pkey = pkey
@@ -1110,6 +590,7 @@ class TableModel(QAbstractTableModel):
 
     def submitAll(self, column: int|None = None, value: Any|None = None) -> bool:
         # if a referenceKey is provided fill all the rows with reference value
+        record: Any
         if column is not None:
             for record in self.dataSet:
                 record[column] = value
@@ -1313,9 +794,9 @@ class TableModel(QAbstractTableModel):
               'datetime': QDateTime()}[dt]
         # inplace list sorting
         if order == Qt.SortOrder.AscendingOrder:
-            self.dataSet.sort(key=lambda x: x[column] or nv)
+            self.dataSet.sort(key=lambda x: x[column] or nv) # type: ignore
         else:
-            self.dataSet.sort(key=lambda x: x[column] or nv, reverse=True)
+            self.dataSet.sort(key=lambda x: x[column] or nv, reverse=True) # type: ignore
         self.layoutChanged.emit()
 
     def filter(self, column: int|None = None, value: Any = None) -> None:
@@ -1327,20 +808,7 @@ class TableModel(QAbstractTableModel):
             field = f"{self.columns[column][FIELD]}"
             self.filterCondition.append((f'{field} = %s', value))
         self.select()
-
-    # def filterMasterRow(self, row: int) -> None:
-    #     "Filter dataset based on master row creating a dictionary of mapped rows"
-    #     self.layoutAboutToBeChanged.emit()
-    #     self.filterMapping.clear()
-    #     self.filterMapping = {len(self.filterMapping): n for n, i in enumerate(self.dataSet) if  i['master_row'] == row}
-    #     self.rows = len(self.filterMapping)
-    #     # notify of changes
-    #     self.dataChanged.emit(self.createIndex(0, 0),
-    #                           self.createIndex(self.rowCount(), self.columnCount()),
-    #                           [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-    #     self.layoutChanged.emit()
-    #     self.rowCountChanged.emit(self.rows)
-    
+ 
     def addWhere(self, condition: str, value: str|int|float|QDate|QDateTime|None) ->None:
         "Add where conditions before select"
         self.whereCondition.append((condition, value))
@@ -1427,179 +895,175 @@ class TableModel(QAbstractTableModel):
         except psycopg.Error as er:
             self.endResetModel()
             raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
-        # create an unfiltered master row mapping
-        #self.filterMapping = {i: i  for i in range(len(self.dataSet))}
-
-        
+ 
        
-class PandasModel(QAbstractTableModel):
-    """A read-only model to interface a database view with pandas pivot dataframe"""
+# class PandasModel(QAbstractTableModel):
+#     """A read-only model to interface a database view with pandas pivot dataframe"""
 
-    def __init__(self,parent=None):
-        QAbstractTableModel.__init__(self, parent)
-        self._dataframe = None
-        self._pivot = None
-        self.table = None # table or view name - string, subclass must define this
-        self.isCompanyTable = False # True if is a company table, subclass must define this
-        self.columns = () # model columns definition, subclass must define this
-        # Number of rows needed for column headers
-        #self.col_levels = dataframe.columns.nlevels if hasattr(dataframe.columns, 'nlevels') else 1
-        self.col_levels = 0
-        # Number of columns needed for row headers (index)
-        self.row_levels = 0 # updated by createPivot
+#     def __init__(self,parent=None):
+#         QAbstractTableModel.__init__(self, parent)
+#         self._dataframe = None
+#         self._pivot = None
+#         self.table = None # table or view name - string, subclass must define this
+#         self.isCompanyTable = False # True if is a company table, subclass must define this
+#         self.columns = () # model columns definition, subclass must define this
+#         # Number of rows needed for column headers
+#         #self.col_levels = dataframe.columns.nlevels if hasattr(dataframe.columns, 'nlevels') else 1
+#         self.col_levels = 0
+#         # Number of columns needed for row headers (index)
+#         self.row_levels = 0 # updated by createPivot
         
-    def select(self) -> None:
-        "Fetch rows from DB creating the sql select statement and filling the dataset"
-        # create a reverse dictionary for columns translation
-        self.trcolumns = {self.columns[i][0]: i for i in self.columns}
-        #print("Columns translation:", self.trcolumns)
-        script = f"SELECT {', '.join(self.columns.keys())}\nFROM {self.table}"
-        if self.isCompanyTable:
-            script += "\nWHERE company_id = system.pa_current_company();"
-        else:
-            script += ";"
-        #print("**** PandasModel SELECT script ****\n", script)
-        try:
-            with appconn.cursor() as cur:
-                cur.execute(script)
-                if cur.description:
-                    columns = [self.columns[i[0]][0] for i in cur.description]
-                else:                    
-                    columns = []
-                df = pd.DataFrame(cur.fetchall(), columns=columns)
-                #print(df.head())
-        except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))   
-        # force correct data types
-        f = {self.columns[i][0]: self.columns[i][3] for i in self.columns if self.columns[i][3]}
-        self._dataframe = df.astype(f)
-        #print(f"Dataframe loaded with {len(self._dataframe)} rows and {len(self._dataframe.columns)} columns")
-        #print("DTypes:", self._dataframe.dtypes)
+#     def select(self) -> None:
+#         "Fetch rows from DB creating the sql select statement and filling the dataset"
+#         # create a reverse dictionary for columns translation
+#         self.trcolumns = {self.columns[i][0]: i for i in self.columns}
+#         #print("Columns translation:", self.trcolumns)
+#         script = f"SELECT {', '.join(self.columns.keys())}\nFROM {self.table}"
+#         if self.isCompanyTable:
+#             script += "\nWHERE company_id = system.pa_current_company();"
+#         else:
+#             script += ";"
+#         #print("**** PandasModel SELECT script ****\n", script)
+#         try:
+#             with appconn.cursor() as cur:
+#                 cur.execute(script)
+#                 if cur.description:
+#                     columns = [self.columns[i[0]][0] for i in cur.description]
+#                 else:                    
+#                     columns = []
+#                 df = pd.DataFrame(cur.fetchall(), columns=columns)
+#                 #print(df.head())
+#         except psycopg.Error as er:
+#             raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))   
+#         # force correct data types
+#         f = {self.columns[i][0]: self.columns[i][3] for i in self.columns if self.columns[i][3]}
+#         self._dataframe = df.astype(f)
+#         #print(f"Dataframe loaded with {len(self._dataframe)} rows and {len(self._dataframe.columns)} columns")
+#         #print("DTypes:", self._dataframe.dtypes)
         
-        # Number of columns needed for row headers (index)
-        #self.row_levels = df.index.nlevels if hasattr(df.index, 'nlevels') else 1
-        #print('Columns:', self._dataframe.columns)
+#         # Number of columns needed for row headers (index)
+#         #self.row_levels = df.index.nlevels if hasattr(df.index, 'nlevels') else 1
+#         #print('Columns:', self._dataframe.columns)
         
-    def filterEvent(self, value: str) -> None:
-        "Filter dataframe for a specific event description"
-        # re-generate dataframe from DB, undo previous filters
-        self.select()
-        if self._dataframe is None:
-            return
-        self._dataframe = self._dataframe[self._dataframe[self.columns['event'][0]] == value]
+#     def filterEvent(self, value: str) -> None:
+#         "Filter dataframe for a specific event description"
+#         # re-generate dataframe from DB, undo previous filters
+#         self.select()
+#         if self._dataframe is None:
+#             return
+#         self._dataframe = self._dataframe[self._dataframe[self.columns['event'][0]] == value]
         
-    def filterLike(self, column: str, value: str) -> None:
-        "Filter dataframe for a specific column value using like operator"
-        if self._dataframe is None:
-            return
-        if column not in self._dataframe.columns:
-            return
-        self._dataframe = self._dataframe[self._dataframe[column].astype(str).str.contains(value, na=False, case=False)]
+#     def filterLike(self, column: str, value: str) -> None:
+#         "Filter dataframe for a specific column value using like operator"
+#         if self._dataframe is None:
+#             return
+#         if column not in self._dataframe.columns:
+#             return
+#         self._dataframe = self._dataframe[self._dataframe[column].astype(str).str.contains(value, na=False, case=False)]
         
-    def getEvents(self) -> list:
-        "Return a list of distinct events description"
-        if self._dataframe is None:
-            return []
-        c = (self.columns.get('event') or (None,))[0] # index are translated for pivot use
-        return self._dataframe[c].dropna().unique().tolist()
+#     def getEvents(self) -> list:
+#         "Return a list of distinct events description"
+#         if self._dataframe is None:
+#             return []
+#         c = (self.columns.get('event') or (None,))[0] # index are translated for pivot use
+#         return self._dataframe[c].dropna().unique().tolist()
 
-    def createPivot(self, rows: list, columns: list, values: list, aggfunc: dict, totals: bool) -> None:
-        "Create a pivot table from the dataframe"
-        if self._dataframe is None:
-            return
-        #print(self._dataframe.head())
-        self._pivot = pd.pivot_table(self._dataframe,
-                                    index=rows,
-                                    columns=columns,
-                                    values=values,
-                                    aggfunc=aggfunc,
-                                    fill_value=0.0,
-                                    margins=totals,
-                                    margins_name=_tr('Statistics','Totale Generale'))
-        logger.info(f"Pivot table created with {len(self._pivot)} rows and {len(self._pivot.columns)} columns")
-        #print(self._pivot.head())
-        #print(self._pivot.columns)
-        #print(self._pivot.index.names)
-        #print(self._pivot.info())
-        # update col_levels
-        #self.col_levels = self._pivot.columns.nlevels if hasattr(self._pivot.columns, 'nlevels') else 1
-        #self.col_levels += totals
-        # update row_levels
-        self.row_levels = self._pivot.index.nlevels if hasattr(self._pivot.index, 'nlevels') else 1
-        self.row_levels += totals
+#     def createPivot(self, rows: list, columns: list, values: list, aggfunc: dict, totals: bool) -> None:
+#         "Create a pivot table from the dataframe"
+#         if self._dataframe is None:
+#             return
+#         #print(self._dataframe.head())
+#         self._pivot = pd.pivot_table(self._dataframe,
+#                                     index=rows,
+#                                     columns=columns,
+#                                     values=values,
+#                                     aggfunc=aggfunc,
+#                                     fill_value=0.0,
+#                                     margins=totals,
+#                                     margins_name=_tr('Statistics','Totale Generale'))
+#         logger.info(f"Pivot table created with {len(self._pivot)} rows and {len(self._pivot.columns)} columns")
+#         #print(self._pivot.head())
+#         #print(self._pivot.columns)
+#         #print(self._pivot.index.names)
+#         #print(self._pivot.info())
+#         # update col_levels
+#         #self.col_levels = self._pivot.columns.nlevels if hasattr(self._pivot.columns, 'nlevels') else 1
+#         #self.col_levels += totals
+#         # update row_levels
+#         self.row_levels = self._pivot.index.nlevels if hasattr(self._pivot.index, 'nlevels') else 1
+#         self.row_levels += totals
 
-    def rowCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
-        return self._pivot.shape[0] + self.col_levels
+#     def rowCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
+#         return self._pivot.shape[0] + self.col_levels
 
-    def columnCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
-        return self._pivot.shape[1] + self.row_levels
+#     def columnCount(self, parent: QModelIndex|QPersistentModelIndex = QModelIndex()) -> int:
+#         return self._pivot.shape[1] + self.row_levels
 
-    def data(self,
-             index: QModelIndex|QPersistentModelIndex = QModelIndex(),
-             role: int = Qt.ItemDataRole.DisplayRole
-             ) -> Any:
-        if not index.isValid():
-            return None
-        header = self.headerData(index.column(), Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
-        if header:
-            header = header.split('\n')[0]  # in case of multi-line header
-        fm = self.columns[self.trcolumns[header]][4]  # (name, format)
-        if role == Qt.ItemDataRole.TextAlignmentRole:
-            if fm in ('int', 'float', 'decimal2'):   
-                return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-            return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
+#     def data(self,
+#              index: QModelIndex|QPersistentModelIndex = QModelIndex(),
+#              role: int = Qt.ItemDataRole.DisplayRole
+#              ) -> Any:
+#         if not index.isValid():
+#             return None
+#         header = self.headerData(index.column(), Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
+#         if header:
+#             header = header.split('\n')[0]  # in case of multi-line header
+#         fm = self.columns[self.trcolumns[header]][4]  # (name, format)
+#         if role == Qt.ItemDataRole.TextAlignmentRole:
+#             if fm in ('int', 'float', 'decimal2'):   
+#                 return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
+#             return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         
-        if role == Qt.ItemDataRole.DisplayRole:
-            r, c = index.row(), index.column()
-            dt = self._pivot.iloc[r - self.col_levels, c - self.row_levels] if r >= self.col_levels and c >= self.row_levels else None
-            # CASE 1: Top-Left Empty Corner
-            if r < self.col_levels and c < self.row_levels:
-                return ""
-            # CASE 2: Column Headers (Top rows)
-            if r < self.col_levels:
-                label = self._pivot.columns[c - self.row_levels]
-                return str(label[r]) if isinstance(label, tuple) else str(label)
-            # CASE 3: Row Headers (Left columns)
-            if c < self.row_levels:
-                label = self._pivot.index[r - self.col_levels]
-                outstr = label[c] if isinstance(label, tuple) else label
-                if fm == 'int':
-                    return session['qlocale'].toString(int(outstr or 0))
-                elif fm in ('float', 'decimal2'):
-                    return session['qlocale'].toString(float(outstr or 0.0), 'f', 2)
-                elif fm == 'date':
-                    if pd.isna(outstr):
-                        return ""
-                    return outstr.strftime('%d/%m/%Y')
-                else:
-                    return str(outstr)
-            # CASE 4: Actual Data Values
-            if fm == 'int':
-                return session['qlocale'].toString(int(dt or 0))
-            elif fm in ('float', 'decimal2'):
-                return session['qlocale'].toString(float(dt or 0.0), 'f', 2)
-            elif fm == 'date':
-                if pd.isna(dt):
-                    return ""
-                return dt.strftime('%d/%m/%Y') if hasattr(dt, 'strftime') else str(dt)
-            else:
-                return str(dt)
+#         if role == Qt.ItemDataRole.DisplayRole:
+#             r, c = index.row(), index.column()
+#             dt = self._pivot.iloc[r - self.col_levels, c - self.row_levels] if r >= self.col_levels and c >= self.row_levels else None
+#             # CASE 1: Top-Left Empty Corner
+#             if r < self.col_levels and c < self.row_levels:
+#                 return ""
+#             # CASE 2: Column Headers (Top rows)
+#             if r < self.col_levels:
+#                 label = self._pivot.columns[c - self.row_levels]
+#                 return str(label[r]) if isinstance(label, tuple) else str(label)
+#             # CASE 3: Row Headers (Left columns)
+#             if c < self.row_levels:
+#                 label = self._pivot.index[r - self.col_levels]
+#                 outstr = label[c] if isinstance(label, tuple) else label
+#                 if fm == 'int':
+#                     return session['qlocale'].toString(int(outstr or 0))
+#                 elif fm in ('float', 'decimal2'):
+#                     return session['qlocale'].toString(float(outstr or 0.0), 'f', 2)
+#                 elif fm == 'date':
+#                     if pd.isna(outstr):
+#                         return ""
+#                     return outstr.strftime('%d/%m/%Y')
+#                 else:
+#                     return str(outstr)
+#             # CASE 4: Actual Data Values
+#             if fm == 'int':
+#                 return session['qlocale'].toString(int(dt or 0))
+#             elif fm in ('float', 'decimal2'):
+#                 return session['qlocale'].toString(float(dt or 0.0), 'f', 2)
+#             elif fm == 'date':
+#                 if pd.isna(dt):
+#                     return ""
+#                 return dt.strftime('%d/%m/%Y') if hasattr(dt, 'strftime') else str(dt)
+#             else:
+#                 return str(dt)
         
-        return None
+#         return None
 
-    def headerData(self, section, orientation, role: int =Qt.ItemDataRole.DisplayRole) -> str|None:
-        if role == Qt.ItemDataRole.DisplayRole:
-            if orientation == Qt.Orientation.Horizontal:
-                if section < self.row_levels:
-                    #print('Index;', self._pivot.index)
-                    return self._pivot.index.names[section]
-                # Column Names
-                col_label = self._pivot.columns[section - self.row_levels]
-                # If MultiIndex, join levels
-                return "\n".join(map(str, col_label)) if isinstance(col_label, tuple) else str(col_label)
+#     def headerData(self, section, orientation, role: int =Qt.ItemDataRole.DisplayRole) -> str|None:
+#         if role == Qt.ItemDataRole.DisplayRole:
+#             if orientation == Qt.Orientation.Horizontal:
+#                 if section < self.row_levels:
+#                     #print('Index;', self._pivot.index)
+#                     return self._pivot.index.names[section]
+#                 # Column Names
+#                 col_label = self._pivot.columns[section - self.row_levels]
+#                 # If MultiIndex, join levels
+#                 return "\n".join(map(str, col_label)) if isinstance(col_label, tuple) else str(col_label)
             
-            if orientation == Qt.Orientation.Vertical:
-                return None
-        return None
+#             if orientation == Qt.Orientation.Vertical:
+#                 return None
+#         return None
 

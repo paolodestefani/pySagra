@@ -820,6 +820,8 @@ class BaseOrderDialog(QDialog):
                 QMessageBox.warning(self,
                                     _tr("MessageDialog", "Warning"),
                                     msg)
+            # set weborder flag
+            self.ui.checkBoxWebOrder.setChecked(True)
         finally:
             # clear barcode line edit
             self.ui.lineEditBarCode.clear()

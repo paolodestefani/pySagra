@@ -199,13 +199,8 @@ SET fullfillment_date = Null
 WHERE
     company_id = system.pa_current_company()
     AND order_header_department_id = {order_id};"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
 
 
 class Order():
@@ -299,7 +294,8 @@ class Order():
             r['department_id'] = i
             r['note'] = self.depnote.get(i)
             others = list(used_dep_desc)
-            others.remove(get_department_desc(i))
+            if i:
+                others.remove(get_department_desc(i))
             if others:
                 r['other_departments'] = ", ".join([d for d in others if d])
             else:

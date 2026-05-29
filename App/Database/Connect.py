@@ -30,8 +30,7 @@ and manage connections. Also provide the database informations.
 
 # standard library
 import logging
-#from collections.abc import Generator, Iterator
-from typing import Iterator, Any, Optional, ContextManager
+from typing import Any, Optional, ContextManager
 
 # psycopg
 import psycopg
@@ -193,7 +192,7 @@ SELECT EXISTS(SELECT 1
                 cur.execute("SELECT system.pa_disconnect();")
         except psycopg.Error as er:
             logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBConnectionError(er)
+            raise PyAppDBConnectionError(str(er))
         # close db connection
         self._conn.close()
 
@@ -235,7 +234,7 @@ SELECT EXISTS(
             result = cur.execute(script).fetchone()
             if result:
                 return result[0]
-            return None
+            return False
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
@@ -268,22 +267,9 @@ WHERE session_id = pg_backend_pid();"""
     except psycopg.Error as er:
         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-#     else: # all companies list
-#         script = """
-# SELECT 
-#     c.company_id, 
-#     c.description
-# FROM system.company c;"""
-#     try:
-#         with appconn.cursor() as cur:
-#             cur.execute(script)
-#             return cur.fetchall()
-#     except psycopg.Error as er:
-#         logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-#         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
-
-def get_company_desc(company: int) -> str:
+    
+    
+def get_company_desc(company: int) -> str|None:
     "Get company description"
     script = t"""
 SELECT 

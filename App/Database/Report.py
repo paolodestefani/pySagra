@@ -30,9 +30,6 @@ Database functions for report management
 # standard library
 import logging
 
-# standard library
-from typing import Callable
-
 # psycopg
 import psycopg
 

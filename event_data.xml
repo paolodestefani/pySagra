@@ -1,0 +1,372 @@
+<?xml version='1.0' encoding='utf-8'?>
+<event>
+    <title>SAGRA DEL PEPERONE</title>
+    <start_date>2026-01-01T17:15:14+01:00</start_date>
+    <end_date>2026-12-31T23:59:59+01:00</end_date>
+    <items>
+        <department description="PRIMI">
+            <item>
+                <id>53</id>
+                <description>ANTIPASTO PEPERONI</description>
+                <price>5.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>62</id>
+                <description>CROSTINI PEPERONI</description>
+                <price>4.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>42</id>
+                <description>GNOCCHI RAGU'</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>43</id>
+                <description>GNOCCHI FORMAGGI</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>52</id>
+                <description>GNOCCHI PEPERONI</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>44</id>
+                <description>PENNE RAGU'</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>45</id>
+                <description>PENNE FORMAGGI</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>54</id>
+                <description>RAVIOLI PEPERONI</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>51</id>
+                <description>TAGLIATELLE PEPERONI</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>50</id>
+                <description>PASTICCIO PEPERONI</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+        </department>
+        <department description="SECONDI">
+            <item>
+                <id>46</id>
+                <description>COSTICINE POLENTA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>47</id>
+                <description>SALSICCE POLENTA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>48</id>
+                <description>BRACIOLA POLENTA</description>
+                <price>8.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>49</id>
+                <description>TRIS</description>
+                <price>12.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>55</id>
+                <description>INVOLTINI PEPERONI</description>
+                <price>8.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>56</id>
+                <description>PEPERONI RIPIENI</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>59</id>
+                <description>PATATE FRITTE</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>61</id>
+                <description>FUNGHI</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>60</id>
+                <description>FAGIOLI</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>57</id>
+                <description>PEPERONATA</description>
+                <price>4.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>90</id>
+                <description>WURSTEL</description>
+                <price>5.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+        </department>
+        <department description="BAR">
+            <item>
+                <id>63</id>
+                <description>BIONDA PICCOLA</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>64</id>
+                <description>BIONDA MEDIA</description>
+                <price>5.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>72</id>
+                <description>BIONDA CARAFFA</description>
+                <price>12.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>65</id>
+                <description>ROSSA PICCOLA</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>66</id>
+                <description>ROSSA MEDIA</description>
+                <price>5.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>73</id>
+                <description>ROSSA CARAFFA</description>
+                <price>12.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>67</id>
+                <description>BIANCO MEZZO</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>68</id>
+                <description>BIANCO LITRO</description>
+                <price>5.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>71</id>
+                <description>BOTTIGLIA PROSECCO</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>69</id>
+                <description>ROSSO MEZZO</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>70</id>
+                <description>ROSSO LITRO</description>
+                <price>5.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>74</id>
+                <description>BOTTIGLIA CABERNET</description>
+                <price>9.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>80</id>
+                <description>ACQUA NATURALE MEZZO</description>
+                <price>2.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>81</id>
+                <description>ACQUA NATURALE LITRO</description>
+                <price>4.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>82</id>
+                <description>ACQUA FRIZZANTE MEZZO</description>
+                <price>2.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>83</id>
+                <description>ACQUA FRIZZANTE LITRO</description>
+                <price>4.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>88</id>
+                <description>ARANCIATA</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>89</id>
+                <description>COCA COLA</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>75</id>
+                <description>CROSTATA FRUTTI</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>76</id>
+                <description>PROFITEROLES</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>77</id>
+                <description>TARTUFO BIANCO</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>78</id>
+                <description>TARTUFO NERO</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>79</id>
+                <description>TIRAMISU'</description>
+                <price>4.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>84</id>
+                <description>CAFFE'</description>
+                <price>1.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>85</id>
+                <description>DECAFFEINATO</description>
+                <price>1.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+        </department>
+    </items>
+    <itemvariants>
+        <item id="60">
+            <variant>
+                <description>CON CIPOLLA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="84">
+            <variant>
+                <description>CORRETTO GRAPPA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO SANBUCA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO BRANDI</description>
+                <price>1.00</price>
+            </variant>
+        </item>
+        <item id="85">
+            <variant>
+                <description>CORRETTO GRAPPA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO SANBUCA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO BRANDI</description>
+                <price>1.00</price>
+            </variant>
+        </item>
+    </itemvariants>
+</event>

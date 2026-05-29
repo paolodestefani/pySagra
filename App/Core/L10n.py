@@ -34,12 +34,9 @@ import decimal
 # PySide6
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QMessageBox
 
 # application modules
-from App import ENCKEY
 from App import session
-from App.Database.Scripting import get_script
 
 
 # translate function

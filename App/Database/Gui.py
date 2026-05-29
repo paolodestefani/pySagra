@@ -97,7 +97,7 @@ ORDER BY t.sorting;"""
             cur.execute(script)
             return cur.fetchall()
     except psycopg.Error as er:
-        rlogger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
+        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
         raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
 
 

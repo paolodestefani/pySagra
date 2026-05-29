@@ -58,10 +58,10 @@ from PySide6.QtWidgets import QDialogButtonBox
 # application modules
 from App import session
 from App.Database.Exceptions import PyAppDBError
-from App.Database.AbstractModels.TableModel import PandasModel
+#from App.Database.AbstractModels.TableModel import PandasModel
 from App.Database.Lookup import event_lookup
-from App.Database.Models import OrderHeaderPandasModel
-from App.Database.Models import OrderLinePandasModel
+#from App.Database.Models import OrderHeaderPandasModel
+#from App.Database.Models import OrderLinePandasModel
 from App.Ui.AnalysisWidget import Ui_AnalysisWidget
 from App.Ui.StatisticsExportDialog import Ui_StatisticsExportDialog
 from App.Widget.Dialog import PrintDialog

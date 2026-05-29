@@ -32,7 +32,8 @@ Postgres to PySide6 data type adaptation
 
 # psycopg
 import psycopg
-from psycopg.adapt import Loader, Dumper
+from psycopg.adapt import Loader
+from psycopg.adapt import Dumper
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -74,7 +75,9 @@ DEFAULT = Default()
 
 class TimestampTzQDateTimeLoader(Loader): # timestamptz -> QDateTime
     
-    def load(self, value: bytes) -> QDateTime:
+    def load(self, 
+             value: bytes | bytearray | memoryview[int]
+             ) -> QDateTime:
         ds = bytes(value).decode()
         return QDateTime.fromString(ds, Qt.DateFormat.ISODateWithMs)
 
@@ -98,7 +101,9 @@ psycopg.adapters.register_dumper(QDateTime, QDateTimeTimestampTzDumper)
 
 class DateQDateLoader(Loader): # date -> QDate
     
-    def load(self, value: bytes) -> QDate:
+    def load(self, 
+             value: bytes | bytearray | memoryview[int]
+             ) -> QDate:
         return QDate.fromString(bytes(value).decode(), Qt.DateFormat.ISODate)
 
 psycopg.adapters.register_loader('date', DateQDateLoader)
@@ -119,7 +124,9 @@ psycopg.adapters.register_dumper(QDate, QDateDateDumper)
 
 class TimeQTimeLoader(Loader): # time -> QTime
     
-    def load(self, value: bytes) -> QTime:
+    def load(self, 
+             value: bytes | bytearray | memoryview[int]
+             ) -> QTime:
         ts = bytes(value).decode()
         return QTime.fromString(ts, Qt.DateFormat.ISODate)
 
@@ -139,7 +146,9 @@ psycopg.adapters.register_dumper(QTime, QTimeTimeDumper)
 #
 
 class ByteaQByteArrayLoader(Loader):
-    def load(self, value: bytes) -> QByteArray:
+    def load(self, 
+             value: bytes | bytearray | memoryview[int]
+             ) -> QByteArray:
         return QByteArray.fromHex(bytes(value))
 
 psycopg.adapters.register_loader('bytea', ByteaQByteArrayLoader) 
@@ -158,7 +167,9 @@ psycopg.adapters.register_dumper(QByteArray, QByteArrayByteaDumper)
 
 class InetStrLoader(Loader):
     
-    def load(self, value: bytes) -> str:
+    def load(self, 
+             value: bytes | bytearray | memoryview[int]
+             ) -> str:
         return bytes(value).decode()
 
 psycopg.adapters.register_loader('inet', InetStrLoader)

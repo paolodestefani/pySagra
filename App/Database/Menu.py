@@ -29,8 +29,7 @@ This module provide class and functions for application menu management
 """
 
 # application modules
-from App.Database.Exceptions import PyAppDBError
-from App.Database.Connect import appconn
+
 
 
 

@@ -1,170 +1,144 @@
 <html lang="en">
   <head>
-    <title>pySagra help</title>
+    <title>
+      Help on login procedure
+    </title>
   </head>
-  <body style="font-family: Arial, Sans-Serif;">
+  <body>
     <h1>
-		pySagra documentation
+      Online documentation for pySagra
     </h1>
-    <center>
-      <img src="qrc:/pySagra">
-    </center>
-    <h2>
-      List of topics:
-    </h2>
-    <ul>
-      <li>
-        <a href="#overview">Overview</a>
-      </li>
-      <li>
-        <a href="#architecture">Application architecture</a>
-      </li>
-      <li>
-        <a href="#gui">User interface</a>
-      </li>
-    </ul>
-    <h2 id="overview">
-      Overview
-    </h2>
-    <p>
-      <b>pySagra</b> stems from the need to manage the gastronomic 
-	  stand of my village's festival. The activity to be managed is
-	  therefore the order entry of products, typically first courses,
-	  main courses, drinks, etc., the subsequent distribution of 
-	  the orders, real work orders, to the various departments 
-	  of the stand, for example bar, restaurant, but also pizzeria,
-	  ice cream parlor, etc. The orders are placed in the
-	  cash desks and must be the most quick and simple as possible.
-	  Once the order has been entered it is divided by department
-	  and distributed to the departments concerned. Once the 
-	  department copy is printed the order it is considered 
-	  automatically processed. There is no management of order 
-	  fulfillment as it is superfluous for the type of activity 
-	  that is carried out. Apart from this the program allows 
-	  the closure of the cash register end various sales 
-	  statistics. All lists, statistics including, they are 
-	  printable and automatically exportable to Excel.
-	  Currently, fiscal printing is not managed.
-    </p>
-    <p>
-      The features of the application can be summarized in 
-	  the following points:
-    </p>
-    <ul>
-      <li>Management of <b> events </b>: all operations come
-	  always referring to a specific event (eg. Sagra del 
-	  Pepper, Beer Festival, etc.).
-      </li>
-      <li>Management of <b> departments </b> (eg Bar, restaurant,
-	  Pizzeria, etc.). Some departments may not be available for
-	  specific events.
-      </li>
-      <li>Managing <b> sales </b> items, distinguishing them
-	  in elementary items, kits (eg three of a kind: sausages + ribs +
-	  chop) and menu (ex. sagra menu: beer + tris + fried potatoes).
-	  The kits must be composed by themselves
-	  elementary articles. Menus may contain kits.
-      </li>
-      <li>Management of <b> variants </b> of items (eg pizza
-	  margherita without mozzarella, with salamino, etc.). The variant
-	  may provide a price increase.
-      </li>
-      <li>Delivery management at <b> table </b> or per
-	  <b> Take </b>. It is possible to check the existence of the
-	  table number entered.
-      </li>
-      <li><b>stock level control</b>: for elementary articles
-	  which interests to monitor it is possible to insert the
-	  stock available. The program automatically updates the
-	  availability based on sales made.
-      </li>
-      <li>Management of <b>sales orders</b> through a optimized form
-	  aimed at achieving the maximum insertion speed with stock control
-	  of the articles, total calculation, amount cashed, change, etc.
-      </li>
-      <li>Generation of the <b> order printing </b> for the
-	  customer, for the various departments concerned and one for
-	  covers. All these prints are in A5 format and optional
-      </li>
-      <li>Print of the <b> cashed </b> per day and half a day
-      </li>
-      <li>Management of various <b> sales statistics </b> even
-	  comparing different events
-      </li>
-      <li>All <b> archives </b> (events, departments, items,
-	  etc.) and the available statistics can be viewed,
-	  printable A4 and <b> exportable </b> in excel
-      </li>
-      <li>The application is <b> cross-platform </b>:
-	  developed and tested on Windows and Linux, it should work
-	  correctly also on Mac OSX
-	  </li>
-    </ul>
-    <p><a class="top" href="#top" title="top">Back to top</a></p>
-    <h2 id="architecture">
-      Application architecture
-    </h2>
-    <p>
-	This program was developed with in mind
-	some specific objectives:
-    </p>
-    <ul>
-      <li>Deepen my knowledge of the Python language
-      </li>
-      <li>Implement an application with a graphical interface e
-	  based on a sql database server
-      </li>
-      <li>Implement a multiuser application with client / server
-	  architecture
-      </li>
-      <li>The application must be multi-platform and available
-	  low / no cost to anyone who requests it
-      </li>
-    </ul>
-    <p>
-      Consequently for the realization of this application
-	  have been used:
-    </p>
-    <ul>
-      <li>The <a href="https://www.python.org">Python</a> programming language
-	  version 3.7</li>
-      <li>The <a href="https://www.qt.io">Qt</a> libraries version 5.x
-      </li>
-      <li>The Qt wrapper libraries <a href=
-      "https://www.riverbankcomputing.com/software/pyqt/download5">PyQt</a>
-	  version 5.x
-      </li>
-      <li>The <a href="https://www.postgresql.org">PostgreSQL</a> database
-	  server version 10.x 
-      </li>
-	  <li>The <a href="http://initd.org/psycopg/">psycopg</a> Python connector
-	  to PostgreSQL version 2.8.x 
-      </li>
-      <li>The <a href="https://github.com/pasnox/oxygen-icons-png">oxygen icons</a>
-	  icon set
-      </li>
-      <li>The pySagra icon is from DelliOS System Icons set
-      of <a href="http://www.wendellverli.com/">Wendell
-      Fernandes</a>
-      </li>
-    </ul>
-    <p>
-      All the tools listed are multiplatform and
-	  available for free
-    </p>
-    <p><a class="top" href="#top" title="top">Back to top</a></p>
-    <h2 id="gui">
-      User interface
-    </h2>
-    <center>
-      <img src="qrc:/help/img/main_window.png">
-    </center>
-    <p>
-      The user interface is made of (...):
-    </p>
-    <p><a class="top" href="#top" title="top">Back to top</a></p>
-    <p>
-      <a href="qrc:/help/login.html" title="login">Help on Login procedure</a>
-    </p>
-  </body>
+<center><img src="qrc:/pySagra"></center>
+
+<p>Table of contents:</p>
+<ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#framework">System Architecture</a></li>
+    <li><a href="#user_interface">User Interface</a></li>
+</ul>
+
+<h2 id="overview">Overview</h2>
+<p>One of the traditional and cultural characteristics across Italy is
+the presence of <b>Sagre</b> (local festivals). As clarified by Wikipedia, a
+sagra is a popular local festival held annually.
+It traditionally originates from a religious celebration, held
+on the occasion of a consecration or to commemorate a saint 
+(usually the patron saint), but it is also used to celebrate
+the harvest or to promote a local food and wine product. During a 
+sagra, a local fair, a market, and various celebrations usually take place. 
+The most important area of the festival, at least
+from a culinary perspective, is the food stand.  
+<b>pySagra</b> was born from the need to manage the food stand 
+of my hometown's festival. The management workflow starts from 
+taking product orders, typically first courses,
+second courses, drinks, etc., and the subsequent distribution of order tickets,
+which act as actual <i>production</i> orders, to the various departments of the stand,
+such as the bar, the kitchen, as well as the pizzeria, ice cream station, etc. 
+Order entry takes place at the cash desks and must be as 
+fast and simple as possible. Once entered, the order
+is divided by department and routed to the relevant stations.
+Managing order fulfillment and product stock is
+usually unnecessary for this type of activity, which 
+prioritizes the speed of order handling and food delivery.
+At the end of the day or at the conclusion of the festival, results are verified
+through a revenue summary and various sales and consumption statistics.</p> 
+<p>The program allows managing all these aspects, from order loading
+to product delivery and final statistics.</p>
+<p>The features of the application can be summarized
+in the following points:</p>
+<ul>
+<li><b>Event</b> management: all operations are always
+ referenced to a specific event (e.g., Pepper Festival,
+  Beer Festival, etc.).</li>
+<li><b>Department</b> management (e.g., Bar, Kitchen, Pizzeria, etc.).
+ Some departments may be unavailable for specific events.</li>
+<li>Management of sales and consumption <b>items</b>, distinguishing them
+into basic items, <b>kits</b> - composite items (e.g., trio platter:
+ sausages + ribs + pork chop) and <b>menus</b> - groupings
+  of items from various departments (e.g., festival menu: beer + trio platter
+  + french fries). Kits must consist only of
+      basic items. Menus can contain kits.</li>
+<li>Management of item <b>variants</b> (e.g., pizza
+margherita without mozzarella, with spicy salami, etc.). The variant
+can include a price surcharge.</li>
+<li>Management of <b>dine-in (table)</b> or <b>takeout</b> delivery.</li>
+<li><b>Stock</b> control: for basic items
+that need monitoring, it is possible to input the
+available stock. The program automatically updates the
+availability based on sales made and subsequent consumption.</li>
+<li><b>Ordered - Delivered</b> control: for
+items that need monitoring, it is possible to track 
+the committed quantity and the subsequent delivery, also managing
+order fulfillment. The program automatically updates the
+order status (entered, processing, fulfilled) based on the
+deliveries made.</li>
+<li><b>Sales order</b> management via a loading screen
+ optimized and designed to achieve the
+maximum entry speed. Check for the existence of the
+indicated table. Possibility to select the table from
+an interactive layout map of existing tables. Check for the 
+availability of the entered items, considering the 
+components for kits and menus. Automatic calculation of 
+order total, amount received, any value discounts
+  (e.g., vouchers), change due, etc. Display of possible variants.</li>
+<li>Possibility to insert notes per department</li>
+<li>Orders can also be entered in a web application
+that generates a QR Code that can be scanned at the cash desk for quick acquisition,
+followed only by payment.</li>
+<li>Generation of the <b>order printout</b> for the customer, 
+specific printouts for the various departments involved, and one for
+ table covers only. All these printouts are optional and available in various formats</li>
+<li>Printout of <b>revenue</b> by day and half-day</li>
+<li>Continuous display and printing of item availability 
+or the components of kits and menus.</li>
+<li>Management of various <b>sales and consumption statistics</b>, including
+comparing different events and periods</li>
+<li>All <b>records</b> (events, departments, items,
+etc.) and available statistics can be viewed,
+printed in A4 format, and <b>exported</b> to CSV/Excel</li>
+<li>The application is <b>cross-platform</b>: developed and tested
+ on Mac OSX and Windows, it should also function correctly on Linux.</li> 
+ </ul>
+
+<p><a class="top" href="#top" title="top">Back to top</a></p>
+
+<h2 id="framework">Application Architecture</h2>
+<p>This program was developed with
+some specific goals in mind:</p>
+<ul>
+    <li>Create an application with a graphical interface based on
+ an SQL database server</li>
+ <li>Create a multi-user application with a client/server architecture</li>
+<li>The application must be cross-platform and available
+at low or no cost to anyone who requests it</li>
+</ul>
+<p>To build this application based on the previous premises,
+the following tools were chosen:</p>
+<ul>
+    <li>the <a href="https://www.python.org/">Python</a> programming language
+in version 3.14</li>
+<li>the <a href="https://www.qt.io/">Qt</a> libraries in version 6.x</li>
+<li>the binding to the Qt libraries <a href="https://doc.qt.io/qtforpython-6/">Qt for Python</a> in version 6.x</li>
+<li>The <a href="https://www.postgresql.org">PostgreSQL</a> database server in version
+ 18.x or later</li>
+<li>The PostgreSQL connector for Python <a href="https://www.psycopg.org/">Psycopg</a> in version
+3.3.x or later</li>
+<li>the default icon set is <a href="https://github.com/KDE/oxygen-icons">oxygen</a> 
+    but other icon packs downloaded from 
+    <a href="https://www.iconarchive.com">Iconarchive</a> are also available</li>
+<li>the pySagra icon is part of the DelliOS System Icons set
+by <a href="https://dellustrations.com">dellustrations.com</a></li>
+</ul>
+<p>All the listed tools are cross-platform and
+available free of charge</p>
+
+<p><a class="top" href="#top" title="top">Back to top</a></p>
+    
+<h2 id="user_interface">User Interface</h2>
+<p>The application's user interface:</p>
+<img src="qrc:/help/img/main_window.png">
+<a href="qrc:/help/login.html" title="login">Help on Login procedure</a>
+
+<p><a class="top" href="#top" title="top">Back to top</a></p>
+ </body>
 </html>
