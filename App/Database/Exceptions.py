@@ -29,13 +29,15 @@ Definition of database exceptions
 
 # standard library
 from contextlib import contextmanager
+from logging import Logger
 import logging
 from typing import Generator
 from typing import Optional
 
 import psycopg
 
-logger = logging.getLogger(__name__)
+# Logger di fallback del modulo del decorator
+default_logger = logging.getLogger(__name__)
 
 
 # Exceptions hierarchy
@@ -107,31 +109,27 @@ class PyAppDBConcurrencyError(PyAppDBError):
 # Context manager to capture psycopg errors and raise custom exceptions
 
 @contextmanager
-def db_exception_context() -> Generator[None, None, None]:
-    """
-    Context manager to catch native psycopg 3 errors, 
-    log them centrally, and raise a custom PyAppDBError exception.
-    """
+def db_exception_context(logger: Optional[Logger] = None) -> Generator[None, None, None]:
+    # Se passi il logger del modulo, usa quello, altrimenti usa il fallback
+    active_logger = logger or default_logger
+    
     try:
         yield
     except psycopg.Error as er:
-        # Extract SQLSTATE (e.g., '23505'). Fallback to 'UNKNOWN' if missing.
-        sqlstate: str = er.sqlstate or 'UNKNOWN'
-        
-        # In psycopg 3, the attribute is 'diag', which returns a Diagnostic object
+        sqlstate: str = er.sqlstate if er.sqlstate is not None else 'UNKNOWN'
         diag = er.diag
         
-        # Safely extract messages ensuring Mypy knows they can be strings
-        primary_msg: str = diag.message_primary if diag and diag.message_primary else str(er)
+        primary_msg: str = diag.message_primary if diag and diag.message_primary else str(er).strip()
         detail_msg: str = diag.message_detail if diag and diag.message_detail else ''
 
-        # Structural logging for developers
-        logger.error(
+        # The log will use the passed logger module!
+        active_logger.error(
             "*** DATABASE ERROR ***\nSQL State: %s\nPrimary: %s\nDetail: %s", 
             sqlstate, 
             primary_msg, 
-            detail_msg
+            detail_msg,
+            stacklevel=3
         )
-        
         # Raise the custom exception for the GUI layer
         raise PyAppDBError(code=sqlstate, message=primary_msg, detail=detail_msg) from er
+

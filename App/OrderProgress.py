@@ -59,7 +59,7 @@ from App.Core.L10n import _tr
 
 
 
-ID, BARCODE, NUM, DATE, TIME, DELIVERY, TABLE, CUSTOMER, DEPARTMENT, FULLFILLMENT = range(10)
+ID, BARCODE, NUM, DATE, TIME, DELIVERY, TABLE, CUSTOMER, DEPARTMENT, FULFILLMENT = range(10)
 
 
 
@@ -195,9 +195,9 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
             return
 
         (ohdid, ohid, onum, odate, otime, odelivery, otable, ocustomer,
-         odep, odepdesc, ofullfillmentdate) = result
+         odep, odepdesc, ofulfillmentdate) = result
 
-        if ofullfillmentdate:  # order already processed
+        if ofulfillmentdate:  # order already processed
             if QMessageBox.question(self,
                                     _tr('MessageDialog', 'Question'),
                                     _tr('OrderProgress', 'Order already processed, process again ?'),
@@ -255,7 +255,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         dt = session['qlocale'].toString(QDateTime.currentDateTime(), QLocale.FormatType.ShortFormat)
         cell = QTableWidgetItem(dt)
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, FULLFILLMENT, cell)
+        self.ui.tableWidgetScans.setItem(row, FULFILLMENT, cell)
         self.ui.tableWidgetScans.scrollToBottom()
         self.updateFilterConditions()
 

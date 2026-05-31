@@ -23,7 +23,7 @@
 
 """Menu
 
-Management of application menu, menu items and shortcuts
+Management of application menu and menu items
 
 """
 
@@ -32,30 +32,25 @@ import logging
 
 # PySide6
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QObject
 from PySide6.QtCore import QItemSelectionModel
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QAbstractItemView
-from PySide6.QtWidgets import QDialog
-from PySide6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QDialog, QWidget
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-from App import currentAction
 from App import currentIcon
 from App.Core.L10n import _tr
-from App.Database.Exceptions import PyAppDBError
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Models import MenuIndexModel
 from App.Database.Models import MenuModel
 from App.Database.Models import MenuItemTreeModel
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager
-from App.Widget.Dialog import PrintDialog
 from App.Ui.MenuWidget import Ui_MenuWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
+from App.Database.Menu import duplicate_menu
 
 
 # logger
@@ -77,6 +72,31 @@ def menu(action: QAction, checked: bool = False) -> None:
     mf.reload()
     mw.addTab(title, mf)
     logger.info('Menus Form added to main window')
+
+
+
+class DuplicateMenuDialog(QDialog):
+    "Dialog box for duplicate the current selected profile"
+    
+    def __init__(self, parent: QWidget, menu: str) -> None:  # no parent for tabwidget widget pages
+        super().__init__(parent)
+        self.ui = Ui_DuplicateDialog()
+        self.ui.setupUi(self)
+        self.setWindowTitle(_tr('Menu', 'Duplicate menu'))
+        self._fromMenu = menu
+
+    def accept(self) -> None:
+        "Duplicate menu"
+        with gui_exception_context(self, _tr('Menu', 'Duplicate menu')):
+            duplicate_menu(self._fromMenu,
+                           self.ui.lineEditCode.text(),
+                           self.ui.lineEditDescription.text())
+        
+            logger.info("On duplicate profile: operation completed successfully")
+            QMessageBox.information(self,
+                                    _tr('MessageDialog', "Information"),
+                                    _tr('Profile', "Profile duplicated"))
+        super().accept()
 
 
 class MenusForm(FormIndexManager):
@@ -115,6 +135,8 @@ class MenusForm(FormIndexManager):
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
         self.ui.treeViewMenuItems.setItemDelegateForColumn(ACTION, ActionDelegate(self))
+        # signal and slot
+        self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)
         
     def addChild(self) -> None:
         "Add a child menu item to the current selected menu item"
@@ -190,4 +212,11 @@ class MenusForm(FormIndexManager):
         "Reload data, set widgets to default state"
         self.ui.lineEditCode.setDisabled(True)
         super().reload()
+        
+    def duplicate(self) -> None:
+        "Duplicate the current menu"
+        currentMenu = self.model.index(self.mapper.currentIndex(), CODE).data()
+        dlg = DuplicateMenuDialog(self, currentMenu)
+        dlg.exec()
+        self.reload()
 

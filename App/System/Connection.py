@@ -31,7 +31,6 @@ Management of current connections and connection history
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -41,21 +40,20 @@ from PySide6.QtWidgets import QVBoxLayout
 
 # application modules
 from App import session
-#from App import currentAction
 from App import currentIcon
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connections import kill_client
 from App.Database.Connections import delete_connection_history
 from App.Database.System import pa_setting
 from App.Database.System import pa_setting_set
-from App.Database.Connect import appconn
 from App.Database.Models import ConnectionModel
 from App.Database.Models import ConnectionHistoryModel
 from App.Ui.ConnectionWidget import Ui_ConnectionWidget
 from App.Ui.ConnectionHistoryWidget import Ui_ConnectionHistoryWidget
 from App.Core.L10n import _tr
-from App.Widget.Form import FormManager
 from App.Widget.Form import FormViewManager
+from App.Core.ExceptionHandler import gui_exception_context
+
 
 # logger
 logger = logging.getLogger(__name__)
@@ -104,16 +102,15 @@ class ConnectionForm(FormViewManager):
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         # button icons
-        #self.ui.killClientButton.setIcon(currentIcon['system_kill'])
-        #self.ui.tableView.setModel(model)
         self.ui.tableView.setLayoutName('CurrentConnection')  # must be set AFTER model
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        #self.ui.tableView.activateWindow()
         # signal slot connections
         self.ui.killClientButton.clicked.connect(self.killClient)
      
     def killClient(self) -> None:
         "Kills selected client PID"
+        if not self.view:
+            return
         cir = self.view.selectionModel().currentIndex().row()
         pid = self.model.index(cir, 0).data() # pid on column 0
         if pid is None:
@@ -134,14 +131,8 @@ class ConnectionForm(FormViewManager):
                                 f"{msg}: {pid} ?",
                                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
                                 QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
-            try:
+            with gui_exception_context(self, _tr('Connection', "Kill client")):
                 kill_client(pid)
-            except PyAppDBError as er:
-                QMessageBox.critical(self,
-                                     _tr('MessageDialog', "Critical"),
-                                     f"Database error: {er.code}\n{er.message}",
-                                     QMessageBox.StandardButton.Ok)
-                logger.error('Database error on kill client: %s', er.message)
 
     def export(self) -> None:
         "Export current connections list to file"
@@ -199,15 +190,8 @@ class ConnectionHistoryForm(FormViewManager):
                                         1)
         if not ok:
             return
-        try:
+        with gui_exception_context(self, _tr('Connection', 'Delete older records')):
             delete_connection_history(days)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}",
-                                 QMessageBox.StandardButton.Ok)
-            logger.error('Database error on delete connection: %s', er.message)
-        else:
             self.reload()
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'information'),
@@ -222,15 +206,8 @@ class ConnectionHistoryForm(FormViewManager):
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
-        try:
+        with gui_exception_context(self, _tr('Connection', 'Delete all records')):
             delete_connection_history(0)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}",
-                                 QMessageBox.StandardButton.Ok)
-            logger.error('Database error on delete connection history: %s', er.message)
-        else:
             self.reload()
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'information'),
@@ -241,15 +218,8 @@ class ConnectionHistoryForm(FormViewManager):
         days = self.ui.spinBoxDays.value()
         if not self.ui.checkBoxAutomaticDeletion.isChecked():
             days = None
-        try:
+        with gui_exception_context(self, _tr('Connection', 'Set automatic deletion settings')):
             pa_setting_set('clear_connection_history', days)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}",
-                                 QMessageBox.StandardButton.Ok)
-            logger.error('Database error on setting automatic delete options: %s', er.message)
-        else:
             self.reload()
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),

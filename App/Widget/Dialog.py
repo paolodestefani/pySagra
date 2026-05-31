@@ -169,8 +169,6 @@ class MessageBox(QDialog):
         sty = app.style()
         icon = sty.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
         self.ui.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
-        self.ui.checkBoxShowDetailMessage.setChecked(False)
-        self.ui.frameDetails.setVisible(False)
         
 def MessageBoxCritical(parent, 
                        title: str|None = None,
@@ -982,12 +980,21 @@ class EventFilterDialog(QDialog):
             self.ui.comboBoxEvent.addItem(d, i)
         self.ui.comboBoxEvent.setCurrentText(session['event_description'])
         self.ui.comboBoxEvent.currentIndexChanged.connect(self.setDate)
+        # initial date set
+        self.setDate()
         
     def setDate(self) -> None:
         "Set date to the first of selected event"
         event = self.ui.comboBoxEvent.currentData()
-        desc, start_date, end_date, price_list = get_event_data(event)
-        self.ui.dateEditDate.setDate(start_date.date())
+        result = get_event_data(event)
+        if not result:
+            return
+        desc, start_date, end_date, price_list = result
+        today = QDateTime.currentDateTime()
+        if start_date <= today <= end_date:
+            self.ui.dateEditDate.setDate(today.date())
+        else:
+            self.ui.dateEditDate.setDate(start_date.date())
 
     def accept(self) -> None:
         "Apply event filter conditions to model"
@@ -999,9 +1006,10 @@ class EventFilterDialog(QDialog):
             dayPart = 'L' if self.ui.radioButtonLunch.isChecked() else 'D'
         else:
             dayPart = None
-        self.parent().updateFilterConditions(self.ui.comboBoxEvent.currentData(),
-                                             date,
-                                             dayPart)
+        if hasattr(self.parent(), 'updateFilterConditions'):
+            self.parent().updateFilterConditions(self.ui.comboBoxEvent.currentData(),
+                                                date,
+                                                dayPart)
         super().accept()
 
 

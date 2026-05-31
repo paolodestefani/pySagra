@@ -4,76 +4,65 @@
 <context>
     <name>ChangeCompany</name>
     <message>
-        <location filename="../../App/System/Login.py" line="313"/>
+        <location filename="../../App/System/Login.py" line="244"/>
         <source>Change company</source>
         <translation>Cambia azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="326"/>
+        <location filename="../../App/System/Login.py" line="248"/>
+        <source>Getting companies list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Login.py" line="251"/>
         <source>There are no other companies you can login</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="329"/>
+        <location filename="../../App/System/Login.py" line="254"/>
         <source>Choose a company to login</source>
         <translation type="unfinished">Selezionare un&apos;azienda a cui collegarsi</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="349"/>
-        <source>Unknown company id</source>
-        <translation>ID azienda sconosciuto</translation>
+        <location filename="../../App/System/Login.py" line="271"/>
+        <source>Setting working company</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="351"/>
-        <source>No access rights to required company</source>
-        <translation>NOn hai i diritti di accesso all&apos;azienda selezionata</translation>
+        <location filename="../../App/System/Login.py" line="282"/>
+        <source>Getting current event</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Login</name>
     <message>
-        <location filename="../../App/System/Login.py" line="103"/>
+        <location filename="../../App/System/Login.py" line="94"/>
         <source>{APPNAME} - Login</source>
         <translation>{APPNAME} - Login</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="166"/>
-        <source>Authentication failed
-wrong user or password</source>
+        <location filename="../../App/System/Login.py" line="139"/>
+        <source>Database connection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="172"/>
-        <source>Wrong database server version</source>
+        <location filename="../../App/System/Login.py" line="200"/>
+        <source>Setting working company</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="174"/>
-        <source>Wrong application database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="176"/>
-        <source>Wrong application database version</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="248"/>
-        <source>Unknown company</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="250"/>
-        <source>No access rights to required company</source>
-        <translation type="unfinished">NOn hai i diritti di accesso all&apos;azienda selezionata</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="274"/>
+        <location filename="../../App/System/Login.py" line="215"/>
         <source>There is no company you can log on</source>
         <translation>Non ci sono aziende alle quali collegarci</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="297"/>
+        <location filename="../../App/System/Login.py" line="221"/>
+        <source>Getting current event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Login.py" line="228"/>
         <source>Password change is required</source>
         <translation>E&apos; necessario modificare la password</translation>
     </message>
@@ -200,33 +189,12 @@ wrong user or password</source>
 <context>
     <name>MessageDialog</name>
     <message>
-        <location filename="../../App/System/Login.py" line="155"/>
-        <source>Database connection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="168"/>
-        <source>Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="255"/>
-        <location filename="../../App/System/Login.py" line="273"/>
-        <location filename="../../App/System/Login.py" line="356"/>
+        <location filename="../../App/System/Login.py" line="214"/>
         <source>Critical</source>
         <translation>Critico</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="180"/>
-        <location filename="../../App/System/Login.py" line="259"/>
-        <location filename="../../App/System/Login.py" line="284"/>
-        <location filename="../../App/System/Login.py" line="320"/>
-        <location filename="../../App/System/Login.py" line="371"/>
-        <source>Database error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Login.py" line="296"/>
+        <location filename="../../App/System/Login.py" line="227"/>
         <source>Information</source>
         <translation>Informazioni</translation>
     </message>

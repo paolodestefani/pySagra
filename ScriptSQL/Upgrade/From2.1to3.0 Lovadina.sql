@@ -728,7 +728,7 @@ INSERT INTO company.order_header (
 	change, 
 	--is_electronic_payment,
 	status,
-	fullfillment_date,
+	fulfillment_date,
 	created_by,
 	created_at,
 	updated_by,
@@ -755,7 +755,7 @@ SELECT
 	l.change,				-- change
 	--is_electronic_payment, -- is_electronic_payment
 	l.status,				-- status
-	l.fullfillment_date,	-- fullfillment_date
+	l.fulfillment_date,	-- fulfillment_date
 	l.user_ins,				-- created_by
 	l.date_ins,				-- created_at
 	l.user_upd,				-- updated_by
@@ -821,7 +821,7 @@ INSERT INTO company.order_header_department (
 	department_id,
 	note,
 	other_departments,
-	fullfillment_date,
+	fulfillment_date,
 	created_by,
 	created_at,
 	updated_by,
@@ -834,7 +834,7 @@ SELECT
 	d.department_id, 		-- department_id
 	Null,					-- note
 	Null,				 	-- other_departments
-	coalesce(h.fullfillment_date, h.date_time), 	-- fullfillment_date
+	coalesce(h.fulfillment_date, h.date_time), 	-- fulfillment_date
 	h.created_by,			-- created_by
 	h.created_at,			-- created_at
 	h.updated_by,			-- updated_by
@@ -856,7 +856,7 @@ WITH cte AS (
 		p.order_header_department_id,
 		l.note,
 		l.other_departments,
-		l.fullfillment_date,
+		l.fulfillment_date,
 		l.id
 	FROM company.order_header_department p
 	JOIN company.order_header h ON p.order_header_id = h.order_header_id
@@ -868,7 +868,7 @@ WITH cte AS (
 UPDATE company.order_header_department i
 SET note 				= cte.note,
 	other_departments	= cte.other_departments,
-	fullfillment_date	= coalesce(cte.fullfillment_date, i.fullfillment_date),
+	fulfillment_date	= coalesce(cte.fulfillment_date, i.fulfillment_date),
 	external_code		= cte.id
 FROM cte
 WHERE i.order_header_department_id = cte.order_header_department_id;

@@ -30,12 +30,9 @@ Database functions for report management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
 from App.Report import REPORT_CLASSES
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 from App.Report.ReportEngine import Report
 
@@ -49,13 +46,9 @@ def delete_all_reports() -> None:
     script = """
 DELETE FROM system.report;
 ALTER TABLE system.report ALTER COLUMN report_id RESTART WITH 1;"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
 
 
 def load_report(report_code: str,
@@ -88,13 +81,9 @@ SET report_class = {report_class},
     xml_data = {xml_data},
     is_system_object = {system};
 """
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
 
 
 def list_all_reports() -> list:
@@ -116,15 +105,11 @@ LEFT JOIN (
 	    ) v(i, c)) v 
 	ON r.report_class = v.c 
 ORDER BY v.i, report_code, l10n;"""
-    #print(script)
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
+
     
 def report_class_adapt_list(class_code: str, l10n: str='en_US') -> list:
     "Return id and description of all the report customizations for the input class"
@@ -138,13 +123,10 @@ WHERE
         r.report_class = {class_code}
     AND r.l10n = {l10n}
 ORDER BY ra.class_sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def get_report_list(report_class: str,
@@ -161,35 +143,25 @@ FROM system.report
 WHERE 
         report_class = {report_class} 
     AND l10n = {l10n};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            records = cur.fetchall()
-            return [(None, '')] + records if null else records
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        records = cur.fetchall()
+        return [(None, '')] + records if null else records
 
 
-def report_description(report_id: int) -> str|None:
+def report_description(report_id: int) -> str | None:
     "Return the report description of report code of l10n localization or en_US"
     script = t"""
 SELECT 
     description
 FROM system.report
 WHERE report_id = {report_id};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
-            if result:
-                return result[0]
-            else:
-                return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (None,))[0]
+ 
     
 def get_report_id(report_code: str, l10n: str) -> int:
     "Return the report ID of report code and l10n localization or en_US"
@@ -198,40 +170,26 @@ SELECT coalesce(a.report_id, b.report_id)
 FROM system.report a
 JOIN system.report b ON a.report_code = b.report_code AND b.l10n = 'en_US'
 WHERE a.report_code = {report_code} AND a.l10n = {l10n};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
-            if result:                
-                return result[0]
-            else:                
-                return 0
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (0,))[0]
 
 
-def report_xml(report_id: int) -> str|None:
+def report_xml(report_id: int) -> str | None:
     "Report XML definition of the report for required report customization"
     script = t"""
 SELECT 
     xml_data
 FROM system.report
 WHERE report_id = {report_id};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            result = next(cur, None)
-            if result:
-                return result[0]
-            else:
-                return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (None,))[0]
 
 
-def get_report_from_adapt(adapt_id: int) -> tuple|tuple[None]:
+def get_report_from_adapt(adapt_id: int) -> tuple | tuple[None]:
     script = t"""
 SELECT 
     r.report_id,
@@ -242,16 +200,16 @@ SELECT
 FROM system.report r
 JOIN system.adaptation ra ON r.report_id = ra.report_id AND ra.type = 'R'
 WHERE ra.adaptation_id = {adapt_id};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return next(cur, (None, None, None, None, None))
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (None, None, None, None, None))
 
 
-def report_query(report: Report, condition: list|None = None, sorting: list|None = None) -> list|None:
+def report_query(report: Report, 
+                 condition: list | None = None,
+                 sorting: list | None = None
+                 ) -> list | None:
     "Returns dataset from report query/where/order by and dynamic where/orderby clauses"
     # remove trailing ; if any
     if not report.query:
@@ -296,10 +254,7 @@ def report_query(report: Report, condition: list|None = None, sorting: list|None
     # execute query and returns result set
     #print(script)
     #print(args)
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script, args)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script, args)
+        return cur.fetchall()

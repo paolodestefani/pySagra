@@ -34,8 +34,8 @@ class Ui_MenuWidget(object):
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.page1 = QWidget()
         self.page1.setObjectName(u"page1")
-        self.verticalLayout_5 = QVBoxLayout(self.page1)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_6 = QVBoxLayout(self.page1)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.verticalLayout_3 = QVBoxLayout()
@@ -62,6 +62,18 @@ class Ui_MenuWidget(object):
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_3.addItem(self.verticalSpacer)
+
+        self.groupBox_6 = QGroupBox(self.page1)
+        self.groupBox_6.setObjectName(u"groupBox_6")
+        self.verticalLayout_5 = QVBoxLayout(self.groupBox_6)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.pushButtonDuplicate = QPushButton(self.groupBox_6)
+        self.pushButtonDuplicate.setObjectName(u"pushButtonDuplicate")
+
+        self.verticalLayout_5.addWidget(self.pushButtonDuplicate)
+
+
+        self.verticalLayout_3.addWidget(self.groupBox_6)
 
 
         self.horizontalLayout_2.addLayout(self.verticalLayout_3)
@@ -114,7 +126,7 @@ class Ui_MenuWidget(object):
 
         self.horizontalLayout_2.setStretch(1, 1)
 
-        self.verticalLayout_5.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_2)
 
         self.stackedWidget.addWidget(self.page1)
         self.page2 = QWidget()
@@ -148,6 +160,8 @@ class Ui_MenuWidget(object):
         MenuWidget.setWindowTitle(QCoreApplication.translate("MenuWidget", u"Menu", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("MenuWidget", u"Code", None))
         self.checkBoxSystem.setText(QCoreApplication.translate("MenuWidget", u"System menu", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("MenuWidget", u"Menu management", None))
+        self.pushButtonDuplicate.setText(QCoreApplication.translate("MenuWidget", u"Duplicate", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("MenuWidget", u"Description", None))
         self.pushButtonAddChild.setText("")
         self.pushButtonAdd.setText("")

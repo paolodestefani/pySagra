@@ -57,26 +57,17 @@ from App import APPVERSIONPATCH
 from App import APPVERSIONTAG
 from App import session
 from App import currentIcon
-from App.Database import EWDBS # wrong database server version
-from App.Database import EWADB # wrong application database
-from App.Database import EWAPV # wrong application version
-from App.Database import EUKNU  # unknown user id
-from App.Database import EPWDR # a password is required
-from App.Database import EWPWD # password authentication failed
-from App.Database import EUKNC # Unknown company
-from App.Database import ENACR # No access rights to required company
 
 # application modules
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Gui import setTheme
 from App.Core.Gui import setColorScheme
 from App.Core.Gui import setFont
 from App.Core.Gui import setIconTheme
 from App.Database.Connect import appconn
-from App.Database.Exceptions import PyAppDBError
-from App.Database.Exceptions import PyAppDBConnectionError
 from App.Database.Connect import has_companies_available
 from App.Database.Connect import get_companies_list
 from App.Database.Connect import get_company_desc
@@ -144,50 +135,16 @@ class LoginDialog(QDialog):
         par['db_password'] = self.ui.lineEditDBPassword.text()
         par['hostname'] = QHostInfo.localHostName()
         # connect
-        try:
+        success = False
+        with gui_exception_context(self, _tr("Login", "Database connection")):
             # on network error is better to have a wait cursor
             QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             appconn.connect(par)
-        except PyAppDBConnectionError as er:
-            # for normal cursor on error message box
-            QGuiApplication.restoreOverrideCursor()
-            MessageBoxCritical(self,
-                               _tr("MessageDialog", "Database connection"),
-                               er.code,
-                               er.message,
-                               er.detail)
+            logger.info("Database connection established")
+            success = True
+        if not success:
             self.ui.lineEditPassword.clear()
-            logger.error("Database connection error %s", er)
             return
-        except PyAppDBError as er:
-            # for normal cursor on error message box
-            QGuiApplication.restoreOverrideCursor()
-            if er.code in (EPWDR, EUKNU, EWPWD): # authentication failed (wrong user or password)
-                msg = _tr("Login", "Authentication failed\nwrong user or password")
-                QMessageBox.warning(self,
-                                _tr('MessageDialog', 'Warning'),
-                                msg)
-            else: # other error codes
-                if er.code == EWDBS:
-                    msg = _tr("Login", 'Wrong database server version')
-                elif er.code == EWADB:
-                    msg = _tr("Login", 'Wrong application database')
-                elif er.code == EWAPV:
-                    msg = _tr("Login", 'Wrong application database version')
-                else:
-                    msg = er.message
-                MessageBoxCritical(self,
-                               _tr("MessageDialog", "Database error"),
-                               er.code,
-                               er.message,
-                               er.detail)
-            self.ui.lineEditPassword.clear()
-            logger.critical("Connection error %s\n%s", er.code, str(er))
-            return
-        finally:
-            QGuiApplication.restoreOverrideCursor()
-        logger.info("Database connection established")
-
         # store login settinggs
         st = QSettings()
         st.setValue("LogIn/Server", par['server'])
@@ -195,7 +152,6 @@ class LoginDialog(QDialog):
         st.setValue("LogIn/Database", par['database'])
         st.setValue("LogIn/DbUser", string_encode(par['db_user']))
         st.setValue("LogIn/DbPassword", string_encode(par['db_password']))
-
         # user style theme
         logger.info("Setting user style to %s", session['style_theme'])
         setTheme(session['style_theme'])
@@ -225,7 +181,7 @@ class LoginDialog(QDialog):
             lang = session['l10n'][:2]
             if lang != 'en':
                 logger.info("Setting user translations to %s", lang)
-                for i in ('qt', APPNAME):
+                for i in ('qtbase', APPNAME):
                     t = QTranslator()
                     if t.load(f"{i}_{lang}", ":/"):
                         if QCoreApplication.installTranslator(t):
@@ -240,27 +196,12 @@ class LoginDialog(QDialog):
         # set working company
         if session['current_company'] and can_use_company(session['app_user_code'], session['current_company']):
             logger.info("Setting working company to %s", session['current_company'])
-            try:
+            success = False
+            with gui_exception_context(self, _tr("Login", "Setting working company")):
                 appconn.change_company(session['current_company'])
-            except PyAppDBError as er:
-                if er.code in (EUKNC,ENACR):    
-                    if er.code == EUKNC:
-                        msg = _tr("Login", 'Unknown company')
-                    elif er.code == ENACR:
-                        msg = _tr("Login", 'No access rights to required company')
-                    else:
-                        pass
-                    msg = f"{msg}\n{er.message}"
-                    QMessageBox.warning(None,
-                                        _tr("MessageDialog", "Critical"),
-                                        msg)
-                else:
-                    MessageBoxCritical(self,
-                               _tr("MessageDialog", "Database error"),
-                               er.code,
-                               er.message,
-                               er.detail)
-                logger.error("Database error %s", er.message)
+                logger.info("Working company setted to %s", session['current_company'])
+                success = True
+            if not success:
                 return
         else:
             if has_companies_available(session['app_user_code']):
@@ -277,19 +218,9 @@ class LoginDialog(QDialog):
             
         # get current event
         logger.info("Setting current event if any")
-        try:
+        with gui_exception_context(None, _tr("Login", "Getting current event")):
             get_current_event()
-        except PyAppDBError as er:
-            MessageBoxCritical(None,
-                               _tr("MessageDialog", "Database error"),
-                               er.code,
-                               er.message)
-            logger.error("Database error %s %s", er.code, er.message)
-            return
-        logger.info("Current event setted to %s %s",
-                     session['event_id'],
-                     session['event_description'])
-
+            logger.info("Current event setted to %s %s", session['event_id'], session['event_description'])
         # change password required
         if session['new_password_required']:
             QMessageBox.information(self,
@@ -313,15 +244,9 @@ class ChangeCompanyDialog(QDialog):
         self.setWindowTitle(_tr('ChangeCompany', 'Change company'))
         self.ui.labelIcon.setPixmap(currentIcon['system_change_company'].pixmap(100))
         # get available companies
-        try:
+        companies = []
+        with gui_exception_context(self, _tr('ChangeCompany', 'Getting companies list')):
             companies = get_companies_list(session['user'])
-        except PyAppDBError as er:
-            MessageBoxCritical(parent,
-                               _tr('MessageDialog', "Database error"),
-                               er.code,
-                               er.message)
-            logger.error("Database error %s %s", er.code, er.message)
-            return
         if not companies:
             self.ui.labelMessage.setText(_tr('ChangeCompany', "There are no other companies you can login"))
             self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setDisabled(True)
@@ -342,35 +267,20 @@ class ChangeCompanyDialog(QDialog):
         newco = int(value)
         newde = get_company_desc(newco)
         logger.info("On change company starting setting working company")
-        try:
+        success = False
+        with gui_exception_context(self, _tr('ChangeCompany', 'Setting working company')):
             appconn.change_company(newco)
-        except PyAppDBError as er:
-            if er.code == EUKNC: # unknown company id
-                msg = _tr('ChangeCompany', "Unknown company id")
-            elif er.code == ENACR: # no access rights to required company
-                msg = _tr('ChangeCompany', "No access rights to required company")
-            else:
-                msg = f"Database error: {er.code}"
-
-            MessageBoxCritical(self,
-                               _tr('MessageDialog', 'Critical'),
-                               msg,
-                               er.message)
-            logger.error("Database error %s %s", er.code, er.message)
+            success = True
+        if not success:            
             return
+        
         session['company'] = newco
         session['company_description'] = newde
         logger.info("On change company setting working company to %s", session['company'])
         # setting current event
         logger.info("On change company setting current event if any")
-        try:
+        with gui_exception_context(self, _tr('ChangeCompany', 'Getting current event')):
             get_current_event()
-        except PyAppDBError as er:
-            logger.error("On change company database error %s %s", er.code, er.message)
-            MessageBoxCritical(self,
-                               _tr('MessageDialog', "Database error"),
-                               er.code,
-                               er.message)
-        else:
+        if session['event_id']:
             logger.info("On change company current event setted to %s %s", session['event_id'], session['event_description'])
         super().accept()

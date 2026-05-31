@@ -30,11 +30,8 @@ Database fubctions for GUI management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -52,14 +49,11 @@ FROM system.profile_action pa
 JOIN system.connection cn ON pa.profile_code = cn.profile_code
 JOIN system.app_user u ON cn.app_user_code = u.user_code
 WHERE cn.session_id = pg_backend_pid();"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
+    
 
 def get_menu(item: str) -> list[tuple]:
     "Returns menu definition from system.menu_toolbar_item"
@@ -72,14 +66,11 @@ SELECT
 FROM system.menu_toolbar_item m
 WHERE m.parent = {item}
 ORDER BY m.sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
+
     
 def get_toolbar(item: str) -> list[tuple]:
     "Returns toolbar definition from system.menu_item"
@@ -92,13 +83,10 @@ SELECT
 FROM system.menu_toolbar_item t
 WHERE t.parent = {item}
 ORDER BY t.sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def get_menu_tree(menu: str) -> list[tuple]:
@@ -114,13 +102,10 @@ WHERE
     company_id = system.pa_current_company()
     AND parent = {menu}
 ORDER BY sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def set_user_theme(theme: str) -> None:
@@ -129,10 +114,6 @@ def set_user_theme(theme: str) -> None:
 UPDATE system.app_user 
 SET stylesheet_theme = {theme} 
 WHERE id = system.pa_current_user();"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)

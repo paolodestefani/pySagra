@@ -48,7 +48,6 @@ from PySide6.QtWidgets import QDialog
 
 # application modules
 from App import session
-#from App import currentAction
 from App import currentIcon
 from App.Database import EDSAE  # Database schema already exists (create company sp)
 from App.Database import ECIAE  # Company id already exists (create company sp)
@@ -74,6 +73,8 @@ from App.Widget.Dialog import PrintDialog
 from App.Ui.CompanyWidget import Ui_CompanyWidget
 from App.Ui.NewCompanyDialog import Ui_NewCompanyDialog
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
+
 
 # logger
 logger = logging.getLogger(__name__)
@@ -98,7 +99,7 @@ def company(action: QAction, checked: bool = False) -> None:
     
 
 class CompanyForm(FormIndexManager):
-    """Form for management of company: creation, deletion, modification
+    """Form for management of companies: creation, deletion, modification
      and user access to each company"""
 
     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
@@ -250,19 +251,16 @@ class CompanyForm(FormIndexManager):
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
-        try:
+        with gui_exception_context(self, _tr('Company', "Deleting company")):
             drop_company(companyId)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
-            logger.error('Database error on drop company: %s', er.message)
-        else:
+            
+            logger.info('Company %s/%s deleted', companyId, companyDescription)
+            
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
                                     _tr('Company', "Company deleted"))
-        self.reload()
-        self.toFirst()
+            self.reload()
+            self.toFirst()
 
     def print(self) -> None:
         "Print company list"
@@ -336,8 +334,8 @@ class NewCompanyDialog(QDialog):
         userProfile = self.ui.comboBoxProfile.currentData()
         userMenu = self.ui.comboBoxMenu.currentData()
         userToolbar = self.ui.comboBoxToolbar.currentData()
-        # create a new company from template
-        try:
+        # create a new company
+        with gui_exception_context(self, _tr('Company', "Creating new company")):
             create_company(companyCode,
                            companyDescription,
                            image)
@@ -346,23 +344,7 @@ class NewCompanyDialog(QDialog):
                                userProfile,
                                userMenu,
                                userToolbar)
-        except PyAppDBError as er:
-            if er.code == ECIAE:
-                msg = _tr("Company", "Company ID already exists. "
-                                 "Try to set a different company ID for the new "
-                                 "company")
-            else:
-                msg = f"Error: {er.code}\n{er.message}"
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Icon.Critical)
-            mbox.setWindowTitle(_tr("MessageDialog", "Critical"))
-            mbox.setText(msg)
-            mbox.setDetailedText(er.message)
-            mbox.exec_()
-            logger.error('Database error on create new company')
-            logger.error('Error code: %s', er.code)
-            logger.error('Error message: %s', er.message)
-        else:
+        
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
                                     _tr('Company', "Company created succesfully"))

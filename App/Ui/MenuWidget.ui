@@ -32,7 +32,7 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="page1">
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
          <item>
@@ -75,6 +75,22 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_6">
+             <property name="title">
+              <string>Menu management</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QPushButton" name="pushButtonDuplicate">
+                <property name="text">
+                 <string>Duplicate</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </item>

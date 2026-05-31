@@ -156,7 +156,7 @@ BEGIN
         FROM company.order_line_department 
         WHERE order_header_department_id = NEW.order_header_department_id
     LOOP
-        IF NEW.fullfillment_date IS NULL THEN
+        IF NEW.fulfillment_date IS NULL THEN
             -- ordered
             UPDATE company.order_line_department
             SET ordered_quantity    = quantity,
@@ -173,24 +173,24 @@ BEGIN
 
     -- ORDER HEADER status
 	IF (
-        SELECT bool_and(CASE WHEN fullfillment_date IS NULL THEN false ELSE true END) 
+        SELECT bool_and(CASE WHEN fulfillment_date IS NULL THEN false ELSE true END) 
         FROM company.order_header_department 
         WHERE order_header_id = NEW.order_header_id
         ) THEN
         UPDATE company.order_header 
-        SET status = 'P', fullfillment_date = now()     -- (P)rocessed
+        SET status = 'P', fulfillment_date = now()     -- (P)rocessed
         WHERE order_header_id = NEW.order_header_id;
 	ELSIF ( 
-        SELECT bool_or(CASE WHEN fullfillment_date IS NULL THEN false ELSE true END) 
+        SELECT bool_or(CASE WHEN fulfillment_date IS NULL THEN false ELSE true END) 
         FROM company.order_header_department 
         WHERE order_header_id = NEW.order_header_id
         ) THEN
 		UPDATE company.order_header 
-        SET status = 'I', fullfillment_date = Null      -- (I)n progress
+        SET status = 'I', fulfillment_date = Null      -- (I)n progress
         WHERE order_header_id = NEW.order_header_id;
     ELSE
         UPDATE company.order_header
-        SET status = 'A', fullfillment_date = Null      -- (A)quired
+        SET status = 'A', fulfillment_date = Null      -- (A)quired
         WHERE order_header_id = NEW.order_header_id;
 	END IF;
 
@@ -235,7 +235,7 @@ CREATE TABLE order_header (
     is_electronic_payment   boolean NOT NULL DEFAULT false,
     is_from_web             boolean NOT NULL DEFAULT false,
     status                  char NOT NULL DEFAULT 'A', -- (A)quired, (I)n progress, (P)rocessed
-	fullfillment_date       timestamptz(3) NULL,
+	fulfillment_date       timestamptz(3) NULL,
     external_code           integer,
     --
     CONSTRAINT order_header_pk 
@@ -291,7 +291,7 @@ CREATE TABLE order_header_department (
     note                        text,
     other_departments           text,
     barcode                     varchar(64) NULL,
-	fullfillment_date           timestamptz(3) NULL,
+	fulfillment_date           timestamptz(3) NULL,
     external_code               integer,
     --
     CONSTRAINT order_header_department_pk 

@@ -30,11 +30,9 @@ This module provides classes and functions for users management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
 from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -46,14 +44,10 @@ def user_list() -> list:
     script = """
 SELECT id 
 FROM system.app_user;"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-                return [i[0] for i in cur.fetchall()]
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return [i[0] for i in cur.fetchall()]
 
 
 def user_company_set(user: str,
@@ -63,49 +57,33 @@ def user_company_set(user: str,
                      toolbar: str
                      ) -> None:
     script = t'SELECT system.pa_user_company_set({user}, {company}, {profile}, {menu}, {toolbar});'
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
 
 
 def change_password(user: str, new_password: str) -> None:
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(t'SELECT system.pa_password_change({user}, {new_password});')
-    except psycopg.Error as er:
-        rlogger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT system.pa_password_change({user}, {new_password});')
+
 
 def encrypt_password(password: str) -> str:
     script = t"SELECT system.crypt({password}, system.gen_salt('bf'));"
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-                result = next(cur, None)
-                if result:
-                    return result[0]
-                raise PyAppDBError("00000", "Password encryption failed")
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        result = next(cur, None)
+        if result:
+            return result[0]
+        raise PyAppDBError("00000", "Password encryption failed")
+
 
 def force_password_change(user: str) -> None:
     script = t"""
 UPDATE system.app_user
 SET is_change_password_required = true
 WHERE code = {user};"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)

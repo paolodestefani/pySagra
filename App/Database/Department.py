@@ -31,10 +31,12 @@ Function for databse management of departments
 import logging
 
 # psycopg
-import psycopg
+#import psycopg
 
 # application modules
-from App.Database.Exceptions import PyAppDBError
+#from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
+
 from App.Database.Connect import appconn
 
 
@@ -65,13 +67,10 @@ SELECT department_id, description
 FROM department
 WHERE company_id = system.pa_current_company()
 ORDER BY sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er)) 
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def get_department(desc: str) -> int:
@@ -82,32 +81,25 @@ FROM department
 WHERE 
         company_id = system.pa_current_company()
     AND description = {desc};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()[0]
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er)) 
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()[0]
 
 
-def get_department_desc(dep: int) -> str|None:
+def get_department_desc(dep: int) -> str | None:
     "Returns department description of given department id"
     script = t"""
 SELECT description 
 FROM department 
 WHERE department_id = {dep};"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                return result[0]
-            else:
-                return None # should not happen
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        result = cur.execute(script).fetchone()
+        if result:
+            return result[0]
+        return None
+
     
 def get_department_barcode(dep: int) -> str | None:
     "Returns department barcode of given department id"
@@ -117,16 +109,12 @@ FROM company.department
 WHERE   
         department_id <= {dep}
     AND company_id = system.pa_current_company();"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                return result[0]
-            else:
-                return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        result = cur.execute(script).fetchone()
+        if result:
+            return result[0]
+        return None
 
 
 def get_department_printer_class(dep: int) -> int | None:
@@ -138,17 +126,13 @@ WHERE
         department_id = {dep} 
     AND is_obsolete IS false 
     AND is_menu_container IS false;"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                return result[0]
-            else:                
-                return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        result = cur.execute(script).fetchone()
+        if result:
+            return result[0]
+        return None
+    
 
 def department_takeaway_list()-> list[str]:
     "Returns a list of departments enabled for take away"
@@ -158,13 +142,8 @@ FROM department
 WHERE
     company_id = system.pa_current_company()
     AND is_for_takeaway IS True;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            if cur.rowcount:
-                return [i[0] for i in cur]
-            else:
-                return []
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return [i[0] for i in cur.fetchall()]
+    

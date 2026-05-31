@@ -41,9 +41,9 @@ from PySide6.QtWidgets import QButtonGroup
 
 # application modules
 from App import session
-from App import currentAction
 from App import currentIcon
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Profile import duplicate_profile
 from App.Database.Models import ProfileIndexModel
@@ -98,16 +98,10 @@ class DuplicateProfileDialog(QDialog):
 
     def accept(self) -> None:
         "Duplicate profile"
-        try:
+        with gui_exception_context(self, _tr('Profile', 'Duplicate profile')):
             duplicate_profile(self._fromProfile,
                               self.ui.lineEditCode.text(),
                               self.ui.lineEditDescription.text())
-        except PyAppDBError as er:
-            logger.error("On duplicate profile: database error: %s %s", er.code, er.message)
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 f"{er.code} - {er.message}")
-        else:
             logger.info("On duplicate profile: operation completed successfully")
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
@@ -242,7 +236,6 @@ class ProfileForm(FormIndexManager):
 
     def duplicate(self) -> None:
         "Duplicate the current profile"
-        # get the current price list id
         currentProfile = self.model.index(self.mapper.currentIndex(), CODE).data()
         dlg = DuplicateProfileDialog(self, currentProfile)
         dlg.exec()

@@ -28,7 +28,6 @@ Postgres to PySide6 data type adaptation
 """
 
 # standard library
-# import logging
 
 # psycopg
 import psycopg
@@ -86,7 +85,7 @@ psycopg.adapters.register_loader('timestamptz', TimestampTzQDateTimeLoader)
 
 class QDateTimeTimestampTzDumper(Dumper): # QDateTime -> timestamptz
     
-    def dump(self, value: QDateTime|None) -> bytes|None:
+    def dump(self, value: QDateTime | None) -> bytes | None:
         if value is None or not value.isValid():
            return None 
         return bytes(value.toString(Qt.DateFormat.ISODateWithMs), 'utf-8')

@@ -30,11 +30,9 @@ This module provides classes and functions for databse settings management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
 from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 # application modules
@@ -49,7 +47,7 @@ logger = logging.getLogger(__name__)
 class SettingClass():
     "A dict like class for get/set a single setting parmeter"
 
-    def __getitem__(self, key: str) -> str|None:
+    def __getitem__(self, key: str) -> str | None:
         "Get value for key from setting table"
         # use fstring because field names are not used for cursor parameters
         # t-strings don't work as of psycopg 3.3.4
@@ -57,31 +55,24 @@ class SettingClass():
 SELECT {key:i}
 FROM company.setting 
 WHERE company_id = system.pa_current_company();"""
-        try:
-            with appconn.cursor() as cur:
-                cur.execute(script)
-                result = cur.fetchone()
-                if result is None:
-                    raise PyAppDBError("No data found", "No setting value found for key: " + key)
-                return result[0]
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            cur.execute(script)
+            result = next(cur, (None,))[0]
+            if result is None:
+                raise PyAppDBError("No data found", "No setting value found for key: " + key)
+            return result
+        
     def __setitem__(self, key: str, value: str) -> None:
         "Set value for key in setting table"
         script = t"""
 UPDATE company.setting
 SET {key:i} = {value}
 WHERE company_id = system.pa_current_company();"""
-        try:
-            with appconn.transaction():
-                with appconn.cursor() as cur:
-                    cur.execute(script)
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            cur.execute(script)
+        
     def __repr__(self) -> str:
         return "Company setting get/set utility class"
 

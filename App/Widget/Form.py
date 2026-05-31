@@ -53,6 +53,7 @@ from App.Database.AbstractModels.TreeModel import TreeModel, TreeQueryModel
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
 from App.Widget.Dialog import MessageBoxCritical
+from App.Core.ExceptionHandler import gui_exception_context
 
 # edit status settings
 (NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST,
@@ -254,62 +255,62 @@ class FormManager[T](QWidget):
                                  _tr("Form", "Error on mapper submit"))
             self.mapper.setCurrentIndex(row)
             return
-        try:
+        with gui_exception_context(self, _tr("Form", "Error on model submit all")):
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
-        except PyAppDBError as er:
-            if er.code == '23000':
-                msg = _tr("Form", "Integrity constraint violation: "
-                          "unable to commit the transaction because "
-                          "a generic integrity violation occured")
-            if er.code == '23502':
-                msg = _tr("Form", "Integrity constraint violation: "
-                          "unable to commit the transaction because "
-                          "a not null error occured")
-            if er.code == '23503':
-                msg = _tr("Form", "Foreign key violation: "
-                          "unable to delete the current record because "
-                          "is still referenced from another database object")
-            if er.code == '23505':
-                msg = _tr("Form", "Duplicate key value violates unique constraint: "
-                          "Can not insert the current record because a key value "
-                          "is already present in the database table")
-            else:
-                msg = (f"Unrecognized database error code: {er.code}\n"
-                       f"For more information click on 'Show Details...'")
-            MessageBoxCritical(self, 
-                               _tr("Form", "Error on model submit all"),
-                               msg,
-                               er.message)
-            appconn.rollback()
+        # except PyAppDBError as er:
+        #     if er.code == '23000':
+        #         msg = _tr("Form", "Integrity constraint violation: "
+        #                   "unable to commit the transaction because "
+        #                   "a generic integrity violation occured")
+        #     if er.code == '23502':
+        #         msg = _tr("Form", "Integrity constraint violation: "
+        #                   "unable to commit the transaction because "
+        #                   "a not null error occured")
+        #     if er.code == '23503':
+        #         msg = _tr("Form", "Foreign key violation: "
+        #                   "unable to delete the current record because "
+        #                   "is still referenced from another database object")
+        #     if er.code == '23505':
+        #         msg = _tr("Form", "Duplicate key value violates unique constraint: "
+        #                   "Can not insert the current record because a key value "
+        #                   "is already present in the database table")
+        #     else:
+        #         msg = (f"Unrecognized database error code: {er.code}\n"
+        #                f"For more information click on 'Show Details...'")
+        #     MessageBoxCritical(self, 
+        #                        _tr("Form", "Error on model submit all"),
+        #                        msg,
+        #                        er.message)
+        #     appconn.rollback()
             self.mapper.setCurrentIndex(row)
             return
         # details data and mapper
         for mapper in self.linkedMappers:
             mapper.submit()
         for relation, masterColumn, detailField in self.detailRelations:
-            try:
+            with gui_exception_context(self, _tr("Form", "Error on model detail submit all")):
                 value = self.model.data(self.model.index(row, masterColumn))
                 if hasattr(relation, 'submitAll'):
                     relation.submitAll(detailField, value)
-            except PyAppDBError as er:
-                if er.code == '23503':
-                    msg = _tr("Form", "Referential integrity violation: "
-                              "unable to delete the current record because "
-                              "is still referenced from another database object")
-                if er.code == '23505':
-                    msg = _tr("Form", "Duplicate key value violates unique constraint: "
-                              "Can not insert the current record because a key value "
-                              "is already present in the database table")
-                else:
-                    msg = (f"Unrecognized database error code: {er.code}\n"
-                           f"For more information click on 'Show Details...'")
-                MessageBoxCritical(self,
-                                   _tr("Form", "Error on model detail submit all"),
-                                   msg,
-                                   er.message)
-                appconn.rollback()
-                return
+            # except PyAppDBError as er:
+            #     if er.code == '23503':
+            #         msg = _tr("Form", "Referential integrity violation: "
+            #                   "unable to delete the current record because "
+            #                   "is still referenced from another database object")
+            #     if er.code == '23505':
+            #         msg = _tr("Form", "Duplicate key value violates unique constraint: "
+            #                   "Can not insert the current record because a key value "
+            #                   "is already present in the database table")
+            #     else:
+            #         msg = (f"Unrecognized database error code: {er.code}\n"
+            #                f"For more information click on 'Show Details...'")
+            #     MessageBoxCritical(self,
+            #                        _tr("Form", "Error on model detail submit all"),
+            #                        msg,
+            #                        er.message)
+            #     appconn.rollback()
+            #     return
         # commit transactions
         appconn.commit()
         # mapper repositioning
@@ -321,27 +322,27 @@ class FormManager[T](QWidget):
         row = self.mapper.currentIndex()
         # details data
         for relation, masterColumn, detailColumn in self.detailRelations:
-            try:
+            with gui_exception_context(self, _tr("Form", "Error on model detail submit all")):
                 relation.removeRows(0, relation.rowCount())
                 relation.submitAll()
-            except PyAppDBError as er:
-                if er.code == '23503':
-                    msg = _tr("Form", "Referential integrity violation: "
-                              "unable to delete the current record because "
-                              "is still referenced from another database object")
-                if er.code == '23505':
-                    msg = _tr("Form", "Duplicate key value violates unique constraint: "
-                              "Can not insert the current record because a key value "
-                              "is already present in the database table")
-                else:
-                    msg = (f"Unrecognized database error code: {er.code}\n"
-                           f"For more information click on 'Show Details...'")
-                MessageBoxCritical(self,
-                                   _tr("Form", "Error on model detail submit all"),
-                                   msg,
-                                   er.message)
-                appconn.rollback()
-                return
+            # except PyAppDBError as er:
+            #     if er.code == '23503':
+            #         msg = _tr("Form", "Referential integrity violation: "
+            #                   "unable to delete the current record because "
+            #                   "is still referenced from another database object")
+            #     if er.code == '23505':
+            #         msg = _tr("Form", "Duplicate key value violates unique constraint: "
+            #                   "Can not insert the current record because a key value "
+            #                   "is already present in the database table")
+            #     else:
+            #         msg = (f"Unrecognized database error code: {er.code}\n"
+            #                f"For more information click on 'Show Details...'")
+            #     MessageBoxCritical(self,
+            #                        _tr("Form", "Error on model detail submit all"),
+            #                        msg,
+            #                        er.message)
+            #     appconn.rollback()
+            #    return
         # master table
         try:
             self.model.removeRow(row)
@@ -548,31 +549,31 @@ class FormViewManager[T](QWidget):
         #    return
         if not self.model:
             return None
-        try:
+        with gui_exception_context(self, _tr("Form", "Error on model submit all")):
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
-        except PyAppDBError as er:
-            if er.code == '23503':
-                msg = _tr("Form", "Referential integrity violation: "
-                          "unable to delete the current record because "
-                          "is still referenced from another database object")
-            if er.code == '23505':
-                msg = _tr("Form", "Duplicate key value violates unique constraint: "
-                          "Can not insert the current record because a key value "
-                          "is already present in the database table")
-            else:
-                msg = (f"Unrecognized database error code: {er.code}\n"
-                       f"For more information click on 'Show Details...'")
+        # except PyAppDBError as er:
+        #     if er.code == '23503':
+        #         msg = _tr("Form", "Referential integrity violation: "
+        #                   "unable to delete the current record because "
+        #                   "is still referenced from another database object")
+        #     if er.code == '23505':
+        #         msg = _tr("Form", "Duplicate key value violates unique constraint: "
+        #                   "Can not insert the current record because a key value "
+        #                   "is already present in the database table")
+        #     else:
+        #         msg = (f"Unrecognized database error code: {er.code}\n"
+        #                f"For more information click on 'Show Details...'")
 
-            MessageBoxCritical(self,
-                               _tr("Form", "Error on model submit all"),
-                               msg,
-                               er.message)
+        #     MessageBoxCritical(self,
+        #                        _tr("Form", "Error on model submit all"),
+        #                        msg,
+        #                        er.message)
 
-            appconn.rollback()
-        else:
-            # commit transactions
-            appconn.commit()
+        #     appconn.rollback()
+        # else:
+        #     # commit transactions
+        #     appconn.commit()
 
         # mapper repositioning
         self.state = VIEW

@@ -31,11 +31,8 @@ This module provides classes and functions for database scripting management
 import logging
 from typing import Any
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -55,16 +52,13 @@ WHERE
         company_id = system.pa_current_company()
     AND class_name = {class_id} 
     AND is_active IS true;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            if cur.rowcount:
-                return {(m, j): s for m, j, s in cur.fetchall()}
-            else:
-                return {}
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        if cur.rowcount:
+            return {(m, j): s for m, j, s in cur.fetchall()}
+        else:
+            return {}
 
 
 def load_script(cls: str,
@@ -94,13 +88,9 @@ UPDATE
 SET script = {script},
     is_active = {act};
 """
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(sql)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(sql)
 
 
 def get_all_scripts() -> Any | None:
@@ -115,10 +105,7 @@ SELECT
     script
 FROM system.python_scripting;
 """
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()

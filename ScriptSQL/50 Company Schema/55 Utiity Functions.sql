@@ -80,10 +80,10 @@ RETURNS VOID AS
 $$
 BEGIN
 	UPDATE order_header_department
-    SET fullfillment_date = oh.date_time
+    SET fulfillment_date = oh.date_time
     FROM order_header_department ohd
     JOIN order_header oh ON ohd.order_header_id = oh.order_header_id
-    WHERE ohd.fullfillment_date is null
+    WHERE ohd.fulfillment_date is null
         AND oh.event_id = in_event; -- event include company
 END;
 $$ 

@@ -75,16 +75,16 @@ from App.Report.Order import printOrderDepartmentReport
 # index model order header
 (I_ID, EVENT, I_DATETIME, I_NUMBER, I_DATE, I_TIME, I_STATDATE, I_STATDAYPART, I_CASHDESK,
  I_DELIVERY, I_EP, I_TABLE, I_CUSTOMER, I_COVERS, I_AMOUNT, I_DISCOUNT, I_CASH, I_CHANGE,
- I_STATUS, I_FULLFILLMENT, 
+ I_STATUS, I_FULFILLMENT, 
  I_USER_INS, I_DATE_INS, I_USER_UPD, I_DATE_UPD) = range(24)
 
 # model order header
 (ID, EVENT, DATETIME, NUMBER, DATE, TIME, STATDATE, STATDAYPART, CASHDESK,
  DELIVERY, EP, FW, TABLE, CUSTOMER, CONTACT, COVERS, AMOUNT, DISCOUNT, CASH, CHANGE,
- STATUS, FULLFILLMENT, USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(26)
+ STATUS, FULFILLMENT, USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(26)
 
 # model order header department
-(P_ID, P_IDHEADER, P_DEPARTMENT, P_NOTE, P_OTHER, P_BARCODE, P_FULLFILLMENT) = range(7)
+(P_ID, P_IDHEADER, P_DEPARTMENT, P_NOTE, P_OTHER, P_BARCODE, P_FULFILLMENT) = range(7)
 
 # model order detail
 (D_ID, D_IDHEADER, D_ITEM, D_VARIANTS, D_QUANTITY, D_PRICE, D_AMOUNT) = range(7)
@@ -165,7 +165,7 @@ class OrderForm(FormIndexManager):
                                                 ('I', _tr('OrderArchive', 'In progress')),
                                                 ('P', _tr('OrderArchive', 'Processed'))))
         self.mapper.addMapping(self.ui.comboBoxStatus, STATUS, b"modelDataStr")
-        self.mapper.addMapping(self.ui.dateTimeEditFullfillment, FULLFILLMENT, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.dateTimeEditFullfillment, FULFILLMENT, b"modelDataDateTime")
         # details tableView
         self.ui.tableViewDetails.setModel(modelDet)
         self.ui.tableViewDetails.setLayoutName('OrderArchiveDetail')

@@ -36,7 +36,6 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QDir
-from PySide6.QtCore import QFileInfo
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QIcon
@@ -44,13 +43,11 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QDialogButtonBox
 
 # application modules
 from App import session
-from App import currentAction
 from App.Core.L10n import _tr
-from App.Database.Adaptation import set_adapt_setting
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Adaptation import export_adaptation
 from App.Database.Adaptation import export_adaptation_setting
 from App.Database.Adaptation import import_adaptation
@@ -121,7 +118,7 @@ class CustomizationsDialog(QDialog):
             return
         if not fileName.endswith('.zip'):
             fileName += '.zip'
-        try:
+        with gui_exception_context(self, _tr('Customizations', 'Export customizations')):
             # looks like zipfile accept qt file path with / so no need to use os.path.join
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                 # version
@@ -139,16 +136,11 @@ class CustomizationsDialog(QDialog):
                 writer = csv.writer(string_buffer)
                 writer.writerows(export_adaptation_setting())
                 zf.writestr('adaptation_setting', string_buffer.getvalue())
-        except Exception as er:
-            msg = _tr('Customizations', "Error on saving customizations to file")
-            MessageBoxCritical(self,
-                               _tr('Customizations', "Export customizations"),
-                               f"{msg}\n{er}")
-        else:
-            st.setValue("ExportAdaptationsFile", fileName)
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', 'Information'),
-                                    _tr('Customizations', 'Export completed successfully'))
+    
+                st.setValue("ExportAdaptationsFile", fileName)
+                QMessageBox.information(self,
+                                        _tr('MessageDialog', 'Information'),
+                                        _tr('Customizations', 'Export completed successfully'))
 
     def importCustomization(self) -> None:
         "Import customizations from a zipped CSV files - *.zip"
@@ -160,7 +152,7 @@ class CustomizationsDialog(QDialog):
                                                        filter= 'pySagra Zipped Adaptation File (*.zip *.*)')
         if fileName == "":
             return
-        try:
+        with gui_exception_context(self, _tr('Customizations', 'Import customizations')):
             adaptations: list[tuple] = []
             adaptsettings: list[tuple] = []
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
@@ -207,13 +199,8 @@ class CustomizationsDialog(QDialog):
                         int(row[10]) if row[10] else None,  # combo2 index
                         row[11] or None                     # widget value
                                     ))
-            import_adaptation(adaptations, adaptsettings)
-        except Exception as er:
-            msg = _tr('Customizations', "Error on reading customizations from file")
-            MessageBoxCritical(self,
-                               _tr('Customizations', "Import customizations"),
-                               f"{msg}\n{er}")
-        else:
+                import_adaptation(adaptations, adaptsettings)
+       
             st.setValue("ExportAdaptationsFile", fileName)
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
@@ -228,15 +215,9 @@ class CustomizationsDialog(QDialog):
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
-        try:
+        with gui_exception_context(self, _tr('Customizations', "Clear customizations")):
             clear_adaptation()
-        except Exception as er:
-            msg = _tr('Customizations', "Error on clearing customizations")
-            QMessageBox.critical(self,
-                                  _tr('Customizations', "Clear customizations"),
-                                  f"{msg}\n{er}")
-        else:
-            # completed
+        
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Customizations', 'Customizations deleted'))

@@ -69,6 +69,7 @@ from App import currentAction
 from App import currentIcon
 from App import APPNAME
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Gui import TBS, TP
 from App.System.Login import ChangeCompanyDialog
 from App.System.Action import createActionDictionary
@@ -76,9 +77,7 @@ from App.Database.Connect import appconn
 from App.Database.Gui import get_actions
 from App.Database.Gui import get_menu
 from App.Database.Gui import get_toolbar
-#from App.Widget.Control import Counter
 
-#from App.Ui.GoToDialog import Ui_GoToDialog
 
 # logger
 logger = logging.getLogger(__name__)
@@ -106,83 +105,87 @@ def createActions(mainWindow: MainWindow) -> None:
     createActionDictionary(mainWindow)
     action: QAction|QWidgetAction
     # create active actions for user's profile
-    for act, aut in get_actions(): # base
-        if act not in actionDefinition:
-            continue
-        if act == 'edit_counter':
-            # widgetAction for record counter current
-            action = QWidgetAction(mainWindow)
-            action.setDefaultWidget(mainWindow.counter)
-        else:
-            # regular action for anything else
-            action = QAction(actionDefinition[act][DESC], mainWindow)  # description
-        
-        action.setMenuRole(actionDefinition[act][MERO])
-        
-        action.setData(aut) # authorization
+    with gui_exception_context(mainWindow, _tr('MainWindow', 'Create actions')):
+        for act, aut in get_actions(): # base
+            if act not in actionDefinition:
+                continue
+            if act == 'edit_counter':
+                # widgetAction for record counter current
+                action = QWidgetAction(mainWindow)
+                action.setDefaultWidget(mainWindow.counter)
+            else:
+                # regular action for anything else
+                action = QAction(actionDefinition[act][DESC], mainWindow)  # description
+            
+            action.setMenuRole(actionDefinition[act][MERO])
+            
+            action.setData(aut) # authorization
 
-        if actionDefinition[act][SLOT]:  # slot, passing qaction
-            action.triggered.connect(partial(actionDefinition[act][SLOT], action))
-        if actionDefinition[act][CHCK]:  # chackable
-            action.setCheckable(True)
-        if actionDefinition[act][ICON]:  # icon
-            action.setIcon(currentIcon[actionDefinition[act][ICON]])
-        if actionDefinition[act][SHCT]:  # standard key shortcut
-            action.setShortcut(actionDefinition[act][SHCT])
-        if actionDefinition[act][TOOL]:  # tooltip
-            action.setToolTip(actionDefinition[act][TOOL])
-        if actionDefinition[act][STAT]:  # statustip
-            action.setStatusTip(actionDefinition[act][STAT])
-        if actionDefinition[act][WHAT]:  # whatsthis
-            action.setWhatsThis(actionDefinition[act][WHAT])
-        
-        mainWindow.addAction(action)
-        currentAction[act] = action
-        
+            if actionDefinition[act][SLOT]:  # slot, passing qaction
+                action.triggered.connect(partial(actionDefinition[act][SLOT], action))
+            if actionDefinition[act][CHCK]:  # chackable
+                action.setCheckable(True)
+            if actionDefinition[act][ICON]:  # icon
+                action.setIcon(currentIcon[actionDefinition[act][ICON]])
+            if actionDefinition[act][SHCT]:  # standard key shortcut
+                action.setShortcut(actionDefinition[act][SHCT])
+            if actionDefinition[act][TOOL]:  # tooltip
+                action.setToolTip(actionDefinition[act][TOOL])
+            if actionDefinition[act][STAT]:  # statustip
+                action.setStatusTip(actionDefinition[act][STAT])
+            if actionDefinition[act][WHAT]:  # whatsthis
+                action.setWhatsThis(actionDefinition[act][WHAT])
+            
+            mainWindow.addAction(action)
+            currentAction[act] = action
+            
 
 # create menu
 
 def addMenuItems(item: str, menu: QMenuBar|QMenu) -> None:
     "Add action or submenu to menu"
-    for child, itemType, description, action in get_menu(item):
-        if itemType == 'S':
-            menu.addSeparator()
-        elif itemType == 'M':
-            subMenu = menu.addMenu(description)
-            addMenuItems(child, subMenu)
-        else:
-            if action in currentAction:
-                menu.addAction(currentAction[action])
+    with gui_exception_context(menu, _tr('MainWindow', 'Create menu')):
+        for child, itemType, description, action in get_menu(item):
+            if itemType == 'S':
+                menu.addSeparator()
+            elif itemType == 'M':
+                subMenu = menu.addMenu(description)
+                addMenuItems(child, subMenu)
+            else:
+                if action in currentAction:
+                    menu.addAction(currentAction[action])
 
 def createMenuBar(mainWindow: QMainWindow) -> None:
     "Create menu bar adding menus"
     menuBar = QMenuBar() # for MAC we need to create a menubar and set later
-    for child, itemType, description, action in get_menu(session['menu']):
-        menu = menuBar.addMenu(description or "EMPTY MENU")
-        addMenuItems(child, menu)
-    mainWindow.setMenuBar(menuBar)
+    with gui_exception_context(menuBar, _tr('MainWindow', 'Create menu')):
+        for child, itemType, description, action in get_menu(session['menu']):
+            menu = menuBar.addMenu(description or "EMPTY MENU")
+            addMenuItems(child, menu)
+        mainWindow.setMenuBar(menuBar)
 
 # create toolbars
 
 def createToolBar(mainWindow: QMainWindow) -> None:
     "Create toolbars"
-    for child, itemType, description, action in get_toolbar(session['toolbar']):
-        toolBar = QToolBar(description)
-        toolBar.setObjectName(description)
-        toolBar.setToolButtonStyle(TBS[session['tool_button_style'] or 'I'][1])
-        for child2, itemType2, description2, action2 in get_toolbar(child):
-            if itemType2 == 'S':
-                toolBar.addSeparator()
-            else:
-                if action2 in currentAction:
-                    a = currentAction[action2]
-                    sc = a.shortcut()
-                    if sc:
-                        t = a.toolTip()
-                        s = sc.toString()
-                        a.setToolTip(t + f" [{s}]")
-                    toolBar.addAction(a)
-        mainWindow.addToolBar(toolBar)
+    with gui_exception_context(mainWindow, _tr('MainWindow', 'Create toolbars')):
+        for child, itemType, description, action in get_toolbar(session['toolbar']):
+            toolBar = QToolBar(description)
+            toolBar.setObjectName(description)
+            toolBar.setToolButtonStyle(TBS[session['tool_button_style'] or 'I'][1])
+            for child2, itemType2, description2, action2 in get_toolbar(child):
+                if itemType2 == 'S':
+                    toolBar.addSeparator()
+                else:
+                    if action2 in currentAction:
+                        a = currentAction[action2]
+                        sc = a.shortcut()
+                        if sc:
+                            t = a.toolTip()
+                            s = sc.toString()
+                            a.setToolTip(t + f" [{s}]")
+                        toolBar.addAction(a)
+            mainWindow.addToolBar(toolBar)
 
 # custom tab widget
 
@@ -264,6 +267,8 @@ class TabWidget(QTabWidget):
                          Qt.AlignmentFlag.AlignCenter,
                          evds)
 
+# custom counter widget for record navigation, show current record and total records count, 
+# with a red border when a limit is reached
 
 class Counter(QLineEdit):
     """A QLabel with a custom style to show the current record number and 
@@ -609,7 +614,7 @@ class MainWindow(QMainWindow):
         return True
 
     def helpLink(self) -> str:
-        "Return contect help link if available"
+        "Return context help link if available"
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'helpLink') and w.helpLink:
             return w.helpLink

@@ -21,3 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
+"""System modules
+
+This module contains system-related management forms and dialogs
+
+"""

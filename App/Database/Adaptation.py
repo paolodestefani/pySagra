@@ -32,9 +32,6 @@ creating, deleting, listing, exporting, importing adaptations and their settings
 import logging
 from typing import List, Tuple, Any
 
-# psycopg
-import psycopg
-
 # application modules
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Exceptions import db_exception_context
@@ -44,13 +41,13 @@ from App.Database.Connect import appconn
 # logger
 logger = logging.getLogger(__name__)
 
+
 def create_adaptation(adapt_type: str,
                       adapt_class: str, 
                       description: str, 
                       report_id: int | None = None,
                       system: bool = False) -> int:
     """Create a new adaptation returning the generated id"""
-    
     script = t"""
 INSERT INTO system.adaptation (
     type,
@@ -65,10 +62,9 @@ VALUES (
     {report_id},
     {system})
 RETURNING adaptation_id;"""
-    
     # Unified context managers ensuring proper evaluation order:
     # 1. Error trapping -> 2. Transaction lifecycle -> 3. Cursor allocation
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         result = cur.execute(script).fetchone()
         if result:
             return result[0]
@@ -76,16 +72,16 @@ RETURNING adaptation_id;"""
             # Custom exception raised manually if the INSERT returns no rows
             raise PyAppDBError('00000', 'Failed to create adaptation')
 
+
 def is_system_object(adapt_id: int) -> bool:
     """Check if the adaptation id is a system object"""
-    
     script = t"""
 SELECT adaptation_id
 FROM system.adaptation
 WHERE adaptation_id = {adapt_id}
     AND is_system_object IS true;"""
-    
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         # Using fetchone() is safer than rowcount for SELECT queries in psycopg 3
         return cur.fetchone() is not None
@@ -98,23 +94,20 @@ def delete_adaptation(adapt_id: int) -> None:
 DELETE FROM system.adaptation
 WHERE adaptation_id = {adapt_id}
     AND is_system_object = false;"""
-    
     script2 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
     COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
     (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
 );"""
-    
     script3 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
     COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
     (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
 );"""
-    
     # Unified context managers in the recommended evaluation order
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script1)
         cur.execute(script2)
         cur.execute(script3)
@@ -125,30 +118,26 @@ def clear_adaptation() -> None:
     # Also delete adaptation settings and user defaults (handled via cascade constraints in DB)
     script1 = """
 DELETE FROM system.adaptation;"""
-    
     script2 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
     COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
     (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
 );"""
-    
     script3 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
     COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
     (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
 );"""
-    
     script4 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation_user_default', 'adaptation_user_default_id'),
     COALESCE((SELECT max(adaptation_user_default_id) FROM system.adaptation_user_default), 1),
     (SELECT max(adaptation_user_default_id) IS NOT NULL FROM system.adaptation_user_default)
 );"""
-    
     # Unified context managers ensuring atomic execution of all clean-up statements
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         for statement in (script1, script2, script3, script4):
             cur.execute(statement)
 
@@ -166,7 +155,7 @@ WHERE
     AND class = {adapt_class}
 ORDER BY class_sorting;"""
     # Unified context managers in the recommended sequence
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         return cur.fetchall()
     
@@ -189,7 +178,7 @@ FROM system.adaptation
 ORDER BY adaptation_id;
 """
     # Unified context managers for safe execution and clean tracking
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         return cur.fetchall()
 
@@ -213,7 +202,7 @@ SELECT
 FROM system.adaptation_setting
 ORDER BY adaptation_setting_id;"""
     # Unified context managers handling error trapping, transaction lifecycle, and cursor
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         return cur.fetchall()
 
@@ -224,13 +213,10 @@ def import_adaptation(adaptations: List[Tuple[Any, ...]],
     # For executemany, traditional placeholder syntax (%s) is required
     script1 = """
 DELETE FROM system.adaptation;"""  # Also deletes adaptation settings via cascade
-    
     script2 = """
 ALTER TABLE system.adaptation ALTER COLUMN adaptation_id RESTART WITH 1;"""
-    
     script3 = """
 ALTER TABLE system.adaptation_setting ALTER COLUMN adaptation_setting_id RESTART WITH 1;"""
-    
     script4 = """
 INSERT INTO system.adaptation (
     adaptation_id,
@@ -243,7 +229,6 @@ INSERT INTO system.adaptation (
     row_count_limit,
     is_system_object)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    
     script5 = """
 INSERT INTO system.adaptation_setting (
     adaptation_setting_id, 
@@ -259,24 +244,21 @@ INSERT INTO system.adaptation_setting (
     combo2_index,
     widget_value)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    
     script6 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
     COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
     (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
 );"""
-    
     script7 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
     COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
     (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
 );"""
-    
     # Unified context managers ensure that if any batch insert or sequence reset fails,
     # the entire database import operation undergoes a clean rollback.
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script1)
         cur.execute(script2)
         cur.execute(script3)
@@ -293,9 +275,8 @@ SELECT
     row_count_limit
 FROM system.adaptation
 WHERE adaptation_id = {adapt_id};"""
-    
     # Unified context managers including the transaction block for consistency
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         result = cur.execute(script).fetchone()
         if result:
             return result[0]
@@ -310,7 +291,7 @@ SET row_count_limit = {limit}
 WHERE adaptation_id = {adapt_id};"""
     
     # Unified context managers ensuring proper execution order and atomicity
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
     
 
@@ -327,7 +308,7 @@ SELECT
 FROM system.adaptation_setting
 WHERE adaptation_id = {adapt_id}
 ORDER BY layout_row;"""
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         records = cur.fetchall()
         # Safe empty state check instead of relying on cur.rowcount
@@ -365,7 +346,7 @@ VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
     # Unified context managers guarantee that the DELETE and the bulk INSERT
     # occur within a single atomic transaction block. If any insert fails,
     # the previous settings are automatically preserved via rollback.
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script1)
         cur.executemany(script2, columns)
 
@@ -378,7 +359,7 @@ FROM system.adaptation
 WHERE adaptation_id = {adapt_id};"""
     
     # Unified context managers in the recommended evaluation order
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         result = cur.execute(script).fetchone()
         if result:
             return result[0]
@@ -391,7 +372,7 @@ def set_adapt_sorting(adapt_id: int, sorting: int) -> None:
 UPDATE system.adaptation
 SET class_sorting = {sorting}
 WHERE adaptation_id = {adapt_id};"""
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
     
 
@@ -404,7 +385,7 @@ WHERE
         type  = {adapt_type} 
     AND class = {adapt_class};"""
     # Unified context managers ensuring consistent execution and clean exception trapping
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         result = cur.execute(script).fetchone()
         if result:
             return result
@@ -427,7 +408,7 @@ SET is_default_for_class = true
 WHERE adaptation_id = {adapt_id};"""
     # Unified context managers guarantee that the initial SELECT and both UPDATE
     # statements are executed within a single, isolated atomic transaction block.
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         result = cur.execute(script1).fetchone()
         if not result:
             return None
@@ -447,7 +428,7 @@ WHERE
     AND class = {adapt_class}
     AND app_user_code = {user};"""
     # Unified context managers in the recommended evaluation order
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         result = cur.execute(script).fetchone()
         if result:
             return result
@@ -471,7 +452,7 @@ WHERE
     AND class = {adapt_class}
     AND is_default_for_class IS true;"""
     # Unified context managers execution within a single isolated transaction
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         # 1. Try to fetch user-specific default configuration
         result = cur.execute(script1).fetchone()
         if result:
@@ -506,7 +487,7 @@ VALUES (
     {adapt_id});"""
     # Unified context managers guarantee that both the DELETE and the INSERT
     # statement are executed within a single, isolated atomic transaction block.
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script1)
         cur.execute(script2)
 
@@ -523,7 +504,7 @@ FROM system.adaptation_setting
 WHERE adaptation_id = {adapt_id}
 ORDER BY sorting;"""
     # Unified context managers including the transaction block for structural consistency
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         return cur.fetchall()
 
@@ -545,6 +526,6 @@ INSERT INTO system.adaptation_setting (
     size)
 VALUES (%s, %s, %s, %s, %s);"""
     # Unified context managers guarantee that both statements run in a single atomic transaction
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script1)
         cur.executemany(script2, columns)

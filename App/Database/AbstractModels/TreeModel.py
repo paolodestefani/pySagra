@@ -28,6 +28,7 @@ This module contains generic and reusable tree models for database tables
 """
 
 # standard library
+import logging
 from typing import Any
 
 # psycopg
@@ -43,8 +44,13 @@ from PySide6.QtCore import QModelIndex
 # application modules
 from App.Database import OVFIELD
 from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 from App.Core.L10n import _tr
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 UPDATED, INSERTED, DELETED = range(3)
@@ -66,12 +72,10 @@ SELECT
 FROM system.menu_toolbar_item m
 WHERE parent = %s
 ORDER BY sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(sql, (parent,))
-            return cur.fetchall()
-    except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(sql, (parent,))
+        return cur.fetchall()
 
 
 class TreeItem():
@@ -198,22 +202,20 @@ class TreeQueryModel(QAbstractItemModel):
         self.endResetModel()
 
     def _walk(self, parentItem):
-        try:
-            with appconn.cursor() as cur:
-                x = parentItem.childFieldValue(self.childFieldColumn)
-                cur.execute(self.script[self.currentLevel], (x,))
-                for record in cur:
-                    itemData = dict()
-                    # selected fields
-                    for i in range(len(self.columns)):
-                        itemData[i] = record[i]
-                    n = TreeItem(itemData, parentItem)
-                    parentItem.appendChild(n)
-                    self.currentLevel += 1
-                    self._walk(n)
-                    self.currentLevel -= 1
-        except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            x = parentItem.childFieldValue(self.childFieldColumn)
+            cur.execute(self.script[self.currentLevel], (x,))
+            for record in cur:
+                itemData = dict()
+                # selected fields
+                for i in range(len(self.columns)):
+                    itemData[i] = record[i]
+                n = TreeItem(itemData, parentItem)
+                parentItem.appendChild(n)
+                self.currentLevel += 1
+                self._walk(n)
+                self.currentLevel -= 1
 
     def rowCount(self, parent=QModelIndex()):
         parentItem = self.getItem(parent)
@@ -350,28 +352,26 @@ class TreeModel(QAbstractItemModel):
             #return False
 
     def _walk(self, parentItem):
-        try:
-            with appconn.cursor() as cur:
-                #print("Mogrify",cur.mogrify(script, args))
-                x = parentItem.childFieldValue(self.childFieldColumn)
-                cur.execute(self._script, (x,))
-                for record in cur:
-                    #print("Rec", record)
-                    itemData = dict()
-                    # selected fields
-                    for i in range(len(self.columns)):
-                        itemData[i] = record[i]
-                    n = TreeItem(itemData, parentItem)
-                    # primary key fields
-                    n.pkey = {self.primaryKey[i - self._cols]: record[i] for i in self._pkcols}
-                    # row timestamp
-                    n.objectVersion = record[self._ovcol]
-                    n.state='S'
-                    parentItem.appendChild(n)
-                    # if self.hasChild(n.itemData[self.sqlChildFieldColumn]):
-                    self._walk(n)
-        except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            #print("Mogrify",cur.mogrify(script, args))
+            x = parentItem.childFieldValue(self.childFieldColumn)
+            cur.execute(self._script, (x,))
+            for record in cur:
+                #print("Rec", record)
+                itemData = dict()
+                # selected fields
+                for i in range(len(self.columns)):
+                    itemData[i] = record[i]
+                n = TreeItem(itemData, parentItem)
+                # primary key fields
+                n.pkey = {self.primaryKey[i - self._cols]: record[i] for i in self._pkcols}
+                # row timestamp
+                n.objectVersion = record[self._ovcol]
+                n.state='S'
+                parentItem.appendChild(n)
+                # if self.hasChild(n.itemData[self.sqlChildFieldColumn]):
+                self._walk(n)
 
     def rowCount(self, parent=QModelIndex()):
         parentItem = self.getItem(parent)
@@ -503,35 +503,32 @@ class TreeModel(QAbstractItemModel):
 
         self._store(self.rootItem)  # for inserted/updated items
         # for deleted items
-        try:
-            with appconn.cursor() as cur: # manual submit, no commit
-                for dd in self.toDelete:
-                    # check if record was modified
-                    args = dd.pkey.copy()
-                    args['object_version'] = dd.objectVersion # self.toDelete[row]['rowtimestamp']
-                    #print("SQL delete check", cur.mogrify(self.sqlCheck, args))
-                    cur.execute(self.sqlCheck, args)
-                    if cur.rowcount == 0:
-                        self.pgError = _tr("Model", "Row modified before delete")
-                        return False
-                    # delete record
-                    # where = " AND ".join([f"{i} = %({i})s" for i in self.toDelete[row]['pkey']])
-                    where = " AND ".join([f"{i} = %({i})s" for i in dd.pkey])
-                    script = (f"DELETE FROM {self.sqlTable}\n"
-                              f"WHERE {where};")
-                    #args = dict()
-                    # args.update(self.toDelete[row]['pkey'])
-                    #args.update(dd.pkey)
-                    #print("SQL delete", cur.mogrify(script, args))
-                    #print("** DELETE **")
-                    #print(cur.mogrify(script, dd.pkey))
-                    cur.execute(script, dd.pkey)
-                # clear deleted record list
-                self.toDelete.clear()
-        except psycopg.Error as er:
-            raise PyAppDBError(er.diag.sqlstate, er)
-        else:
-            return True
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            for dd in self.toDelete:
+                # check if record was modified
+                args = dd.pkey.copy()
+                args['object_version'] = dd.objectVersion # self.toDelete[row]['rowtimestamp']
+                #print("SQL delete check", cur.mogrify(self.sqlCheck, args))
+                cur.execute(self.sqlCheck, args)
+                if cur.rowcount == 0:
+                    self.pgError = _tr("Model", "Row modified before delete")
+                    return False
+                # delete record
+                # where = " AND ".join([f"{i} = %({i})s" for i in self.toDelete[row]['pkey']])
+                where = " AND ".join([f"{i} = %({i})s" for i in dd.pkey])
+                script = (f"DELETE FROM {self.sqlTable}\n"
+                            f"WHERE {where};")
+                #args = dict()
+                # args.update(self.toDelete[row]['pkey'])
+                #args.update(dd.pkey)
+                #print("SQL delete", cur.mogrify(script, args))
+                #print("** DELETE **")
+                #print(cur.mogrify(script, dd.pkey))
+                cur.execute(script, dd.pkey)
+            # clear deleted record list
+            self.toDelete.clear()
+        return True
 
     def _store(self, item):
         for child in item.childItems:
@@ -539,86 +536,76 @@ class TreeModel(QAbstractItemModel):
                 self._store(child)
             if child.state == UPDATED:
                 # updated all the item is stored
-                try:
-                    with appconn.cursor() as cur:  # manual submit, no commit
-                        # *** UPDATE ***
-                        for column in child.toModify:
-                            # check if record was already modified
-                            args = child.pkey.copy()
-                            args['object_version'] = child.objectVersion
-                            cur.execute(self.sqlCheck, args)
-                            if cur.rowcount == 0:
-                                pgerror = _tr("Model", "Row modified before update")
-                                raise PyAppDBError(0, pgerror)
-                            # update record
-                            fields = ", ".join([f"{self.columns[i][0]} = %({self.columns[i][0]})s" for i in child.toModify])
-                            # fields = ", ".join([f"{i[0]} = %({i[0]})s" for i in self.columns if i[0] not in self.sqlPrimaryKey and not i[2]])  # exclude primary key and read only fields
-                            where = " AND ".join([f"{i} = %({i})s" for i in child.pkey])
-                            fieldsback = ", ".join([i[0] or 'Null' for i in self.columns] + ['object_version'])
-                            script = (f"UPDATE {self.sqlTable}\n"
-                                      f"SET {fields}\n"
-                                      f"WHERE {where}\n"
-                                      f"RETURNING {fieldsback};")
-                            args = {self.columns[i][0]: child.itemData[i] for i in child.toModify}
-                            #args = {c[0]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[0] not in self.sqlPrimaryKey and not c[2]}
-                            args.update(child.pkey.copy())
-                            #print("** UPDATE **")
-                            #print(script)
-                            #print(args)
-                            cur.execute(script, args)
-                            # repopulate the modified row
-                            for record in cur:
-                                # selected fields
-                                for i in range(len(self.columns)):
-                                    child.itemData[i] = record[i]
-                                # row timestamp
-                                child.objectVersion = record[i + 1]  # row timestamp is always the last column
-                            # self.dataChanged.emit(self.index(row, 0), self.index(row, 0)) # if any trigger modify de record
-                        # clear modified record list
-                        child.toModify.clear()
-                        child.state = None
-                except psycopg.Error as er:
-                    raise PyAppDBError(er.diag.sqlstate, er)
-            if child.state == INSERTED:
-                try:
-                    with appconn.cursor() as cur:  # manual submit, no commit
-                        # *** INSERT ***
-                        fieldList = [i[0] for i in self.columns if i[0] and not i[2]]
-                        valueList = [f"%({i[0]})s" for i in self.columns if i[0] and not i[2]]
-                        #if self.recordType:
-                            #fieldList += [i for i in self.recordType]
-                            #valueList += [f"'{self.recordType[i]}'" for i in self.recordType]  # record type must be string
-                        fields = ", ".join(fieldList)
-                        values = ", ".join(valueList)
+                # Unified context managers in the recommended evaluation order
+                with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur: # manual submit, no commit
+                    # *** UPDATE ***
+                    for column in child.toModify:
+                        # check if record was already modified
+                        args = child.pkey.copy()
+                        args['object_version'] = child.objectVersion
+                        cur.execute(self.sqlCheck, args)
+                        if cur.rowcount == 0:
+                            pgerror = _tr("Model", "Row modified before update")
+                            raise PyAppDBError(0, pgerror)
+                        # update record
+                        fields = ", ".join([f"{self.columns[i][0]} = %({self.columns[i][0]})s" for i in child.toModify])
+                        # fields = ", ".join([f"{i[0]} = %({i[0]})s" for i in self.columns if i[0] not in self.sqlPrimaryKey and not i[2]])  # exclude primary key and read only fields
+                        where = " AND ".join([f"{i} = %({i})s" for i in child.pkey])
                         fieldsback = ", ".join([i[0] or 'Null' for i in self.columns] + ['object_version'])
-                        script = (f"INSERT INTO {self.sqlTable}\n"
-                                  f"({fields})\n"
-                                  f"VALUES ({values})\n"
-                                  f"RETURNING {fieldsback};")
-                        args = {c[0]: child.itemData[i] for i, c in enumerate(self.columns) if c[0] and not c[2]}
-                        # if self.automaticPKey:
-                            #for i in self.sqlPrimaryKey:
-                                #args[i] = DEFAULT
-                        # print(cur.mogrify(script, args))
-                        #print("** INSERT **")
+                        script = (f"UPDATE {self.sqlTable}\n"
+                                    f"SET {fields}\n"
+                                    f"WHERE {where}\n"
+                                    f"RETURNING {fieldsback};")
+                        args = {self.columns[i][0]: child.itemData[i] for i in child.toModify}
+                        #args = {c[0]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[0] not in self.sqlPrimaryKey and not c[2]}
+                        args.update(child.pkey.copy())
+                        #print("** UPDATE **")
                         #print(script)
                         #print(args)
                         cur.execute(script, args)
-                        # repopulate the inserted row
+                        # repopulate the modified row
                         for record in cur:
                             # selected fields
                             for i in range(len(self.columns)):
                                 child.itemData[i] = record[i]
                             # row timestamp
                             child.objectVersion = record[i + 1]  # row timestamp is always the last column
-                        # self.dataChanged.emit(self.index(row, 0), self.index(row, cols))  # if any trigger modify de record
-                    # clear insert record list
+                        # self.dataChanged.emit(self.index(row, 0), self.index(row, 0)) # if any trigger modify de record
+                    # clear modified record list
+                    child.toModify.clear()
                     child.state = None
-                except psycopg.Error as er:
-                    raise PyAppDBError(er.diag.sqlstate, er)
-
-
-
-
-
-
+            if child.state == INSERTED:
+                # Unified context managers in the recommended evaluation order
+                with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur: # manual submit, no commit
+                    # *** INSERT ***
+                    fieldList = [i[0] for i in self.columns if i[0] and not i[2]]
+                    valueList = [f"%({i[0]})s" for i in self.columns if i[0] and not i[2]]
+                    #if self.recordType:
+                        #fieldList += [i for i in self.recordType]
+                        #valueList += [f"'{self.recordType[i]}'" for i in self.recordType]  # record type must be string
+                    fields = ", ".join(fieldList)
+                    values = ", ".join(valueList)
+                    fieldsback = ", ".join([i[0] or 'Null' for i in self.columns] + ['object_version'])
+                    script = (f"INSERT INTO {self.sqlTable}\n"
+                                f"({fields})\n"
+                                f"VALUES ({values})\n"
+                                f"RETURNING {fieldsback};")
+                    args = {c[0]: child.itemData[i] for i, c in enumerate(self.columns) if c[0] and not c[2]}
+                    # if self.automaticPKey:
+                        #for i in self.sqlPrimaryKey:
+                            #args[i] = DEFAULT
+                    # print(cur.mogrify(script, args))
+                    #print("** INSERT **")
+                    #print(script)
+                    #print(args)
+                    cur.execute(script, args)
+                    # repopulate the inserted row
+                    for record in cur:
+                        # selected fields
+                        for i in range(len(self.columns)):
+                            child.itemData[i] = record[i]
+                        # row timestamp
+                        child.objectVersion = record[i + 1]  # row timestamp is always the last column
+                    # self.dataChanged.emit(self.index(row, 0), self.index(row, cols))  # if any trigger modify de record
+                # clear insert record list
+                child.state = None

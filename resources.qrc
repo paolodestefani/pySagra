@@ -5,6 +5,7 @@
   </qresource>
   <qresource>
     <file alias="login_it.qm">translation/login_it.qm</file>
+    <file alias="qtbase_it.qm">translation/qtbase_it.qm</file>
     <file alias="pySagra_it.qm">translation/pySagra_it.qm</file>
 	<file alias="pySagra_th.qm">translation/pySagra_th.qm</file>
   </qresource>

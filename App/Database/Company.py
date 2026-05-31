@@ -30,11 +30,8 @@ This module provides database functions used for company management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -48,17 +45,11 @@ def max_company_code() -> int:
 SELECT 
     max(company_id) 
 FROM system.company;"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                return result[0]
-            else:
-                return 0
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (0,))[0] or 10 # Safely get the first result or return 0 if no rows
+   
 
 def company_is_in_use(company: int) -> bool:
     "Return True if the company is currently in use"
@@ -66,41 +57,39 @@ def company_is_in_use(company: int) -> bool:
 SELECT company_id 
 FROM system.connection 
 WHERE company_id = {company};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return bool(cur.rowcount)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        # Using fetchone() is safer than rowcount for SELECT queries in psycopg 3
+        return cur.fetchone() is not None
 
 
-def create_company(company_id: int, company_desc: str, company_image: bytes|None) -> None:
+def create_company(company_id: int,
+                   company_desc: str,
+                   company_image: bytes | bytearray | memoryview[int] | None
+                   ) -> None:
     "Create a new company with the given parameters"
     script = t"""
 SELECT system.pa_company_create({company_id}, {company_desc}, {False}, {company_image});
 """
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
 
 
 def drop_company(company_id: int) -> None:
     "Drop company"
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(t"SELECT system.pa_company_drop({company_id});")
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t"SELECT system.pa_company_drop({company_id});")
+        
 
-
-def set_company_access(company_id: int, user_code: str, profile_code: str, menu_code: str, toolbar_code: str)-> None:
+def set_company_access(company_id: int,
+                       user_code: str,
+                       profile_code: str,
+                       menu_code: str,
+                       toolbar_code: str
+                       ) -> None:
     "Set access company for one user to the given company"
     script = t"""
 INSERT INTO system.app_user_company (
@@ -115,14 +104,10 @@ VALUES (
     {profile_code}, 
     {menu_code}, 
     {toolbar_code});"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+    
 
 def company_list() -> list[tuple]:
     "Return available companies in current database"
@@ -131,10 +116,8 @@ SELECT
     company_id, 
     description 
 FROM system.company;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
+        

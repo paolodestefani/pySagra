@@ -53,10 +53,13 @@ pyside6-lupdate	\
 	App/Widget/Form.py \
     App/Ui/AboutDialog.ui \
     App/Ui/CompanyWidget.ui \
+    App/OrderEntry.py \
+    App/Ui/OrderDialog0.ui \
 	-tr-function-alias translate+=_tr -noobsolete -ts translation/ts/pySagra_it.ts 
 
 pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm
 
 # exit from venv
 deactivate
+]
 

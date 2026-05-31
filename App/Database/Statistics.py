@@ -31,13 +31,10 @@ This module provides classes and functions for statistics management
 from typing import Any
 
 # pandas
-import pandas as pd
-
-# psycopg
-import psycopg
+#import pandas as pd
 
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -59,18 +56,16 @@ from App.Database.Connect import appconn
 def load_statistic_bi_data(view: str,
                            from_event: int,
                            to_event: int
-                           ) -> list[Any]|None:
+                           ) -> list[Any] | None:
     "Load a statistic data"
     script = f"""SELECT * FROM {view} WHERE "ID Evento" BETWEEN %s AND %s;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script, (from_event, to_event))
-            if cur.description:
-                return [(i[0] for i in cur.description)] + cur.fetchall()
-            else:
-                return []
-    except psycopg.Error as er:
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script, (from_event, to_event))
+        if cur.description:
+            return [(i[0] for i in cur.description)] + cur.fetchall()
+        else:
+            return []
 
 
 # def available_statistics() -> tuple:

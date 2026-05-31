@@ -30,11 +30,8 @@ This module provides classes and functions for system settings management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -42,33 +39,24 @@ from App.Database.Connect import appconn
 logger = logging.getLogger(__name__)
 
 
-def pa_setting(setting: str) -> str|None:
+def pa_setting(setting: str) -> str | None:
     "Get current value of the system setting parameter"
     # all arguments must be string
     setting = str(setting)
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(t'SELECT * FROM system.pa_setting({setting});')
-            result = cur.fetchone()
-            if result:
-                return result[0]
-            else:
-                return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT * FROM system.pa_setting({setting});')
+        return next(cur, (None,))[0]
 
 
-def pa_setting_set(setting: str, value: str|None) -> None:
+def pa_setting_set(setting: str, 
+                   value: str | None
+                   ) -> None:
     "Set the privided setting parameter to value"
     # all arguments must be string
     setting = str(setting)
     if value is not None: # must keep None (=NULL) != string
         value = str(value)
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(t'SELECT system.pa_setting_set({setting}, {value});')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT system.pa_setting_set({setting}, {value});')

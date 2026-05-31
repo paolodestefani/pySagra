@@ -286,7 +286,7 @@ ALTER TABLE price_list_detail ENABLE TRIGGER update_user_date;
 --
 INSERT INTO order_header (id, event, date_time, order_number, order_date, order_time, stat_order_date, stat_order_day_part,
 						 cash_desk, delivery, table_num, customer_name, covers, total_amount, discount, cash, change, 
-                         status, fullfillment_date,
+                         status, fulfillment_date,
 						 user_ins, date_ins, user_upd, date_upd, row_timestamp)
 SELECT id,
 	event,
@@ -318,7 +318,7 @@ ALTER TABLE order_header ENABLE TRIGGER update_user_date;
 --
 -- copy order header department
 --
-INSERT INTO order_header_department (id, id_header, department, note, other_departments, fullfillment_date,
+INSERT INTO order_header_department (id, id_header, department, note, other_departments, fulfillment_date,
 									 user_ins, date_ins, user_upd, date_upd, row_timestamp)
 SELECT ohd.id,
 	ohd.id_header,

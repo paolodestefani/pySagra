@@ -36,7 +36,8 @@ import psycopg
 # application modules
 from App.Database import OVFIELD
 from App.Database.Connect import appconn
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
+from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Exceptions import PyAppDBConcurrencyError
 
 
@@ -75,33 +76,26 @@ class Record(dict):
         "Select a record of a table based on primay key value"
         script = (f"SELECT * FROM {self.table} "
                   f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])};")
-        try:
-            with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-                cur.execute(script, self)
-                result = next(cur, None)
-                if result:
-                    self.update(result)
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute(script, self)
+            result = next(cur, None)
+            if result:
+                self.update(result)
+                
     def insert_record(self) -> None:
         "Insert a record base on primary key"
         script = (f"INSERT INTO {self.table} ({', '.join(self.keys())})\n"
                   f"VALUES ({', '.join([f'%({i})s ' for i in self.keys()])})\n"
                   f"RETURNING {', '.join([i for i in self.keys() if i not in self.pkey] + list(self.pkey))};")
         # primary key fields are always returned to self dict
-        try:
-            with appconn.transaction():
-                with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-                    cur.execute(script, self)
-                    result = next(cur, None)
-                    if result:
-                        self.update(result)
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute(script, self)
+            result = next(cur, None)
+            if result:
+                self.update(result)
+        
     def update_record(self) -> None:
         "Update a record base on primary key, raise an exception if modified before"
         # check object_version
@@ -112,31 +106,23 @@ class Record(dict):
             script = (f"SELECT {OVFIELD} = %({OVFIELD})s\n"
                       f"FROM {self.table}\n"
                       f"WHERE {where};")
-            try:
-                with appconn.transaction():
-                    with appconn.cursor() as cur:
-                        cur.execute(script, args)
-                        result = next(cur, None)
-                        if not result:
-                            raise PyAppDBConcurrencyError()
-            except psycopg.Error as er:
-                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+            # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            cur.execute(script, args)
+            result = next(cur, None)
+            if not result:
+                raise PyAppDBConcurrencyError()
         # update
         script = (f"UPDATE {self.table}\n"
                   f"SET {', '.join([f'{i} = %({i})s' for i in self if i not in self.pkey])}\n"
                   f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])}\n"
                   f"RETURNING {OVFIELD};")
-        try:
-            with appconn.transaction():
-                with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-                    cur.execute(script, self)
-                    result = next(cur, None)
-                    if result:
-                        self.update(result)
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute(script, self)
+            result = next(cur, None)
+            if result:
+                self.update(result)
 
     def delete_record(self) :
         "Delete one record base on primary key, raise an exception if modified before"
@@ -147,38 +133,30 @@ class Record(dict):
             script = (f"SELECT {OVFIELD} = {self[OVFIELD]}\n"
                       f"FROM {self.table}\n"
                       f"WHERE {where};")
-            try:
-                with appconn.transaction():
-                    with appconn.cursor() as cur:
-                        cur.execute(script, args)
-                        result = cur.fetchone()[0]
-                        if not result:
-                            raise PyAppDBConcurrencyError()
-            except psycopg.Error as er:
-                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+            # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            cur.execute(script, args)
+            result = cur.fetchone()[0]
+            if not result:
+                raise PyAppDBConcurrencyError()
         # delete
         script = (f"DELETE FROM {self.table}\n"
                   f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])}")
-        try:
-            with appconn.transaction():
-                with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-                    cur.execute(script, self)
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute(script, self)
 
 
 class RecordSet(list):
     """A list of record of a database table. Each record is a Record instance"""
 
-    def __init__(self, table: str, pkey: list[str]|tuple[str]) -> None:
+    def __init__(self, table: str, pkey: list[str] | tuple[str]) -> None:
         """table = database table
            pkey = list of primary key fields"""
         self.table = table
         self.pkey = pkey
 
-    def insert_records(self):
+    def insert_records(self) -> None:
         "Insert a list of records"
         if not self:
             return # empty list, nothing to do
@@ -187,28 +165,20 @@ class RecordSet(list):
                   f"RETURNING {', '.join([i for i in self[0].keys() if i not in self.pkey] + list(self.pkey))};")
         # primary key fields are always returned to self dict
         # script constructor based on the first item of the list
-        try:
-            with appconn.transaction():
-                with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-                    for r in self:
-                        cur.execute(script, r)
-                        r.update(cur.fetchone())
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            for r in self:
+                cur.execute(script, r)
+                r.update(cur.fetchone())
+        
     def select_records(self) -> None:
         "Select a record of a table based on primay key value"
         script = (f"SELECT * \n"
                   f"FROM {self.table}\n"
                   f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])};")
         self.clear()
-        try:
-            with appconn.transaction():
-                with appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-                    cur.execute(script)
-                    for r in cur:
-                        self.append(r)
-        except psycopg.Error as er:
-            logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-            raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            cur.execute(script)
+            for r in cur:
+                self.append(r)

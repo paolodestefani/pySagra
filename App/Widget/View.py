@@ -87,8 +87,8 @@ from App.Widget.Delegate import HideTextDelegate
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import IntegerDelegate
 from App.Widget.TableWidget import TableWidgetItem
-from App.Widget.Dialog import MessageBoxCritical
-from App.Widget.Utils import gui_exception_context
+#from App.Widget.Dialog import MessageBoxCritical
+from App.Core.ExceptionHandler import gui_exception_context
 
 from App.Ui.ViewSettingsDialog import Ui_ViewSettingsDialog
 

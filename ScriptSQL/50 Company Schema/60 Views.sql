@@ -297,23 +297,23 @@ SELECT
 	oh.customer_name	    AS customer_name,
 	oh.covers		        AS covers,
 	oh.status		        AS status,
-	oh.fullfillment_date	AS fullfillment_date,
+	oh.fulfillment_date	    AS fulfillment_date,
     oh.cash_desk	        AS cash_desk,
 	oh.created_by	        AS user_ins,
 	oh.is_from_web	        AS from_web,
 	-- department status
 	od.dep1			        AS department1,
-	od.fullfill1	        AS fullfillment1,
+	od.fulfill1	            AS fulfillment1,
 	od.dep2			        AS department2,
-	od.fullfill2	        AS fullfillment2,
+	od.fulfill2	            AS fulfillment2,
 	od.dep3			        AS department3,
-	od.fullfill3	        AS fullfillment3,
+	od.fulfill3	            AS fulfillment3,
 	od.dep4			        AS department4,
-	od.fullfill4	        AS fullfillment4,
+	od.fulfill4	            AS fulfillment4,
 	od.dep5			        AS department5,
-	od.fullfill5	        AS fullfillment5,
+	od.fulfill5	            AS fulfillment5,
 	od.dep6			        AS department6,
-	od.fullfill6	        AS fullfillment6
+	od.fulfill6	            AS fulfillment6
 FROM order_header oh
 JOIN system.company c ON oh.company_id = c.company_id
 JOIN event e ON oh.event_id = e.event_id
@@ -322,17 +322,17 @@ JOIN ( 	-- one row for evey order_header_id
 	SELECT
 		i.order_header_id AS order_header_id,
 		max(CASE i.dn WHEN 1 THEN i.department ELSE Null END) AS dep1,
-		max(CASE i.dn WHEN 1 THEN i.fullfillment_date ELSE Null END) AS fullfill1,
+		max(CASE i.dn WHEN 1 THEN i.fulfillment_date ELSE Null END) AS fulfill1,
 		max(CASE i.dn WHEN 2 THEN i.department ELSE Null END) AS dep2,
-		max(CASE i.dn WHEN 2 THEN i.fullfillment_date ELSE Null END) AS fullfill2,
+		max(CASE i.dn WHEN 2 THEN i.fulfillment_date ELSE Null END) AS fulfill2,
 		max(CASE i.dn WHEN 3 THEN i.department ELSE Null END) AS dep3,
-		max(CASE i.dn WHEN 3 THEN i.fullfillment_date ELSE Null END) AS fullfill3,
+		max(CASE i.dn WHEN 3 THEN i.fulfillment_date ELSE Null END) AS fulfill3,
 		max(CASE i.dn WHEN 4 THEN i.department ELSE Null END) AS dep4,
-		max(CASE i.dn WHEN 4 THEN i.fullfillment_date ELSE Null END) AS fullfill4,
+		max(CASE i.dn WHEN 4 THEN i.fulfillment_date ELSE Null END) AS fulfill4,
 		max(CASE i.dn WHEN 5 THEN i.department ELSE Null END) AS dep5,
-		max(CASE i.dn WHEN 5 THEN i.fullfillment_date ELSE Null END) AS fullfill5,
+		max(CASE i.dn WHEN 5 THEN i.fulfillment_date ELSE Null END) AS fulfill5,
 		max(CASE i.dn WHEN 6 THEN i.department ELSE Null END) AS dep6,
-		max(CASE i.dn WHEN 6 THEN i.fullfillment_date ELSE Null END) AS fullfill6
+		max(CASE i.dn WHEN 6 THEN i.fulfillment_date ELSE Null END) AS fulfill6
 	FROM (
 		SELECT
 			ohd.order_header_id,
@@ -340,7 +340,7 @@ JOIN ( 	-- one row for evey order_header_id
 							PARTITION BY ohd.order_header_id 
 							ORDER BY ohd.order_header_id, d.sorting) AS dn,
 			d.description AS department,
-			ohd.fullfillment_date
+			ohd.fulfillment_date
 		FROM company.order_header_department ohd
 		JOIN company.department d ON ohd.department_id = d.department_id
 		) i
@@ -362,7 +362,7 @@ SELECT
     oh.order_date::text  		    AS order_date,
     oh.order_time::text			    AS order_time,
     oh.date_time::text      	    AS order_date_time,  
-    oh.fullfillment_date::text	    AS fullfillment_date, 
+    oh.fulfillment_date::text	    AS fulfillment_date, 
     oh.stat_order_date::text	    AS stat_order_date,
     oh.stat_order_day_part  	    AS stat_order_day_part,
     oh.cash_desk            	    AS cash_desk,

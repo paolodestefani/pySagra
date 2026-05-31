@@ -30,11 +30,8 @@ This module provides classes and functions for web order server updating
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
@@ -44,7 +41,7 @@ from App.Core.Cryptography import string_decode
 logger = logging.getLogger(__name__)
 
 
-def get_web_order_server_params() -> tuple[str|None, int|None, str|None, str|None, str|None, str|None]:
+def get_web_order_server_params() -> tuple[str | None, int | None, str | None, str | None, str | None, str | None]:
     "Get web order server connection parameters and file name"
     script = """
 SELECT
@@ -57,27 +54,24 @@ SELECT
 FROM web_order_server
 WHERE company_id = system.pa_current_company();
 """
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            r = cur.fetchone()  # must be only one record
-            if r:
-                return (r[0],
-                        r[1],
-                        r[2],
-                        string_decode(r[3]),
-                        string_decode(r[4]),
-                        string_decode(r[5]))
-            else:
-                return (None, 
-                        None,
-                        None,
-                        None,
-                        None,
-                        None)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        r = cur.fetchone()  # must be only one record
+        if r:
+            return (r[0],
+                    r[1],
+                    r[2],
+                    string_decode(r[3]),
+                    string_decode(r[4]),
+                    string_decode(r[5]))
+        else:
+            return (None, 
+                    None,
+                    None,
+                    None,
+                    None,
+                    None)
 
 
 def set_web_order_server_params(server: str,
@@ -112,11 +106,7 @@ SET server_address = EXCLUDED.server_address,
     user_password = EXCLUDED.user_password,
     file_name = EXCLUDED.file_name;
 """
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
     

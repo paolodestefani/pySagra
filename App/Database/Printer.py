@@ -30,11 +30,8 @@ This module provides classes and functions for database printer management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -42,7 +39,7 @@ from App.Database.Connect import appconn
 logger = logging.getLogger(__name__)
 
 
-def get_printer_name(class_id: int, computer: str) -> str|None:
+def get_printer_name(class_id: int, computer: str) -> str | None:
     "Return the printer name of class_id"
     script = t"""
 SELECT printer
@@ -50,13 +47,7 @@ FROM printer_class_printer
 WHERE 
         printer_class_id = {class_id} 
     AND computer = {computer};"""
-    try:
-            with appconn.cursor() as cur:
-                result = cur.execute(script).fetchone()
-                if result:
-                    return result[0]
-                else:
-                    return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (None,))[0]

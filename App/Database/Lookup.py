@@ -31,12 +31,9 @@ used by delegates and combo boxes
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
 from App import session
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 from App.Database.Report import get_report_list
 
@@ -50,14 +47,10 @@ def get_list(query):
     if query.startswith('LIST:'):
         data = query.split(':')[1]
         return [(i.split('=')) for i in data.split(',')]
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(query)
-                return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(query)
+        return cur.fetchall()
 
 
 def abstract_lookup(code: str,
@@ -77,17 +70,11 @@ def abstract_lookup(code: str,
         script += f" ORDER BY {', '.join(order_by)};"
     else:
         script += f" ORDER BY {code};"
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            records = cur.fetchall()
-            if null:
-                return [(None, '')] + records
-            else:
-                return records
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        records = cur.fetchall()
+        return [(None, '')] + records if null else records
 
 
 def abstract_with_code_lookup(code: str,
@@ -107,14 +94,11 @@ def abstract_with_code_lookup(code: str,
         script += f" ORDER BY {', '.join(order_by)};"
     else:
         script += f" ORDER BY {code};"
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            records = cur.fetchall()
-            return [(None, '')] + records if null else records
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        records = cur.fetchall()
+        return [(None, '')] + records if null else records
 
 
 def profile_lookup() -> list[tuple]:

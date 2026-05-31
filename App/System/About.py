@@ -4,11 +4,26 @@
 # Author: Paolo De Stefani
 # Contact: paolo <at> paolodestefani <dot> it
 # Copyright (C) 2026 Paolo De Stefani
-# License:
+# License: GPL v3
+
+# This file is part of pySagra.
+#
+# pySagra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# pySagra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
 """About
 
-Definition and management of About andSystemInfo dialogs
+Definition and management of About and SystemInfo dialogs
 
 """
 
@@ -33,7 +48,6 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QMessageBox
 
-
 # application modules
 from App import APPNAME
 from App import APPVERSIONMAJOR 
@@ -47,6 +61,7 @@ from App import session
 #from App import currentAction
 from App.Database.Connect import database_information
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Ui.AboutDialog import Ui_AboutDialog
 from App.Ui.SystemInfoDialog import Ui_SystemInfoDialog
 
@@ -173,7 +188,8 @@ class SystemInfoDialog(QDialog):
                   ('Architecture', platform.architecture()[0])):
             text += f"<tr><td><b>{i[0]}</b></td><td>{i[1]}</td></tr>"
         text += f"<tr><td></td><td></td></tr>"  # empty line
-        for i in database_information():
-            text += f"<tr><td><b>{i[0]}</b></td><td>{i[1]}</td></tr>"
-        text += f"</table>"
+        with gui_exception_context(self, _tr('SystemInfo', 'System info database information')):
+            for i in database_information():
+                text += f"<tr><td><b>{i[0]}</b></td><td>{i[1]}</td></tr>"
+            text += f"</table>"
         self.ui.textEditInfo.setText(text)

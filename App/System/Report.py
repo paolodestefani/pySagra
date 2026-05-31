@@ -58,7 +58,6 @@ from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Report import delete_all_reports
 from App.Database.Report import load_report
 from App.Database.Report import list_all_reports
@@ -70,6 +69,7 @@ from App.Widget.Delegate import GenericDelegate
 from App.Widget.Dialog import PrintDialog
 from App.Ui.ReportWidget import Ui_ReportWidget
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
 
@@ -252,8 +252,9 @@ class ReportForm(FormIndexManager):
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
-        delete_all_reports()
-        self.reload()        
+        with gui_exception_context(self, _tr('Report', "Delete all reports")):
+            delete_all_reports()
+            self.reload()        
 
     def download(self) -> None:
         "Dowload current report to a file"
@@ -270,7 +271,7 @@ class ReportForm(FormIndexManager):
                     f"/{self.model.index(row, CODE).data()}"
                     f"_{self.model.index(row, L10N).data()}"
                     f".rpt.zip")
-        try:
+        with gui_exception_context(self, _tr('Report', "Download current report")):
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                 zf.writestr('code', self.model.data(self.model.index(row, CODE)))
                 zf.writestr('l10n', self.model.data(self.model.index(row, L10N)))
@@ -278,12 +279,7 @@ class ReportForm(FormIndexManager):
                 zf.writestr('system', str(self.model.data(self.model.index(row, SYSTEM))))
                 zf.writestr('description', self.model.data(self.model.index(row, DESCRIPTION)))
                 zf.writestr('xml', self.model.data(self.model.index(row, XML)))
-        except Exception as er:
-            msg = _tr('Report', "Error on saving current report to file")
-            QMessageBox.critical(self,
-                                 _tr('Report', "Download current report"),
-                                 f"{msg}\n{er}")
-        else:
+        
             msg = _tr('Report', "Current report saved to file:")
             QMessageBox.information(self,
                                     _tr('Report', "Download current report"),
@@ -300,7 +296,7 @@ class ReportForm(FormIndexManager):
                                                      path)
         if directory == "":
             return
-        try:
+        with gui_exception_context(self, _tr('Report', "Download all reports")):
             for i, (cod, lcn, cls, sys, dsc, xml) in enumerate(list_all_reports(), 1):
                 fileName = (f"{directory}"
                             f"/{i:02d}"
@@ -314,12 +310,7 @@ class ReportForm(FormIndexManager):
                     zf.writestr('system', str(sys))
                     zf.writestr('description', dsc)
                     zf.writestr('xml', xml)
-        except Exception as er:
-            msg = _tr('Report', "Error on saving all reports to file")
-            QMessageBox.critical(self,
-                                _tr('Report', "Download all reports"),
-                                f"{msg}\n{er}")
-        else:
+        
             msg = _tr('Report', "All reports saved to directory")
             QMessageBox.information(self,
                                     _tr('Report', "Download all reports"),
@@ -337,7 +328,7 @@ class ReportForm(FormIndexManager):
                                                   "*.rpt.zip")
         if fileName == "":
             return
-        try:
+        with gui_exception_context(self, _tr('Report', "Upload current report")):
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                 cod = zf.read('code').decode('utf-8')
                 lcn = zf.read('l10n').decode('utf-8')
@@ -345,20 +336,11 @@ class ReportForm(FormIndexManager):
                 sys = zf.read('system').decode('utf-8')
                 dsc = zf.read('description').decode('utf-8')
                 xml = zf.read('xml').decode('utf-8')
-        except Exception as er:
-            msg = _tr('Report', "Error on opening a report file")
-            QMessageBox.critical(self,
-                                 _tr('Report', "Upload current report"),
-                                 f"{msg}\n{er}")
-        else:
+        
             sysb: bool = sys == 'True'
-            try:
+            with gui_exception_context(self, _tr('Report', "Upload current report")):
                 load_report(cod, lcn, cls, sysb, dsc, xml)
-            except PyAppDBError as er:
-                QMessageBox.critical(self,
-                                     _tr("MessageDialog", "Critical"),
-                                     f"<p>Database error: {er.code}</p><p><b>{er.message}</b></p>")
-            else:
+            
                 self.reload()
                 QMessageBox.information(self,
                                         _tr('MessageDialog', "information"),
@@ -373,11 +355,11 @@ class ReportForm(FormIndexManager):
                                                      path)
         if directory == "":
             return
-        error = False
+        success = False
         for f in QDir(directory).entryInfoList(QDir.Filter.NoFilter, QDir.SortFlag.Name):
             if f.isFile() and f.completeSuffix() == 'rpt.zip':
                 fileName = f.absoluteFilePath()
-                try:
+                with gui_exception_context(self, _tr('Report', "Upload all reports")):
                     with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                         cod = zf.read('code').decode('utf-8')
                         lcn = zf.read('l10n').decode('utf-8')
@@ -385,23 +367,14 @@ class ReportForm(FormIndexManager):
                         sys = zf.read('system').decode('utf-8')                    
                         dsc = zf.read('description').decode('utf-8')
                         xml = zf.read('xml').decode('utf-8')
-                except Exception as er:
-                    msg = _tr('Report', "Error on opening report file:")
-                    QMessageBox.critical(self,
-                                         _tr('Report', "Upload all reports"),
-                                         f"{msg}\n{fileName}\n{er}")
-                    error = True
-                else:
+                        success = True
+
                     sysb: bool = sys == 'True'
-                    try:
+                    with gui_exception_context(self, _tr('Report', "Upload all reports")):
                         load_report(cod, lcn, cls, sysb, dsc, xml)
-                    except PyAppDBError as er:
-                        error = True
-                        QMessageBox.critical(self,
-                                             _tr("MessageDialog", "Critical"),
-                                             f"<p>Database error: {er.code}</p><p><b>{er.message}</b></p>")
+                        success = True
         self.reload()
-        if error:
+        if not success:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Error"),
                                  _tr('Report', "Reports imported to database with errors"))

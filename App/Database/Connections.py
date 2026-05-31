@@ -30,11 +30,8 @@ This module provides all the facilities to manage connections
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # apllication modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -42,19 +39,15 @@ from App.Database.Connect import appconn
 logger = logging.getLogger(__name__)
 
 
-
 def current_logins() -> int:
     "Returns the number of logged users"
     sql = """
 SELECT count(*) 
 FROM system.connection;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(sql)
-            return next(cur)[0]
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(sql)
+        return next(cur, (0,))[0]  # Safely get the first result or return 0 if no rows
 
 
 def delete_connection_history(days: int) -> None:
@@ -62,21 +55,14 @@ def delete_connection_history(days: int) -> None:
     script = t"""
 DELETE FROM system.connection_history
 WHERE cast(logout_datetime as date) <= (current_date - {days});"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
 
 
 def kill_client(cid: int) -> None:
     "Kills the client of cid process id"
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(t'SELECT system.pa_kill_client({cid});')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT system.pa_kill_client({cid});')
+    

@@ -43,7 +43,7 @@ from PySide6.QtWidgets import QToolBar
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDialogButtonBox
-
+from PySide6.QtWidgets import QTabWidget
 from PySide6.QtWidgets import QStyleFactory
 from PySide6.QtWidgets import QPushButton
 
@@ -54,6 +54,7 @@ from App import currentAction
 from App import actionDefinition
 from App import currentIcon
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Gui import CS, IT, TBS, TP
 from App.Core.Gui import setTheme
 from App.Core.Gui import setColorScheme
@@ -104,12 +105,11 @@ class PreferencesDialog(QDialog):
         self.ui.comboBoxFontFamily.setCurrentFont(QFont('Arial'))
         self.ui.spinBoxFontSize.setValue(10)
         # load user preferences
-        try:
+        success = False
+        with gui_exception_context(self, _tr('Preferences', 'Load user preferences')):
             theme, color, icon, ffamily, fsize, tbstyle, tabposition  = load_preferences(session['app_user_code'])
-        except PyAppDBError as er:
-            title = _tr("Preferences", "Error loading user preferences")
-            logger.error("On load preferences database error: %s %s", er.code, er.message)
-            QMessageBox.critical(self, title, er.message)
+            success = True
+        if not success:
             return
         # set widget current value
         self.ui.comboBoxTheme.setCurrentText(theme)
@@ -162,7 +162,7 @@ class PreferencesDialog(QDialog):
             i.setToolButtonStyle(TBS[tbstyle][1])
         session['mainwin'].tabWidget.setTabPosition(TP[tabposition][1])
         # save new preferences
-        try:
+        with gui_exception_context(self, _tr('Preferences', 'Save user preferences')):
             save_preferences(session['app_user_code'], 
                              theme,
                              color,
@@ -171,10 +171,6 @@ class PreferencesDialog(QDialog):
                              fsize,
                              tbstyle,
                              tabposition)
-        except PyAppDBError as er:
-            title = _tr("Preferences", "Error saving user preferences")
-            logger.error("On save preferences database error: %s %s", er.code, er.message)
-            QMessageBox.critical(self, title, er.message)
 
     def restoreDefault(self) -> None:
         "Restore default setings"

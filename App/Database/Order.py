@@ -31,15 +31,13 @@ This module provides classes and functions for order management
 from typing import Any
 import logging
 
-# psycopg
-import psycopg
-
 # PySide6
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QDate
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Utility import Record, RecordSet
 from App.Database.Connect import appconn
 from App.Database.Setting import Setting
@@ -59,8 +57,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_order_number(event_id: int,
-                     event_date: QDate|None = None,
-                     day_part: str|None = None
+                     event_date: QDate | None = None,
+                     day_part: str | None = None
                      ) -> int:
     "Returns the next available order number"
     script = t"""
@@ -68,18 +66,11 @@ SELECT
     order_number_based_on
 FROM setting
 WHERE company_id = system.pa_current_company();"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                mode = result[0]
-            else:
-                raise PyAppDBError(None, 'Failed to retrive order numbering mode from settings')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
-    number = 1
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        mode = next(cur, (None,))[0] or 'E'# if no setting found, default to event based numbering
+    number: int
     match mode:
         case 'E':
             # event based numbering, get the max value of any day/daypart
@@ -88,14 +79,10 @@ SELECT max(coalesce(current_value, 0)) + 1
 FROM numbering 
 WHERE   company_id  = system.pa_current_company()
     AND event_id    = {event_id};"""
-            try:
-                with appconn.cursor() as cur:
-                    cur.execute(script)
-                    number = next(cur)[0] or 1
-            except psycopg.Error as er:
-                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-            
+            # Unified context managers in the recommended evaluation order
+            with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+                cur.execute(script)
+                number = next(cur, (None,))[0] or 1 # if no order for the event, start from 1
         case 'D':
             # day based numbering, get the max of L or D
             script = t"""
@@ -104,14 +91,10 @@ FROM numbering
 WHERE company_id = system.pa_current_company()
     AND event_id = {event_id}
     AND event_date = {event_date}"""
-            try:
-                with appconn.cursor() as cur:
-                    cur.execute(script)
-                    number = next(cur)[0] or 1
-            except psycopg.Error as er:
-                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-        
+            # Unified context managers in the recommended evaluation order
+            with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+                cur.execute(script)
+                number = next(cur, (None,))[0] or 1 # if no order for the day, start from 1
         case 'P':
             # day part based numbering
             script = t"""
@@ -121,13 +104,12 @@ WHERE company_id = system.pa_current_company()
     AND event_id = {event_id}
     AND event_date = {event_date}
     AND day_part = {day_part};"""
-            try:
-                with appconn.cursor() as cur:
-                    cur.execute(script)
-                    number = next(cur)[0] or 1
-            except psycopg.Error as er:
-                logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-                raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+            # Unified context managers in the recommended evaluation order
+            with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+                cur.execute(script)
+                number = next(cur, (None,))[0] or 1 # if no order for the day part, start from 1
+        case _:
+            raise Exception(f"Invalid order numbering mode: {mode}")
     return number
 
 
@@ -142,16 +124,13 @@ WHERE
     AND event_id = {event_id} 
     AND stat_order_date = {date}
     AND stat_order_day_part = {day_part};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return next(cur)[0] or 0
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (0,))[0]
 
 
-def get_order_header_department_details(barcode: str) -> tuple|None:
+def get_order_header_department_details(barcode: str) -> tuple | None:
     "Returns params of the given order header department barcode"
     # actually we don't need to filter company_id as event_id is unique across companies
     script = t"""
@@ -166,20 +145,17 @@ SELECT
     oh.customer_name,
     ohd.department_id,
     dep.description,
-    ohd.fullfillment_date
+    ohd.fulfillment_date
 FROM order_header_department ohd
 JOIN order_header oh ON ohd.order_header_id = oh.order_header_id
 JOIN department dep ON ohd.department_id = dep.department_id
 WHERE 
     ohd.company_id = system.pa_current_company()
     AND ohd.barcode = {barcode};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchone()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchone()
 
 
 def update_order_header_department_status(order_id: int, mark: bool=True) -> None:
@@ -188,18 +164,19 @@ def update_order_header_department_status(order_id: int, mark: bool=True) -> Non
     if mark:  # set datetime or null to unmark
         script = t"""
 UPDATE order_header_department
-SET fullfillment_date = CURRENT_TIMESTAMP
+SET fulfillment_date = CURRENT_TIMESTAMP
 WHERE
     company_id = system.pa_current_company()
     AND order_header_department_id = {order_id};"""
     else:
         script = t"""
 UPDATE order_header_department
-SET fullfillment_date = Null
+SET fulfillment_date = Null
 WHERE
     company_id = system.pa_current_company()
     AND order_header_department_id = {order_id};"""
-    with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
 
 
@@ -302,12 +279,12 @@ class Order():
                 r['other_departments'] = None
             headersdep.append(r)
         
-        # set status and fullfillment date if required
+        # set status and fulfillment date if required
         if not setting['manage_order_progress']:
             self.header['status'] = 'P'  # set as already processed
-            self.header['fullfillment_date'] = self.header['date_time']
+            self.header['fulfillment_date'] = self.header['date_time']
             for i in headersdep:
-                i['fullfillment_date'] = self.header['fullfillment_date']
+                i['fulfillment_date'] = self.header['fulfillment_date']
         # insert
         try:
             self.header.insert_record()

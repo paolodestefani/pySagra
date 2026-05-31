@@ -72,7 +72,9 @@ from App.Inventory import inventory
 from App.OrderProgress import orderProgress
 
 from App.OrderEntry import orderEntry
-from App.Statistics import statisticsAnalysis, statisticsPrint, statisticsExport
+from App.Statistics import statisticsAnalysis
+from App.Statistics import statisticsPrint
+from App.Statistics import statisticsExport
 from App.OrderedDelivered import orderedDelivered
 from App.SalesSummary import salesSummary
 from App.Tool import eventBasedTool

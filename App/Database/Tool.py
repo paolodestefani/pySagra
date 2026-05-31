@@ -31,11 +31,8 @@ database
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -45,79 +42,82 @@ logger = logging.getLogger(__name__)
 
 def delete_event_order(event_id: int) -> None:
     "Delete all orders of the given event"
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(t'SELECT company.delete_event_order({event_id});')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT company.delete_event_order({event_id});')
 
 
 def inventory_rebuild(event_id: int) -> None:
     "Inventory rebuild for the given event"
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(t'SELECT company.inventory_rebuild({event_id});')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT company.inventory_rebuild({event_id});')
 
     
 def ordered_delivered_rebuild(event_id: int) -> None:
     "Ordered delivered rebuild for the given event"
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(t'SELECT company.ordered_delivered_rebuild({event_id});')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT company.ordered_delivered_rebuild({event_id});')
 
 
 def numbering_rebuild(event_id: int) -> None:
     "Numbering rebuild for the given event"
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(t'SELECT company.numbering_rebuild({event_id});')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT company.numbering_rebuild({event_id});')
 
 
 def set_order_as_processed(event_id: int) -> None:
     "Set all unprocessed orders as processed ad order date"
     # order headers are updated by the trigger
     # no need to filter by company id as event_id is unique per company
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(t'SELECT company.set_order_as_processed({event_id});')
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(t'SELECT company.set_order_as_processed({event_id});')
+ 
     
 def delete_all_orders() -> None:
-    "Delete ALL orders for current company"
-    script = """
+    "Delete ALL orders for current company, update identity sequences"
+    script1 = """
 DELETE FROM order_header
 WHERE company_id = system.pa_current_company();
+"""
+    script2 = """
 DELETE FROM numbering
 WHERE company_id = system.pa_current_company();
 """
+    script3 = """
+SELECT setval(
+    pg_get_serial_sequence('company.order_header', 'order_header_id'),
+    COALESCE((SELECT max(order_header_id) FROM company.order_header), 1),
+    (SELECT max(order_header_id) IS NOT NULL FROM company.order_header)
+);"""
+    script4 = """
+SELECT setval(
+    pg_get_serial_sequence('company.order_header_department', 'order_header_department_id'),
+    COALESCE((SELECT max(order_header_department_id) FROM company.order_header_department), 1),
+    (SELECT max(order_header_department_id) IS NOT NULL FROM company.order_header_department)
+);"""
+    script5 = """
+SELECT setval(
+    pg_get_serial_sequence('company.order_line', 'order_line_id'),
+    COALESCE((SELECT max(order_line_id) FROM company.order_line), 1),
+    (SELECT max(order_line_id) IS NOT NULL FROM company.order_line)
+);"""
+    script6 = """
+SELECT setval(
+    pg_get_serial_sequence('company.order_line_department', 'order_line_department_id'),
+    COALESCE((SELECT max(order_line_department_id) FROM company.order_line_department), 1),
+    (SELECT max(order_line_department_id) IS NOT NULL FROM company.order_line_department)
+);"""
     # linked tables (oreder_header_department, order_detail, etc.
     # are automatically deleted from db cascade constraints
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        for statement in (script1, script2, script3, script4, script5, script6):
+            cur.execute(statement)
+
     
 def delete_all_inventory() -> None:
     "Delete ALL stock inventory records for current company"
@@ -125,14 +125,10 @@ def delete_all_inventory() -> None:
 DELETE FROM inventory
 WHERE company_id = system.pa_current_company();"""
     # linked table web_order_detail is automatically deleted from db cascade constraints
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
     
 def delete_all_events() -> None:
     "Delete ALL events for current company"
@@ -140,14 +136,10 @@ def delete_all_events() -> None:
 DELETE FROM event
 WHERE company_id = system.pa_current_company();"""
     # linked tables (all about orders) are automatically deleted from db cascade constraints
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
     
 def delete_all_price_lists() -> None:
     "Delete ALL price lists for current company"
@@ -155,14 +147,10 @@ def delete_all_price_lists() -> None:
 DELETE FROM price_list
 WHERE company_id = system.pa_current_company();"""
     # linked table (price_list_detail) is automatically deleted from db cascade constraints
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+ 
     
 def delete_all_items() -> None:
     "Delete ALL items for current company"
@@ -170,56 +158,40 @@ def delete_all_items() -> None:
 DELETE FROM item
 WHERE company_id = system.pa_current_company();"""
     # linked table (item_part, item_variant) are automatically deleted from db cascade constraints
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
     
 def delete_all_departments() -> None:
     "Delete ALL departments for current company"
     script = """
 DELETE FROM department
 WHERE company_id = system.pa_current_company();"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
     
 def delete_all_tables() -> None:
     "Delete ALL tables for current company"
     script = """
 DELETE FROM seat_map
 WHERE company_id = system.pa_current_company();"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
     
 def delete_all_cash_desks() -> None:
     "Delete ALL cash desks for current company"
     script = """
 DELETE FROM cash_desk
 WHERE company_id = system.pa_current_company();"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
     
 def delete_all_printer_classes() -> None:
     "Delete ALL printer classes for current company"
@@ -227,14 +199,10 @@ def delete_all_printer_classes() -> None:
 DELETE FROM printer_class
 WHERE company_id = system.pa_current_company();"""
     # linked table (printer_class_printer) is automatically deleted from db cascade constraints
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
 
 def copy_cash_desk(from_company_id: int) -> None:
     "Copy ALL the cash desks from another company to current company"
@@ -251,13 +219,9 @@ SElECT
     note
 FROM cash_desk
 WHERE company_id = {from_company_id};"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
 
 
 def copy_printer_class(from_company_id: int) -> None:
@@ -274,14 +238,10 @@ SElECT
 FROM printer_class
 WHERE company_id = {from_company_id};
 """
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+ 
 
 def copy_table(from_company_id: int) -> None:
     "Copy ALL the tables from another company to current company"
@@ -306,14 +266,10 @@ SElECT
     seat_map_id
 FROM seat_map
 WHERE company_id = {from_company_id};"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
 
 def copy_department(from_company_id: int) -> None:
     "Copy ALL the departments from another company to current company"
@@ -339,14 +295,10 @@ SElECT
 FROM department a
 LEFT JOIN printer_class b ON a.printer_class_id = b.external_code AND b.company_id = {from_company_id}
 WHERE a.company_id = {from_company_id};"""
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
     
 def copy_item(from_company_id: int) -> None:
     "Copy all items from selected company to current company"
@@ -394,12 +346,6 @@ FROM company.item i
 JOIN company.department d ON i.department_id = d.external_code 
 WHERE i.company_id = {from_company_id}
 """
-    try:
-        with appconn.cursor() as cur:
-            with appconn.transaction():
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
-    
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)

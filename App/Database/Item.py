@@ -30,12 +30,9 @@ This module provide functions for item database management
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
 from App.Database.Connect import appconn
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 
 
 # logger
@@ -53,13 +50,10 @@ FROM item_variant
 WHERE   company_id  = system.pa_current_company() 
     AND item_id     = {item_id}
 ORDER BY sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def item_list(event_id: int, department_id: int) -> list[tuple]:
@@ -84,14 +78,11 @@ WHERE
     AND is_salable      IS true 
     AND event_id        = {event_id} 
     AND department_id   = {department_id};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
+        
     
 def item_web_list(event_id: int, department_id: int) -> list[tuple]:
     "Get item list for supplied event for web order"
@@ -111,13 +102,10 @@ WHERE
     AND event_id        = {event_id} 
     AND department_id   = {department_id}
 ORDER BY web_sorting;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def is_menu(item_id: int) -> bool:
@@ -130,13 +118,10 @@ WHERE
         company_id  = system.pa_current_company() 
     AND item_id     = {item_id} 
     AND item_type   = 'M';"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return bool(cur.rowcount)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchone() is not None
 
 
 def is_kit(item_id: int) -> bool:
@@ -149,13 +134,10 @@ WHERE
         company_id  = system.pa_current_company()
     AND item_id     = {item_id} 
     AND item_type   = 'K';"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return bool(cur.rowcount)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchone() is not None
 
 
 def is_for_takeaway(item_id: int) -> bool:
@@ -169,13 +151,10 @@ WHERE
         i.company_id    = system.pa_current_company()
     AND i.item_id       = {item_id} 
     AND d.is_for_takeaway IS True;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return bool(cur.rowcount)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchone() is not None
 
 
 def has_stock_management(item_id: int) -> bool:
@@ -189,13 +168,10 @@ WHERE
         company_id  = system.pa_current_company()
     AND item_id     = {item_id}
     AND has_inventory_control IS true;"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return bool(cur.rowcount)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchone() is not None
 
 
 def get_menu_items(item_id: int) -> list[tuple]:
@@ -209,16 +185,13 @@ FROM item_part
 WHERE
         company_id  = system.pa_current_company()
     AND item_id     = {item_id};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
-def get_item_dep(item_id: int) -> int|None:
+def get_item_dep(item_id: int) -> int | None:
     "Return department id for item"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = t"""
@@ -228,19 +201,13 @@ FROM item
 WHERE 
         company_id  = system.pa_current_company()
     AND item_id     = {item_id};"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                return result[0]
-            else:
-                return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (None,))[0] 
 
 
-def get_item_desc(item_id: int) -> str|None:
+def get_item_desc(item_id: int) -> str | None:
     "Return description of item item"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = t"""
@@ -250,16 +217,10 @@ FROM item
 WHERE 
         company_id  = system.pa_current_company()
     AND item_id     = {item_id};"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                return result[0]
-            else:                
-                return None
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (None,))[0]
 
 
 def get_item_stock_level(event_id: int, item_id: int) -> int:
@@ -273,17 +234,11 @@ WHERE
         company_id  = system.pa_current_company()
     AND event_id    = {event_id} 
     AND item_id     = {item_id};"""
-    try:
-        with appconn.cursor() as cur:
-            result = cur.execute(script).fetchone()
-            if result:
-                return result[0] or 0 # if stock not set balance is null
-            else:
-                return 0
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return next(cur, (0,))[0]  # if no row returned available is considered 0
+    
 
 def kit_availability(event_id: int) -> list[tuple]:
     # actually we don't need to filter company_id as event_id is unique across companies
@@ -297,13 +252,10 @@ WHERE
         company_id  = system.pa_current_company()
     AND item_type   = 'K' 
     AND event_id    = {event_id};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def menu_availability(event_id: int) -> list[tuple]:
@@ -316,11 +268,7 @@ WHERE
         company_id  = system.pa_current_company()
     AND item_type   = 'M' 
     AND event_id    = {event_id};"""
-    try:
-        with appconn.cursor() as cur:
-            cur.execute(script)
-            return cur.fetchall()
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
-    
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()

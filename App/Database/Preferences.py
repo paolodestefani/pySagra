@@ -30,11 +30,8 @@ This module provides classes and functions for user preferences database managem
 # standard library
 import logging
 
-# psycopg
-import psycopg
-
 # application modules
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -55,21 +52,17 @@ SELECT
     tab_position
 FROM system.app_user
 WHERE user_code = {user_code};"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-                return cur.fetchall()[0]
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()[0]
 
 
 def save_preferences(user_code: str,
                      style: str,
                      color: str,
                      icon: str,
-                     ffamily: str|None,
+                     ffamily: str | None,
                      fsize: int,
                      tbstyle: str,
                      tabposition: str
@@ -85,10 +78,6 @@ SET style_theme = {style},
     tool_button_style= {tbstyle},
     tab_position = {tabposition}
 WHERE user_code = {user_code};"""
-    try:
-        with appconn.transaction():
-            with appconn.cursor() as cur:
-                cur.execute(script)
-    except psycopg.Error as er:
-        logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))
-        raise PyAppDBError(er.diag.sqlstate, er.diag.message_primary, str(er))
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)

@@ -636,7 +636,7 @@ CREATE TABLE order_header (
     cash numeric(12, 2) NOT NULL DEFAULT 0,
     change numeric(12, 2) NOT NULL DEFAULT 0,
 	status char NOT NULL DEFAULT 'A',
-	fullfillment_date timestamptz(3) NULL,
+	fulfillment_date timestamptz(3) NULL,
     --
     user_ins text NOT NULL,
     date_ins timestamptz(3) NOT NULL,
@@ -669,7 +669,7 @@ CREATE TABLE order_header_department (
     department integer NOT NULL,
     note text,
     other_departments text,
-	fullfillment_date timestamptz(3) NULL,
+	fulfillment_date timestamptz(3) NULL,
     --
     user_ins text NOT NULL,
     date_ins timestamptz(3) NOT NULL,
