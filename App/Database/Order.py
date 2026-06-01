@@ -37,7 +37,7 @@ from PySide6.QtCore import QDate
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
-from App.Database.Exceptions import db_exception_context
+from App.Core.Database import db_exception_context
 from App.Database.Utility import Record, RecordSet
 from App.Database.Connect import appconn
 from App.Database.Setting import Setting

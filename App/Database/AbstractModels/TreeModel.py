@@ -44,7 +44,7 @@ from PySide6.QtCore import QModelIndex
 # application modules
 from App.Database import OVFIELD
 from App.Database.Exceptions import PyAppDBError
-from App.Database.Exceptions import db_exception_context
+from App.Core.Database import db_exception_context
 from App.Database.Connect import appconn
 from App.Core.L10n import _tr
 

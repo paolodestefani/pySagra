@@ -32,13 +32,10 @@ This module manages application users and user access rights to each company
 import logging
 
 # PySide6
-
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QObject
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QFileInfo
-from PySide6.QtCore import QSize
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
@@ -53,7 +50,6 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-#from App import currentAction
 from App import currentIcon
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Exceptions import PyAppDBError
@@ -74,10 +70,9 @@ from App.Widget.Delegate import GenericDelegate
 from App.Ui.UserWidget import Ui_UserWidget
 from App.Ui.ChangePasswordDialog import Ui_ChangePasswordDialog
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
-from App.Core.Scripting import scriptInit
-from App.Core.Scripting import scriptMethod
 
 
 # logger
@@ -358,14 +353,10 @@ class ChangePasswordDialog(QDialog):
                                      "in the 'New password' does not match "
                                      "that of the 'Confirm password'"))
             return
-        try:
+        with gui_exception_context(self, _tr('ChangePassword', 'Change password')):
             change_password(self.ui.lineEditUser.text(),
                             self.ui.lineEditNewPassword.text())
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
-        else:
+        
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
                                     _tr('ChangePassword', "Password changed successfully"))

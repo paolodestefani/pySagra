@@ -37,6 +37,7 @@ import logging
 # PySide6
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QSettings
+from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
@@ -109,12 +110,14 @@ class CustomizationsDialog(QDialog):
         "Export customizations to a zipped CSV files - *.zip"
         st = QSettings()
         path = st.value("ExportAdaptationsFile", QDir.current().path(), type=str)
-        fileName, filter = QFileDialog.getSaveFileName(self,
-                                caption=_tr('Customizations', "Select the file name to create"),
-                                dir=str(path),
-                                filter= 'pySagra Zipped Adaptation File (*.zip *.*)',
-                                options=QFileDialog.Option.DontUseNativeDialog )
+        fileName, _ = QFileDialog.getSaveFileName(self,
+                                                  caption=_tr('Customizations', "Select the file name to create"),
+                                                  dir=str(path),
+                                                  filter= 'pySagra Zipped Adaptation File (*.zip *.*)')
         if fileName == "":
+            # ---  WORKAROUND FOR MACOS ---
+            self.raise_()
+            self.activateWindow()
             return
         if not fileName.endswith('.zip'):
             fileName += '.zip'
@@ -137,25 +140,29 @@ class CustomizationsDialog(QDialog):
                 writer.writerows(export_adaptation_setting())
                 zf.writestr('adaptation_setting', string_buffer.getvalue())
     
-                st.setValue("ExportAdaptationsFile", fileName)
-                QMessageBox.information(self,
-                                        _tr('MessageDialog', 'Information'),
-                                        _tr('Customizations', 'Export completed successfully'))
+            st.setValue("ExportAdaptationsFile", fileName)
+            # ---  WORKAROUND FOR MACOS ---
+            self.raise_() 
+            self.activateWindow() 
+            QMessageBox.information(
+                                  self,
+                                    _tr('MessageDialog', 'Information'),
+                                    _tr('Customizations', 'Export completed successfully'))
 
     def importCustomization(self) -> None:
         "Import customizations from a zipped CSV files - *.zip"
         st = QSettings()
         path = st.value("ExportAdaptationsFile", QDir.current().path(), type=str)
-        fileName, filter = QFileDialog.getOpenFileName(self,
-                                                       caption=_tr('Customizations', "Select the file name to load"),
-                                                       dir=str(path),
-                                                       filter= 'pySagra Zipped Adaptation File (*.zip *.*)')
+        fileName, _ = QFileDialog.getOpenFileName(self,
+                                                  caption=_tr('Customizations', "Select the file name to load"),
+                                                  dir=str(path),
+                                                  filter= 'pySagra Zipped Adaptation File (*.zip *.*)')
         if fileName == "":
             return
         with gui_exception_context(self, _tr('Customizations', 'Import customizations')):
             adaptations: list[tuple] = []
             adaptsettings: list[tuple] = []
-            with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
+            with zipfile.ZipFile(fileName, 'r') as zf:
                 # check version
                 string_buffer = io.StringIO(zf.read('version').decode('utf-8'))
                 reader = csv.reader(string_buffer)

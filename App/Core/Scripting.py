@@ -35,23 +35,26 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
+from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Scripting import get_script
 
 
 # scripting management
 def scriptInit(instanceReference: object) -> dict:
     "Returns a dictionary of string command for scripting purpose"
-    script = get_script(instanceReference.__class__.__name__)
-    # execute init script after if any
-    globalsParameters = {'session': session,
-                         'self': instanceReference}
-    try:
-        exec(script.get(('__init__', 'A'), ''), globalsParameters)
-    except Exception as er:
-        QMessageBox.critical(None,
-                             'Script engine',
-                             f'Error executing __init__ script: \n{er}')
-    return script
+    with gui_exception_context(None, _tr('Scripting', 'Error loading script')):
+        script = get_script(instanceReference.__class__.__name__)
+        # execute init script after if any
+        globalsParameters = {'session': session,
+                            'self': instanceReference}
+        try:
+            exec(script.get(('__init__', 'A'), ''), globalsParameters)
+        except Exception as er:
+            QMessageBox.critical(None,
+                                'Script engine',
+                                f'Error executing __init__ script: \n{er}')
+        return script
 
 
 def scriptMethod(method: Callable) -> Callable:

@@ -50,7 +50,7 @@ from PySide6.QtCore import QPersistentModelIndex
 # application modules
 from App import session
 from App.Database import OVFIELD
-from App.Database.Exceptions import db_exception_context
+from App.Core.Database import db_exception_context
 from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Connect import appconn
 

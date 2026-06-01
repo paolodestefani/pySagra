@@ -29,10 +29,10 @@ This module provides classes and functions for database scripting management
 
 # standard library
 import logging
-from typing import Any
+from typing import Any, List
 
 # application modules
-from App.Database.Exceptions import db_exception_context
+from App.Core.Database import db_exception_context
 from App.Database.Connect import appconn
 
 
@@ -93,7 +93,7 @@ SET script = {script},
         cur.execute(sql)
 
 
-def get_all_scripts() -> Any | None:
+def get_all_scripts() -> List[Any]:
     "Get all python scripts available"
     script = """
 SELECT 

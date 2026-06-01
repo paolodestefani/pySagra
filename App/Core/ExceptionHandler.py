@@ -37,7 +37,8 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
-from App.Database.Exceptions import PyAppDBConnectionError, PyAppDBError
+from App.Database.Exceptions import PyAppDBConnectionError
+from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 from App.Core.L10n import _tr
 from App.Widget.Dialog import MessageBoxCritical
@@ -81,6 +82,8 @@ error_code_messages = {
     '42703': _tr("PGError", "Column does not exist"),
     '42P09': _tr("PGError", "Ambiguous column name or alias")
 }
+
+# Context manager to capture exceptions in GUI operations and show critical dialogs
 
 @contextmanager
 def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator[None, None, None]:

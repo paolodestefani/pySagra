@@ -29,7 +29,6 @@ and currency formatting
 """
 
 # standard library
-import decimal
 
 # PySide6
 from PySide6.QtCore import Qt

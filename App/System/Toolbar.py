@@ -40,19 +40,15 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-#from App import currentAction
 from App import currentIcon
 from App.Core.L10n import _tr
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Models import ToolbarIndexModel
 from App.Database.Models import ToolbarModel
 from App.Database.Models import ToolbarItemTreeModel
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager
-from App.Widget.Dialog import PrintDialog
 from App.Ui.ToolbarWidget import Ui_ToolbarWidget
-from App.Ui.DuplicateDialog import Ui_DuplicateDialog
 
 
 # logger
