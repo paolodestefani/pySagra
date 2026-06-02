@@ -44,8 +44,6 @@ from App.Database.Report import get_report_id
 from App.Database.Report import report_xml
 from App.Database.Report import report_query
 from App.Report.ReportEngine import Report
-from App.Widget.Dialog import PrintPreviewDialog
-
 
 
 def printOrderReport(order_id: int, printer: str|None = None) -> None:
@@ -67,7 +65,7 @@ def printOrderReport(order_id: int, printer: str|None = None) -> None:
         report.print(prnt)
     else:
         # print preview
-        dialog = PrintPreviewDialog(session['mainwin'])
+        dialog = QPrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)
         dialog.exec()
@@ -92,7 +90,7 @@ def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
         report.print(prnt)
     else:
         # print preview
-        dialog = PrintPreviewDialog(session['mainwin'])
+        dialog = QPrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)
         dialog.exec()
@@ -123,7 +121,7 @@ def printOrderDepartmentReport(order_id: int,
         report.print(prnt)
     else:
         # print preview
-        dialog = PrintPreviewDialog(session['mainwin'])
+        dialog = QPrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)
         dialog.exec()
@@ -159,7 +157,7 @@ def printStockUnloadReport(report_id: int,
         report.print(prnt)
     else:
         # print preview
-        dialog = PrintPreviewDialog(session['mainwin'])
+        dialog = QPrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)
         dialog.exec()

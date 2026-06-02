@@ -31,11 +31,8 @@ This module provides stock inventory management
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
-from PySide6.QtCore import QDate
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtCore import QSettings
 
 # application modules
@@ -55,19 +52,21 @@ from App.Database.Models import MenuAvailabilityModel
 from App.Ui.InventoryWidget import Ui_InventoryWidget
 
 
+# logger
+logger = logging.getLogger(__name__)
 
 ID, EVENT, ITEM, LOADED, UNLOADED, STOCK, ORDERED, AVAILABLE, NEW_STOCK = range(9)
 
 
 def inventory(action: QAction, checked: bool = False):
     "Manage stock inventory"
-    logging.info('Starting inventory Form')
+    logger.info('Starting inventory Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     sw = InventoryForm(mw, title, auth)
     mw.addTab(title, sw)
-    logging.info('Stock inventory Form added to main window')
+    logger.info('Stock inventory Form added to main window')
 
 
 class InventoryForm(FormViewManager[Ui_InventoryWidget]):
@@ -132,10 +131,12 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
 
     def save(self):
         super().save()
+        logger.info('Saving inventory')
         self.updateFilterConditions(self.selectedEvent)
 
     def reload(self):
         super().reload()
+        logger.info('Reloading inventory')
         self.updateFilterConditions(self.selectedEvent)
 
     def new(self):
@@ -169,4 +170,4 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
     def close(self, *args, **kwargs) -> bool: # avoid signature change for event handler
         st = QSettings()
         st.setValue("Inventory/SplitterSizes", self.ui.splitter.sizes())
-        super().close()
+        return super().close() # return value is used by event handler, so return super() result

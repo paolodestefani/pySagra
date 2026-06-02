@@ -40,7 +40,7 @@ from App.Database.Connect import appconn
 logger = logging.getLogger(__name__)
 
 
-def table_list() -> list[tuple[str, int, int, str, str]]:
+def table_list() -> list[tuple[str, int, int, str, str, bool]]:
     "Returns a list of available table codes"
     script = t"""
 SELECT 
@@ -48,7 +48,8 @@ SELECT
     pos_row,
     pos_column,
     text_color,
-    background_color
+    background_color,
+    is_unavailable
 FROM company.seat_map
 WHERE 
         company_id = {session['current_company']} 

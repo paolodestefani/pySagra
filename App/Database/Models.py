@@ -902,6 +902,7 @@ class SeatMapModel(TableModel):
                         ("pos_column", _tr('Models', 'Column'), False, 'int'),
                         ("text_color", _tr('Models', 'Text color'), False, 'str'),
                         ("background_color", _tr('Models', 'Background color'), False, 'str'),
+                        ("is_unavailable", _tr('Models', 'Unavailable'), False, 'bool'),
                         ("is_obsolete", _tr('Models', 'Obsolete'), False, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),

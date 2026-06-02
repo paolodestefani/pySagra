@@ -29,10 +29,12 @@ This module contains custom general delegates
 
 # standard library
 from decimal import Decimal
-from typing import Any, cast
+from typing import Any
+from typing import cast
 
 # PySide6
-from PySide6.QtCore import QRectF, Qt
+from PySide6.QtCore import Qt
+from PySide6.QtCore import QRectF
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QIODevice
@@ -77,12 +79,11 @@ from App import session
 from App import actionDefinition
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
+from App.Core.L10n import _tr
 from App.Database.AbstractModels.TableModel import QueryModel, TableModel
 from App.Database.Setting import SettingClass
 from App.Widget.Control import ColorComboBox
-from App.Widget.Control import RelationalComboBox
 from App.Widget.Dialog import SelectImageDialog
-
 
 
 class GenericDelegate(QStyledItemDelegate):
@@ -122,15 +123,15 @@ class GenericDelegate(QStyledItemDelegate):
     def createEditor(self, 
                      parent: QWidget,
                      option: QStyleOptionViewItem,
-                     index: QModelIndex|QPersistentModelIndex
+                     index: QModelIndex | QPersistentModelIndex
                      ) -> QWidget:
         abstract_model = index.model()
         model = cast(QueryModel|TableModel, abstract_model)
         fieldType = cast(str, model.columns[index.column()][3])
-        widget: QWidget|QSpinBox|QDateEdit|QDateTimeEdit|QDoubleSpinBox|QLineEdit
+        widget: QWidget | QSpinBox | QDateEdit | QDateTimeEdit | QDoubleSpinBox | QLineEdit | None
         match fieldType:
             case 'bool':  # must be checked before int (bool is subclass of int)
-                widget = None # QWidget(parent)
+                widget = QWidget(parent)
             case 'int':
                 widget = QSpinBox(parent)
                 widget.setRange(0, 999999999)
@@ -199,7 +200,7 @@ class GenericDelegate(QStyledItemDelegate):
                 model.setData(index, editor.value())
             case QLineEdit():
                 model.setData(index, editor.text())
-            case QWidget()|None:  # dummy editor for boolean fields, toggle value
+            case QWidget():  # dummy editor for boolean fields, toggle value
                 current_val = index.data(Qt.ItemDataRole.EditRole)
                 if current_val is None:
                     current_val = index.data(Qt.ItemDataRole.DisplayRole)
@@ -207,107 +208,26 @@ class GenericDelegate(QStyledItemDelegate):
             case _:
                 raise TypeError(f"Unsupported editor type: {editor}")
   
-
-# class ColorDelegate(QStyledItemDelegate):
-#     "Color delegate"
-
-#     def createEditor(self,
-#                      parent: QWidget,
-#                      option: QStyleOptionViewItem,
-#                      index: QModelIndex|QPersistentModelIndex
-#                      ) -> QWidget:
-#         color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
-#         if not color.isValid():
-#             color = QColor(Qt.GlobalColor.green)
-#         newcolor = QColorDialog.getColor(color, parent)
-#         print("Index", index.row(), index.column(), "Current color", color.name(), "New color", newcolor.name())
-#         if newcolor.isValid():
-#             index.model().setData(index, newcolor.name(), Qt.ItemDataRole.EditRole)
-#             print("Dataset", index.model().dataSet[0])
-#         return QWidget(parent)  # dummy editor, not used
-
-#     def paint(self,
-#               painter: QPainter,
-#               option: QStyleOptionViewItem,
-#               index: QModelIndex|QPersistentModelIndex) -> None:
-#         color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
-#         painter.save()
-#         styleOption = QStyleOptionViewItem(option)
-#         styleOption.backgroundBrush = QBrush(color)
-#         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
-#                                          styleOption,
-#                                          painter)
-#         painter.restore()
-        
-# class ColorDelegate(QStyledItemDelegate):
-    
-#     def paint(self, painter, option, index):
-#         # Recupera il colore dal modello
-#         color_val = index.data(Qt.ItemDataRole.DisplayRole)
-#         color = QColor(color_val) if color_val else QColor(Qt.GlobalColor.white)
-        
-#         painter.save()
-#         opts = QStyleOptionViewItem(option)
-#         self.initStyleOption(opts, index)
-        
-#         # 1. Rimuove il testo per evitare di vedere il codice HEX
-#         opts.text = ""
-        
-#         # 2. Imposta il colore di sfondo
-#         opts.backgroundBrush = QBrush(color)
-        
-#         # Su Windows, per far vedere bene la selezione, Qt disegna un rettangolo tratteggiato.
-#         # drawControl gestirà correttamente sia lo sfondo colorato che il focus.
-#         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem, opts, painter)
-#         painter.restore()
-
-#     def editorEvent(self, event, model, option, index):
-#         # Usiamo MouseButtonRelease: è lo standard più sicuro tra Win/Mac
-#         # per evitare che il dialogo appaia mentre il mouse è ancora premuto
-#         if event.type() == QEvent.Type.MouseButtonRelease:
-#             # Opzionale: puoi limitare l'apertura solo se viene cliccato il tasto sinistro
-#             if event.button() == Qt.MouseButton.LeftButton:
-#                 current_str = index.data(Qt.ItemDataRole.DisplayRole)
-#                 current_color = QColor(current_str) if current_str else QColor(Qt.GlobalColor.green)
-                
-#                 # Nel tuo editorEvent
-#                 new_color = QColorDialog.getColor(current_color, option.widget, "Seleziona Colore")
-                
-#                 if new_color.isValid():
-#                     # Aggiorna il modello
-#                     model.setData(index, new_color.name(), Qt.ItemDataRole.EditRole)
-#                     return True
-#         return False
-
-#     def createEditor(self, parent, option, index):
-#         # Fondamentale: impedisce a Windows di creare la QLineEdit di default
-#         # che apparirebbe sopra il tuo colore.
-#         return None
     
 class ColorDelegate(QStyledItemDelegate):
     
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index) -> None:
-        # Recupera il colore dal modello
+        # retrieve color from model data, if invalid use white as default
         color_val = index.data(Qt.ItemDataRole.DisplayRole)
         color = QColor(color_val) if color_val else QColor(Qt.GlobalColor.white)
         
         painter.save()
         opts = QStyleOptionViewItem(option)
         self.initStyleOption(opts, index)
-        
-        # 1. Rimuove il testo per evitare di vedere il codice HEX
+        # 1. remove text to avoid drawing it, we will draw only the colored rectangle
         opts.text = ""
-        
-        # 2. Lasciamo che lo stile disegni lo sfondo di sistema (gestendo selezione e focus)
-        # Rimosso: opts.backgroundBrush = QBrush(color)
+        # 2. let the style draw the system background (handling selection and focus)
         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem, opts, painter)
-        
-        # 3. Disegna il rettangolo arrotondato sopra lo sfondo con gli stessi parametri
+        # 3. draw the colored rectangle if the color is valid (non-empty string)
         if color.isValid():
-            # Attiva l'antialiasing per curve morbide
+            # use antialiasing for smoother edges on the rounded rectangle
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            
-            # Stesso margine di 3 pixel per mantenere la coerenza visiva
+            # same margin for all sides to create a gap between the colored rectangle and the cell borders
             margin = 3.0
             rect = QRectF(
                 option.rect.x() + margin,
@@ -315,38 +235,32 @@ class ColorDelegate(QStyledItemDelegate):
                 option.rect.width() - (margin * 2),
                 option.rect.height() - (margin * 2)
             )
-            
-            # Imposta colore e bordo nero da 1px
+            # set the brush to fill the rectangle with the color and a pen for the border 
+            # (optional, can be set to NoPen if no border is desired)
             painter.setBrush(QBrush(color))
             painter.setPen(QPen(Qt.GlobalColor.black, 1))
-            
-            # Stesso raggio di arrotondamento a 4 pixel
+            # same corner radius of 4 pixels
             corner_radius = 4.0
             painter.drawRoundedRect(rect, corner_radius, corner_radius)
-        
         painter.restore()
 
     def editorEvent(self, event, model, option, index):
-        # Usiamo MouseButtonRelease: è lo standard più sicuro tra Win/Mac
-        # per evitare che il dialogo appaia mentre il mouse è ancora premuto
+        # using MouseButtonRelease because it's the standard across Win/Mac
+        # to avoid issues with MouseButtonDblClick that can cause double toggling of the color on double click
         if event.type() == QEvent.Type.MouseButtonRelease:
-            # Opzionale: puoi limitare l'apertura solo se viene cliccato il tasto sinistro
             if event.button() == Qt.MouseButton.LeftButton:
                 current_str = index.data(Qt.ItemDataRole.DisplayRole)
                 current_color = QColor(current_str) if current_str else QColor(Qt.GlobalColor.green)
-                
-                # Nel tuo editorEvent
-                new_color = QColorDialog.getColor(current_color, option.widget, "Seleziona Colore")
-                
+                # open color dialog with current color as default
+                new_color = QColorDialog.getColor(current_color, option.widget, _tr('Delegate', 'Select Color'))
                 if new_color.isValid():
-                    # Aggiorna il modello
+                    # update model with new color as hex string, using EditRole to store the actual value
                     model.setData(index, new_color.name(), Qt.ItemDataRole.EditRole)
                     return True
         return False
 
     def createEditor(self, parent, option, index):
-        # Fondamentale: impedisce a Windows di creare la QLineEdit di default
-        # che apparirebbe sopra il tuo colore.
+        # mandatory return None to avoid creating an editor, we will handle editing in editorEvent
         return None
 
 
@@ -387,20 +301,6 @@ class ColorComboDelegate(QStyledItemDelegate):
         ccb = cast(ColorComboBox, editor)
         model.setData(index, ccb.currentData(Qt.ItemDataRole.UserRole), Qt.ItemDataRole.EditRole)
 
-    # def paint(self, 
-    #           painter: QPainter,
-    #           option: QStyleOptionViewItem,
-    #           index: QModelIndex|QPersistentModelIndex
-    #           ) -> None:
-    #     color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
-    #     painter.save()
-    #     styleOption = QStyleOptionViewItem(option)
-    #     styleOption.backgroundBrush = QBrush(color)
-    #     QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
-    #                                      styleOption,
-    #                                      painter)
-    #     painter.restore()
-    
     def paint(self, 
             painter: QPainter,
             option: QStyleOptionViewItem,
@@ -410,20 +310,17 @@ class ColorComboDelegate(QStyledItemDelegate):
         color = QColor(index.data(Qt.ItemDataRole.DisplayRole))
         
         painter.save()
-        
-        # 1. Disegna lo sfondo standard della cella (gestisce selezione, hover, ecc.)
+        # 1. draw the default item view background (selection, hover, alternate background) without text
         styleOption = QStyleOptionViewItem(option)
-        # Rimuoviamo l'assegnazione del backgroundBrush qui per non colorare l'intera cella quadrata
         QApplication.style().drawControl(QStyle.ControlElement.CE_ItemViewItem,
                                         styleOption,
                                         painter)
         
-        # 2. Se il colore è valido, disegna il rettangolo arrotondato sopra lo sfondo
+        # 2. if color is valid, draw a filled rounded rectangle with the color, leaving a margin from the cell borders
         if color.isValid():
-            # Attiva l'antialiasing per evitare bordi seghettati sulle curve
+            # use antialiasing for smoother edges on the rounded rectangle
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            
-            # Definisci un margine (es. 3 pixel) per staccare il colore dai bordi della cella
+            # define a margin of 3 pixels on all sides to create a gap between the colored rectangle and the cell borders
             margin = 3.0
             rect = QRectF(
                 option.rect.x() + margin,
@@ -431,17 +328,14 @@ class ColorComboDelegate(QStyledItemDelegate):
                 option.rect.width() - (margin * 2),
                 option.rect.height() - (margin * 2)
             )
-            
-            # Imposta il colore di riempimento e un leggero bordo nero (puoi usare Qt.PenStyle.NoPen se non vuoi il bordo)
+            # use the color for filling and a light black border (you can use Qt.PenStyle.NoPen if you don't want a border)
             painter.setBrush(QBrush(color))
             painter.setPen(QPen(Qt.GlobalColor.black, 1))
-            
-            # Raggio di arrotondamento degli angoli
+            # corner radius for the rounded rectangle
             corner_radius = 4.0
             painter.drawRoundedRect(rect, corner_radius, corner_radius)
             
         painter.restore()
-
 
 
 class ImageDelegate(QStyledItemDelegate):
@@ -933,6 +827,7 @@ class AmountDelegate(DecimalDelegate):
 class NewStockDelegate(QuantityDelegate):
     """A delegate for insert new stock on stock_summary and recalc loads and balance
     """
+    
     LOAD, UNLOAD, STOCK, ORDERED, AVAILABLE = range(3, 8)
     
     def paint(self, 
@@ -978,6 +873,7 @@ class NewStockDelegate(QuantityDelegate):
 
 
 class StockLevelDelegate(QuantityDelegate):
+    """A delegate for stock level with color based on quantity (green, orange, red, gray)"""
 
     def __init__(self, parent: QWidget, warning=10, critical=5, bold=True):
         super().__init__(parent, bold=bold)
@@ -1028,7 +924,6 @@ class StockLevelDelegate(QuantityDelegate):
         style.drawControl(QStyle.ControlElement.CE_ItemViewItem, option, painter, widget)
 
         
-
 class BoldDelegate(QStyledItemDelegate):
     "A delegate for bold rendering of text"
 
@@ -1113,8 +1008,7 @@ class PasswordDelegate(QStyledItemDelegate):
             val = index.data(Qt.ItemDataRole.DisplayRole)
         option.text = '\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF'
         option.displayAlignment = Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-        if self.bold:
-            option.font.setWeight(QFont.Weight.Bold)
+        option.font.setWeight(QFont.Weight.Bold)
         if index.data(Qt.ItemDataRole.FontRole):
             if index.data(Qt.ItemDataRole.FontRole).bold():
                 option.font.setWeight(QFont.Weight.Bold)

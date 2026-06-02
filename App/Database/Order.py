@@ -188,12 +188,11 @@ class Order():
         self.lines = RecordSet('order_line', ('order_line_id',))
         self.depnote: dict = {} # dict(dep: note)
         
-    def out_of_stock(self) -> list[str|None]:
+    def out_of_stock(self) -> list[str]:
         "Returns a list of out of stock items"
-        result = get_event_from_date(self.header['date_time'])
-        if not result:
+        event_id, _ = get_event_from_date(self.header['date_time'])
+        if not event_id:
             raise PyAppDBError("02000", "No event found for order date")
-        event_id = result[0]
         out_of_stock = []
         for i in self.lines:
             if has_stock_management(i['item_id']):
@@ -206,10 +205,10 @@ class Order():
         headersdep = RecordSet('order_header_department', ('order_header_department_id',))
         linesdep = RecordSet('order_line_department', ('order_line_department_id',))
         # set event
-        result = get_event_from_date(self.header['date_time'])
-        if not result:
+        event_id, _ = get_event_from_date(self.header['date_time'])
+        if not event_id:
             raise PyAppDBError("02000", "No event found for order date")
-        self.header['event_id'] = result[0]
+        self.header['event_id'] = event_id
         # order date and time set in insert for management of event date changes
         self.header['order_date'] = self.header['date_time'].date()
         self.header['order_time'] = self.header['date_time'].time()

@@ -207,7 +207,7 @@ WHERE
         return next(cur, (None,))[0] 
 
 
-def get_item_desc(item_id: int) -> str | None:
+def get_item_desc(item_id: int) -> str:
     "Return description of item item"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = t"""
@@ -220,7 +220,7 @@ WHERE
     # Unified context managers ensuring proper evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
-        return next(cur, (None,))[0]
+        return next(cur, ("",))[0]
 
 
 def get_item_stock_level(event_id: int, item_id: int) -> int:

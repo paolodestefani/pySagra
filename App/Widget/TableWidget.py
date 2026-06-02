@@ -21,52 +21,27 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Views
+"""TableWidget module
 
-This module contains general custom views
-
+This module contains general custom table widget classes
 
 """
 
 # standard library
-import os
-import csv
 from typing import Any
 
 # PySide6
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QSettings
-from PySide6.QtCore import QUrl
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
-from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPoint
-from PySide6.QtCore import QMimeData
 from PySide6.QtGui import QDropEvent
-from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QHBoxLayout
-from PySide6.QtWidgets import QTableView
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
-from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QAbstractItemView
-from PySide6.QtGui import QAction
-from PySide6.QtGui import QActionGroup
-from PySide6.QtWidgets import QMenu
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QFileDialog
-from PySide6.QtWidgets import QInputDialog
-from PySide6.QtWidgets import QDialog
 
 # application modules
-from App import session
-from App import currentIcon
-from App.Core.L10n import _tr
-from App.Database.Exceptions import PyAppDBError
-from App.Widget.Delegate import RelationDelegate
-from App.Widget.Delegate import HideTextDelegate
-from App.Widget.Delegate import BooleanDelegate
 
 
 # navigation status settings
@@ -82,7 +57,7 @@ class TableWidgetItem(QTableWidgetItem):
     
     def __init__(self, value: object = None) -> None:
         super().__init__()
-        if isinstance(value, int|str|bool|QDate|QDateTime|None):
+        if isinstance(value, int | str | bool | QDate | QDateTime | None):
             self._data = value
         else:
             self._data = None

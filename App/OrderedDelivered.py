@@ -32,21 +32,14 @@ This module provide ordered delivered form management
 import logging
 
 # PySide6
-from PySide6.QtCore import Qt
-from PySide6.QtCore import QObject
-from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
-from PySide6.QtCore import QTime
-from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QAbstractItemView
-from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
-from App import session 
-from App.Database.Setting import SettingClass
+from App import session
 from App.Database.Models import ItemsOrderedDeliveredModel
 from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import QuantityDelegate
@@ -58,6 +51,8 @@ from App.Ui.OrderedDeliveredWidget import Ui_OrderedDeliveredWidget
 from App.Core.L10n import _tr
 
 
+# logger
+logger = logging.getLogger(__name__)
 
 EVENT, DATE, DAY_PART, ITEM, ITEM_DESCRIPTION, ORDERED, DELIVERED = range(7)
 
@@ -69,13 +64,13 @@ def dayPartMapping():
 
 def orderedDelivered(action: QAction, checked: bool = False) -> None:
     "Ordered delivered"
-    logging.info('Starting ordered delivered Form')
+    logger.info('Starting ordered delivered Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     su = OrderedDeliveredForm(mw, title, auth)
     mw.addTab(title, su)
-    logging.info('Ordered delivered Form added to main window')
+    logger.info('Ordered delivered Form added to main window')
 
 
 class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
@@ -131,21 +126,6 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         super().reload()
         self.ui.dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self.updateTimer.start()
-
-    # def setFilters(self):
-    #     "Filters event, date, day part"
-    #     if not event_lookup():
-    #         QMessageBox.information(self,
-    #                             _tr('MessageDialog', 'Information'),
-    #                             _tr('StockUnload', 'No event available'))
-    #         return
-    #     # create filter dialog if not exists
-    #     if not hasattr(self, 'sortFilterDialog'):
-    #         self.sortFilterDialog = EventFilterDialog(self,
-    #                                                   self.selectedEvent,
-    #                                                   self.selectedDate,
-    #                                                   self.selectedDayPart)
-    #     self.sortFilterDialog.show()
 
     def print(self):
         "Ordered delivered report"

@@ -82,13 +82,10 @@ from PySide6.QtCore import QRect
 from PySide6.QtGui import QLinearGradient
 
 # application modules
-from App import session
 from App import currentIcon
 from App.Core.L10n import _tr
 from App.Core.Cryptography import string_encode
 from App.Core.Cryptography import string_decode
-from App.Database.Setting import Setting
-
 
 
 class LabelImage(QLabel):
@@ -439,53 +436,12 @@ class DataWidgetMapper(QDataWidgetMapper):
         delegate = self.itemDelegate()
         
         if isinstance(widget, QComboBox):
-            #widget.currentIndexChanged.connect(lambda: delegate.commitData.emit(widget))
             widget.activated.connect(lambda: delegate.commitData.emit(widget))
             
         elif isinstance(widget, QCheckBox):
             # this forces the commit immediatly for checkboxes, 
             # which otherwise on macOS would not lose focus and commit until another widget is focused
             widget.clicked.connect(lambda: delegate.commitData.emit(widget))
-
-
-# class ColorComboBox(QComboBox):
-#     """A QComboBox that uses userData + itemText for key-value foreign key
-#     or set/get items from a (k, v) list"""
-
-#     itemChanged=Signal()
-
-#     def setColorList(self, colors: list) -> None:
-#         self.clear()
-#         for v, k in colors:
-#             pix = QPixmap(24, 24)
-#             pix.fill(QColor(v))
-#             painter = QPainter(pix)
-#             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-#             painter.setPen(QPen(Qt.GlobalColor.black, 1))
-#             painter.drawRect(pix.rect())
-#             self.addItem(QIcon(pix), k, v)
-#             painter.end()
-            
-#     def currentColor(self) -> QColor:
-#         return self.currentData(Qt.ItemDataRole.UserRole)
-    
-#     def setCurrentColor(self, color: QColor) -> None:
-#         index = self.findData(color)
-#         self.setCurrentIndex(index if index >= 0 else 0)  # can be -1 on New
-
-#     def _get_modelDataStr(self) -> str|None:
-#         return self.currentData(Qt.ItemDataRole.UserRole)
-
-#     def _set_modelDataStr(self, data: str|None) -> None:
-#         index = self.findData(data)
-#         self.setCurrentIndex(index if index >= 0 else 0)  # can be -1 on New
-
-#     modelDataStr = Property(str, 
-#                             fget=_get_modelDataStr,
-#                             fset=_set_modelDataStr,
-#                             notify=itemChanged,
-#                             user=True)
-
 
 
 class ColorComboBox(QComboBox):
@@ -497,94 +453,71 @@ class ColorComboBox(QComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # Risolto il problema del TypeError usando la lambda
+        # Fixed TypeError issue using lambda in currentIndexChanged connection by defining a separate method
         self.currentIndexChanged.connect(lambda index: self.itemChanged.emit())
 
-    # def setColorList(self, colors: list[tuple[Any, str]]) -> None:
-    #     """Riceve una lista di tuple (colore, nome_colore)"""
-    #     self.clear()
-    #     for color_input, name in colors:
-    #         color = QColor(color_input)
-    #         if not color.isValid():
-    #             continue
-                
-    #         pix = QPixmap(24, 24)
-    #         pix.fill(color)
-            
-    #         painter = QPainter(pix)
-    #         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    #         painter.setPen(QPen(Qt.GlobalColor.black, 1))
-    #         painter.drawRect(0, 0, pix.width() - 1, pix.height() - 1)
-    #         painter.end()
-            
-    #         # Salviamo l'oggetto QColor internamente nel userData del widget
-    #         self.addItem(QIcon(pix), name, color)
-
     def setColorList(self, colors: list[tuple[Any, str]]) -> None:
-        """Riceve una lista di tuple (colore, nome_colore)"""
+        """Receives a list of tuples (color, color_name), where color can be a 
+        hex string or a QColor/QColorConstants, and populates the combo box with colored icons."""
         self.clear()
         
-        # Raggio di arrotondamento (modifica questo valore per accentuare l'effetto)
+        # Define a fixed corner radius for the color icons
         corner_radius = 5.0 
         
         for color_input, name in colors:
             color = QColor(color_input)
             if not color.isValid():
                 continue
-                
-            # 1. Crea la pixmap vuota e trasparente
+            # 1. create an empty pixmap with transparent background
             pix = QPixmap(24, 24)
             pix.fill(Qt.GlobalColor.transparent)
-            
-            # 2. Inizializza il painter con Antialiasing attivo
+            # 2. initialize a QPainter to draw on the pixmap
             painter = QPainter(pix)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            
-            # 3. Imposta il colore di riempimento e il bordo nero leggero
+            # 3. Set the fill color and light black border
             painter.setBrush(QBrush(color))
             painter.setPen(QPen(Qt.GlobalColor.black, 1))
-            
-            # 4. Disegna il rettangolo arrotondato
-            # Usiamo 0.5 di offset per evitare che il bordo da 1px venga tagliato
+            # 4. Draw the rounded rectangle
+            # We use 0.5 as offset to avoid the 1px border from being cut off
             rect = QRectF(0.5, 0.5, 23.0, 23.0)
             painter.drawRoundedRect(rect, corner_radius, corner_radius)
-            
             painter.end()
             
-            # Salviamo l'oggetto QColor internamente nel userData del widget
+            # save the color in userData for later retrieval and matching with database values
             self.addItem(QIcon(pix), name, color)
 
             
     def currentColor(self) -> QColor | None:
-        """Ritorna l'oggetto QColor attualmente selezionato"""
+        """Returns the currently selected QColor object"""
         return self.currentData(Qt.ItemDataRole.UserRole)
     
     def setCurrentColor(self, color_input: Any) -> None:
-        """Imposta il colore corrente accettando hex string o QColor"""
+        """Sets the current color accepting a hex string or QColor"""
         color = QColor(color_input)
         index = self.findData(color)
         self.setCurrentIndex(index if index >= 0 else 0)
 
-    # --- METODI PER IL DATA BINDING (QDataWidgetMapper) ---
+    # --- data binding methods for QDataWidgetMapper --- #
 
     def _get_modelDataStr(self) -> str:
         """
-        Estratta dal mapper per salvare nel DB.
-        Sotto forma di stringa esadecimale (es: '#ff0000') digeribile da psycopg.
+        Extracts the current color and returns it as a hex string used by psycopg.
+        If no valid color is selected, returns an empty string.
         """
         color = self.currentColor()
         return color.name() if color and color.isValid() else ""
 
     def _set_modelDataStr(self, data: str | None) -> None:
         """
-        Riceve la stringa dal DB tramite il mapper e aggiorna l'interfaccia.
+        Receives the string from the database via the mapper and updates the interface.
         """
         if data:
             self.setCurrentColor(data)
         else:
             self.setCurrentIndex(0)
 
-    # La proprietà dichiara esplicitamente il tipo 'str' (fondamentale per psycopg)
+    # this property is used by the mapper to get/set the color as a hex string, 
+    # while the combo box internally works with QColor objects
     modelDataStr = Property(str, 
                             fget=_get_modelDataStr,
                             fset=_set_modelDataStr,
@@ -783,58 +716,19 @@ class PasswordLineEdit(QLineEdit):
                                 fset=_set_modelDataEncrypt,
                                 notify=textChanged,
                                 user=True)
-
-
-# class ColorSetComboBox(QComboBox):
-#     "A combobox with a predefined set of colors"
-
-#     currentColorChanged = Signal(QColor)
-
-#     def __init__(self, parent: QWidget) -> None:
-#         super().__init__(parent)
-#         self.colors = ((QColorConstants.Transparent, _tr("Controls", "Transparent")),
-#                        (QColorConstants.Black, _tr("Controls", "Black")),
-#                        (QColorConstants.Red, _tr("Controls", "Red")),
-#                        (QColorConstants.DarkRed, _tr("Controls", "Dark red")),
-#                        (QColorConstants.Green, _tr("Controls", "Green")),
-#                        (QColorConstants.DarkGreen, _tr("Controls", "Dark green")),
-#                        (QColorConstants.Blue, _tr("Controls", "Blue")),
-#                        (QColorConstants.DarkBlue, _tr("Controls", "Dark blue")),
-#                        (QColorConstants.Cyan, _tr("Controls", "Cyan")),
-#                        (QColorConstants.DarkCyan, _tr("Controls", "Dark cyan")),
-#                        (QColorConstants.Magenta, _tr("Controls", "Magenta")),
-#                        (QColorConstants.DarkMagenta, _tr("Controls", "Dark magenta")),
-#                        (QColorConstants.Yellow, _tr("Controls", "Yellow")),
-#                        (QColorConstants.DarkYellow, _tr("Controls", "Dark yellow")),
-#                        (QColorConstants.Gray, _tr("Controls", "Gray")),
-#                        (QColorConstants.DarkGray, _tr("Controls", "Dark gray")),
-#                        (QColorConstants.LightGray, _tr("Controls", "Light gray")),
-#                        (QColorConstants.White, _tr("Controls", "White")))
-#         self.qtColors = tuple((i[0] for i in self.colors))
-#         for c, d in self.colors:
-#             pix = QPixmap(32, 24)
-#             pix.fill(QColor(c))
-#             self.addItem(QIcon(pix), d, c)
-#         self.currentIndexChanged.connect(self.emitColor)
-        
-#     def setCurrentColor(self, color: QColor) -> None:
-#         if color in self.qtColors:
-#             self.setCurrentIndex(self.qtColors.index(color))
-
-#     def emitColor(self, index: int) -> None:
-#         color = QColor(self.qtColors[self.currentIndex()])
-#         self.currentColorChanged.emit(color)
         
         
 class ButtonSeat(QPushButton):
     """A QPushButton with a custom paint event to create a 3D effect and custom colors, 
     used for seat selection in order dialog or seat map management"""
+
     def __init__(self, 
                  parent: QWidget,
                  text: str,
                  font: QFont,
                  textColor: str,
-                 backgroundColor: str, ) -> None:
+                 backgroundColor: str,
+                 unavailable: bool) -> None:
         super().__init__(parent)
         self.setText(text)
         self.setFont(font)
@@ -844,6 +738,7 @@ class ButtonSeat(QPushButton):
         # colors
         self.seatBackgroundColor = QColor(backgroundColor)
         self.seatTextColor = QColor(textColor)
+        self.unavailable = unavailable
 
     def paintEvent(self, event):
         "Custom paint event to draw a button with a 3D effect and custom colors"
@@ -880,7 +775,8 @@ class ButtonItem(QPushButton):
     
     def __init__(self, parent: QWidget, text: str, textColor: str, backgroundColor: str) -> None:
         super().__init__(parent)
-        self.setting = parent.setting # link to settings for stock level thresholds and colors
+        if hasattr(parent, 'setting'):
+            self.setting = parent.setting # link to settings for stock level thresholds and colors
         self.description = text or ''
         self.caption = self.description.replace(' ', '\n')
         self.setText(self.caption)

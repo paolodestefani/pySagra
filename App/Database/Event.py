@@ -72,7 +72,7 @@ SELECT EXISTS(
         return result[0] if result else False
     
     
-def get_event_from_date(date: Any) -> tuple[int, str] | None:
+def get_event_from_date(date: Any) -> tuple[int | None, str | None]:
     "Get event id from date time"
     script = t"""
 SELECT 
@@ -85,5 +85,5 @@ WHERE
     # Unified context managers ensuring proper evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
-        return next(cur, None)
+        return next(cur, (None, None))
    

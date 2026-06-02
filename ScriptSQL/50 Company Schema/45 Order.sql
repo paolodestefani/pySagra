@@ -256,7 +256,7 @@ CREATE TABLE order_header (
         REFERENCES event (event_id)
         MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
     CONSTRAINT order_header_docnum_unique 
-        UNIQUE (event_id, order_number, order_date)
+        UNIQUE (event_id, order_number, stat_order_date, stat_order_day_part)
 
 ) TABLESPACE {pyAppPgTablesTS};
 COMMENT ON TABLE order_header IS 

@@ -65,6 +65,7 @@ CREATE TABLE seat_map (
     pos_column          integer NOT NULL,
     text_color          varchar(48) NOT NULL DEFAULT '#000000',
     background_color    varchar(48) NOT NULL DEFAULT '#6ad59e',
+    is_unavailable      boolean NOT NULL DEFAULT false,
     is_obsolete         boolean NOT NULL DEFAULT true,
     external_code       integer,
     --

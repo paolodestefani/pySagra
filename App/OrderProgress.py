@@ -25,7 +25,6 @@
 
 This module provides a dialog for manage order progress
 
-
 """
 
 # standard library
@@ -33,7 +32,6 @@ import logging
 
 # PySide6
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QObject
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QLocale
@@ -41,7 +39,6 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QAbstractItemView
-from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QTableWidgetItem
 
 # application modules
@@ -49,15 +46,17 @@ from App import session
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Order import get_order_header_department_details
 from App.Database.Order import update_order_header_department_status
-from App.Database.Setting import SettingClass
 from App.Database.Models import OrderStatusModel
 from App.Widget.Form import FormViewManager
 from App.Widget.Delegate import GenericDelegate
-#from App.Ui.OrderProgressDialog import Ui_OrderProgressDialog
+from App.Widget.Dialog import EventFilterDialog
 from App.Ui.OrderProgressWidget import Ui_OrderProgressWidget
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 
 
+# logger
+logger = logging.getLogger(__name__)
 
 ID, BARCODE, NUM, DATE, TIME, DELIVERY, TABLE, CUSTOMER, DEPARTMENT, FULFILLMENT = range(10)
 
@@ -65,7 +64,7 @@ ID, BARCODE, NUM, DATE, TIME, DELIVERY, TABLE, CUSTOMER, DEPARTMENT, FULFILLMENT
 
 def orderProgress(action: QAction, checked: bool = False) -> None:
     "Order progress"
-    logging.info('Starting order progress diaform')
+    logger.info('Starting order progress dialog')
     mw = session['mainwin']
     # exit if no event available
     if not session['event_id']:
@@ -79,7 +78,7 @@ def orderProgress(action: QAction, checked: bool = False) -> None:
     opf = OrderProgressForm(mw, title, auth)
     opf.reload()
     mw.addTab(title, opf)
-    logging.info('Order progress form shown')
+    logger.info('Order progress form shown')
 
 
 class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
@@ -135,11 +134,12 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.lineEditBarcode.editingFinished.connect(self.scan)
         self.ui.pushButtonSetAsUnprocessed.clicked.connect(self.setAsUnprocessed)
         
-    def reload(self):
+    def reload(self) -> None:
+        "Reload all widgets"
         super().reload()
         self.updateFilterConditions()
         # focus on barcode lineedit must be after widgets is shown
-        self.ui.lineEditBarcode.setFocus
+        self.ui.lineEditBarcode.setFocus()
     
     def updateFilterConditions(self) -> None:
         "Update model filter conditions"
@@ -211,15 +211,8 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.lineEditBarcode.clear()
         self.ui.lineEditBarcode.setFocus()
         # update order header department status, mark as processed order header department
-        try:
+        with gui_exception_context(self, _tr("OrderProgress", "Update order status")):
             update_order_header_department_status(ohdid, True)
-        except PyAppDBError as er:
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Critical)
-            mbox.setWindowTitle(_tr("OrderProgress", "Error on update order status"))
-            mbox.setText(_tr("OrderProgress", "Database error {}").format(er.code))
-            mbox.setDetailedText(er.message)
-            mbox.exec_()
         # insert new row in scans history
         row = self.ui.tableWidgetScans.rowCount()
         self.ui.tableWidgetScans.insertRow(row)
@@ -276,15 +269,8 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
             self.ui.lineEditBarcode.setFocus()
             return
         # update order header department status
-        try:
+        with gui_exception_context(self, _tr("OrderProgress", "Update order status")):
             update_order_header_department_status(orderId, False)
-        except PyAppDBError as er:
-            mbox = QMessageBox(self)
-            mbox.setIcon(QMessageBox.Critical)
-            mbox.setWindowTitle(_tr("OrderProgress", "Error on update order status"))
-            mbox.setText(_tr("OrderProgress", "Database error {}").format(er.code))
-            mbox.setDetailedText(er.message)
-            mbox.exec()
         # delete row from tablewidget
         self.ui.tableWidgetScans.removeRow(row)
         self.ui.lineEditBarcode.setFocus()

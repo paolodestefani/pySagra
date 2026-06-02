@@ -32,26 +32,23 @@ This module is used to manage cash desk names
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QStyledItemDelegate
 from PySide6.QtNetwork import QHostInfo
 
 # application modules
 from App import session
-#from App import currentAction
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Database.Models import CashDeskModel
-from App.Widget.Delegate import BooleanDelegate
-from App.Widget.Delegate import IntegerDelegate
-from App.Widget.Delegate import RelationDelegate
 from App.Widget.Form import FormViewManager
 from App.Ui.CashDeskWidget import Ui_CashDeskWidget
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 (ID, COMPUTER, DESCRIPTION, NOTE,
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(8)
@@ -59,14 +56,14 @@ from App.Ui.CashDeskWidget import Ui_CashDeskWidget
 
 def cashDesk(action: QAction, checked: bool = False) -> None:
     "Manage cash desk"
-    logging.info('Starting cash desk Form')
+    logger.info('Starting cash desk Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     dw = CashDeskForm(mw, title, auth)
     dw.reload()
     mw.addTab(title, dw)
-    logging.info('Cash Desk Form added to main window')
+    logger.info('Cash Desk Form added to main window')
 
 
 class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):

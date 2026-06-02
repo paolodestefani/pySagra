@@ -25,20 +25,18 @@
 
 This module provides items form management
 
-
 """
 
 # standard library
 import logging
+from typing import cast
+from typing import Any
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QDialog
 
 # application modules
@@ -50,7 +48,6 @@ from App.Core.Scripting import scriptMethod
 from App.Core.Gui import COLORS
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ColorComboDelegate
-from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import QuantityDelegate
 from App.Widget.Delegate import AmountDelegate
 from App.Widget.Delegate import GenericDelegate
@@ -72,6 +69,9 @@ from App.Database.Item import get_variants
 from App.Ui.ItemWidget import Ui_ItemWidget
 from App.Ui.ChooseItemDialog import Ui_ChooseItemDialog
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 (I_ID, I_TYPE, I_DESCRIPTION, I_DEPARTMENT, I_SORTING, I_ROW, I_COLUMN,
  I_NORMALTXTCOLOR, I_NORMALBCKCOLOR, I_STOCK, I_UNLOAD, I_VARIANTS, I_KITPART, I_MENUPART,
@@ -98,14 +98,14 @@ def itemType() -> list:
 
 def item(action: QAction, checked: bool = False) -> None:
     "Manage items"
-    logging.info('Starting items Form')
+    logger.info('Starting items Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     iw = ItemForm(mw, title, auth)
     iw.applySortFilter()
     mw.addTab(title, iw)
-    logging.info('Items Form added to main window')
+    logger.info('Items Form added to main window')
 
 
 class ChooseItemDialog(QDialog):
@@ -166,8 +166,12 @@ class ItemForm(FormIndexManager):
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
         self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_lookup))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, [(self.setting['normal_background_color'] or '', _tr('Item', 'default'))] + COLORS))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, [(self.setting['normal_text_color'] or '', _tr('Item', 'default'))] + COLORS))
+        self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, 
+                                                                                        cast(list[Any], [(self.setting['normal_background_color'] or '', _tr('Item', 'default'))] 
+                                                                                        + COLORS)))
+        self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, 
+                                                                                        cast(list[Any], [(self.setting['normal_text_color'] or '', _tr('Item', 'default'))] 
+                                                                                        + COLORS)))
         # mapper mappings
         self.ui.comboBoxType.setFunction(itemType)
         self.mapper.addMapping(self.ui.comboBoxType, TYPE)

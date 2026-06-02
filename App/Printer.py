@@ -57,6 +57,8 @@ from App.Widget.Delegate import PrintersDelegate
 from App.Ui.DepartmentPrinterWidget import Ui_DepartmentPrinterWidget
 
 
+# logger
+logger = logging.getLogger(__name__)
 
 ID, DESCRIPTION, USER_INS, DATE_INS, USER_UPD, DATE_UPD = range(6)
 
@@ -65,14 +67,14 @@ P_ID, P_CLASS_ID, P_COMPUTER, P_PRINTER, P_USER_INS, P_DATE_INS, P_USER_UPD, P_D
 
 def printer(action: QAction, checked: bool = False) -> None:
     "Show/Edit printer classes"
-    logging.info('Starting printers Form')
+    logger.info('Starting printers Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     pf = PrinterForm(mw, title, auth)
     pf.reload()
     mw.addTab(title, pf)
-    logging.info('Printers Form added to main window')
+    logger.info('Printers Form added to main window')
 
 
 class PrinterForm(FormIndexManager):

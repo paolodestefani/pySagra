@@ -23,8 +23,8 @@
 
 """Views
 
-This module contains general custom views
-
+This module contains general custom views and related dialogs, 
+such as the enhanced table view with layout customizations
 
 """
 
@@ -42,21 +42,10 @@ from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QLocale
-from PySide6.QtCore import QPoint
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QTimer
-
-from PySide6.QtGui import QDropEvent
 from PySide6.QtGui import QDesktopServices
-from PySide6.QtGui import QCursor
-from PySide6.QtGui import QContextMenuEvent
-
-from PySide6.QtWidgets import QStyle
-from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QTableView
-from PySide6.QtWidgets import QTableWidget
-from PySide6.QtWidgets import QTableWidgetItem
-from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QActionGroup
@@ -69,9 +58,8 @@ from PySide6.QtWidgets import QDialog
 
 # application modules
 from App import session
-from App import currentIcon
 from App.Core.L10n import _tr
-from App.Database.Exceptions import PyAppDBError
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Adaptation import list_adaptation
 from App.Database.Adaptation import create_adaptation
 from App.Database.Adaptation import get_view_columns
@@ -87,14 +75,13 @@ from App.Widget.Delegate import HideTextDelegate
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import IntegerDelegate
 from App.Widget.TableWidget import TableWidgetItem
-#from App.Widget.Dialog import MessageBoxCritical
-from App.Core.ExceptionHandler import gui_exception_context
 
 from App.Ui.ViewSettingsDialog import Ui_ViewSettingsDialog
 
 
 
 class TableViewSettingsDialog(QDialog):
+    """Dialog to manage the settings of a view, such as column order, visibility and width"""
 
     def __init__(self, parent: EnhancedTableView) -> None:
         super().__init__(parent)
@@ -145,27 +132,19 @@ class TableViewSettingsDialog(QDialog):
         
         def get_val(row: int, col: int) -> Any:
             item = self.ui.tableWidget.item(row, col)
-            # Prendi l'EditRole (dato fresco dal delegate) 
-            # o il DisplayRole (dato iniziale) se l'EditRole è None
             v = item.data(Qt.ItemDataRole.EditRole)
             return v if v is not None else item.data(Qt.ItemDataRole.DisplayRole)
-
         try:
             for r in range(self.ui.tableWidget.rowCount()):
-                # Ora il codice è di nuovo pulitissimo!
                 logical_idx = int(get_val(r, 0))
                 visible = bool(get_val(r, 3))
                 width = int(get_val(r, 4))
-
-                # Applicazione layout (con visualIndex per evitare l'effetto domino)
                 current_visual = header.visualIndex(logical_idx)
                 header.moveSection(current_visual, r)
-                
                 self._parent.setColumnHidden(logical_idx, not visible)
                 if visible:
                     self._parent.setColumnWidth(logical_idx, width)
         finally:
-            # 2. Sblocca e forza un aggiornamento finale pulito
             header.blockSignals(False)
             header.viewport().update()
             
@@ -178,7 +157,6 @@ class EnhancedTableView(QTableView):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.layoutName: str|None = None
-        #fw = QApplication.fontMetrics().averageCharWidth()
         # good defaults
         self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked|QAbstractItemView.EditTrigger.SelectedClicked)
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
@@ -379,32 +357,19 @@ class EnhancedTableView(QTableView):
         else:
             self.verticalHeader().show()
 
-    def add(self) -> int:
+    def add(self) -> int | None:
         "Insert a row in grid at the end"
         row = self.model().rowCount()
         success = self.model().insertRow(row)
-        #index = self.model().createIndex(row, 0)
+        if not success:
+            QMessageBox.critical(self,
+                                 _tr("MessageDialog", "Critical"),
+                                 _tr("View", "Error inserting row"))
+            return None
         index = self.model().index(row, 0)
         self.scrollTo(index)
         self.setCurrentIndex(index)
-        #self.edit(index)
         return row
-    # def add(self) -> int:
-    #     "Insert a row in grid at the end"
-    #     model = self.model()
-    #     row = model.rowCount()
-        
-    #     if model.insertRow(row):
-    #         # Recuperiamo l'indice corretto dal modello
-    #         index = model.index(row, 0)
-            
-    #         self.scrollTo(index)
-    #         self.setCurrentIndex(index)
-            
-    #         # Aspettiamo il prossimo ciclo di eventi per avviare l'editing
-    #         QTimer.singleShot(0, lambda: self.edit(index))
-            
-    #     return row
 
     def remove(self) -> None:
         "Delete the current row"
@@ -420,6 +385,7 @@ class EnhancedTableView(QTableView):
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
                                  _tr("View", "Error deleting row"))
+        return None
 
     def exportView(self) -> None:
         "Export to CSV file"

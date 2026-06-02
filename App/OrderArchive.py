@@ -25,19 +25,15 @@
 
 This module provides form and related classes for manage order archive
 
-
 """
 
 # standard library
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QAbstractItemView
-from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QCheckBox
 
 # application modules
@@ -72,6 +68,10 @@ from App.Report.Order import printOrderReport
 from App.Report.Order import printOrderCoverReport
 from App.Report.Order import printOrderDepartmentReport
 
+
+# logger
+logger = logging.getLogger(__name__)
+
 # index model order header
 (I_ID, EVENT, I_DATETIME, I_NUMBER, I_DATE, I_TIME, I_STATDATE, I_STATDAYPART, I_CASHDESK,
  I_DELIVERY, I_EP, I_TABLE, I_CUSTOMER, I_COVERS, I_AMOUNT, I_DISCOUNT, I_CASH, I_CHANGE,
@@ -95,20 +95,14 @@ from App.Report.Order import printOrderDepartmentReport
 
 def orderArchive(action: QAction, checked: bool = False) -> None:
     "Manage order archive"
-    logging.info('Starting order archive Form')
+    logger.info('Starting order archive Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     ow = OrderForm(mw, title, auth)
     #ow.reload() # reload after filtering
     mw.addTab(title, ow)
-    logging.info('Order archive Form added to main window')
-
-# class OrdersWidget(QWidget, Ui_OrderWidget):
-
-#     def __init__(self, parent):
-#         super().__init__(parent)
-#         self.setupUi(self)
+    logger.info('Order archive Form added to main window')
 
 
 class OrderForm(FormIndexManager):
@@ -143,7 +137,6 @@ class OrderForm(FormIndexManager):
         self.ui.tableView.setItemDelegateForColumn(I_CASH, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(I_CHANGE, AmountDelegate(self))
         # mapper mappings
-        # self.mapper.setItemDelegate(PMapperDelegate(self))
         self.mapper.addMapping(self.ui.lineEditCashDesk, CASHDESK)
         self.mapper.addMapping(self.ui.spinBoxNumber, NUMBER)
         self.mapper.addMapping(self.ui.dateEditDate, DATE)
@@ -169,7 +162,6 @@ class OrderForm(FormIndexManager):
         # details tableView
         self.ui.tableViewDetails.setModel(modelDet)
         self.ui.tableViewDetails.setLayoutName('OrderArchiveDetail')
-        #self.ui.tableViewDetails.setItemDelegate(GenericDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_QUANTITY, QuantityDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(D_PRICE, AmountDelegate(self))

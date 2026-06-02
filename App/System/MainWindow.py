@@ -38,16 +38,13 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QLocale
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import QSettings
-from PySide6.QtCore import QEvent
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QPainter
-from PySide6.QtGui import QColor
 from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QPaintEvent
-from PySide6.QtWidgets import QComboBox
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QStyle
@@ -222,29 +219,29 @@ class TabWidget(QTabWidget):
         painter = QPainter(self)
         # colors
         if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Light:
-            color1 = QColorConstants.LightGray #QColor('#BBBBBB')
-            color2 = QColorConstants.DarkBlue # QColor('#221155')
+            color1 = QColorConstants.LightGray
+            color2 = QColorConstants.DarkBlue
         else:
-            color1 = QColorConstants.DarkYellow #  QColor('#777722')
-            color2 = QColorConstants.Yellow #QColor('#F0F040')
+            color1 = QColorConstants.DarkYellow
+            color2 = QColorConstants.Yellow
         # company
         x = (self.width() - img.width()) // 2
         y = (self.height() - img.height()) // 2
         painter.drawPixmap(x, y, img)
         painter.setPen(color1)
         painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(3,   # x
-                                50, # y
-                                self.width(), # width
-                                60), # height
+        painter.drawText(QRectF(3,                      # x
+                                50,                     # y
+                                self.width(),           # width
+                                60),                    # height
                          Qt.AlignmentFlag.AlignCenter,
                          session['company_description'][:40])
         painter.setPen(color2)
         painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(0,   # x
-                                47, # y
-                                self.width(), # width
-                                60), # height
+        painter.drawText(QRectF(0,                      # x
+                                47,                     # y
+                                self.width(),           # width
+                                60),                    # height
                          Qt.AlignmentFlag.AlignCenter,
                          session['company_description'][:40])
         # event
@@ -252,18 +249,18 @@ class TabWidget(QTabWidget):
         evds = f"{session['event_description'] or msg}"
         painter.setPen(color1)
         painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(3,   # x
-                                self.height() - 150,  # y
-                                self.width(),  # width
-                                60),  # height
+        painter.drawText(QRectF(3,                      # x
+                                self.height() - 150,    # y
+                                self.width(),           # width
+                                60),                    # height
                          Qt.AlignmentFlag.AlignCenter,
                          evds)
         painter.setPen(color2)
         painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(0,   # x
-                                self.height() - 153,  # y
-                                self.width(),  # width
-                                60),  # height
+        painter.drawText(QRectF(0,                      # x
+                                self.height() - 153,    # y
+                                self.width(),           # width
+                                60),                    # height
                          Qt.AlignmentFlag.AlignCenter,
                          evds)
 
@@ -313,9 +310,9 @@ class Counter(QLineEdit):
         self.style().polish(self)
 
 
-# -------------------------------------------------------------------------- #
-# --  MAIN  WINDOW
-# -------------------------------------------------------------------------- #
+# -------------------- #
+# --  MAIN  WINDOW  -- #
+# -------------------- #
 
 class MainWindow(QMainWindow):
     """Application Main Window"""

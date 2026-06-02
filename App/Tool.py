@@ -76,6 +76,9 @@ from App.Ui.CopyToolDialog import Ui_CopyToolDialog
 from App.Core.L10n import _tr
 
 
+# logger
+logger = logging.getLogger(__name__)
+
 
 def eventBasedTool(action: QAction, checked: bool = False) -> None:
     "Launch event based tool dialog"

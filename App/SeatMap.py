@@ -33,55 +33,55 @@ import logging
 
 # PySide6
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QVBoxLayout
-from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QColorDialog
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QButtonGroup
-from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QSizePolicy
 
 # application modules
 from App import session
 from App.Database.Exceptions import PyAppDBError
-from App.Database.SeatMap import table_list
 from App.Database.SeatMap import table_delete
 from App.Database.Models import SeatMapModel
 from App.Database.Setting import SettingClass
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Ui.SeatMapWidget import Ui_SeatMapWidget
-from App.Ui.GenerateTableNumbersDialog import Ui_GenerateTableNumbers
 from App.Widget.Form import  FormManager
 from App.Widget.Control import ButtonSeat
+from App.Widget.Control import ButtonColor
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ColorDelegate
 from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Dialog import PrintDialog
 
 
+# logger
+logger = logging.getLogger(__name__)
 
-ID, TABLE_CODE, ROW, COLUMN, TEXT_COLOR, BACKGROUND_COLOR, IS_OBSOLETE = range(7)
+(ID, TABLE_CODE, ROW, COLUMN, TEXT_COLOR, BACKGROUND_COLOR,
+ IS_UNAVAILABLE, IS_OBSOLETE, 
+ USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(12)
 
 EDIT, PREVIEW = range(2)
 
 
 def seatMap(action: QAction, checked: bool = False) -> None:
     "Manage seat map"
-    logging.info('Starting seat map Form')
+    logger.info('Starting seat map Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     tw = SeatMapForm(mw, title, auth)
     tw.reload()
     mw.addTab(title, tw)
-    logging.info('Tables Form added to main window')
+    logger.info('Tables Form added to main window')
 
 
 class SeatMapForm(FormManager[Ui_SeatMapWidget]):
@@ -138,12 +138,11 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.spinBoxRows.setValue(self.setting['table_list_rows'])
         self.ui.spinBoxColumns.setValue(self.setting['table_list_columns'])
         self.ui.spinBoxSpacing.setValue(self.setting['table_list_spacing'])
+        # signal/slot
         self.bgbc.buttonClicked.connect(self.backgroundColorButtonClicked)
         self.ui.pushButtonChooseBackground.clicked.connect(self.chooseBackground)
         self.ui.pushButtonChooseText.clicked.connect(self.chooseText)
         self.ui.pushButtonGenerateTables.clicked.connect(self.generateTableNumbers)
-        
-        # signal/slot
         self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
         #self.ui.pushButtonGenerateTables.clicked.connect(self.generateTables)
         self.ui.pushButtonPreview.clicked.connect(self.showPreview)
@@ -185,13 +184,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                 QMessageBox.StandardButton.No
                                 ) == QMessageBox.StandardButton.Yes:
-            try:
+            with gui_exception_context(self, _tr("SeatMap", "Delete all tables")):
                 table_delete()
-            except PyAppDBError as er:
-                QMessageBox.critical(self,
-                                     _tr("MessageDialog", "Critical"),
-                                     f"Database error: {er.code}\n{er.message}")
-            else:
                 self.ui.tableView.model().select()
                 self.mapper.toFirst()
 
@@ -216,7 +210,6 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.setting['table_list_rows'] = self.ui.spinBoxRows.value()
         self.setting['table_list_columns'] = self.ui.spinBoxColumns.value()
         self.setting['table_list_spacing'] = self.ui.spinBoxSpacing.value()
-        #self.setting.save()
         # create a preview
         # buttons for tables
         # clean first
@@ -232,14 +225,18 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
             col = self.model.index(r, COLUMN).data()
             tc = self.model.index(r, TEXT_COLOR).data()
             bc = self.model.index(r, BACKGROUND_COLOR).data()
+            un = True if self.model.index(r, IS_UNAVAILABLE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
+            ob = True if self.model.index(r, IS_OBSOLETE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
             b = ButtonSeat(self, 
                            cod, 
                            QFont(self.setting['table_list_font_family'] or "Arial",
                                  int(self.setting['table_list_font_size'] or 7),
-                                 QFont.Weight.Bold),
+                                 QFont.Weight.Bold if not un else QFont.Weight.Normal),
                            tc, 
-                           bc)
-            if row is None or col is None:
+                           bc,
+                           un)
+            # show only not obsolete tables
+            if row is None or col is None or ob is True:
                 continue
             self.ui.gridLayoutPreview.addWidget(b, row, col)
         # fill the remaining cells of gl with an empty widget
@@ -258,13 +255,15 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         dialog = PrintDialog(self, 'TABLE')
         dialog.show()
         
-    def backgroundColorButtonClicked(self, button: QPushButton) -> None:
+    def backgroundColorButtonClicked(self, button: ButtonColor) -> None:
+        "Choose the button's background color for example buttons"
         color = QColorDialog.getColor(Qt.GlobalColor.white, self)
         if not color.isValid():
             return
         button.setBackgroundColor(color.name())
 
     def chooseBackground(self) -> None:
+        "Choose the background color"
         color = QColorDialog.getColor(Qt.GlobalColor.white, self)
         if not color.isValid():
             return
@@ -272,6 +271,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.pushButtonExample.setBackgroundColor(self.bgcolor)
 
     def chooseText(self) -> None:
+        "Choose the text color"
         color = QColorDialog.getColor(Qt.GlobalColor.black, self)
         if not color.isValid():
             return

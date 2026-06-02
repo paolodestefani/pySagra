@@ -32,7 +32,6 @@ This module contains general custom dialogs
 import os
 import sys
 from typing import cast, Any
-import logging
 
 # PySide6
 from PySide6.QtCore import QCoreApplication
@@ -49,32 +48,23 @@ from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
-from PySide6.QtCore import QTemporaryFile
-from PySide6.QtCore import QAbstractItemModel
 
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrintPreviewWidget
 from PySide6.QtPrintSupport import QPrinterInfo
 from PySide6.QtPrintSupport import QPrintDialog
-from PySide6.QtGui import QGuiApplication
-from PySide6.QtGui import QAction
 from PySide6.QtGui import QCursor
-from PySide6.QtGui import QIcon
 from PySide6.QtGui import QPixmap
-from PySide6.QtGui import QFont
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtGui import QPdfWriter
 from PySide6.QtGui import QPagedPaintDevice
-from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QDialogButtonBox
-from PySide6.QtWidgets import QToolBar
 from PySide6.QtWidgets import QFileDialog
-from PySide6.QtWidgets import QInputDialog
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QSpinBox
@@ -84,7 +74,6 @@ from PySide6.QtWidgets import QDateEdit
 from PySide6.QtWidgets import QDateTimeEdit
 from PySide6.QtWidgets import QTimeEdit
 from PySide6.QtWidgets import QComboBox
-from PySide6.QtWidgets import QMenu
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QPushButton
 
@@ -92,20 +81,16 @@ from PySide6.QtWidgets import QPushButton
 from App import session
 from App import currentIcon
 from App.Core.L10n import _tr
-from App.Core.Cryptography import string_decode
 from App.Ui.MessageDialog import Ui_MessageDialog
-from App.Ui.PrintPDFDialog import Ui_PrintPDFDialog
 from App.Ui.SelectImageDialog import Ui_SelectImageDialog
 from App.Ui.PrintDialog import Ui_PrintDialog
 from App.Ui.SortFilterDialog import Ui_SortFilterDialog
 from App.Ui.EventFilterDialog import Ui_EventFilterDialog
-from App.Ui.PrintPDFDialog import Ui_PrintPDFDialog
 from App.Ui.DateTimeInputDialog import Ui_DateTimeInputDialog
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Report import report_class_adapt_list
 from App.Database.Report import get_report_list
-from App.Database.Report import get_report_id
 from App.Database.Report import report_xml
 from App.Database.Report import get_report_from_adapt
 from App.Database.Report import report_query
@@ -517,7 +502,7 @@ class SortFilterDialog(QDialog):
             self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().setCurrentIndex(0)
         # get sort and filter params
         try:
-            skip, filters, sortings = get_adapt_setting(sortFilterId)
+            _, filters, sortings = get_adapt_setting(sortFilterId)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -1006,10 +991,13 @@ class EventFilterDialog(QDialog):
             dayPart = 'L' if self.ui.radioButtonLunch.isChecked() else 'D'
         else:
             dayPart = None
+        from typing import Any, cast
+
         if hasattr(self.parent(), 'updateFilterConditions'):
-            self.parent().updateFilterConditions(self.ui.comboBoxEvent.currentData(),
-                                                date,
-                                                dayPart)
+            cast(Any, self.parent()).updateFilterConditions(self.ui.comboBoxEvent.currentData(), 
+                                                            date, 
+                                                            dayPart)
+
         super().accept()
 
 
@@ -1406,11 +1394,6 @@ class PrintDialog(QDialog):
         if not report_id:
             return
         self.report = Report(report_xml(report_id))
-        #parameter = report.parameter
-        #self.query = self.report.query
-        #self.conditions = self.report.conditions
-        # delete parameters first
-        #for lo in (self.ui.layoutParameters, self.ui.layoutFilters):#, self.ui.layoutSorting):
         for row in range(self.ui.layoutParameters.rowCount()):
             for c in range(3):
                 if self.ui.layoutParameters.itemAtPosition(row, c):
@@ -1454,7 +1437,7 @@ class PrintDialog(QDialog):
                     widget.setFunction(referenceList[self.report.parameter[par].referenceList])
                 case _:
                     raise ReportPrintError("Unable to identify parameter type")
-            widget.param = par # type: ignore[attr-defined]
+            cast(Any, widget).param = par
             self.ui.layoutParameters.addWidget(label, row, 0)
             self.ui.layoutParameters.addWidget(widget, row, 1)
         if self.report.parameter:
@@ -1554,7 +1537,7 @@ class PrintDialog(QDialog):
         # set operator alternatives
         self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
         for o, d, r, w in self.FILTERING[ftype]:
-            data = self.sender().currentData()
+            data = cast(Any, self.sender()).currentData()
             if hasattr(self.report.conditions[data], 'reference') and w == 'LIST':
                 continue
             self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
@@ -1760,7 +1743,7 @@ class PrintDialog(QDialog):
         if not self.generateReport():
             return
         # print preview
-        dialog = PrintPreviewDialog(self)
+        dialog = QPrintPreviewDialog(self)
         dialog.setWindowFlags(Qt.WindowType.Dialog|
                               Qt.WindowType.WindowMinMaxButtonsHint|
                               Qt.WindowType.WindowCloseButtonHint)
@@ -1865,60 +1848,60 @@ class PrintDialog(QDialog):
         st.setValue("ExportPDFResolution", self.ui.spinBoxResolution.value())
         super().done(r)
 
-class PrintPreviewDialog(QPrintPreviewDialog):
-    "Modified QPrintPreviewDialog for exporting to PDF"
+# class PrintPreviewDialog(QPrintPreviewDialog):
+#     "Modified QPrintPreviewDialog for exporting to PDF"
 
-    def __init__(self, parent: QWidget|None = None):
-        "Initialize"
-        super().__init__(parent)
-        # restore geometry
-        st = QSettings()
-        if st.value("PrintDialogGeometry"):
-            self.restoreGeometry(st.value("PrintDialogGeometry"))
-        else:
-            self.setGeometry(QStyle.alignedRect(Qt.LayoutDirection.LeftToRight, Qt.AlignmentFlag.AlignCenter, QSize(800, 600), QGuiApplication.primaryScreen().geometry()))
-        # add toolbutton for export pdf and email
-        tb = self.findChild(QToolBar)
-        action = QAction(_tr('Dialogs', 'Export PDF'), tb)
-        action.triggered.connect(self.printPDF)
-        action.setIcon(currentIcon['print_pdf'])
+#     def __init__(self, parent: QWidget|None = None):
+#         "Initialize"
+#         super().__init__(parent)
+#         # restore geometry
+#         st = QSettings()
+#         if st.value("PrintDialogGeometry"):
+#             self.restoreGeometry(st.value("PrintDialogGeometry"))
+#         else:
+#             self.setGeometry(QStyle.alignedRect(Qt.LayoutDirection.LeftToRight, Qt.AlignmentFlag.AlignCenter, QSize(800, 600), QGuiApplication.primaryScreen().geometry()))
+#         # add toolbutton for export pdf and email
+#         tb = self.findChild(QToolBar)
+#         action = QAction(_tr('Dialogs', 'Export PDF'), tb)
+#         action.triggered.connect(self.printPDF)
+#         action.setIcon(currentIcon['print_pdf'])
 
-    def printPDF(self) -> None:
-        "Export to PDF file"
-        printer = self.printer()
-        pw = self.findChild(QPrintPreviewWidget)
-        if pw:
-            op = PrintPDFDialog(self, printer.docName(), pw.currentPage(), pw.pageCount())
-        if op.exec() == QDialog.DialogCode.Rejected:
-            return
-        file_name, from_page, to_page, open_file, pdf_version, resolution = op.getParameters()
-        if QFile(file_name).exists():
-            if QMessageBox.question(self,
-                                    _tr('MessageDialog', 'Question'),
-                                    _tr('Dialog', "File {} exists, overwrite ?").format(file_name),
-                                    QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
-                return
-        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-        printer.setPdfVersion(pdf_version)
-        printer.setResolution(resolution)
-        printer.setOutputFileName(file_name)
-        printer.setFromTo(from_page, to_page)
-        self.paintRequested.emit(printer)
-        # restore printer to normal operation
-        printer.setOutputFormat(QPrinter.OutputFormat.NativeFormat)
-        printer.setOutputFileName('')
-        if pw:
-            printer.setFromTo(1, pw.pageCount())
-        # open file if requested
-        if open_file:
-            QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))
+#     def printPDF(self) -> None:
+#         "Export to PDF file"
+#         printer = self.printer()
+#         #pw = self.findChild(QPrintPreviewWidget)
+#         #if pw:
+#         #    op = PrintPDFDialog(self, printer.docName(), pw.currentPage(), pw.pageCount())
+#         #if op.exec() == QDialog.DialogCode.Rejected:
+#         #    return
+#         file_name, from_page, to_page, open_file, pdf_version, resolution = op.getParameters()
+#         if QFile(file_name).exists():
+#             if QMessageBox.question(self,
+#                                     _tr('MessageDialog', 'Question'),
+#                                     _tr('Dialog', "File {} exists, overwrite ?").format(file_name),
+#                                     QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
+#                 return
+#         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
+#         printer.setPdfVersion(pdf_version)
+#         printer.setResolution(resolution)
+#         printer.setOutputFileName(file_name)
+#         printer.setFromTo(from_page, to_page)
+#         self.paintRequested.emit(printer)
+#         # restore printer to normal operation
+#         printer.setOutputFormat(QPrinter.OutputFormat.NativeFormat)
+#         printer.setOutputFileName('')
+#         #if pw:
+#         #    printer.setFromTo(1, pw.pageCount())
+#         # open file if requested
+#         if open_file:
+#             QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))
 
 
-    def closeEvent(self, event: QCloseEvent) -> None:
-        "Save geometry on exit"
-        st = QSettings()
-        st.setValue("PrintDialogGeometry", self.saveGeometry())
-        event.accept()
+#     def closeEvent(self, event: QCloseEvent) -> None:
+#         "Save geometry on exit"
+#         st = QSettings()
+#         st.setValue("PrintDialogGeometry", self.saveGeometry())
+#         event.accept()
 
 
 class _DateTimeInputDialog(QDialog):

@@ -30,30 +30,28 @@ This module contains a custom view to display event Sales summary
 
 # standard library
 import logging
+from typing import cast
+from typing import Any
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QVBoxLayout
-from PySide6.QtWidgets import QDialog
 
 # application modules
 from App import session
 from App.Database.Models import SalesSummaryModel
-from App.Database.Lookup import event_lookup
 from App.Ui.SalesSummaryWidget import Ui_SalesSummaryWidget
 from App.Core.L10n import _tr
-from App.Core.Scripting import scriptInit
-from App.Core.Scripting import scriptMethod
-from App.Widget.Delegate import AmountDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import PrintDialog
 from App.Widget.Dialog import EventFilterDialog
 
 
+# logger
+logger = logging.getLogger(__name__)
 
 (EVENT, EVENT_DESCRIPTION, DATE,
  ORDERS_L, ORDERS_D, ORDERS,
@@ -69,13 +67,13 @@ from App.Widget.Dialog import EventFilterDialog
 
 def salesSummary(action: QAction, checked: bool = False):
     "Sales summary"
-    logging.info('Starting Sales summary Form')
+    logger.info('Starting Sales summary Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     cw = SalesSummaryForm(mw, title, auth)
     mw.addTab(title, cw)
-    logging.info('Sales summary Form added to main window')
+    logger.info('Sales summary Form added to main window')
 
 
 class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
@@ -84,7 +82,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         super().__init__(parent, auth)
         model = SalesSummaryModel(self)
         model.setParameter('event_id', session['event_id'])
-        self.setModel(model)
+        self.setModel(cast(Any, model))
         self.tabName = title
         self.helpLink = None
         # overwrite standard sortfilterdialog with event filter dialog
@@ -100,29 +98,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.view = self.ui.tableView # required for formviewmanager
         self.ui.tableView.setLayoutName('SalesSummary')
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
-        self.ui.tableView.setItemDelegateForColumn(TAKEAWAY_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TAKEAWAY_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TAKEAWAY, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TABLE_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TABLE_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TABLE, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(AMOUNT_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(AMOUNT_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(AMOUNT, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(DISCOUNT_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(DISCOUNT_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(DISCOUNT, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ELECTRONIC, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(CASH_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(CASH_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(CASH, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TOTAL_L, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TOTAL_D, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TOTAL, AmountDelegate(self))
-        # scripting init
-        #self.script = scriptInit(self)
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         # daily details
         self.ui.checkBoxDetail.checkStateChanged.connect(self.showDetails)
         self.showDetails(Qt.CheckState.Unchecked)
@@ -132,13 +108,14 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         else:
             self.sortFilterDialog.show()
         
-    def updateFilterConditions(self, event, eventDate=None, dayPart=None):
+    def updateFilterConditions(self, event, eventDate=None, dayPart=None) -> None:
         "Update model for new event id"
-        self.model.setParameter('event_id', event)
-        self.model.select()
+        if hasattr(self.model, 'setParameter'):
+            self.model.setParameter('event_id', event)
+            self.model.select()
 
-    def showDetails(self, state):
-        if state == Qt.Unchecked:
+    def showDetails(self, state) -> None:
+        if state == Qt.CheckState.Unchecked:
             self.ui.tableView.setColumnHidden(ORDERS_L, True)
             self.ui.tableView.setColumnHidden(ORDERS_D, True)
             self.ui.tableView.setColumnHidden(COVERS_L, True)
@@ -177,7 +154,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
             self.ui.tableView.setColumnHidden(TOTAL_L, False)
             self.ui.tableView.setColumnHidden(TOTAL_D, False)
 
-    def print(self):
+    def print(self) -> None:
         "Sales summary report"
         dialog = PrintDialog(self, 'SALES_SUMMARY')
         if not dialog.ui.layoutFilters.itemAtPosition(0, 0):
@@ -190,5 +167,6 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         # filter on current selected event
         dialog.ui.layoutFilters.itemAtPosition(0, 0).widget().setCurrentIndex(1)
         dialog.ui.layoutFilters.itemAtPosition(0, 2).widget().setCurrentIndex(1)
-        dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.model.parameter['event_id'])
+        if hasattr(self.model, 'parameter'):
+            dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.model.parameter['event_id'])
         dialog.show()

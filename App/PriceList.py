@@ -25,20 +25,16 @@
 
 This module provides a form manager for price list and related objects
 
-
 """
 
 # standard library
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QInputDialog
-from PySide6.QtWidgets import QVBoxLayout
 
 # application modules
 from App import session
@@ -55,8 +51,13 @@ from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.PriceListWidget import Ui_PriceListWidget
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 (I_ID, I_DESCRIPTION, 
  I_USER_INS, I_DATE_INS, I_USER_UPD, I_DATE_UPD) = range(6)
@@ -70,14 +71,14 @@ P_USER_INS, P_DATE_INS, P_USER_UPD, P_DATE_UPD) = range(8)
 
 def priceList(action: QAction, checked: bool = False) -> None:
     "Manage price list"
-    logging.info('Starting price list Form')
+    logger.info('Starting price list Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     plw = PriceListForm(mw, title, auth)
     plw.reload()
     mw.addTab(title, plw)
-    logging.info('Price list Form added to main window')
+    logger.info('Price list Form added to main window')
 
 
 class PriceListWidget(QWidget, Ui_PriceListWidget):
@@ -109,14 +110,7 @@ class PriceListForm(FormIndexManager):
         # icons for add/remove buttons
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
-        #self.ui.tableView.setModel(idxModel)
         self.ui.tableView.setLayoutName('PriceListIndex')
-        #self.ui.tableView.activateWindow()
-        #self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.ui.tableView.setSortingEnabled(True)
-        # map view to mapper and mapper to view
-        #self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
-        #self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
         # mapper mappings
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
         # price list detail
@@ -124,11 +118,7 @@ class PriceListForm(FormIndexManager):
         self.ui.tableViewPrices.setLayoutName('PriceListDetail')
         self.ui.tableViewPrices.setItemDelegateForColumn(P_ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewPrices.setItemDelegateForColumn(P_PRICE, AmountDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_list))
-
-        #self.ui.tableView.setItemDelegateForColumn(PRICE, AmountDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(MENU, BooleanDelegate(self))
-        #self.ui.tableView.setItemDelegateForColumn(TAKEAWAY, BooleanDelegate(self))
+        # signal slot
         self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)
@@ -186,18 +176,12 @@ class PriceListForm(FormIndexManager):
             return
         # get the current price list id
         currentPriceList = self.model.index(self.mapper.currentIndex(), ID).data()
-        try:
+        with gui_exception_context(self, _tr("PriceList", "Duplicate price list")):
             duplicate_price_list(currentPriceList, text)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('PriceList', 'Error duplicating price list'),
-                                 str(er))
-            return
-        else:
             QMessageBox.information(self,
                                     _tr('PriceList', 'Price list duplicated'),
                                     _tr('PriceList', 'The price list has been duplicated successfully'))
-        self.reload()
+            self.reload()
 
     @scriptMethod
     def print(self):

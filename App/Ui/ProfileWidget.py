@@ -110,6 +110,10 @@ class Ui_ProfileWidget(object):
 
         self.verticalLayout_3.addWidget(self.groupBox_2)
 
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_3.addItem(self.verticalSpacer_2)
+
         self.groupBox = QGroupBox(self.page1)
         self.groupBox.setObjectName(u"groupBox")
         self.verticalLayout_2 = QVBoxLayout(self.groupBox)
@@ -169,6 +173,7 @@ class Ui_ProfileWidget(object):
 
         self.horizontalLayout_4.addLayout(self.verticalLayout_9)
 
+        self.horizontalLayout_4.setStretch(1, 1)
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_4)
 

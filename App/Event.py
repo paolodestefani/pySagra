@@ -29,12 +29,9 @@ This module provides events management
 
 # standard library
 import logging
-import cryptography
-#import xml.etree.ElementTree as ET
 
 # PySide6
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QObject
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QDateTime
@@ -44,20 +41,15 @@ from PySide6.QtGui import QAction
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QAbstractItemView
-from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
-from App.Core.Cryptography import string_encode
-from App.Core.Cryptography import string_decode
+from App.Core.L10n import _tr
 from App.Database.Connect import get_current_event
 from App.Database.Models import EventIndexModel
 from App.Database.Models import EventModel
 from App.Database.Event import is_used
-from App.Database.Department import department_list
-from App.Database.Item import item_web_list
 from App.Database.Lookup import price_list_lookup
 from App.Widget.Dialog import MessageBoxCritical
 from App.Widget.Delegate import RelationDelegate
@@ -65,10 +57,12 @@ from App.Widget.Delegate import ImageDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.EventWidget import Ui_EventWidget
-from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 (ID, DESCRIPTION, DATE_START, DATE_END, PRICELIST, IMAGE,
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(10)
@@ -76,14 +70,14 @@ from App.Core.Scripting import scriptMethod
 
 def event(action: QAction, checked: bool = False) -> None:
     "Show/Edit curent connections"
-    logging.info('Starting events Form')
+    logger.info('Starting events Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     ew = EventForm(mw, title, auth)
     ew.reload()
     mw.addTab(title, ew)
-    logging.info('Events Form added to main window')
+    logger.info('Events Form added to main window')
 
 
 class EventForm(FormIndexManager):
@@ -113,17 +107,18 @@ class EventForm(FormIndexManager):
         self.ui.tableView.setItemDelegateForColumn(IMAGE, ImageDelegate(self))
         # mapper settings
         self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.dateTimeEditStart, DATE_START, b"modelDataDateTime")
-        self.mapper.addMapping(self.ui.dateTimeEditEnd, DATE_END, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.dateTimeEditStart, DATE_START) #, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.dateTimeEditEnd, DATE_END) #, b"modelDataDateTime")
         self.ui.comboBoxPriceList.setFunction(price_list_lookup)
-        self.mapper.addMapping(self.ui.comboBoxPriceList, PRICELIST, b"modelDataStr")
-        self.mapper.addMapping(self.ui.labelEventImage, IMAGE, b"imageBytearray")
+        self.mapper.addMapping(self.ui.comboBoxPriceList, PRICELIST) #, b"modelDataStr")
+        self.mapper.addMapping(self.ui.labelEventImage, IMAGE) #, b"imageBytearray")
         # scripting init
         self.script = scriptInit(self)
 
     def mapperIndexChanged(self, row):
         "Check if have already movement for the event, in this case can't modifiy any date"
         super().mapperIndexChanged(row)
+        logger.info('Mapper index changed')
         model = self.mapper.model()
         event = model.index(self.mapper.currentIndex(), ID).data()
         if is_used(event):
@@ -134,7 +129,6 @@ class EventForm(FormIndexManager):
             self.ui.dateTimeEditStart.setEnabled(True)
             self.ui.dateTimeEditEnd.setEnabled(True)
             self.ui.labelEventUsed.setVisible(False)
-
 
     @scriptMethod
     def upload(self) -> None:

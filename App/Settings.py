@@ -44,8 +44,6 @@ from PySide6.QtWidgets import QPushButton
 
 # application modules
 from App import session
-from App.Database.Exceptions import PyAppDBError
-from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Setting import Setting
 from App.Database.Lookup import printer_class_lookup
 from App.Database.Lookup import customer_order_report_lookup
@@ -54,11 +52,14 @@ from App.Database.Lookup import cover_order_report_lookup
 from App.Database.Lookup import stock_unload_report_lookup
 from App.Ui.SettingsDialog import Ui_SettingsDialog
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Core.Gui import COLORS
 
 
+# logger
+logger = logging.getLogger(__name__)
 
 COMP_ID, COMP_DESC, COMP_SCHEMA, COMP_SYSTEM, COMP_IMAGE = range(5)
 (UC_COMPANY, UC_USER, UC_PROFILE, UC_MENU, UC_TOOLBAR, UC_USER_INS,
@@ -67,14 +68,14 @@ COMP_ID, COMP_DESC, COMP_SCHEMA, COMP_SYSTEM, COMP_IMAGE = range(5)
 
 def settings(action: QAction, checked: bool = False) -> None:
     "Application settings"
-    logging.info('Starting settings dialog')
+    logger.info('Starting settings dialog')
     mw = session['mainwin']
     title = action.text()
     icon = action.icon()
     auth = action.data()
     sd = SettingsDialog(mw, title, icon, auth)
     sd.exec_()
-    logging.info('Settings dialog shown')
+    logger.info('Settings dialog shown')
 
 
 class SettingsDialog(QDialog):
@@ -87,7 +88,12 @@ class SettingsDialog(QDialog):
         self.setWindowTitle(title)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
-        self.setting = Setting()
+        success = False
+        with gui_exception_context(self, _tr("Setting", "Load settings")):
+            self.setting = Setting()
+            success = True
+        if not success:
+            return
         self.ui.spinBoxLunch.setValue(self.setting['lunch_start_time'])
         self.ui.horizontalSliderLunch.setValue(self.setting['lunch_start_time']) # initially slider/spinbox are not connected
         self.ui.spinBoxDinner.setValue(self.setting['dinner_start_time'])
@@ -361,17 +367,11 @@ class SettingsDialog(QDialog):
                 msg = _tr("Setting", "If print cover copy is selected you must provide a cover report and printer class")
                 QMessageBox.critical(self, title, msg)
                 return False # avoid dialog close
-        try:
+        success = False
+        with gui_exception_context(self, _tr("Setting", "Save settings")):
             self.setting.save()
-        except PyAppDBConcurrencyError:
-            title = _tr("MessageDialog", "Critical")
-            msg = _tr("Setting", "Record modified before update, reload and modify again")
-            QMessageBox.critical(self, title, msg)
-        except PyAppDBError as er:
-            title = _tr("MessageDialog", "Critical")
-            msg = f"{er.code}\n{er.message}"
-            QMessageBox.critical(self, title, msg)
-        return True
+            success = True
+        return success
 
     @scriptMethod
     def accept(self) -> None:

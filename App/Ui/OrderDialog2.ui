@@ -196,7 +196,11 @@
          <number>2</number>
         </property>
         <item>
-         <widget class="QLineEdit" name="lineEditBarCode"/>
+         <widget class="QLineEdit" name="lineEditBarCode">
+          <property name="toolTip">
+           <string>Press Ctrl+F11 to set focus here</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -258,6 +262,9 @@
          <width>310</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Press Ctrl+F12 to change date and time</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -631,7 +638,6 @@
            </property>
            <property name="font">
             <font>
-             <family>MS Shell Dlg 2</family>
              <pointsize>11</pointsize>
             </font>
            </property>
@@ -1014,8 +1020,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>1144</width>
-            <height>348</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_19">

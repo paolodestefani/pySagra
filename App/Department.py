@@ -32,27 +32,23 @@ This module is used to manage department archive and options
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QVBoxLayout
-from PySide6.QtWidgets import QStyledItemDelegate
-#from PySide6.QtWidgets import QAbstractItemView
 
 # application modules
 from App import session
-from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Database.Lookup import printer_class_lookup
 from App.Database.Models import DepartmentModel
-from App.Widget.Delegate import BooleanDelegate
-from App.Widget.Delegate import IntegerDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormViewManager
 from App.Ui.DepartmentWidget import Ui_DepartmentWidget
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 (ID, DESCRIPTION, SORTING, PRINTER, OBSOLETE, NOMANAGE, TAKEAWAY,
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(11)
@@ -60,14 +56,14 @@ from App.Ui.DepartmentWidget import Ui_DepartmentWidget
 
 def department(action: QAction, checked: bool = False) -> None:
     "Manage departments"
-    logging.info('Starting departments Form')
+    logger.info('Starting departments Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     dw = DepartmentForm(mw, title, auth)
     dw.reload()
     mw.addTab(title, dw)
-    logging.info('Departments Form added to main window')
+    logger.info('Departments Form added to main window')
 
 
 class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
@@ -112,4 +108,5 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
 
     @scriptMethod
     def reload(self) -> None:
+        logger.info('Reloading departments form')
         super().reload()

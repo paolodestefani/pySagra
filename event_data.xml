@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <event>
-    <title>SAGRA DEL PEPERONE</title>
-    <start_date>2026-01-01T17:15:14+01:00</start_date>
-    <end_date>2026-12-31T23:59:59+01:00</end_date>
+    <title>test 2027</title>
+    <start_date>2027-06-01T15:22:20+02:00</start_date>
+    <end_date>2027-06-30T23:59:59+02:00</end_date>
     <items>
         <department description="PRIMI">
             <item>
@@ -23,56 +23,56 @@
                 <id>42</id>
                 <description>GNOCCHI RAGU'</description>
                 <price>6.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>43</id>
                 <description>GNOCCHI FORMAGGI</description>
                 <price>6.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>52</id>
                 <description>GNOCCHI PEPERONI</description>
                 <price>6.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>44</id>
-                <description>PENNE RAGU'</description>
+                <description>PENNE RAGU' *</description>
                 <price>6.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>45</id>
                 <description>PENNE FORMAGGI</description>
                 <price>6.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>54</id>
                 <description>RAVIOLI PEPERONI</description>
                 <price>6.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>51</id>
                 <description>TAGLIATELLE PEPERONI</description>
                 <price>7.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>50</id>
                 <description>PASTICCIO PEPERONI</description>
                 <price>7.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
         </department>
@@ -81,42 +81,42 @@
                 <id>46</id>
                 <description>COSTICINE POLENTA</description>
                 <price>7.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>47</id>
                 <description>SALSICCE POLENTA</description>
                 <price>7.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>48</id>
                 <description>BRACIOLA POLENTA</description>
                 <price>8.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>49</id>
                 <description>TRIS</description>
                 <price>12.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>55</id>
                 <description>INVOLTINI PEPERONI</description>
                 <price>8.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>
                 <id>56</id>
                 <description>PEPERONI RIPIENI</description>
                 <price>7.00</price>
-                <active>True</active>
+                <active>False</active>
                 <variants>False</variants>
             </item>
             <item>

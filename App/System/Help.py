@@ -40,6 +40,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QMessageBox
+from PySide6.QtPrintSupport import QPrintPreviewDialog
 
 # application modules
 from App import APPNAME
@@ -47,7 +48,6 @@ from App import session
 from App import currentIcon
 from App.Core.L10n import _tr
 from App.Ui.HelpDialog import Ui_HelpDialog
-from App.Widget.Dialog import PrintPreviewDialog
 
 # logger
 logger = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ class HelpDialog(QDialog):
 
     def print(self) -> None:
         "Print help contents"
-        dialog = PrintPreviewDialog(self)
+        dialog = QPrintPreviewDialog(self)
         dialog.setGeometry(50, 50, 750, 550)
         dialog.setWindowFlags(Qt.WindowType.Dialog | 
                               Qt.WindowType.WindowMinMaxButtonsHint |

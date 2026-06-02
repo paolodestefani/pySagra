@@ -37,7 +37,6 @@ import decimal
 #import pandas as pd
 
 # PySide6
-#from PySide6.QtCore import QObject
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QByteArray
@@ -69,41 +68,45 @@ from App.Widget.Dialog import PrintDialog
 from App.Core.L10n import _tr
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
     "Statistical analysis"
-    logging.info('Starting Statistical Analysis')
+    logger.info('Starting Statistical Analysis')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     af = AnalysisForm(mw, title, auth)
     mw.addTab(title, af)
-    logging.info('Statistical Analysis added to main window')
+    logger.info('Statistical Analysis added to main window')
 
 
 def statisticsPrint(action: QAction, checked: bool = False) -> None:
     "Print statistic reports"
-    logging.info('Starting statistics consumption dialog')
+    logger.info('Starting statistics consumption dialog')
     mw = session['mainwin']
     dialog = PrintDialog(mw, 'STATISTICS')
     dialog.show()
-    logging.info('Statistics consumption dialog shown')
+    logger.info('Statistics consumption dialog shown')
 
 
 def statisticsExport(action: QAction, checked: bool = False) -> None:
     "Statistics export"
-    logging.info('Starting statistics export dialog')
+    logger.info('Starting statistics export dialog')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     icon = action.icon()
     dlg = StatisticsExportDialog(mw, title, icon, auth)
     dlg.exec_()
-    logging.info('Statistics  export dialog shown')
+    logger.info('Statistics  export dialog shown')
 
 
 class StatisticsExportDialog(QDialog):
 
-    def __init__(self, parent, title, icon, auth):
+    def __init__(self, parent, title, icon, auth) -> None:
         super().__init__(parent)
         self.ui = Ui_StatisticsExportDialog()
         self.ui.setupUi(self)
@@ -121,14 +124,14 @@ class StatisticsExportDialog(QDialog):
         self.ui.lineEditHeadersFileName.setText(st.value("StatisticsExport/HeadersFileName", ""))
         self.ui.lineEditDetailsFileName.setText(st.value("StatisticsExport/DetailsFileName", ""))
         self.ui.checkBoxIncludeAll.setChecked(st.value("StatisticsExport/IncludeAll", 'false') == 'true')
-        self.ui.comboBoxFromEvent.setCurrentIndex(int(st.value("StatisticsExport/FromEvent", '1')))
-        self.ui.comboBoxToEvent.setCurrentIndex(int(st.value("StatisticsExport/ToEvent", '1')))
+        self.ui.comboBoxFromEvent.setCurrentIndex(int(st.value("StatisticsExport/FromEvent", '1', type=int)))
+        self.ui.comboBoxToEvent.setCurrentIndex(int(st.value("StatisticsExport/ToEvent", '1', type=int)))
         # signal slot connections
         self.ui.checkBoxIncludeAll.toggled.connect(self.includeAllEvents)
         self.ui.pushButtonSelectHeaders.clicked.connect(self.selectHeadersClicked)
         self.ui.pushButtonSelectDetails.clicked.connect(self.selectDetailsClicked)
 
-    def includeAllEvents(self, checked):
+    def includeAllEvents(self, checked) -> None:
         if checked:
             self.ui.comboBoxFromEvent.setCurrentIndex(-1)
             self.ui.groupBoxFromEvent.setDisabled(True)
@@ -138,7 +141,7 @@ class StatisticsExportDialog(QDialog):
             self.ui.groupBoxFromEvent.setEnabled(True)
             self.ui.groupBoxToEvent.setEnabled(True)
 
-    def selectHeadersClicked(self):
+    def selectHeadersClicked(self) -> None:
         if self.ui.lineEditHeadersFileName.text():
             path = self.ui.lineEditHeadersFileName.text()
         else:
@@ -154,7 +157,7 @@ class StatisticsExportDialog(QDialog):
         st = QSettings()
         st.setValue("StatisticsExport/HeadersFileName", fname)
 
-    def selectDetailsClicked(self):
+    def selectDetailsClicked(self) -> None:
         if self.ui.lineEditDetailsFileName.text():
             path = self.ui.lineEditDetailsFileName.text()
         else:
@@ -170,7 +173,7 @@ class StatisticsExportDialog(QDialog):
         st = QSettings()
         st.setValue("StatisticsExport/DetailsFileName", fname)
 
-    def accept(self):
+    def accept(self) -> None:
         "Proceed on export data"
         if self.ui.checkBoxIncludeAll.isChecked():
             fromEvent = 1
@@ -222,11 +225,6 @@ class StatisticsExportDialog(QDialog):
         st.setValue("StatisticsExport/ToEvent", self.comboBoxToEvent.currentIndex())
         super().accept()
 
-# def format_number(x):
-#     """
-#     Formats a number with . as thousand separators.
-#     """
-#     return f"{x:,.2f}".replace(",", "*").replace(".", ",").replace("*", ".")
 
 class AnalysisForm(QWidget):
 

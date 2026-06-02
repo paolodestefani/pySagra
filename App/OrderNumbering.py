@@ -32,28 +32,24 @@ This module is used to manage order number options
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
-from PySide6.QtCore import QDate
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QVBoxLayout
-from PySide6.QtWidgets import QStyledItemDelegate
-from PySide6.QtNetwork import QHostInfo
 
 # application modules
 from App import session
-from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Database.Models import OrderNumberingModel
 from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import GenericDelegate
-from App.Widget.Delegate import IntegerDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Dialog import EventFilterDialog
 from App.Widget.Form import FormViewManager
 from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 (ID, EVENT, EVENT_DATE, DAY_PART, CURRENT_VALUE,
  USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(9)
@@ -61,14 +57,14 @@ from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
 
 def orderNumbering(action: QAction, checked: bool = False) -> None:
     "Manage order number current values"
-    logging.info('Starting order numbers form')
+    logger.info('Starting order numbers form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
     dw = OrderNumberingForm(mw, title, auth)
     #dw.reload() # not required because filtered model is loaded at init
     mw.addTab(title, dw)
-    logging.info('Order numbers form added to main window')
+    logger.info('Order numbers form added to main window')
 
 
 class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
