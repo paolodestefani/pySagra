@@ -61,11 +61,11 @@ from App.Ui.UpdateWebOrderServerDialog import Ui_UpdateWebOrderServerDialog
 logger = logging.getLogger(__name__)
 
 
-def updateWebOrderServer(action: QAction, checked: bool = False) -> None:
+def updateWOS(action: QAction, checked: bool = False) -> None:
     logger.info('Starting update web order server dialog')
     mw = session['mainwin']
     auth = action.data()
-    title = action.text()
+    title = _tr("UpdateWOS", "Update Web Order Server")
     icon = action.icon()
     dialog = UpdateWebOrderServerDialog(mw, title, icon, auth)
     dialog.show()

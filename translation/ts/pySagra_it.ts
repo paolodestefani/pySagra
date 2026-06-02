@@ -532,11 +532,15 @@
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="494"/>
+        <source>Update W.O.S.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../App/System/Action.py" line="499"/>
         <location filename="../../App/System/Action.py" line="500"/>
         <location filename="../../App/System/Action.py" line="501"/>
-        <source>Update W.O.Server</source>
-        <translation>Aggiorna W.O. Server</translation>
+        <source>Update Web Order Server</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="505"/>
@@ -1164,55 +1168,55 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Form</name>
     <message>
-        <location filename="../../App/Widget/Form.py" line="384"/>
-        <location filename="../../App/Widget/Form.py" line="592"/>
-        <location filename="../../App/Widget/Form.py" line="904"/>
+        <location filename="../../App/Widget/Form.py" line="383"/>
+        <location filename="../../App/Widget/Form.py" line="591"/>
+        <location filename="../../App/Widget/Form.py" line="901"/>
         <source>The data has been modified, save ?</source>
         <translation>I dati sono stati modificati, vuoi salvare ?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="244"/>
-        <location filename="../../App/Widget/Form.py" line="786"/>
+        <location filename="../../App/Widget/Form.py" line="785"/>
         <source>Error inserting a new row</source>
         <translation>Errore in inserimento di una nuova riga</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="256"/>
-        <location filename="../../App/Widget/Form.py" line="803"/>
+        <location filename="../../App/Widget/Form.py" line="802"/>
         <source>Error on mapper submit</source>
         <translation>Errore in mapper submit</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="259"/>
-        <location filename="../../App/Widget/Form.py" line="303"/>
-        <location filename="../../App/Widget/Form.py" line="490"/>
-        <location filename="../../App/Widget/Form.py" line="517"/>
+        <location filename="../../App/Widget/Form.py" line="302"/>
+        <location filename="../../App/Widget/Form.py" line="489"/>
+        <location filename="../../App/Widget/Form.py" line="516"/>
         <source>Error on model submit all</source>
         <translation>Errore in model submitt all</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="304"/>
-        <location filename="../../App/Widget/Form.py" line="518"/>
+        <location filename="../../App/Widget/Form.py" line="303"/>
+        <location filename="../../App/Widget/Form.py" line="517"/>
         <source>Referential integrity violation: unable to delete the current record because is still referenced from another database object</source>
         <translation>Violazione dell&apos;integrità referenziale: impossibile cancellare il record corrente perchè è referenziato da un altro oggetto del database</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="524"/>
+        <location filename="../../App/Widget/Form.py" line="523"/>
         <source>Error on submitAll</source>
         <translation>Errore in submit all</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="806"/>
+        <location filename="../../App/Widget/Form.py" line="805"/>
         <source>Master and detail model submit all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="828"/>
+        <location filename="../../App/Widget/Form.py" line="825"/>
         <source>Master and detail model delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="851"/>
+        <location filename="../../App/Widget/Form.py" line="848"/>
         <source>Form reload</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1222,8 +1226,8 @@ Proseguire ugualmente ?</translation>
         <translation>Annullare le modifiche e ricaricare i dati ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="268"/>
-        <location filename="../../App/Widget/Form.py" line="283"/>
+        <location filename="../../App/Widget/Form.py" line="267"/>
+        <location filename="../../App/Widget/Form.py" line="282"/>
         <source>Error on model detail submit all</source>
         <translation>Errore in model detail submit all</translation>
     </message>
@@ -1379,16 +1383,16 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1802"/>
         <location filename="../../App/Widget/Form.py" line="243"/>
         <location filename="../../App/Widget/Form.py" line="255"/>
-        <location filename="../../App/Widget/Form.py" line="293"/>
-        <location filename="../../App/Widget/Form.py" line="310"/>
-        <location filename="../../App/Widget/Form.py" line="343"/>
-        <location filename="../../App/Widget/Form.py" line="785"/>
-        <location filename="../../App/Widget/Form.py" line="802"/>
-        <location filename="../../App/OrderEntry.py" line="746"/>
-        <location filename="../../App/OrderEntry.py" line="758"/>
-        <location filename="../../App/OrderEntry.py" line="778"/>
-        <location filename="../../App/OrderEntry.py" line="782"/>
-        <location filename="../../App/OrderEntry.py" line="789"/>
+        <location filename="../../App/Widget/Form.py" line="292"/>
+        <location filename="../../App/Widget/Form.py" line="309"/>
+        <location filename="../../App/Widget/Form.py" line="342"/>
+        <location filename="../../App/Widget/Form.py" line="784"/>
+        <location filename="../../App/Widget/Form.py" line="801"/>
+        <location filename="../../App/OrderEntry.py" line="748"/>
+        <location filename="../../App/OrderEntry.py" line="760"/>
+        <location filename="../../App/OrderEntry.py" line="780"/>
+        <location filename="../../App/OrderEntry.py" line="784"/>
+        <location filename="../../App/OrderEntry.py" line="791"/>
         <source>Critical</source>
         <translation>Errore critico</translation>
     </message>
@@ -1402,11 +1406,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1275"/>
         <location filename="../../App/OrderEntry.py" line="110"/>
         <location filename="../../App/OrderEntry.py" line="397"/>
-        <location filename="../../App/OrderEntry.py" line="805"/>
-        <location filename="../../App/OrderEntry.py" line="860"/>
-        <location filename="../../App/OrderEntry.py" line="867"/>
-        <location filename="../../App/OrderEntry.py" line="884"/>
-        <location filename="../../App/OrderEntry.py" line="904"/>
+        <location filename="../../App/OrderEntry.py" line="807"/>
+        <location filename="../../App/OrderEntry.py" line="862"/>
+        <location filename="../../App/OrderEntry.py" line="869"/>
+        <location filename="../../App/OrderEntry.py" line="886"/>
+        <location filename="../../App/OrderEntry.py" line="906"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
@@ -1466,15 +1470,15 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="773"/>
         <location filename="../../App/Widget/Dialog.py" line="1279"/>
         <location filename="../../App/Widget/Dialog.py" line="1808"/>
-        <location filename="../../App/Widget/Form.py" line="383"/>
-        <location filename="../../App/Widget/Form.py" line="591"/>
-        <location filename="../../App/Widget/Form.py" line="903"/>
+        <location filename="../../App/Widget/Form.py" line="382"/>
+        <location filename="../../App/Widget/Form.py" line="590"/>
+        <location filename="../../App/Widget/Form.py" line="900"/>
         <location filename="../../App/OrderEntry.py" line="407"/>
-        <location filename="../../App/OrderEntry.py" line="876"/>
-        <location filename="../../App/OrderEntry.py" line="893"/>
-        <location filename="../../App/OrderEntry.py" line="921"/>
-        <location filename="../../App/OrderEntry.py" line="969"/>
-        <location filename="../../App/OrderEntry.py" line="1034"/>
+        <location filename="../../App/OrderEntry.py" line="878"/>
+        <location filename="../../App/OrderEntry.py" line="895"/>
+        <location filename="../../App/OrderEntry.py" line="923"/>
+        <location filename="../../App/OrderEntry.py" line="971"/>
+        <location filename="../../App/OrderEntry.py" line="1036"/>
         <source>Question</source>
         <translation>Richiesta</translation>
     </message>
@@ -1707,7 +1711,7 @@ Si consiglia di aggiornare i dati della finestra. Aggiorno adesso ?</translation
     </message>
     <message>
         <location filename="../../App/OrderEntry.py" line="382"/>
-        <location filename="../../App/OrderEntry.py" line="762"/>
+        <location filename="../../App/OrderEntry.py" line="764"/>
         <source>Tables</source>
         <translation>Tavoli</translation>
     </message>
@@ -1727,12 +1731,12 @@ Si consiglia di aggiornare i dati della finestra. Aggiorno adesso ?</translation
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="790"/>
+        <location filename="../../App/OrderEntry.py" line="792"/>
         <source>Item NOT available in buttons&apos; grid, web order skipped.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="965"/>
+        <location filename="../../App/OrderEntry.py" line="967"/>
         <source>Warning: these items are unavailable for the current order:
 
 - {0}
@@ -1741,7 +1745,7 @@ Do i proceed anyway ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="707"/>
+        <location filename="../../App/OrderEntry.py" line="709"/>
         <source>Department note</source>
         <translation>Nota del reparto</translation>
     </message>
@@ -1771,111 +1775,111 @@ Do i proceed anyway ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="708"/>
+        <location filename="../../App/OrderEntry.py" line="710"/>
         <source>Message text for {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="745"/>
+        <location filename="../../App/OrderEntry.py" line="747"/>
         <source>Unrecognized QRC structure:</source>
         <translation>Struttura del QRC non riconosciuta:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="751"/>
+        <location filename="../../App/OrderEntry.py" line="753"/>
         <source>Unrecognized QRC format:</source>
         <translation>Formato del QRC non riconosciuto:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="753"/>
+        <location filename="../../App/OrderEntry.py" line="755"/>
         <source>Unrecognized delivery option:</source>
         <translation>Opzione di consegna non riconosciuta:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="755"/>
+        <location filename="../../App/OrderEntry.py" line="757"/>
         <source>Unrecognized covers number:</source>
         <translation>Numero di coperti non coerente:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="757"/>
+        <location filename="../../App/OrderEntry.py" line="759"/>
         <source>Unrecognized parameters:</source>
         <translation>Parametri non riconosciuti:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="777"/>
+        <location filename="../../App/OrderEntry.py" line="779"/>
         <source>Unrecognized item id:</source>
         <translation>Articolo non riconosciuto:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="781"/>
+        <location filename="../../App/OrderEntry.py" line="783"/>
         <source>Unrecognized quantity:</source>
         <translation>Quantità non coerente:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="802"/>
+        <location filename="../../App/OrderEntry.py" line="804"/>
         <source>These items are not available and not included in the order:
 </source>
         <translation>Questi articoli non sono disponibili e non saranno inclusi nell&apos;ordine:
 </translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="859"/>
+        <location filename="../../App/OrderEntry.py" line="861"/>
         <source>No item inserted!</source>
         <translation>Nessun articolo inserito!</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="866"/>
+        <location filename="../../App/OrderEntry.py" line="868"/>
         <source>The table number is missing!</source>
         <translation>Manca il numero del tavolo!</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="874"/>
+        <location filename="../../App/OrderEntry.py" line="876"/>
         <source>The table number does not exist, use it anyway ?</source>
         <translation>Il numero del tavolo non esiste, lo uso lo stesso?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="883"/>
+        <location filename="../../App/OrderEntry.py" line="885"/>
         <source>Customer&apos;s name is missing!</source>
         <translation>Manca il nome del cliente!</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="889"/>
+        <location filename="../../App/OrderEntry.py" line="891"/>
         <source>Warning: there are no seats even though delivery to the table has been indicated,
 do you want to correct it?</source>
         <translation>Attenzione: non è stato indicato il numero del tavolo nonostante la consegna sia al tavolo,
 vuoi correggere ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="903"/>
+        <location filename="../../App/OrderEntry.py" line="905"/>
         <source>Discount amount greater than the total amount!</source>
         <translation>L&apos;importo dello sconto supera il totale ordine!</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="979"/>
+        <location filename="../../App/OrderEntry.py" line="981"/>
         <source>Saving order to database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="989"/>
+        <location filename="../../App/OrderEntry.py" line="991"/>
         <source>Printing order customer copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="994"/>
+        <location filename="../../App/OrderEntry.py" line="996"/>
         <source>Printing order cover copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1001"/>
+        <location filename="../../App/OrderEntry.py" line="1003"/>
         <source>Printing order department copies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1014"/>
+        <location filename="../../App/OrderEntry.py" line="1016"/>
         <source>Printing ordered delivered report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1032"/>
+        <location filename="../../App/OrderEntry.py" line="1034"/>
         <source>Do you want to exit the order entry?</source>
         <translation>Vuoi uscire dall&apos;inserimento ordini ?</translation>
     </message>
@@ -2008,22 +2012,22 @@ vuoi correggere ?</translation>
         <translation>Pag.Elett.</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderDialog0.ui" line="946"/>
+        <location filename="../../App/Ui/OrderDialog0.ui" line="940"/>
         <source>Confirm</source>
         <translation>Conferma</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderDialog0.ui" line="973"/>
+        <location filename="../../App/Ui/OrderDialog0.ui" line="961"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderDialog0.ui" line="997"/>
+        <location filename="../../App/Ui/OrderDialog0.ui" line="985"/>
         <source>Cash</source>
         <translation>Contanti</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderDialog0.ui" line="1026"/>
+        <location filename="../../App/Ui/OrderDialog0.ui" line="1014"/>
         <source>Change</source>
         <translation>Resto</translation>
     </message>

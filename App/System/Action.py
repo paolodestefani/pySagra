@@ -64,7 +64,7 @@ from App.SeatMap import seatMap
 from App.Item import item
 from App.PriceList import priceList
 from App.Event import event
-from App.UpdateWebOrderServer import updateWebOrderServer
+from App.UpdateWOS import updateWOS
 from App.OrderArchive import orderArchive
 from App.OrderNumbering import orderNumbering
 from App.Settings import settings
@@ -491,14 +491,14 @@ def createActionDictionary(mw) -> None:
         QAction.MenuRole.TextHeuristicRole)
     
     actionDefinition['app_file_update_wo_server'] = (
-        _tr("Action", 'Update W.O.Server'),
-        updateWebOrderServer,
+        _tr("Action", 'Update W.O.S.'),
+        updateWOS,
         False,
         'file_update_web_order',
         None,
-        _tr("Action", 'Update W.O.Server'),
-        _tr("Action", 'Update W.O.Server'),
-        _tr("Action", 'Update W.O.Server'),
+        _tr("Action", 'Update Web Order Server'),
+        _tr("Action", 'Update Web Order Server'),
+        _tr("Action", 'Update Web Order Server'),
         QAction.MenuRole.TextHeuristicRole)
 
     actionDefinition['app_file_department'] = (

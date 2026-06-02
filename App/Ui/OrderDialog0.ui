@@ -930,12 +930,6 @@
                <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
                  <widget class="QPushButton" name="pushButtonConfirm">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
                   <property name="font">
                    <font>
                     <pointsize>12</pointsize>
@@ -958,12 +952,6 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButtonCancel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
                   <property name="font">
                    <font>
                     <pointsize>12</pointsize>

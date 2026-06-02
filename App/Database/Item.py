@@ -90,7 +90,7 @@ def item_web_list(event_id: int, department_id: int) -> list[tuple]:
     script = t"""
 SELECT 
     item_id,
-    item_description,
+    item_customer_description,
     price,
     is_available,
     has_variants

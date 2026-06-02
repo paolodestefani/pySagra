@@ -61,6 +61,7 @@ SELECT
     i.item_type                 AS item_type,
     i.item_id                   AS item_id,
     i.description               AS item_description,
+    i.customer_description      AS item_customer_description,
     i.is_salable                AS is_salable,
     COALESCE(p.price, 0.00)     AS price,
     COALESCE(i.pos_row, 0)      AS pos_row,

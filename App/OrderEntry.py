@@ -481,6 +481,8 @@ class BaseOrderDialog(QDialog):
             self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
         # Handle default payment type checkbox
         self.ui.checkBoxElectronicPayment.setChecked(self.setting['default_payment_type'] == 'E')
+        # defaut web order flag
+        self.ui.checkBoxWebOrder.setChecked(False)
         # 1. CLEANUP TABS CORRECTLY (Prevents memory leaks in PySide6)
         while self.ui.tabWidgetList.count() != 0:
             tab_widget = self.ui.tabWidgetList.widget(0)
@@ -563,11 +565,11 @@ class BaseOrderDialog(QDialog):
         # Establish window focus context on the primary table entry field
         self.ui.lineEditTable.setFocus()
 
-    def buttonClicked(self, button: Any, ivars: str = "", priced: Decimal = Decimal('0.0')) -> None:
+    def buttonClicked(self, button: Any, ivars: str = "", priced: Decimal = Decimal('0.0'), web: bool = False) -> None:
         """React to an item button click, manage variants, and update the order table."""
         btn = cast(Any, button)
         # 1. HANDLE ITEM VARIANTS
-        if btn.hasVariants:
+        if btn.hasVariants and not web:
             if not ivars:
                 if (not self.ui.pushButtonVariants.isEnabled()) or self.ui.pushButtonVariants.isChecked():
                     item_description = getattr(btn, 'description', '')
@@ -795,7 +797,7 @@ class BaseOrderDialog(QDialog):
                     btn = cast(Any, raw_button)
                     if btn.isEnabled():
                         # Pass clean Decimal to prevent TypeError in calculations
-                        self.buttonClicked(btn, v, Decimal(str(p or '0.0')))
+                        self.buttonClicked(btn, v, Decimal(str(p or '0.0')), web = True) # web = true -> avoid variant selection
                     else:
                         btn_text = str(btn.text())
                         unavailable[btn_text] = unavailable.get(btn_text, 0) + 1
