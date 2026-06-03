@@ -28,6 +28,7 @@ This module manages application toolbars
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -54,9 +55,18 @@ from App.Ui.ToolbarWidget import Ui_ToolbarWidget
 # logger
 logger = logging.getLogger(__name__)
 
-CODE, DESCRIPTION, SYSTEM = range(3)
+class tb(IntEnum):
+    CODE        = 0
+    DESCRIPTION = 1
+    SYSTEM      = 2
 
-PARENT, CHILD, ITEMDESCRIPTION, SORTING, ITEMTYPE, ACTION = range(6)
+class tbt(IntEnum):
+    PARENT          = 0
+    CHILD           = 1
+    ITEMDESCRIPTION = 2
+    SORTING         = 3
+    ITEMTYPE        = 4
+    ACTION          = 5
 
 
 def toolbar(action: QAction, checked: bool = False) -> None:
@@ -99,15 +109,15 @@ class ToolbarForm(FormIndexManager):
         # widget settings
         self.ui.tableView.setLayoutName('ToolbarIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.mapper.addMapping(self.ui.lineEditCode, CODE)
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
+        self.mapper.addMapping(self.ui.lineEditCode, tb.CODE)
+        self.mapper.addMapping(self.ui.lineEditDescription, tb.DESCRIPTION)
+        self.mapper.addMapping(self.ui.checkBoxSystem, tb.SYSTEM)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
-        self.ui.treeViewMenuItems.setItemDelegateForColumn(ACTION, ActionDelegate(self))
+        self.ui.treeViewMenuItems.setItemDelegateForColumn(tbt.ACTION, ActionDelegate(self))
         # signal/slot
         self.ui.pushButtonAddChild.clicked.connect(self.addChild)
         self.ui.pushButtonAdd.clicked.connect(self.add)

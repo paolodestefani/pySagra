@@ -202,7 +202,7 @@ class QueryModel(QAbstractTableModel):
                 self.dataSet[i, j] = field
         self.layoutChanged.emit()
 
-    def addWhere(self, condition: str, value: int | float | str) -> None:
+    def addWhere(self, condition: str, value: Any) -> None:
         "Add where conditions before select"
         self.whereCondition.append((condition, value))
 
@@ -810,7 +810,7 @@ class TableModel(QAbstractTableModel):
  
     def addWhere(self, 
                  condition: str,
-                 value: str | int | float | QDate | QDateTime | None
+                 value: Any
                  ) ->None:
         "Add where conditions before select"
         self.whereCondition.append((condition, value))

@@ -29,6 +29,7 @@ This module is used to manage cash desk names
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -50,8 +51,16 @@ from App.Ui.CashDeskWidget import Ui_CashDeskWidget
 # logger
 logger = logging.getLogger(__name__)
 
-(ID, COMPUTER, DESCRIPTION, NOTE,
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(8)
+
+class cd(IntEnum):
+    ID          = 0
+    COMPUTER    = 1
+    DESCRIPTION = 2
+    NOTE        = 3
+    USER_INS    = 4
+    DATE_INS    = 5
+    USER_UPD    = 6
+    DATE_UPD    = 7
 
 
 def cashDesk(action: QAction, checked: bool = False) -> None:
@@ -86,15 +95,17 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
         # scripting init
         self.script = scriptInit(self)
-
+        
     @scriptMethod
     def new(self) -> None:
         "Edit second column of the view on new inserted rows"
         super().new()
         model = self.ui.tableView.model()
-        row = model.rowCount() -1
-        index = model.index(row, COMPUTER)
+        row = model.rowCount() - 1
+        index = model.index(row, cd.COMPUTER)
+        # set the computer name
         model.setData(index, QHostInfo.localHostName())
+        # force cell editing
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 

@@ -136,7 +136,7 @@ LEFT JOIN system.company b ON a.company_id = b.company_id;"""
                         ("a.client_port", _tr('Models', 'Client Port'), True, 'int'),
                         ("a.company_id", _tr('Models', 'Company'), True, 'int'),
                         ("b.description", _tr('Models', 'Company Description'), True, 'str'),
-                        ("a.profile_code", _tr('Models', 'Profile'), True, 'str'))
+                        ("a.profile_code", _tr('Models', 'Profile'), True, 'str')) 
         # True if is a company table
         self.isCompanyTable = False
         self.repr = 'Connection query model'
@@ -148,6 +148,7 @@ class ConnectionHistoryModel(QueryModel):
         super().__init__(parent)
         self.selectQuery = """
 SELECT 
+    history_id,
     session_id,
     login_datetime,
     logout_datetime,
@@ -161,7 +162,8 @@ SELECT
 FROM system.connection_history;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, float, str, date, datetime, None = no filter
-        self.columns = (("session_id", _tr('Models', 'Session ID'), True, 'int'),
+        self.columns = (("history_id", _tr('Models', 'History ID'), True, 'int'),
+                        ("session_id", _tr('Models', 'Session ID'), True, 'int'),
                         ("login_datetime", _tr('Models', 'Login Date'), True, 'datetime'),
                         ("logout_datetime", _tr('Models', 'Logout Date'), True, 'datetime'),
                         ("db_user_name", _tr('Models', 'Database User'), True, 'str'),
@@ -301,7 +303,7 @@ class UserModel(TableModel):
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+                        ("updated_at", _tr('Models', 'Date Update'), True, 'date')) 
         # True if is a company table
         self.isCompanyTable = False
         # primary key fields, tuple or list
@@ -537,7 +539,7 @@ class ToolbarModel(TableModel):
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+                        ("updated_at", _tr('Models', 'Date Update'), True, 'date')) 
         # True if is a company table
         self.isCompanyTable = False
         # primary key fields, tuple or list

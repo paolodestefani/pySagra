@@ -29,6 +29,7 @@ This module is used to manage department archive and options
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -50,8 +51,19 @@ from App.Ui.DepartmentWidget import Ui_DepartmentWidget
 # logger
 logger = logging.getLogger(__name__)
 
-(ID, DESCRIPTION, SORTING, PRINTER, OBSOLETE, NOMANAGE, TAKEAWAY,
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(11)
+
+class dep(IntEnum):
+    ID          = 0
+    DESCRIPTION = 1
+    SORTING     = 2
+    PRINTER     = 3
+    OBSOLETE    = 4
+    NOMANAGE    = 5
+    TAKEAWAY    = 6
+    USER_INS    = 7
+    DATE_INS    = 8
+    USER_UPD    = 9
+    DATE_UPD    = 10
 
 
 def department(action: QAction, checked: bool = False) -> None:
@@ -84,7 +96,7 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('Department')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(PRINTER, RelationDelegate(self, printer_class_lookup))
+        self.ui.tableView.setItemDelegateForColumn(dep.PRINTER, RelationDelegate(self, printer_class_lookup))
         # scripting init
         self.script = scriptInit(self)
 
@@ -94,7 +106,7 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         super().new()
         model = self.ui.tableView.model()
         row = model.rowCount() -1
-        index = model.index(row, DESCRIPTION)
+        index = model.index(row, dep.DESCRIPTION)
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 

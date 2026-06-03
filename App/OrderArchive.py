@@ -28,6 +28,7 @@ This module provides form and related classes for manage order archive
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -73,24 +74,89 @@ from App.Report.Order import printOrderDepartmentReport
 logger = logging.getLogger(__name__)
 
 # index model order header
-(I_ID, EVENT, I_DATETIME, I_NUMBER, I_DATE, I_TIME, I_STATDATE, I_STATDAYPART, I_CASHDESK,
- I_DELIVERY, I_EP, I_TABLE, I_CUSTOMER, I_COVERS, I_AMOUNT, I_DISCOUNT, I_CASH, I_CHANGE,
- I_STATUS, I_FULFILLMENT, 
- I_USER_INS, I_DATE_INS, I_USER_UPD, I_DATE_UPD) = range(24)
+class ordi(IntEnum):
+    ID              = 0
+    EVENT           = 1
+    DATE_TIME       = 2
+    NUMBER          = 3
+    DATE            = 4
+    TIME            = 5
+    STAT_DATE       = 6
+    STAT_DAYPART    = 7
+    CASH_DESK       = 8
+    DELIVERY        = 9
+    EP              = 10
+    TABLE           = 11
+    CUSTOMER        = 12
+    COVERS          = 13
+    AMOUNT          = 14
+    DISCOUNT        = 15
+    CASH            = 16
+    CHANGE          = 17
+    STATUS          = 18
+    FULFILLMENT     = 19
+    USER_INS        = 20
+    DATE_INS        = 21
+    USER_UPD        = 22
+    DATE_UPD        = 23
 
 # model order header
-(ID, EVENT, DATETIME, NUMBER, DATE, TIME, STATDATE, STATDAYPART, CASHDESK,
- DELIVERY, EP, FW, TABLE, CUSTOMER, CONTACT, COVERS, AMOUNT, DISCOUNT, CASH, CHANGE,
- STATUS, FULFILLMENT, USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(26)
+class ordh(IntEnum):
+    ID              = 0
+    EVENT           = 1
+    DATE_TIME       = 2
+    NUMBER          = 3
+    DATE            = 4
+    TIME            = 5
+    STAT_DATE       = 6
+    STAT_DAYPART    = 7
+    CASH_DESK       = 8
+    DELIVERY        = 9
+    EP              = 10
+    WO              = 11
+    TABLE           = 12
+    CUSTOMER        = 13
+    CONTACT         = 14
+    COVERS          = 15
+    AMOUNT          = 16
+    DISCOUNT        = 17
+    CASH            = 18
+    CHANGE          = 19
+    STATUS          = 20
+    FULFILLMENT     = 21
+    USER_INS        = 22
+    DATE_INS        = 23
+    USER_UPD        = 24
+    DATE_UPD        = 25
 
 # model order header department
-(P_ID, P_IDHEADER, P_DEPARTMENT, P_NOTE, P_OTHER, P_BARCODE, P_FULFILLMENT) = range(7)
+class ordhd(IntEnum):
+    ID              = 0
+    ID_HEADER       = 1
+    DEPARTMENT      = 2
+    NOTE            = 3
+    OTHER           = 4
+    BARCODE         = 5
+    FULFILLMENT     = 6
 
 # model order detail
-(D_ID, D_IDHEADER, D_ITEM, D_VARIANTS, D_QUANTITY, D_PRICE, D_AMOUNT) = range(7)
+class ordd(IntEnum):
+    ID              = 0
+    ID_HEADER       = 1
+    ITEM            = 2
+    VARIANTS        = 3
+    QUANTITY        = 4
+    PRICE           = 5
+    AMOUNT          = 6
 
 # tree model order detail department
-(M_DEP, M_ITEM, M_VARIANTS, M_QUANTITY, M_PARENT, M_CHILD) = range(6)
+class orddd(IntEnum):
+    DEPARTMENT      = 0
+    ITEM            = 1
+    VARIANTS        = 2
+    QUANTITY        = 3
+    PARENT          = 4
+    CHILD           = 5
 
 
 def orderArchive(action: QAction, checked: bool = False) -> None:
@@ -116,9 +182,9 @@ class OrderForm(FormIndexManager):
         modelTreeDep = OrderDepartmentTreeModel(self)
         #modelTreeDep.select()
         self.setModel(model, idxModel)
-        self.addDetailRelation(modelHeaDep, ID, P_IDHEADER)
-        self.addDetailRelation(modelDet, ID, D_IDHEADER)
-        self.addDetailRelation(modelTreeDep, ID, 0)
+        self.addDetailRelation(modelHeaDep, ordi.ID, ordhd.ID_HEADER)
+        self.addDetailRelation(modelDet, ordi.ID, ordd.ID_HEADER)
+        self.addDetailRelation(modelTreeDep, ordi.ID, orddd.DEPARTMENT)
         self.tabName = title
         self.helpLink = None
         # available status
@@ -131,54 +197,54 @@ class OrderForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         #self.ui.tableView.setModel(self.indexModel)
         self.ui.tableView.setLayoutName('OrderArchiveIndex')
-        self.ui.tableView.setItemDelegateForColumn(I_TIME, TimeDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_AMOUNT, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_DISCOUNT, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_CASH, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_CHANGE, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ordi.TIME, TimeDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ordi.AMOUNT, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ordi.DISCOUNT, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ordi.CASH, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ordi.CHANGE, AmountDelegate(self))
         # mapper mappings
-        self.mapper.addMapping(self.ui.lineEditCashDesk, CASHDESK)
-        self.mapper.addMapping(self.ui.spinBoxNumber, NUMBER)
-        self.mapper.addMapping(self.ui.dateEditDate, DATE)
-        self.mapper.addMapping(self.ui.timeEditTime, TIME)
+        self.mapper.addMapping(self.ui.lineEditCashDesk, ordh.CASH_DESK)
+        self.mapper.addMapping(self.ui.spinBoxNumber, ordh.NUMBER)
+        self.mapper.addMapping(self.ui.dateEditDate, ordh.DATE)
+        self.mapper.addMapping(self.ui.timeEditTime, ordh.TIME)
         self.ui.comboBoxDelivery.setItemList((('T', _tr('OrderArchive', 'Table')),
                                               ('A', _tr('OrderArchive', 'Take-away'))))
-        self.mapper.addMapping(self.ui.checkBoxElectronicPayment, EP)
-        self.mapper.addMapping(self.ui.checkBoxWebOrder, FW)
-        self.mapper.addMapping(self.ui.comboBoxDelivery, DELIVERY, b"modelDataStr")
-        self.mapper.addMapping(self.ui.lineEditTableNumber, TABLE)
-        self.mapper.addMapping(self.ui.spinBoxCovers, COVERS)
-        self.mapper.addMapping(self.ui.doubleSpinBoxTotalAmount, AMOUNT, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.doubleSpinBoxDiscount, DISCOUNT, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.doubleSpinBoxCash, CASH, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.doubleSpinBoxChange, CHANGE, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.lineEditCustomerName, CUSTOMER)
-        self.mapper.addMapping(self.ui.lineEditCustomerContact, CONTACT)
+        self.mapper.addMapping(self.ui.checkBoxElectronicPayment, ordh.EP)
+        self.mapper.addMapping(self.ui.checkBoxWebOrder, ordh.WO)
+        self.mapper.addMapping(self.ui.comboBoxDelivery, ordh.DELIVERY, b"modelDataStr")
+        self.mapper.addMapping(self.ui.lineEditTableNumber, ordh.TABLE)
+        self.mapper.addMapping(self.ui.spinBoxCovers, ordh.COVERS)
+        self.mapper.addMapping(self.ui.doubleSpinBoxTotalAmount, ordh.AMOUNT, b"modelDataDecimal")
+        self.mapper.addMapping(self.ui.doubleSpinBoxDiscount, ordh.DISCOUNT, b"modelDataDecimal")
+        self.mapper.addMapping(self.ui.doubleSpinBoxCash, ordh.CASH, b"modelDataDecimal")
+        self.mapper.addMapping(self.ui.doubleSpinBoxChange, ordh.CHANGE, b"modelDataDecimal")
+        self.mapper.addMapping(self.ui.lineEditCustomerName, ordh.CUSTOMER)
+        self.mapper.addMapping(self.ui.lineEditCustomerContact, ordh.CONTACT)
         self.ui.comboBoxStatus.setItemList((('A', _tr('OrderArchive', 'Acquired')),
                                                 ('I', _tr('OrderArchive', 'In progress')),
                                                 ('P', _tr('OrderArchive', 'Processed'))))
-        self.mapper.addMapping(self.ui.comboBoxStatus, STATUS, b"modelDataStr")
-        self.mapper.addMapping(self.ui.dateTimeEditFullfillment, FULFILLMENT, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.comboBoxStatus, ordh.STATUS, b"modelDataStr")
+        self.mapper.addMapping(self.ui.dateTimeEditFullfillment, ordh.FULFILLMENT, b"modelDataDateTime")
         # details tableView
         self.ui.tableViewDetails.setModel(modelDet)
         self.ui.tableViewDetails.setLayoutName('OrderArchiveDetail')
-        self.ui.tableViewDetails.setItemDelegateForColumn(D_ITEM, RelationDelegate(self, item_all_lookup))
-        self.ui.tableViewDetails.setItemDelegateForColumn(D_QUANTITY, QuantityDelegate(self))
-        self.ui.tableViewDetails.setItemDelegateForColumn(D_PRICE, AmountDelegate(self))
-        self.ui.tableViewDetails.setItemDelegateForColumn(D_AMOUNT, AmountDelegate(self))
+        self.ui.tableViewDetails.setItemDelegateForColumn(ordd.ITEM, RelationDelegate(self, item_all_lookup))
+        self.ui.tableViewDetails.setItemDelegateForColumn(ordd.QUANTITY, QuantityDelegate(self))
+        self.ui.tableViewDetails.setItemDelegateForColumn(ordd.PRICE, AmountDelegate(self))
+        self.ui.tableViewDetails.setItemDelegateForColumn(ordd.AMOUNT, AmountDelegate(self))
         # details department treeView
         self.ui.treeViewDepartmentDetails.setModel(modelTreeDep)
         self.ui.treeViewDepartmentDetails.setItemDelegate(GenericDelegate(self))
-        self.ui.treeViewDepartmentDetails.header().resizeSection(M_DEP, 250) # department
-        self.ui.treeViewDepartmentDetails.header().resizeSection(M_ITEM, 300) # item
-        self.ui.treeViewDepartmentDetails.header().resizeSection(M_VARIANTS, 300) # variants
-        self.ui.treeViewDepartmentDetails.setItemDelegateForColumn(M_QUANTITY, QuantityDelegate(self))
-        self.ui.treeViewDepartmentDetails.hideColumn(M_PARENT)
-        self.ui.treeViewDepartmentDetails.hideColumn(M_CHILD)
+        self.ui.treeViewDepartmentDetails.header().resizeSection(orddd.DEPARTMENT, 250) # department
+        self.ui.treeViewDepartmentDetails.header().resizeSection(orddd.ITEM, 300) # item
+        self.ui.treeViewDepartmentDetails.header().resizeSection(orddd.VARIANTS, 300) # variants
+        self.ui.treeViewDepartmentDetails.setItemDelegateForColumn(orddd.QUANTITY, QuantityDelegate(self))
+        self.ui.treeViewDepartmentDetails.hideColumn(orddd.PARENT)
+        self.ui.treeViewDepartmentDetails.hideColumn(orddd.CHILD)
         # header department tableView
         self.ui.tableViewDepartmentHeader.setModel(modelHeaDep)
         self.ui.tableViewDepartmentHeader.setLayoutName('OrderArchiveDepartment')
-        self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(P_DEPARTMENT, RelationDelegate(self, department_lookup))
+        self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(orddd.DEPARTMENT, RelationDelegate(self, department_lookup))
         # store setting on form creation
         self.setting = Setting()
         # enable/disable widget satus
@@ -244,7 +310,7 @@ class OrderForm(FormIndexManager):
         # PRINT ORDER
         setting = Setting()
         # get order id
-        ti = self.model.data(self.model.index(self.mapper.currentIndex(), ID))
+        ti = self.model.data(self.model.index(self.mapper.currentIndex(), ordh.ID))
         # customer copy
         if self.ui.checkBoxPrintCustomerCopy.isChecked():
             printer = get_printer_name(setting['customer_printer_class'], session['hostname'])

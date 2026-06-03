@@ -28,6 +28,7 @@ This module provides items form management
 """
 
 # standard library
+from enum import IntEnum
 import logging
 from typing import cast
 from typing import Any
@@ -73,19 +74,92 @@ from App.Ui.ChooseItemDialog import Ui_ChooseItemDialog
 # logger
 logger = logging.getLogger(__name__)
 
-(I_ID, I_TYPE, I_DESCRIPTION, I_DEPARTMENT, I_SORTING, I_ROW, I_COLUMN,
- I_NORMALTXTCOLOR, I_NORMALBCKCOLOR, I_STOCK, I_UNLOAD, I_VARIANTS, I_KITPART, I_MENUPART,
- I_SALABLE, I_WEBAVAILABLE, I_WEBSORTING, I_OBSOLETE,
- I_USER_INS, I_DATE_INS, I_USER_UPD, I_DATE_UPD) = range(22)
 
-(ID, TYPE, DESCRIPTION, CUSTOMER_DESCRIPTION, DEPARTMENT, SORTING, ROW, COLUMN,
- NORMALTXTCOLOR, NORMALBCKCOLOR, STOCK, DELIVERED, VARIANTS, KITPART, MENUPART,
- SALABLE, WEBAVAILABLE, WEBSORTING, OBSOLETE) = range(19)
+class iti(IntEnum): # item index
+    ID            = 0
+    TYPE          = 1
+    DESCRIPTION   = 2
+    DEPARTMENT    = 3
+    SORTING       = 4
+    ROW           = 5
+    COLUMN        = 6
+    TXT_COLOR     = 7
+    BCK_COLOR     = 8
+    STOCK         = 9
+    UNLOAD        = 10
+    VARIANTS      = 11
+    KIT_PART      = 12
+    MENU_PART     = 13
+    SALABLE       = 14
+    WEB_AVAILABLE = 15
+    WEB_SORTING   = 16
+    OBSOLETE      = 17
+    USER_INS      = 18
+    DATE_INS      = 19
+    USER_UPD      = 20
+    DATE_UPD      = 21
 
-(VID, VITEM, VDESC, VSORT, VPRICE, VUINS, VDINS, VUUPG, VDUPG) = range(9)
-(KID, KKIT, KPART, KQTA, KUINS, KDINS, KUUPG, KDUPG) = range(8)
-(MID, MMENU, MPART, MQTA, MUINS, MDINS, MUUPG, MDUPG) = range(8)
-(PID, PLIST, PITEM, PPRICE, PUINS, PDINS, PUUPG, PDUPG) = range(8)
+class itm(IntEnum): # item
+    ID            = 0
+    TYPE          = 1
+    DESCRIPTION   = 2
+    CUSTOMER_DESC = 3
+    DEPARTMENT    = 4
+    SORTING       = 5
+    ROW           = 6
+    COLUMN        = 7
+    TXT_COLOR     = 8
+    BCK_COLOR     = 9
+    STOCK         = 10
+    DELIVERED     = 11
+    VARIANTS      = 12
+    KIT_PART      = 13
+    MENU_PART     = 14
+    SALABLE       = 15
+    WEB_AVAILABLE = 16
+    WEB_SORTING   = 17
+    OBSOLETE      = 18
+
+class vnt(IntEnum): # variant
+    ID            = 0
+    ITEM          = 1
+    DESC          = 2
+    SORT          = 3
+    PRICE         = 4
+    USER_INS      = 5
+    DATE_INS      = 6
+    USER_UPD      = 7
+    DATE_UPD      = 8
+    
+class kit(IntEnum): # kit part
+    ID            = 0
+    KIT           = 1 
+    PART          = 2 
+    QTA           = 3
+    USER_INS      = 4 
+    DATE_INS      = 5
+    USER_UPD      = 6
+    DATE_UPD      = 7
+    
+class men(IntEnum): # menu part
+    ID            = 0
+    MENU          = 1
+    PART          = 2
+    QTA           = 3
+    USER_INS      = 4
+    DATE_INS      = 5
+    USER_UPD      = 6
+    DATE_UPD      = 7
+    
+class prc(IntEnum): # price
+    ID            = 0
+    LIST          = 1
+    ITEM          = 2
+    PRICE         = 3 
+    USER_INS      = 4
+    DATE_INS      = 5
+    USER_UPD      = 6
+    DATE_UPD      = 7
 
 TABVAR, TABCOM, TABMEN, TABPRI = range(4)
 
@@ -132,10 +206,10 @@ class ItemForm(FormIndexManager):
         modelm = MenuPartModel(self)
         modelp = PriceListItemModel(self)
         self.setModel(model, idxModel)
-        self.addDetailRelation(modelv, ID, VITEM)
-        self.addDetailRelation(modelk, ID, KKIT)
-        self.addDetailRelation(modelm, ID, MMENU)
-        self.addDetailRelation(modelp, ID, PITEM)
+        self.addDetailRelation(modelv, itm.ID, vnt.ITEM)
+        self.addDetailRelation(modelk, itm.ID, kit.KIT)
+        self.addDetailRelation(modelm, itm.ID, men.MENU)
+        self.addDetailRelation(modelp, itm.ID, prc.ITEM)
         self.tabName = title
         self.helpLink = None
         # available status
@@ -164,53 +238,53 @@ class ItemForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('ItemIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(I_TYPE, RelationDelegate(self, itemType))
-        self.ui.tableView.setItemDelegateForColumn(I_DEPARTMENT, RelationDelegate(self, department_lookup))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALBCKCOLOR, ColorComboDelegate(self, 
+        self.ui.tableView.setItemDelegateForColumn(iti.TYPE, RelationDelegate(self, itemType))
+        self.ui.tableView.setItemDelegateForColumn(iti.DEPARTMENT, RelationDelegate(self, department_lookup))
+        self.ui.tableView.setItemDelegateForColumn(iti.BCK_COLOR, ColorComboDelegate(self, 
                                                                                         cast(list[Any], [(self.setting['normal_background_color'] or '', _tr('Item', 'default'))] 
                                                                                         + COLORS)))
-        self.ui.tableView.setItemDelegateForColumn(I_NORMALTXTCOLOR, ColorComboDelegate(self, 
+        self.ui.tableView.setItemDelegateForColumn(iti.TXT_COLOR, ColorComboDelegate(self, 
                                                                                         cast(list[Any], [(self.setting['normal_text_color'] or '', _tr('Item', 'default'))] 
                                                                                         + COLORS)))
         # mapper mappings
         self.ui.comboBoxType.setFunction(itemType)
-        self.mapper.addMapping(self.ui.comboBoxType, TYPE)
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.lineEditCustomerDescription, CUSTOMER_DESCRIPTION)
+        self.mapper.addMapping(self.ui.comboBoxType, itm.TYPE)
+        self.mapper.addMapping(self.ui.lineEditDescription, itm.DESCRIPTION)
+        self.mapper.addMapping(self.ui.lineEditCustomerDescription, itm.CUSTOMER_DESC)
         self.ui.comboBoxDepartment.setFunction(department_lookup)
-        self.mapper.addMapping(self.ui.comboBoxDepartment, DEPARTMENT)
-        self.mapper.addMapping(self.ui.spinBoxRow, ROW)
-        self.mapper.addMapping(self.ui.spinBoxColumn, COLUMN)
-        self.mapper.addMapping(self.ui.spinBoxSorting, SORTING)
-        self.mapper.addMapping(self.ui.comboBoxNormalTextColor, NORMALTXTCOLOR)
-        self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, NORMALBCKCOLOR)
-        self.mapper.addMapping(self.ui.checkBoxVariants, VARIANTS)
-        self.mapper.addMapping(self.ui.checkBoxInventoryControl, STOCK)
-        self.mapper.addMapping(self.ui.checkBoxDeliveredControl, DELIVERED)
-        self.mapper.addMapping(self.ui.checkBoxKitPart, KITPART)
-        self.mapper.addMapping(self.ui.checkBoxMenuPart, MENUPART)
-        self.mapper.addMapping(self.ui.checkBoxSalable, SALABLE)
-        self.mapper.addMapping(self.ui.checkBoxWebAvailable, WEBAVAILABLE)
-        self.mapper.addMapping(self.ui.spinBoxWebSorting, WEBSORTING)
-        self.mapper.addMapping(self.ui.checkBoxObsolete, OBSOLETE)
+        self.mapper.addMapping(self.ui.comboBoxDepartment, itm.DEPARTMENT)
+        self.mapper.addMapping(self.ui.spinBoxRow, itm.ROW)
+        self.mapper.addMapping(self.ui.spinBoxColumn, itm.COLUMN)
+        self.mapper.addMapping(self.ui.spinBoxSorting, itm.SORTING)
+        self.mapper.addMapping(self.ui.comboBoxNormalTextColor, itm.TXT_COLOR)
+        self.mapper.addMapping(self.ui.comboBoxNormalBackgroundColor, itm.BCK_COLOR)
+        self.mapper.addMapping(self.ui.checkBoxVariants, itm.VARIANTS)
+        self.mapper.addMapping(self.ui.checkBoxInventoryControl, itm.STOCK)
+        self.mapper.addMapping(self.ui.checkBoxDeliveredControl, itm.DELIVERED)
+        self.mapper.addMapping(self.ui.checkBoxKitPart, itm.KIT_PART)
+        self.mapper.addMapping(self.ui.checkBoxMenuPart, itm.MENU_PART)
+        self.mapper.addMapping(self.ui.checkBoxSalable, itm.SALABLE)
+        self.mapper.addMapping(self.ui.checkBoxWebAvailable, itm.WEB_AVAILABLE)
+        self.mapper.addMapping(self.ui.spinBoxWebSorting, itm.WEB_SORTING)
+        self.mapper.addMapping(self.ui.checkBoxObsolete, itm.OBSOLETE)
         # tabwidget tabs and tableview
         self.ui.tableViewVariants.setModel(modelv)
         self.ui.tableViewVariants.setLayoutName('ItemVariant')
-        self.ui.tableViewVariants.setItemDelegateForColumn(VPRICE, AmountDelegate(self))
-        self.ui.tableViewVariants.setItemDelegateForColumn(VDESC, GenericDelegate(self))
-        self.ui.tableViewVariants.setItemDelegateForColumn(VSORT, GenericDelegate(self))
+        self.ui.tableViewVariants.setItemDelegateForColumn(vnt.PRICE, AmountDelegate(self))
+        self.ui.tableViewVariants.setItemDelegateForColumn(vnt.DESC, GenericDelegate(self))
+        self.ui.tableViewVariants.setItemDelegateForColumn(vnt.SORT, GenericDelegate(self))
         self.ui.tableViewComponents.setModel(modelk)
         self.ui.tableViewComponents.setLayoutName('ItemComponent')
-        self.ui.tableViewComponents.setItemDelegateForColumn(KPART, RelationDelegate(self, kit_part_lookup))
-        self.ui.tableViewComponents.setItemDelegateForColumn(KQTA, QuantityDelegate(self))
+        self.ui.tableViewComponents.setItemDelegateForColumn(kit.PART, RelationDelegate(self, kit_part_lookup))
+        self.ui.tableViewComponents.setItemDelegateForColumn(kit.QTA, QuantityDelegate(self))
         self.ui.tableViewMenuItems.setModel(modelm)
         self.ui.tableViewMenuItems.setLayoutName('ItemMenu')
-        self.ui.tableViewMenuItems.setItemDelegateForColumn(MPART, RelationDelegate(self, menu_part_lookup))
-        self.ui.tableViewMenuItems.setItemDelegateForColumn(MQTA, QuantityDelegate(self))
+        self.ui.tableViewMenuItems.setItemDelegateForColumn(men.PART, RelationDelegate(self, menu_part_lookup))
+        self.ui.tableViewMenuItems.setItemDelegateForColumn(men.QTA, QuantityDelegate(self))
         self.ui.tableViewPrices.setModel(modelp)
         self.ui.tableViewPrices.setLayoutName('ItemPrice')
-        self.ui.tableViewPrices.setItemDelegateForColumn(PLIST, RelationDelegate(self, price_list_lookup))
-        self.ui.tableViewPrices.setItemDelegateForColumn(PPRICE, AmountDelegate(self))
+        self.ui.tableViewPrices.setItemDelegateForColumn(prc.LIST, RelationDelegate(self, price_list_lookup))
+        self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, AmountDelegate(self))
         # self.toFirst() not here because we need to set models first
         self.ui.checkBoxVariants.stateChanged.connect(self.hasVariantsStateChanged)
         self.ui.pushButtonCopyVariants.clicked.connect(self.copyVariants)
@@ -218,7 +292,6 @@ class ItemForm(FormIndexManager):
         self.ui.checkBoxSalable.toggled.connect(self.salableToggled)
         self.ui.checkBoxWebAvailable.toggled.connect(self.ui.spinBoxWebSorting.setEnabled)
         # set colors
-        #self.ui.comboBoxNormalTextColor.setColorList([(setting['normal_text_color'], _tr('Item', 'default'))] + COLORS)
         self.ui.comboBoxNormalTextColor.setColorList(COLORS)
         self.ui.comboBoxNormalTextColor.setCurrentColor(self.setting['normal_text_color'])
         self.ui.comboBoxNormalBackgroundColor.setColorList(COLORS)
@@ -276,9 +349,9 @@ class ItemForm(FormIndexManager):
         for so, (vd, pd) in enumerate(get_variants(dlg.ui.comboBoxItems.currentData()), 1):
             model.insertRows(model.rowCount(), 1)
             modelRow = model.rowCount() - 1
-            model.setData(model.index(modelRow, VDESC), vd)
-            model.setData(model.index(modelRow, VSORT), so)
-            model.setData(model.index(modelRow, VPRICE), pd)
+            model.setData(model.index(modelRow, vnt.DESC), vd)
+            model.setData(model.index(modelRow, vnt.SORT), so)
+            model.setData(model.index(modelRow, vnt.PRICE), pd)
 
     def itemTypeChanged(self, index):
         if self.ui.comboBoxType.modelDataStr == 'K':

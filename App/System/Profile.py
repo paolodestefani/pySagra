@@ -28,6 +28,7 @@ Management of user profiles
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -63,9 +64,15 @@ from App.Ui.DuplicateDialog import Ui_DuplicateDialog
 logger = logging.getLogger(__name__)
 
 
-CODE, DESCRIPTION, SYSTEM = range(3)
+class prf(IntEnum):
+    CODE        = 0
+    DESCRIPTION = 1
+    SYSTEM      = 2
 
-PROFILE, ACTION, AUTHORIZATION = range(3)
+class pac(IntEnum):
+    PROFILE         = 0
+    ACTION          = 1
+    AUTHORIZATION   = 2
 
 
 def authorizations() -> tuple[tuple[str, str], ...]:
@@ -135,9 +142,9 @@ class ProfileForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('ProfileIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.mapper.addMapping(self.ui.lineEditCode, CODE)
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
+        self.mapper.addMapping(self.ui.lineEditCode, prf.CODE)
+        self.mapper.addMapping(self.ui.lineEditDescription, prf.DESCRIPTION)
+        self.mapper.addMapping(self.ui.checkBoxSystem, prf.SYSTEM)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -145,8 +152,8 @@ class ProfileForm(FormIndexManager):
         self.ui.tableViewActions.setModel(paModel)
         self.ui.tableViewActions.setLayoutName('ProfileAction')
         #self.ui.tableViewActions.setLayout()
-        self.ui.tableViewActions.setItemDelegateForColumn(ACTION, ActionDelegate(self))
-        self.ui.tableViewActions.setItemDelegateForColumn(AUTHORIZATION, RelationDelegate(self, authorizations))
+        self.ui.tableViewActions.setItemDelegateForColumn(pac.ACTION, ActionDelegate(self))
+        self.ui.tableViewActions.setItemDelegateForColumn(pac.AUTHORIZATION, RelationDelegate(self, authorizations))
         # authorization button group
         self.buttonGroup = QButtonGroup(self)
         self.buttonGroup.addButton(self.ui.pushButtonRead)
@@ -162,14 +169,14 @@ class ProfileForm(FormIndexManager):
     def fillActions(self) -> None:
         "Fill actions table view with all actions not already in"
         model = self.ui.tableViewActions.model()
-        current = {model.data(model.index(i, ACTION)) for i in range(model.rowCount())}
+        current = {model.data(model.index(i, pac.ACTION)) for i in range(model.rowCount())}
         actions = {i for i in actionDefinition}
         difference = actions - current
         for i in difference:
             model.insertRow(model.rowCount())
             modelRow = model.rowCount() - 1
-            model.setData(model.index(modelRow, ACTION), i)
-            model.setData(model.index(modelRow, AUTHORIZATION), 'X')
+            model.setData(model.index(modelRow, pac.ACTION), i)
+            model.setData(model.index(modelRow, pac.AUTHORIZATION), 'X')
 
     def authorizationButtonClicked(self, button: QPushButton) -> None:
         "Set all action to read/write/execute"
@@ -181,7 +188,7 @@ class ProfileForm(FormIndexManager):
             auth = 'X'
         model = self.ui.tableViewActions.model()
         for row in range(model.rowCount()):
-            model.setData(model.index(row, AUTHORIZATION), auth)
+            model.setData(model.index(row, pac.AUTHORIZATION), auth)
 
     def delete(self) -> None:
         "Delete current profile"
@@ -236,7 +243,7 @@ class ProfileForm(FormIndexManager):
 
     def duplicate(self) -> None:
         "Duplicate the current profile"
-        currentProfile = self.model.index(self.mapper.currentIndex(), CODE).data()
+        currentProfile = self.model.index(self.mapper.currentIndex(), prf.CODE).data()
         dlg = DuplicateProfileDialog(self, currentProfile)
         dlg.exec()
         self.reload()

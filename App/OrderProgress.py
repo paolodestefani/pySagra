@@ -28,6 +28,7 @@ This module provides a dialog for manage order progress
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -58,7 +59,18 @@ from App.Core.ExceptionHandler import gui_exception_context
 # logger
 logger = logging.getLogger(__name__)
 
-ID, BARCODE, NUM, DATE, TIME, DELIVERY, TABLE, CUSTOMER, DEPARTMENT, FULFILLMENT = range(10)
+
+class ordp(IntEnum):
+    ID          = 0
+    BARCODE     = 1
+    NUMBER      = 2
+    DATE        = 3
+    TIME        = 4
+    DELIVERY    = 5
+    TABLE       = 6
+    CUSTOMER    = 7
+    DEPARTMENT  = 8
+    FULFILLMENT = 9
 
 
 
@@ -218,37 +230,37 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.tableWidgetScans.insertRow(row)
         cell = QTableWidgetItem(str(ohdid))
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, ID, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.ID, cell)
         cell = QTableWidgetItem(barcode)
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, BARCODE, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.BARCODE, cell)
         cell = QTableWidgetItem(str(onum))
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, NUM, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.NUMBER, cell)
         cell = QTableWidgetItem(odate.toString())
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, DATE, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.DATE, cell)
         cell = QTableWidgetItem(otime.toString())
         cell.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, TIME, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.TIME, cell)
         cell = QTableWidgetItem(odelivery)
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
         cell.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.ui.tableWidgetScans.setItem(row, DELIVERY, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.DELIVERY, cell)
         cell = QTableWidgetItem(otable)
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, TABLE, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.TABLE, cell)
         cell = QTableWidgetItem(ocustomer)
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, CUSTOMER, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.CUSTOMER, cell)
         cell = QTableWidgetItem(odepdesc)
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, DEPARTMENT, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.DEPARTMENT, cell)
         # datetime shows is current because apdated anyway even if already processed
         dt = session['qlocale'].toString(QDateTime.currentDateTime(), QLocale.FormatType.ShortFormat)
         cell = QTableWidgetItem(dt)
         cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        self.ui.tableWidgetScans.setItem(row, FULFILLMENT, cell)
+        self.ui.tableWidgetScans.setItem(row, ordp.FULFILLMENT, cell)
         self.ui.tableWidgetScans.scrollToBottom()
         self.updateFilterConditions()
 
@@ -257,7 +269,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         row = self.ui.tableWidgetScans.currentRow()
         if row < 0: # no row selected
             return
-        orderId = int(self.ui.tableWidgetScans.item(row, ID).data(Qt.EditRole))
+        orderId = int(self.ui.tableWidgetScans.item(row, ordp.ID).data(Qt.EditRole))
         if orderId < 0:  # no item selected
             return
         if QMessageBox.question(self,

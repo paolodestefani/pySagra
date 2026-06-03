@@ -28,9 +28,9 @@ Python scripting management
 """
 
 # standard library
+from enum import IntEnum
 import zipfile
 import logging
-import re
 from typing import cast
 
 # PySide6
@@ -138,9 +138,20 @@ SCRIPTABLE = {'CashDeskForm': ['__init__',
                                  'apply',
                                  'accept']}
 
-(ID, CLASS, METHOD, TRIGGER, DESCRIPTION, NOTE,
- COMPANY, ACTIVE, SCRIPT, 
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(13)
+class scr(IntEnum):
+    ID          = 0 
+    CLASS       = 1
+    METHOD      = 2
+    TRIGGER     = 3
+    DESCRIPTION = 4
+    NOTE        = 5
+    COMPANY     = 6
+    ACTIVE      = 7
+    SCRIPT      = 8
+    USER_INS    = 9
+    DATE_INS    = 10
+    USER_UPD    = 11
+    DATE_UPD    = 12
 
 
 def runOptions() -> list[tuple[str, str]]:
@@ -186,15 +197,15 @@ class ScriptingForm(FormIndexManager):
         self.ui.comboBoxClass.addItems(list(SCRIPTABLE.keys()))
         self.ui.comboBoxCompany.setItemList(company_list())
         # field mapping
-        self.mapper.addMapping(self.ui.comboBoxClass, CLASS)
-        self.mapper.addMapping(self.ui.comboBoxMethod, METHOD)
+        self.mapper.addMapping(self.ui.comboBoxClass, scr.CLASS)
+        self.mapper.addMapping(self.ui.comboBoxMethod, scr.METHOD)
         self.ui.comboBoxTrigger.setItemList(runOptions())
-        self.mapper.addMapping(self.ui.comboBoxTrigger, TRIGGER)#, b"modelDataStr")
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.plainTextEditNote, NOTE)
-        self.mapper.addMapping(self.ui.comboBoxCompany, COMPANY, b"modelDataInt")#, b"modelDataStr")
-        self.mapper.addMapping(self.ui.checkBoxActive, ACTIVE)
-        self.mapper.addMapping(self.ui.textEditScript, SCRIPT)#, b"plainText")
+        self.mapper.addMapping(self.ui.comboBoxTrigger, scr.TRIGGER)#, b"modelDataStr")
+        self.mapper.addMapping(self.ui.lineEditDescription, scr.DESCRIPTION)
+        self.mapper.addMapping(self.ui.plainTextEditNote, scr.NOTE)
+        self.mapper.addMapping(self.ui.comboBoxCompany, scr.COMPANY, b"modelDataInt")#, b"modelDataStr")
+        self.mapper.addMapping(self.ui.checkBoxActive, scr.ACTIVE)
+        self.mapper.addMapping(self.ui.textEditScript, scr.SCRIPT)#, b"plainText")
         # set font
         st = QSettings()
         self.editorFont: QFont = cast(QFont, st.value("Scripting/EditorFont", QFont('Courier', 8), type=QFont))
@@ -283,20 +294,20 @@ class ScriptingForm(FormIndexManager):
         row = self.mapper.currentIndex()
         # looks like zipfile accept qt file path with / so no need to use os.path.join
         fileName = (f"{directory}/"
-                    f"{self.model.index(row, COMPANY).data()}"
-                    f"_{self.model.index(row, CLASS).data()}"
-                    f"_{self.model.index(row, METHOD).data()}"
-                    f"_{self.model.index(row, TRIGGER).data()}"
+                    f"{self.model.index(row, scr.COMPANY).data()}"
+                    f"_{self.model.index(row, scr.CLASS).data()}"
+                    f"_{self.model.index(row, scr.METHOD).data()}"
+                    f"_{self.model.index(row, scr.TRIGGER).data()}"
                     f".scp.zip")
         with gui_exception_context(self,
                        _tr('Scripting', "Saving current script to file")):
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
-                zf.writestr('class', self.model.index(row, CLASS).data())
-                zf.writestr('method', self.model.index(row, METHOD).data())
-                zf.writestr('trigger', self.model.index(row, TRIGGER).data())
-                zf.writestr('active', str(self.model.index(row, ACTIVE).data()))
-                zf.writestr('company', str(self.model.index(row, COMPANY).data()))
-                zf.writestr('pyscript', self.model.index(row, SCRIPT).data())
+                zf.writestr('class', self.model.index(row, scr.CLASS).data())
+                zf.writestr('method', self.model.index(row, scr.METHOD).data())
+                zf.writestr('trigger', self.model.index(row, scr.TRIGGER).data())
+                zf.writestr('active', str(self.model.index(row, scr.ACTIVE).data()))
+                zf.writestr('company', str(self.model.index(row, scr.COMPANY).data()))
+                zf.writestr('pyscript', self.model.index(row, scr.SCRIPT).data())
         
             msg = _tr('Scripting', "Current script saved to file:")
             QMessageBox.information(self,

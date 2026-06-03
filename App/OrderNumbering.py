@@ -29,6 +29,7 @@ This module is used to manage order number options
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -51,8 +52,17 @@ from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
 # logger
 logger = logging.getLogger(__name__)
 
-(ID, EVENT, EVENT_DATE, DAY_PART, CURRENT_VALUE,
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(9)
+
+class ordn(IntEnum):
+    ID = 0
+    EVENT = 1
+    EVENT_DATE = 2
+    DAY_PART = 3
+    CURRENT_VALUE = 4
+    USER_INS = 5
+    DATE_INS = 6
+    USER_UPD = 7
+    DATE_UPD = 8
 
 
 def orderNumbering(action: QAction, checked: bool = False) -> None:
@@ -85,7 +95,7 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('OrderNumbering')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_lookup))
+        self.ui.tableView.setItemDelegateForColumn(ordn.EVENT, RelationDelegate(self, event_lookup))
         # event filter overwrite standard sort and filter dialog
         self.sortFilterDialog = EventFilterDialog(self, show_date = True, show_daypart = True) # type: ignore
         # scripting init
@@ -111,7 +121,7 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         super().new()
         model = self.ui.tableView.model()
         row = model.rowCount() -1
-        index = model.index(row, EVENT)
+        index = model.index(row, ordn.EVENT)
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 

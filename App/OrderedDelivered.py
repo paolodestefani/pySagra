@@ -29,6 +29,7 @@ This module provide ordered delivered form management
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -54,7 +55,15 @@ from App.Core.L10n import _tr
 # logger
 logger = logging.getLogger(__name__)
 
-EVENT, DATE, DAY_PART, ITEM, ITEM_DESCRIPTION, ORDERED, DELIVERED = range(7)
+
+class ord(IntEnum):
+    EVENT       = 0
+    DATE        = 1
+    DAY_PART    = 2
+    ITEM        = 3
+    ITEM_DESC   = 4
+    ORDERED     = 5
+    DELIVERED   = 6
 
 
 def dayPartMapping():
@@ -94,10 +103,10 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.ui.tableView.activateWindow()
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
-        self.ui.tableView.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_lookup))
-        self.ui.tableView.setItemDelegateForColumn(DAY_PART, RelationDelegate(self, dayPartMapping))
-        self.ui.tableView.setItemDelegateForColumn(ORDERED, QuantityDelegate(self, bold=True))
-        self.ui.tableView.setItemDelegateForColumn(DELIVERED, QuantityDelegate(self, bold=True))
+        self.ui.tableView.setItemDelegateForColumn(ord.EVENT, RelationDelegate(self, event_lookup))
+        self.ui.tableView.setItemDelegateForColumn(ord.DAY_PART, RelationDelegate(self, dayPartMapping))
+        self.ui.tableView.setItemDelegateForColumn(ord.ORDERED, QuantityDelegate(self, bold=True))
+        self.ui.tableView.setItemDelegateForColumn(ord.DELIVERED, QuantityDelegate(self, bold=True))
         # initial filtering
         self.sortFilterDialog = EventFilterDialog(self, show_date = True, show_daypart = True) # type: ignore
         # initial filter conditions to current event

@@ -37,11 +37,13 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtGui import QCursor
 from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDataWidgetMapper
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QTableView
+from PySide6.QtWidgets import QApplication
 
 # application modules
 from App import session
@@ -140,6 +142,8 @@ class FormManager[T](QWidget):
 
     def mapperIndexChanged(self, row: int) -> None:
         "Reload detail relations on main model index change"
+        if row < 0 or not self.model:
+            return
         # cursor wait
         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         # connecting form and tableview causes 2 time execution of this method
@@ -245,88 +249,186 @@ class FormManager[T](QWidget):
         self.state = EDIT
         self.mapper.setCurrentIndex(row) # setCurrentIndex() imply updateEditStatus()
 
+    # def save(self) -> None:
+    #     "Save data to db and commit"
+    #     # 1. Forza il widget attualmente attivo a perdere il focus.
+    #     # Questo costringe l'AutoSubmit ad aggiornare IMMEDIATAMENTE il modello 
+    #     # con l'ultimo testo digitato dall'utente prima di salvare.
+    #     widget_attivo = QApplication.focusWidget()
+    #     if widget_attivo:
+    #         widget_attivo.clearFocus()
+            
+    #     row = self.mapper.currentIndex()
+    #     # this is required on new record otherwise need lost focus on all controls.
+    #     # on update apdate all record not only modified fields
+    #     if not self.mapper.submit():
+    #         QMessageBox.critical(self,
+    #                              _tr("MessageDialog", "Critical"),
+    #                              _tr("Form", "Error on mapper submit"))
+    #         self.mapper.setCurrentIndex(row)
+    #         return
+    #     with gui_exception_context(self, _tr("Form", "Error on model submit all")):
+    #         if hasattr(self.model, 'submitAll'):
+    #             self.model.submitAll()
+    #         self.mapper.setCurrentIndex(row)
+    #         # details data and mapper
+    #         for mapper in self.linkedMappers:
+    #             mapper.submit()
+    #         for relation, masterColumn, detailField in self.detailRelations:
+    #             with gui_exception_context(self, _tr("Form", "Error on model detail submit all")):
+    #                 value = self.model.data(self.model.index(row, masterColumn))
+    #                 if hasattr(relation, 'submitAll'):
+    #                     relation.submitAll(detailField, value)
+    #         # commit transactions
+    #         appconn.commit()
+    #         # mapper repositioning
+    #         self.state = VIEW
+    #         self.mapper.setCurrentIndex(row)
+            
     def save(self) -> None:
         "Save data to db and commit"
+        active_widget = QApplication.focusWidget()
+        if active_widget:
+            active_widget.clearFocus()
+            
         row = self.mapper.currentIndex()
-        # this is required on new record otherwise need lost focus on all controls.
-        # on update apdate all record not only modified fields
         if not self.mapper.submit():
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 _tr("Form", "Error on mapper submit"))
+            QMessageBox.critical(self, _tr("MessageDialog", "Critical"), _tr("Form", "Error on mapper submit"))
             self.mapper.setCurrentIndex(row)
             return
+            
         with gui_exception_context(self, _tr("Form", "Error on model submit all")):
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
+                # NOTA: Se il tuo TableModel non esegue un select/refresh automatico dopo il submitAll,
+                # e la tabella usa ID autoincrementali, ricordati di aggiornare il record qui
+                # es: self.model.select() o un refresh analogo per riallineare i dati generati dal DB.
+
             self.mapper.setCurrentIndex(row)
-            # details data and mapper
+            
             for mapper in self.linkedMappers:
                 mapper.submit()
+                
             for relation, masterColumn, detailField in self.detailRelations:
                 with gui_exception_context(self, _tr("Form", "Error on model detail submit all")):
-                    value = self.model.data(self.model.index(row, masterColumn))
+                    # Recupero sicuro dell'indice
+                    idx = self.model.index(row, masterColumn)
+                    value = self.model.data(idx) if idx.isValid() else None
                     if hasattr(relation, 'submitAll'):
                         relation.submitAll(detailField, value)
-            # commit transactions
+                        
             appconn.commit()
-            # mapper repositioning
             self.state = VIEW
             self.mapper.setCurrentIndex(row)
 
+
+    # def delete(self) -> None:
+    #     "Delete current record and commit"
+    #     row = self.mapper.currentIndex()
+    #     # details data
+    #     for relation, masterColumn, detailColumn in self.detailRelations:
+    #         with gui_exception_context(self, _tr("Form", "Error on model detail submit all")):
+    #             if relation.rowCount() > 0:
+    #                 relation.removeRows(0, relation.rowCount())
+    #                 relation.submitAll()
+
+    #     # master table
+    #     try:
+    #         self.model.removeRow(row)
+    #         row -= 1
+    #     except PyAppDBError as er:
+    #         msg = "Error: {}\n{}".format(er.code, er.message)
+    #         QMessageBox.critical(self,
+    #                              _tr("MessageDialog", "Critical"),
+    #                              msg)
+    #         appconn.rollback()
+    #         return
+    #     try:
+    #         if hasattr(self.model, 'submitAll'):
+    #             self.model.submitAll()
+    #     except PyAppDBError as er:
+    #         if er.code == '23503':
+    #             MessageBoxCritical(self,
+    #                                _tr("Form", "Error on model submit all"),
+    #                                _tr("Form", "Referential integrity violation: "
+    #                                 "unable to delete the current record because "
+    #                                 "is still referenced from another database object"),
+    #                                er.message)
+    #         else:
+    #             MessageBoxCritical(self,
+    #                                _tr("MessageDialog", "Critical"),
+    #                                er.code,
+    #                                er.message)
+    #         appconn.rollback()
+    #         self.reload()
+    #         return
+    #     else:
+    #         appconn.commit()
+
+    #     self.mapper.revert() # mandatory when table is empty
+    #     self.state = VIEW
+    #     # riposition the mapper, index could be invalid if < 0 or > model.rowCount()
+    #     # invalid indexes don't emit currentIndexChanged so we must do a
+    #     # manual updateEditStatus()
+    #     if row < 0: # invalid index/empty table
+    #         self.updateEditStatus()
+    #         return
+    #     if row + 1 > self.model.rowCount(): # index grater then records
+    #         row = self.model.rowCount() - 1
+    #     self.mapper.setCurrentIndex(row) # setCurrentIndex() implies updateEditStatus()
+    #     # NO effect on detail relations, sql relational integrity MUST do that
+        
     def delete(self) -> None:
         "Delete current record and commit"
         row = self.mapper.currentIndex()
-        # details data
+        
+        # Dettagli protetti contro indici vuoti
         for relation, masterColumn, detailColumn in self.detailRelations:
             with gui_exception_context(self, _tr("Form", "Error on model detail submit all")):
-                relation.removeRows(0, relation.rowCount())
-                relation.submitAll()
-        # master table
+                if relation.rowCount() > 0: # Soluzione Punto 2: Evita chiamate a vuoto
+                    relation.removeRows(0, relation.rowCount())
+                    relation.submitAll()
+                    
         try:
             self.model.removeRow(row)
             row -= 1
         except PyAppDBError as er:
             msg = "Error: {}\n{}".format(er.code, er.message)
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 msg)
+            QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
             appconn.rollback()
             return
+            
         try:
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
         except PyAppDBError as er:
             if er.code == '23503':
-                MessageBoxCritical(self,
-                                   _tr("Form", "Error on model submit all"),
-                                   _tr("Form", "Referential integrity violation: "
-                                    "unable to delete the current record because "
-                                    "is still referenced from another database object"),
-                                   er.message)
+                MessageBoxCritical(self, _tr("Form", "Error on model submit all"),
+                                   _tr("Form", "Referential integrity violation..."), er.message)
             else:
-                MessageBoxCritical(self,
-                                   _tr("MessageDialog", "Critical"),
-                                   er.code,
-                                   er.message)
+                MessageBoxCritical(self, _tr("MessageDialog", "Critical"), er.code, er.message)
             appconn.rollback()
             self.reload()
             return
         else:
             appconn.commit()
 
-        self.mapper.revert() # mandatory when table is empty
+        # Soluzione Punto 3: Chiamiamo revert solo se ci sono ancora record nel modello
+        if self.model.rowCount() > 0:
+            self.mapper.revert()
+        else:
+            # Se la tabella è vuota, puliamo visivamente i widget associati al mapper
+            self.mapper.clearMapping() 
+            
         self.state = VIEW
-        # riposition the mapper, index could be invalid if < 0 or > model.rowCount()
-        # invalid indexes don't emit currentIndexChanged so we must do a
-        # manual updateEditStatus()
-        if row < 0: # invalid index/empty table
+        
+        if row < 0: 
             self.updateEditStatus()
             return
-        if row + 1 > self.model.rowCount(): # index grater then records
+        if row + 1 > self.model.rowCount(): 
             row = self.model.rowCount() - 1
-        self.mapper.setCurrentIndex(row) # setCurrentIndex() implies updateEditStatus()
-        # NO effect on detail relations, sql relational integrity MUST do that
+        self.mapper.setCurrentIndex(row)
+
 
     def reload(self) -> None:
         "Undo pending changes and Reload data from db"
@@ -450,10 +552,7 @@ class FormViewManager[T](QWidget):
             return
         total = self.model.rowCount()
         index = self.view.selectionModel().currentIndex()
-        if index:
-            current = index.row() + 1 or - 1  # if index.row() == -1
-        else:
-            current = -1
+        current = (index.row() + 1) if (index and index.isValid()) else -1
 
         if self.state == EDIT:
             currentStatus = EDEDIT + (False,) * 8
@@ -642,6 +741,8 @@ class FormIndexManager[T](QWidget):
         # form mapper
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
+        # vavigation flag
+        self._is_navigating = False 
 
     def setModel(self, model: QAbstractItemModel, indexModel: QueryModel) -> None:
         "Set the main form model and index model, index model can change from filter dialog"
@@ -678,27 +779,73 @@ class FormIndexManager[T](QWidget):
 
     def modelChanged(self) -> None:
         "Update status and navigation on model changed"
+        if self._is_navigating:
+            return
         self.state = EDIT
         self.updateEditStatus()
 
+    # def mapperIndexChanged(self, index: int) -> None:
+    #     "Reload form model and detail relations on mapper index change"
+    #     # cursor wait
+    #     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+    #     #self.blockSignals(True)
+    #     #QGuiApplication.processEvents() # not working...
+    #     if not hasattr(self.model, 'filter'):
+    #         return
+
+    #     self.model.filter(0, self.indexModel.index(index, 0).data())    
+    #     self.mapper.toFirst()
+    #     for relation, masterColumn, detailColumn in self.detailRelations:
+    #         value = self.model.index(self.mapper.currentIndex(), masterColumn).data()
+    #         relation.filter(detailColumn, value)
+        
+    #     self.updateEditStatus()
+    #     # cursor restore
+    #     QGuiApplication.restoreOverrideCursor()
+    
     def mapperIndexChanged(self, index: int) -> None:
         "Reload form model and detail relations on mapper index change"
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        #self.blockSignals(True)
-        #QGuiApplication.processEvents() # not working...
-        if not hasattr(self.model, 'filter'):
+        # Soluzione Punto 2: Interrompi subito se l'indice non è valido o se il modello è vuoto
+        if index < 0 or not self.indexModel or self.indexModel.rowCount() == 0:
             return
 
-        self.model.filter(0, self.indexModel.index(index, 0).data())    
-        self.mapper.toFirst()
-        for relation, masterColumn, detailColumn in self.detailRelations:
-            value = self.model.index(self.mapper.currentIndex(), masterColumn).data()
-            relation.filter(detailColumn, value)
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         
-        self.updateEditStatus()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
+        # Soluzione Punto 1: Attiviamo il blocco per evitare falsi positivi di modifica sui widget
+        self._is_navigating = True
+        
+        try:
+            if not hasattr(self.model, 'filter'):
+                return
+
+            # Recupero sicuro del dato dall'indice
+            model_index = self.indexModel.index(index, 0)
+            if not model_index.isValid():
+                return
+                
+            # Filtra il modello principale di una sola riga
+            self.model.filter(0, model_index.data())    
+            
+            # Sincronizza il secondo mapper sul record unico caricato
+            self.mapper.toFirst()
+            
+            # Carica le relazioni di dettaglio
+            if self.detailRelations:
+                current_row = self.mapper.currentIndex()
+                if current_row >= 0:
+                    for relation, masterColumn, detailColumn in self.detailRelations:
+                        idx_master = self.model.index(current_row, masterColumn)
+                        if idx_master.isValid():
+                            value = idx_master.data()
+                            relation.filter(detailColumn, value)
+            
+            self.updateEditStatus()
+            
+        finally:
+            # Rilasciamo il blocco in ogni caso
+            self._is_navigating = False
+            QGuiApplication.restoreOverrideCursor()
+
 
     def updateEditStatus(self) -> None:
         "Update main window edit status based on current model and mapper index"
@@ -767,35 +914,82 @@ class FormIndexManager[T](QWidget):
         "To last"
         self.indexMapper.toLast()
 
+    # def new(self) -> None:
+    #     "Create a new record on model deleting the current one"
+    #     if isinstance(self.model, QueryModel):
+    #         return
+    #     # enable widget, in case it's disabled)
+    #     if hasattr(self.ui, 'stackedWidget'):
+    #         if self.ui.stackedWidget:
+    #             self.ui.stackedWidget.setEnabled(True)
+    #             # move in the form view
+    #             self.ui.stackedWidget.setCurrentIndex(FORM)
+    #     if hasattr(self.model, 'clearData'):
+    #         self.model.clearData() # delete current data if any
+    #     if not self.model.insertRow(0):
+    #         MessageBoxCritical(self,
+    #                             _tr("MessageDialog", "Critical"),
+    #                             _tr("Form", "Error inserting a new row"))
+    #     self.state = EDIT
+    #     self.mapper.toFirst() # setCurrentIndex() imply updateEditStatus()
+    #     for relation, masterColumn, detailColumn in self.detailRelations:
+    #         value = None
+    #         relation.filter(detailColumn, value)
+    #     self._new = True
+    #     self.updateEditStatus()
+
     def new(self) -> None:
         "Create a new record on model deleting the current one"
         if isinstance(self.model, QueryModel):
             return
-        # enable widget, in case it's disabled)
-        if hasattr(self.ui, 'stackedWidget'):
-            if self.ui.stackedWidget:
-                self.ui.stackedWidget.setEnabled(True)
-                # move in the form view
-                self.ui.stackedWidget.setCurrentIndex(FORM)
-        if hasattr(self.model, 'clearData'):
-            self.model.clearData() # delete current data if any
-        if not self.model.insertRow(0):
-            MessageBoxCritical(self,
-                                _tr("MessageDialog", "Critical"),
-                                _tr("Form", "Error inserting a new row"))
-        self.state = EDIT
-        self.mapper.toFirst() # setCurrentIndex() imply updateEditStatus()
-        for relation, masterColumn, detailColumn in self.detailRelations:
-            value = None
-            relation.filter(detailColumn, value)
+
+        # 1. Attiviamo i flag di sicurezza all'inizio per bloccare i falsi positivi dei widget
         self._new = True
-        self.updateEditStatus()
+        self._is_navigating = True
+
+        try:
+            # Abilita il widget e sposta sulla vista FORM
+            if hasattr(self.ui, 'stackedWidget') and self.ui.stackedWidget:
+                self.ui.stackedWidget.setEnabled(True)
+                self.ui.stackedWidget.setCurrentIndex(FORM)
+
+            # Svuota i dati correnti nel modello a riga singola
+            if hasattr(self.model, 'clearData'):
+                self.model.clearData() 
+
+            # Inserisce la nuova riga in prima posizione
+            if not self.model.insertRow(0):
+                MessageBoxCritical(self,
+                                    _tr("MessageDialog", "Critical"),
+                                    _tr("Form", "Error inserting a new row"))
+                self._new = False
+                return
+
+            self.state = EDIT
+            
+            # Sincronizza il mapper principale sulla riga vuota appena creata
+            self.mapper.toFirst() 
+
+            # Svuota le relazioni di dettaglio passando un filtro nullo
+            for relation, masterColumn, detailColumn in self.detailRelations:
+                relation.filter(detailColumn, None)
+
+        finally:
+            # 2. Rilasciamo il blocco di navigazione ma manteniamo lo stato di editing attivo
+            self._is_navigating = False
+            self.updateEditStatus()
+
 
     def save(self) -> None:
         "Save data to db and commit"
+        active_widget = QApplication.focusWidget()
+        if active_widget:
+            active_widget.clearFocus()
+            
         if isinstance(self.model, QueryModel):
             return
-        # mapper master data
+            
+        # Sottomissione dei dati della form principale
         if not self.mapper.submit():
             QMessageBox.critical(self,
                                  _tr("MessageDialog", "Critical"),
@@ -803,76 +997,186 @@ class FormIndexManager[T](QWidget):
             return
         
         with gui_exception_context(self, _tr("Form", "Master and detail model submit all")):
-            # master data
+            # Salva il record principale (genera l'eventuale ID autoincrementale)
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
-            # details data
+                
+            # Salva i dettagli collegati
             for relation, masterColumn, detailColumn in self.detailRelations:
-                value = self.model.index(0, masterColumn).data()
+                idx = self.model.index(0, masterColumn)
+                value = idx.data() if idx.isValid() else None
                 if hasattr(relation, 'submitAll'):
                     relation.submitAll(detailColumn, value)   
             self.reload()
             self._new = False
             self.state = VIEW
+            
+
+    # def delete(self) -> None:
+    #     "Delete current record and commit. Resets the index mapper to the previous value -1"
+    #     if isinstance(self.model, QueryModel):
+    #         return
+    #     # confirm deletion request BETTER DO THIS IN SUBCLASS
+    #     current_index = self.indexMapper.currentIndex()
+        
+    #     with gui_exception_context(self, _tr("Form", "Master and detail model delete")):
+    #         # details data
+    #         for relation, masterColumn, detailColumn in self.detailRelations:
+    #             relation.removeRows(0, relation.rowCount())
+    #             relation.submitAll()
+    #         # master data
+    #         self.model.removeRow(0)
+    #         if hasattr(self.model, 'submitAll'):
+    #             self.model.submitAll()
+                
+    #     self.reload()
+    #     self.indexMapper.setCurrentIndex(current_index - 1)
+    #     self.state = VIEW
 
     def delete(self) -> None:
         "Delete current record and commit. Resets the index mapper to the previous value -1"
         if isinstance(self.model, QueryModel):
             return
-        # confirm deletion request BETTER DO THIS IN SUBCLASS
+            
         current_index = self.indexMapper.currentIndex()
         
         with gui_exception_context(self, _tr("Form", "Master and detail model delete")):
-            # details data
+            # Dettagli protetti contro tabelle già vuote
             for relation, masterColumn, detailColumn in self.detailRelations:
-                relation.removeRows(0, relation.rowCount())
-                relation.submitAll()
-            # master data
+                if relation.rowCount() > 0:
+                    relation.removeRows(0, relation.rowCount())
+                    relation.submitAll()
+                    
+            # Cancellazione record principale (riga singola 0)
             self.model.removeRow(0)
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
                 
+        # 1. Impostiamo lo stato su VIEW prima di aggiornare i mapper e la UI
+        self.state = VIEW
+        
+        # 2. Ricarica l'indice dal database per rimuovere visivamente il record eliminato
         self.reload()
-        self.indexMapper.setCurrentIndex(current_index - 1)
-        self.state = VIEW
-
-    def reload(self) -> None:
-        "Undo pending changes and Reload data from db. Index mapper is set to the previous value"
-        if not self.indexModel: # no index model currently setted
-            return
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        currentIndex = self.indexMapper.currentIndex() # before first select = -1
-        brc = self.indexModel.rowCount() # before first select = 0
-        #
-        with gui_exception_context(self, _tr("Form", "Form reload")):
-            self.indexModel.revertAll()  # also do a select()
-        #
-        # reposition mapper
-        crc = self.indexModel.rowCount()
-        if currentIndex == -1:
-            self.indexMapper.toFirst()
-        elif crc == 0: # no rows
-            self.mapperIndexChanged(-1)
-            self.mapper.revert()
-        #elif indexRowCount == rc: # same rows of before -> update
-        #    self.indexMapper.setCurrentIndex(currentIndex)
-        #elif indexRowCount < rc: # less rows then before -> delete
-        #    self.indexMapper.setCurrentIndex(currentIndex -1)
-        elif brc < crc: # more rows then before -> insert
-            self.indexMapper.toLast()
-        #    key = self.model.index(0, 0).data() # None on first select and after delete-
-        #    # look for index number of the current id
-        #    for i in range(self.indexModel.rowCount(), -1, -1):
-        #        if self.indexModel.index(i, 0).data() == key:
-        #            break
-        #    self.indexMapper.setCurrentIndex(i)
+        
+        # 3. Riposizionamento sicuro del cursore sull'indice aggiornato
+        nuovo_indice = current_index - 1
+        
+        # Se siamo scesi sotto zero, proviamo a metterci sulla riga 0 (se c'è ancora almeno un record)
+        if nuovo_indice < 0:
+            nuovo_indice = 0
+            
+        # Verifichiamo se il modello ha ancora record dopo l'eliminazione
+        if self.indexModel and self.indexModel.rowCount() > 0:
+            # Se il nuovo indice calcolato supera il totale dei record rimasti, agganciamo l'ultimo
+            if nuovo_indice >= self.indexModel.rowCount():
+                nuovo_indice = self.indexModel.rowCount() - 1
+            self.indexMapper.setCurrentIndex(nuovo_indice)
         else:
-            self.indexMapper.setCurrentIndex(currentIndex)    
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
+            # Se la tabella dell'indice è completamente vuota, svuotiamo il mapper in sicurezza
+            self.indexMapper.toFirst()
+            self.updateEditStatus()
+
+
+    # def reload(self) -> None:
+    #     "Undo pending changes and Reload data from db. Index mapper is set to the previous value"
+    #     if not self.indexModel: # no index model currently setted
+    #         return
+    #     # cursor wait
+    #     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+    #     currentIndex = self.indexMapper.currentIndex() # before first select = -1
+    #     brc = self.indexModel.rowCount() # before first select = 0
+    #     #
+    #     with gui_exception_context(self, _tr("Form", "Form reload")):
+    #         self.indexModel.revertAll()  # also do a select()
+    #     #
+    #     # reposition mapper
+    #     crc = self.indexModel.rowCount()
+    #     if currentIndex == -1:
+    #         self.indexMapper.toFirst()
+    #     elif crc == 0: # no rows
+    #         self.mapperIndexChanged(-1)
+    #         self.mapper.revert()
+    #     #elif indexRowCount == rc: # same rows of before -> update
+    #     #    self.indexMapper.setCurrentIndex(currentIndex)
+    #     #elif indexRowCount < rc: # less rows then before -> delete
+    #     #    self.indexMapper.setCurrentIndex(currentIndex -1)
+    #     elif brc < crc: # more rows then before -> insert
+    #         self.indexMapper.toLast()
+    #     #    key = self.model.index(0, 0).data() # None on first select and after delete-
+    #     #    # look for index number of the current id
+    #     #    for i in range(self.indexModel.rowCount(), -1, -1):
+    #     #        if self.indexModel.index(i, 0).data() == key:
+    #     #            break
+    #     #    self.indexMapper.setCurrentIndex(i)
+    #     else:
+    #         self.indexMapper.setCurrentIndex(currentIndex)    
+    #     # cursor restore
+    #     QGuiApplication.restoreOverrideCursor()
+    #     self.state = VIEW
+    #     self.updateEditStatus()
+    
+    def reload(self) -> None:
+        "Undo pending changes and Reload data from db. Automatically stays on the same or new record"
+        if not self.indexModel: 
+            return
+            
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        
+        # 1. DYNAMIC IDENTIFICATION OF THE PRIMARY KEY COLUMN
+        # If it is not defined, we assume column 0 as the fallback.
+        pk_col = getattr(self.model, 'pkColumn', 0)
+
+        # 2. RECUPERO DELLA CHIAVE PRIMARIA PRIMA DEL REFRESH
+        last_saved_key = None
+        era_nuovo_record = getattr(self, '_new', False)
+        
+        if era_nuovo_record and self.model and self.model.rowCount() > 0:
+            # Nel nuovo record (riga 0 del main model), cerchiamo nella colonna chiave corretta
+            last_saved_key = self.model.index(0, pk_col).data()
+        elif self.indexMapper.currentIndex() >= 0:
+            # Nell'indice, cerchiamo la chiave nella colonna corretta
+            last_saved_key = self.indexModel.index(self.indexMapper.currentIndex(), pk_col).data()
+
+        currentIndex = self.indexMapper.currentIndex() 
         self.state = VIEW
+        
+        with gui_exception_context(self, _tr("Form", "Form reload")):
+            self.indexModel.revertAll()  # Riesegue la select SQL con filtri e ordinamenti
+            
+        crc = self.indexModel.rowCount()
+        
+        # 3. RICERCA SEQUENZIALE SULLA COLONNA CHIAVE REALE
+        riga_trovata = -1
+        if last_saved_key is not None and crc > 0:
+            for i in range(crc):
+                # Confrontiamo i dati sulla colonna pk_col corretta
+                valore_indice = self.indexModel.index(i, pk_col).data()
+                
+                # Usiamo str() per il confronto così siamo immuni alle differenze di tipo (es. intero vs stringa)
+                if str(valore_indice) == str(last_saved_key):
+                    riga_trovata = i
+                    break
+
+        # 4. RIPOSIZIONAMENTO DEL MAPPER
+        if crc == 0:  
+            if hasattr(self.model, 'clearData'):
+                self.model.clearData()
+            self.mapper.revert()
+            self.updateEditStatus()
+            
+        elif riga_trovata >= 0:
+            self.indexMapper.setCurrentIndex(riga_trovata)
+            
+        else:
+            if currentIndex >= crc:
+                currentIndex = crc - 1
+            if currentIndex < 0:
+                currentIndex = 0
+            self.indexMapper.setCurrentIndex(currentIndex)    
+            
+        QGuiApplication.restoreOverrideCursor()
         self.updateEditStatus()
+
 
     def setIndexModel(self, model: QueryModel) -> None:
         self.indexModel = model

@@ -28,6 +28,7 @@ Management of application reports: create, delete and modify of pysagra reports
 """
 
 # standard library
+from enum import IntEnum
 import zipfile
 import logging
 import re
@@ -46,9 +47,6 @@ from PySide6.QtGui import QAction
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QFontMetrics
-from PySide6.QtGui import QColorConstants
-from PySide6.QtGui import QSyntaxHighlighter
-from PySide6.QtGui import QTextCharFormat
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QApplication
@@ -70,7 +68,6 @@ from App.Widget.Dialog import PrintDialog
 from App.Ui.ReportWidget import Ui_ReportWidget
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.L10n import langCountry
 from App.Core.L10n import langCountryFlags
 from App.Core.SyntaxHighlighter import XMLHighlighter
 
@@ -78,10 +75,18 @@ from App.Core.SyntaxHighlighter import XMLHighlighter
 # logger
 logger = logging.getLogger(__name__)
 
-
-V_ID, V_CODE, V_L10N, V_CLASS, V_DESCRIPTION, V_SYSTEM, V_USER_INS, V_DATE_INS, V_USER_UPD, V_DATE_UPD = range(10)
-
-ID, CODE, L10N, CLASS, DESCRIPTION, XML, SYSTEM, USER_INS, DATE_INS, USER_UPD, DATE_UPD = range(11)
+class rpt(IntEnum):
+    ID          = 0
+    CODE        = 1
+    L10N        = 2
+    CLASS       = 3
+    DESCRIPTION = 4
+    XML         = 5
+    SYSTEM      = 6
+    USER_INS    = 7
+    DATE_INS    = 8
+    USER_UPD    = 9
+    DATE_UPD    = 10
 
 
 
@@ -124,14 +129,14 @@ class ReportForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('ReportIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.mapper.addMapping(self.ui.lineEditCode, CODE)
+        self.mapper.addMapping(self.ui.lineEditCode, rpt.CODE)
         self.ui.comboBoxL10n.setItemList(langCountryFlags())
-        self.mapper.addMapping(self.ui.comboBoxL10n, L10N) # don't need b"modelDataStr" because is the default
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
+        self.mapper.addMapping(self.ui.comboBoxL10n, rpt.L10N) # don't need b"modelDataStr" because is the default
+        self.mapper.addMapping(self.ui.lineEditDescription, rpt.DESCRIPTION)
         self.ui.comboBoxClass.addItems([None] + REPORT_CLASSES)
-        self.mapper.addMapping(self.ui.comboBoxClass, CLASS)
-        self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
-        self.mapper.addMapping(self.ui.textEditXML, XML)
+        self.mapper.addMapping(self.ui.comboBoxClass, rpt.CLASS)
+        self.mapper.addMapping(self.ui.checkBoxSystem, rpt.SYSTEM)
+        self.mapper.addMapping(self.ui.textEditXML, rpt.XML)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -269,17 +274,17 @@ class ReportForm(FormIndexManager):
         row = self.mapper.currentIndex()
         # looks like zipfile accept qt file path with / so no need to use os.path.join
         fileName = (f"{directory}"
-                    f"/{self.model.index(row, CODE).data()}"
-                    f"_{self.model.index(row, L10N).data()}"
+                    f"/{self.model.index(row, rpt.CODE).data()}"
+                    f"_{self.model.index(row, rpt.L10N).data()}"
                     f".rpt.zip")
         with gui_exception_context(self, _tr('Report', "Download current report")):
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
-                zf.writestr('code', self.model.data(self.model.index(row, CODE)))
-                zf.writestr('l10n', self.model.data(self.model.index(row, L10N)))
-                zf.writestr('class', self.model.data(self.model.index(row, CLASS)))
-                zf.writestr('system', str(self.model.data(self.model.index(row, SYSTEM))))
-                zf.writestr('description', self.model.data(self.model.index(row, DESCRIPTION)))
-                zf.writestr('xml', self.model.data(self.model.index(row, XML)))
+                zf.writestr('code', self.model.data(self.model.index(row, rpt.CODE)))
+                zf.writestr('l10n', self.model.data(self.model.index(row, rpt.L10N)))
+                zf.writestr('class', self.model.data(self.model.index(row, rpt.CLASS)))
+                zf.writestr('system', str(self.model.data(self.model.index(row, rpt.SYSTEM))))
+                zf.writestr('description', self.model.data(self.model.index(row, rpt.DESCRIPTION)))
+                zf.writestr('xml', self.model.data(self.model.index(row, rpt.XML)))
         
             msg = _tr('Report', "Current report saved to file:")
             QMessageBox.information(self,
@@ -380,7 +385,7 @@ class ReportForm(FormIndexManager):
 
     def print(self) -> None:
         "Print current report"
-        rid: int = self.model.data(self.model.index(self.mapper.currentIndex(), ID))
-        lcn: str = self.model.data(self.model.index(self.mapper.currentIndex(), L10N))
+        rid: int = self.model.data(self.model.index(self.mapper.currentIndex(), rpt.ID))
+        lcn: str = self.model.data(self.model.index(self.mapper.currentIndex(), rpt.L10N))
         dialog = PrintDialog(self, reportId=rid, l10n=lcn)
         dialog.show()

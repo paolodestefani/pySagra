@@ -29,6 +29,7 @@ This module contains a custom view to display event Sales summary
 """
 
 # standard library
+from enum import IntEnum
 import logging
 from typing import cast
 from typing import Any
@@ -53,16 +54,38 @@ from App.Widget.Dialog import EventFilterDialog
 # logger
 logger = logging.getLogger(__name__)
 
-(EVENT, EVENT_DESCRIPTION, DATE,
- ORDERS_L, ORDERS_D, ORDERS,
- COVERS_L, COVERS_D, COVERS,
- TAKEAWAY_L, TAKEAWAY_D, TAKEAWAY,
- TABLE_L, TABLE_D, TABLE,
- AMOUNT_L, AMOUNT_D, AMOUNT,
- DISCOUNT_L, DISCOUNT_D, DISCOUNT,
- ELECTRONIC_L, ELECTRONIC_D, ELECTRONIC,
- CASH_L, CASH_D, CASH,
- TOTAL_L, TOTAL_D, TOTAL) = range(30)
+
+class ss(IntEnum):
+    EVENT       = 0
+    EVENT_DESC  = 1
+    DATE        = 2
+    ORDERS_L    = 3
+    ORDERS_D    = 4
+    ORDERS      = 5
+    COVERS_L    = 6
+    COVERS_D    = 7
+    COVERS      = 8
+    TAKEAWAY_L  = 9
+    TAKEAWAY_D  = 10
+    TAKEAWAY    = 11
+    TABLE_L     = 12
+    TABLE_D     = 13
+    TABLE       = 14
+    AMOUNT_L    = 15
+    AMOUNT_D    = 16
+    AMOUNT      = 17
+    DISCOUNT_L  = 18
+    DISCOUNT_D  = 19
+    DISCOUNT    = 20
+    ELECT_L     = 21
+    ELECT_D     = 22
+    ELECT       = 23
+    CASH_L      = 24
+    CASH_D      = 25
+    CASH        = 26
+    TOTAL_L     = 27
+    TOTAL_D     = 28
+    TOTAL       = 29
 
 
 def salesSummary(action: QAction, checked: bool = False):
@@ -116,43 +139,43 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
 
     def showDetails(self, state) -> None:
         if state == Qt.CheckState.Unchecked:
-            self.ui.tableView.setColumnHidden(ORDERS_L, True)
-            self.ui.tableView.setColumnHidden(ORDERS_D, True)
-            self.ui.tableView.setColumnHidden(COVERS_L, True)
-            self.ui.tableView.setColumnHidden(COVERS_D, True)
-            self.ui.tableView.setColumnHidden(TAKEAWAY_L, True)
-            self.ui.tableView.setColumnHidden(TAKEAWAY_D, True)
-            self.ui.tableView.setColumnHidden(TABLE_L, True)
-            self.ui.tableView.setColumnHidden(TABLE_D, True)
-            self.ui.tableView.setColumnHidden(AMOUNT_L, True)
-            self.ui.tableView.setColumnHidden(AMOUNT_D, True)
-            self.ui.tableView.setColumnHidden(DISCOUNT_L, True)
-            self.ui.tableView.setColumnHidden(DISCOUNT_D, True)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_L, True)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_D, True)
-            self.ui.tableView.setColumnHidden(CASH_L, True)
-            self.ui.tableView.setColumnHidden(CASH_D, True)
-            self.ui.tableView.setColumnHidden(TOTAL_L, True)
-            self.ui.tableView.setColumnHidden(TOTAL_D, True)
+            self.ui.tableView.setColumnHidden(ss.ORDERS_L, True)
+            self.ui.tableView.setColumnHidden(ss.ORDERS_D, True)
+            self.ui.tableView.setColumnHidden(ss.COVERS_L, True)
+            self.ui.tableView.setColumnHidden(ss.COVERS_D, True)
+            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_L, True)
+            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_D, True)
+            self.ui.tableView.setColumnHidden(ss.TABLE_L, True)
+            self.ui.tableView.setColumnHidden(ss.TABLE_D, True)
+            self.ui.tableView.setColumnHidden(ss.AMOUNT_L, True)
+            self.ui.tableView.setColumnHidden(ss.AMOUNT_D, True)
+            self.ui.tableView.setColumnHidden(ss.DISCOUNT_L, True)
+            self.ui.tableView.setColumnHidden(ss.DISCOUNT_D, True)
+            self.ui.tableView.setColumnHidden(ss.ELECT_L, True)
+            self.ui.tableView.setColumnHidden(ss.ELECT_D, True)
+            self.ui.tableView.setColumnHidden(ss.CASH_L, True)
+            self.ui.tableView.setColumnHidden(ss.CASH_D, True)
+            self.ui.tableView.setColumnHidden(ss.TOTAL_L, True)
+            self.ui.tableView.setColumnHidden(ss.TOTAL_D, True)
         else:
-            self.ui.tableView.setColumnHidden(ORDERS_L, False)
-            self.ui.tableView.setColumnHidden(ORDERS_D, False)
-            self.ui.tableView.setColumnHidden(COVERS_L, False)
-            self.ui.tableView.setColumnHidden(COVERS_D, False)
-            self.ui.tableView.setColumnHidden(TAKEAWAY_L, False)
-            self.ui.tableView.setColumnHidden(TAKEAWAY_D, False)
-            self.ui.tableView.setColumnHidden(TABLE_L, False)
-            self.ui.tableView.setColumnHidden(TABLE_D, False)
-            self.ui.tableView.setColumnHidden(AMOUNT_L, False)
-            self.ui.tableView.setColumnHidden(AMOUNT_D, False)
-            self.ui.tableView.setColumnHidden(DISCOUNT_L, False)
-            self.ui.tableView.setColumnHidden(DISCOUNT_D, False)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_L, False)
-            self.ui.tableView.setColumnHidden(ELECTRONIC_D, False)
-            self.ui.tableView.setColumnHidden(CASH_L, False)
-            self.ui.tableView.setColumnHidden(CASH_D, False)
-            self.ui.tableView.setColumnHidden(TOTAL_L, False)
-            self.ui.tableView.setColumnHidden(TOTAL_D, False)
+            self.ui.tableView.setColumnHidden(ss.ORDERS_L, False)
+            self.ui.tableView.setColumnHidden(ss.ORDERS_D, False)
+            self.ui.tableView.setColumnHidden(ss.COVERS_L, False)
+            self.ui.tableView.setColumnHidden(ss.COVERS_D, False)
+            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_L, False)
+            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_D, False)
+            self.ui.tableView.setColumnHidden(ss.TABLE_L, False)
+            self.ui.tableView.setColumnHidden(ss.TABLE_D, False)
+            self.ui.tableView.setColumnHidden(ss.AMOUNT_L, False)
+            self.ui.tableView.setColumnHidden(ss.AMOUNT_D, False)
+            self.ui.tableView.setColumnHidden(ss.DISCOUNT_L, False)
+            self.ui.tableView.setColumnHidden(ss.DISCOUNT_D, False)
+            self.ui.tableView.setColumnHidden(ss.ELECT_L, False)
+            self.ui.tableView.setColumnHidden(ss.ELECT_D, False)
+            self.ui.tableView.setColumnHidden(ss.CASH_L, False)
+            self.ui.tableView.setColumnHidden(ss.CASH_D, False)
+            self.ui.tableView.setColumnHidden(ss.TOTAL_L, False)
+            self.ui.tableView.setColumnHidden(ss.TOTAL_D, False)
 
     def print(self) -> None:
         "Sales summary report"

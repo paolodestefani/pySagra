@@ -29,6 +29,7 @@ This module prvide a form and related classes for manage printer classes
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -60,9 +61,24 @@ from App.Ui.DepartmentPrinterWidget import Ui_DepartmentPrinterWidget
 # logger
 logger = logging.getLogger(__name__)
 
-ID, DESCRIPTION, USER_INS, DATE_INS, USER_UPD, DATE_UPD = range(6)
 
-P_ID, P_CLASS_ID, P_COMPUTER, P_PRINTER, P_USER_INS, P_DATE_INS, P_USER_UPD, P_DATE_UPD = range(8)
+class pncl(IntEnum):
+    ID          = 0
+    DESCRIPTION = 1
+    USER_INS    = 2
+    DATE_INS    = 3
+    USER_UPD    = 4
+    DATE_UPD    = 5
+
+class pndt(IntEnum):
+    ID          = 0
+    CLASS_ID    = 1
+    COMPUTER    = 2
+    PRINTER     = 3
+    USER_INS    = 4
+    DATE_INS    = 5
+    USER_UPD    = 6
+    DATE_UPD    = 7
 
 
 def printer(action: QAction, checked: bool = False) -> None:
@@ -85,7 +101,7 @@ class PrinterForm(FormIndexManager):
         idxModel = PrinterIndexModel(self)
         pdModel = PrinterDetailModel(self)
         self.setModel(model, idxModel)
-        self.addDetailRelation(pdModel, ID, P_CLASS_ID)
+        self.addDetailRelation(pdModel, pncl.ID, pndt.CLASS_ID)
         self.tabName = title
         self.helpLink = None
         # available status
@@ -102,17 +118,17 @@ class PrinterForm(FormIndexManager):
         self.ui.tableView.setLayoutName('PrinterIndex')
         self.setIndexView(self.ui.tableView)
         # mapper mappings
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
+        self.mapper.addMapping(self.ui.lineEditDescription, pncl.DESCRIPTION)
         # printers detail
         self.ui.printersTableView.setModel(pdModel)
         self.ui.printersTableView.setLayoutName('Printer')
-        self.ui.printersTableView.setItemDelegateForColumn(P_COMPUTER, ReadOnlyDelegate(self))
+        self.ui.printersTableView.setItemDelegateForColumn(pndt.COMPUTER, ReadOnlyDelegate(self))
         # get host name
         self.hostName = QHostInfo.localHostName()
         # get printers list
         self.availablePrinters = [i.printerName() for i in QPrinterInfo.availablePrinters()]
         # printer item delegate
-        self.ui.printersTableView.setItemDelegateForColumn(P_PRINTER, PrintersDelegate(self, self.availablePrinters, self.hostName))
+        self.ui.printersTableView.setItemDelegateForColumn(pndt.PRINTER, PrintersDelegate(self, self.availablePrinters, self.hostName))
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)
         # scripting init
@@ -153,7 +169,7 @@ class PrinterForm(FormIndexManager):
         # check if a record for current computer name already exists
         model = self.ui.printersTableView.model()
         for i in range(model.rowCount()):
-            index = model.index(i, P_COMPUTER)
+            index = model.index(i, pndt.COMPUTER)
             if index.data() == self.hostName:
                 QMessageBox.information(self,
                                         _tr("MessageDialog", "Information"),
@@ -161,14 +177,14 @@ class PrinterForm(FormIndexManager):
                 return
         cr = self.ui.printersTableView.model().rowCount() # must be before add, with add model have already a new row
         self.ui.printersTableView.add()
-        index = self.ui.printersTableView.model().index(cr, P_COMPUTER)
+        index = self.ui.printersTableView.model().index(cr, pndt.COMPUTER)
         self.ui.printersTableView.model().setData(index, self.hostName)
 
     @scriptMethod
     def remove(self) -> None:
         curIndex = self.ui.printersTableView.currentIndex()
         model = self.ui.printersTableView.model()
-        index = model.index(curIndex.row(), P_COMPUTER)
+        index = model.index(curIndex.row(), pndt.COMPUTER)
         if index.data() != self.hostName:
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),

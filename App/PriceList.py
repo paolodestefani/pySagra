@@ -28,6 +28,7 @@ This module provides a form manager for price list and related objects
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -59,14 +60,32 @@ from App.Core.Scripting import scriptMethod
 # logger
 logger = logging.getLogger(__name__)
 
-(I_ID, I_DESCRIPTION, 
- I_USER_INS, I_DATE_INS, I_USER_UPD, I_DATE_UPD) = range(6)
 
-(ID, DESCRIPTION,
- USER_INS, DATE_INS, USER_UPD, DATE_UPD)= range(6)
+class pli(IntEnum):
+    ID          = 0
+    DESCRIPTION = 1
+    USER_INS    = 2
+    DATE_INS    = 3
+    USER_UPD    = 4
+    DATE_UPD    = 5
 
-(P_ID, P_IDPL, P_ITEM, P_PRICE,
-P_USER_INS, P_DATE_INS, P_USER_UPD, P_DATE_UPD) = range(8)
+class pls(IntEnum):
+    ID          = 0
+    DESCRIPTION = 1
+    USER_INS    = 2
+    DATE_INS    = 3
+    USER_UPD    = 4
+    DATE_UPD    = 5
+
+class prc(IntEnum):
+    ID          = 0
+    ID_PL       = 1
+    ITEM        = 2
+    PRICE       = 3
+    USER_INS    = 4
+    DATE_INS    = 5
+    USER_UPD    = 6
+    DATE_UPD    = 7
 
 
 def priceList(action: QAction, checked: bool = False) -> None:
@@ -96,7 +115,7 @@ class PriceListForm(FormIndexManager):
         idxModel = PriceListIndexModel(self)
         priModel = PriceListItemModel(self)
         self.setModel(model, idxModel)
-        self.addDetailRelation(priModel, ID, P_IDPL)
+        self.addDetailRelation(priModel, pli.ID, prc.ID_PL)
         self.tabName = title
         self.helpLink = None
         # available status
@@ -112,12 +131,12 @@ class PriceListForm(FormIndexManager):
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         self.ui.tableView.setLayoutName('PriceListIndex')
         # mapper mappings
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
+        self.mapper.addMapping(self.ui.lineEditDescription, pls.DESCRIPTION)
         # price list detail
         self.ui.tableViewPrices.setModel(priModel)
         self.ui.tableViewPrices.setLayoutName('PriceListDetail')
-        self.ui.tableViewPrices.setItemDelegateForColumn(P_ITEM, RelationDelegate(self, item_all_lookup))
-        self.ui.tableViewPrices.setItemDelegateForColumn(P_PRICE, AmountDelegate(self))
+        self.ui.tableViewPrices.setItemDelegateForColumn(prc.ITEM, RelationDelegate(self, item_all_lookup))
+        self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, AmountDelegate(self))
         # signal slot
         self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)
         self.ui.pushButtonAdd.clicked.connect(self.add)
@@ -175,7 +194,7 @@ class PriceListForm(FormIndexManager):
         if not ok:
             return
         # get the current price list id
-        currentPriceList = self.model.index(self.mapper.currentIndex(), ID).data()
+        currentPriceList = self.model.index(self.mapper.currentIndex(), pls.ID).data()
         with gui_exception_context(self, _tr("PriceList", "Duplicate price list")):
             duplicate_price_list(currentPriceList, text)
             QMessageBox.information(self,

@@ -28,6 +28,7 @@ This module provides stock inventory management
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -55,7 +56,17 @@ from App.Ui.InventoryWidget import Ui_InventoryWidget
 # logger
 logger = logging.getLogger(__name__)
 
-ID, EVENT, ITEM, LOADED, UNLOADED, STOCK, ORDERED, AVAILABLE, NEW_STOCK = range(9)
+
+class inv(IntEnum):
+    ID        = 0
+    EVENT     = 1
+    ITEM      = 2
+    LOADED    = 3
+    UNLOADED  = 4
+    STOCK     = 5
+    ORDERED   = 6
+    AVAILABLE = 7
+    NEW_STOCK = 8
 
 
 def inventory(action: QAction, checked: bool = False):
@@ -90,18 +101,18 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         if st.value("Inventory/SplitterSizes", None):
             self.ui.splitter.setSizes(st.value("Inventory/SplitterSizes"))
         self.ui.tableViewItem.setLayoutName('Inventory')
-        self.ui.tableViewItem.setItemDelegateForColumn(EVENT, RelationDelegate(self, event_lookup))
-        self.ui.tableViewItem.setItemDelegateForColumn(ITEM, RelationDelegate(self, item_with_stock_control_lookup))
-        self.ui.tableViewItem.setItemDelegateForColumn(LOADED, QuantityDelegate(self))
-        self.ui.tableViewItem.setItemDelegateForColumn(UNLOADED, QuantityDelegate(self))
-        self.ui.tableViewItem.setItemDelegateForColumn(STOCK, StockLevelDelegate(self,
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.EVENT, RelationDelegate(self, event_lookup))
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.ITEM, RelationDelegate(self, item_with_stock_control_lookup))
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.LOADED, QuantityDelegate(self))
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.UNLOADED, QuantityDelegate(self))
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.STOCK, StockLevelDelegate(self,
                                                                                  setting['inventory_warning_stock_level'],
                                                                                  setting['inventory_critical_stock_level']))
-        self.ui.tableViewItem.setItemDelegateForColumn(ORDERED, QuantityDelegate(self))
-        self.ui.tableViewItem.setItemDelegateForColumn(AVAILABLE, StockLevelDelegate(self, 
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.ORDERED, QuantityDelegate(self))
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.AVAILABLE, StockLevelDelegate(self, 
                                                                                      setting['inventory_warning_stock_level'],
                                                                                      setting['inventory_critical_stock_level']))
-        self.ui.tableViewItem.setItemDelegateForColumn(NEW_STOCK, NewStockDelegate(self))
+        self.ui.tableViewItem.setItemDelegateForColumn(inv.NEW_STOCK, NewStockDelegate(self))
         # stay on NEW_STOCK column
         #self.ui.tableViewItem.selectionModel().currentChanged.connect(self.columnChanged)
         # kit availability
@@ -144,10 +155,10 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         super().new()
         model = self.ui.tableViewItem.model()
         newRow = model.rowCount() - 1
-        newIndex = model.index(newRow, EVENT)
+        newIndex = model.index(newRow, inv.EVENT)
         model.setData(newIndex, self.selectedEvent)
         # edit item cell
-        newIndex = model.index(newRow, ITEM)
+        newIndex = model.index(newRow, inv.ITEM)
         self.ui.tableViewItem.edit(newIndex)
 
     def updateFilterConditions(self, event, eventDate=None, dayPart=None):

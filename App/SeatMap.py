@@ -29,6 +29,7 @@ This module provides a form to manage tables archive
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -38,13 +39,11 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QColorDialog
-from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QButtonGroup
 from PySide6.QtWidgets import QSizePolicy
 
 # application modules
 from App import session
-from App.Database.Exceptions import PyAppDBError
 from App.Database.SeatMap import table_delete
 from App.Database.Models import SeatMapModel
 from App.Database.Setting import SettingClass
@@ -65,11 +64,24 @@ from App.Widget.Dialog import PrintDialog
 # logger
 logger = logging.getLogger(__name__)
 
-(ID, TABLE_CODE, ROW, COLUMN, TEXT_COLOR, BACKGROUND_COLOR,
- IS_UNAVAILABLE, IS_OBSOLETE, 
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(12)
 
-EDIT, PREVIEW = range(2)
+class sm(IntEnum):
+    ID          = 0
+    TABLE_CODE  = 1
+    ROW         = 2
+    COLUMN      = 3
+    TXT_COLOR   = 4
+    BKG_COLOR   = 5
+    UNAVAILABLE = 6
+    OBSOLETE    = 7
+    USER_INS    = 8
+    DATE_INS    = 9
+    USER_UPD    = 10
+    DATE_UPD    = 11
+
+class vw(IntEnum):
+    EDIT        = 0
+    PREVIEW     = 1
 
 
 def seatMap(action: QAction, checked: bool = False) -> None:
@@ -108,12 +120,12 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.tableView.setSortingEnabled(True)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
         # custom delegates
-        self.ui.tableView.setItemDelegateForColumn(TABLE_CODE, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ROW, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(COLUMN, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(TEXT_COLOR, ColorDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(BACKGROUND_COLOR, ColorDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(IS_OBSOLETE, BooleanDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(sm.TABLE_CODE, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(sm.ROW, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(sm.COLUMN, GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(sm.TXT_COLOR, ColorDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(sm.BKG_COLOR, ColorDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(sm.OBSOLETE, BooleanDelegate(self))
         # map view to mapper and mapper to view
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
         self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
@@ -165,7 +177,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
     @scriptMethod
     def delete(self) -> None:
         "Delete and update current table"
-        table = self.model.data(self.model.index(self.mapper.currentIndex(), TABLE_CODE))
+        table = self.model.data(self.model.index(self.mapper.currentIndex(), sm.TABLE_CODE))
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 _tr('Table', "Are you sure you want to delete table {} ?".format(table)),
@@ -196,12 +208,12 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
     def showPreview(self, clicked: bool) -> None:
         "Show/Hide preview of th tables/Buttons available in the model"
         if clicked:
-            self.ui.stackedWidget.setCurrentIndex(PREVIEW)
+            self.ui.stackedWidget.setCurrentIndex(vw.PREVIEW)
             self.ui.pushButtonPreview.setText(_tr("StandTable", "Back to Edit"))
             self.ui.groupBoxBaseGeometry.setVisible(True)
             self.ui.groupBoxMinimunSize.setVisible(True)
         else:
-            self.ui.stackedWidget.setCurrentIndex(EDIT)
+            self.ui.stackedWidget.setCurrentIndex(vw.EDIT)
             self.ui.pushButtonPreview.setText(_tr("StandTable", "Swith to Preview"))
             self.ui.groupBoxBaseGeometry.setVisible(False)
             self.ui.groupBoxMinimunSize.setVisible(False)
@@ -220,13 +232,13 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                 w.deleteLater()
         # new widets from model, don't need to save before preview
         for r in range(self.model.rowCount() + 1):
-            cod = self.model.index(r, TABLE_CODE).data()
-            row = self.model.index(r, ROW).data()
-            col = self.model.index(r, COLUMN).data()
-            tc = self.model.index(r, TEXT_COLOR).data()
-            bc = self.model.index(r, BACKGROUND_COLOR).data()
-            un = True if self.model.index(r, IS_UNAVAILABLE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
-            ob = True if self.model.index(r, IS_OBSOLETE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
+            cod = self.model.index(r, sm.TABLE_CODE).data()
+            row = self.model.index(r, sm.ROW).data()
+            col = self.model.index(r, sm.COLUMN).data()
+            tc = self.model.index(r, sm.TXT_COLOR).data()
+            bc = self.model.index(r, sm.BKG_COLOR).data()
+            un = True if self.model.index(r, sm.UNAVAILABLE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
+            ob = True if self.model.index(r, sm.OBSOLETE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
             b = ButtonSeat(self, 
                            cod, 
                            QFont(self.setting['table_list_font_family'] or "Arial",
@@ -307,12 +319,12 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     code = prefix + str(r).zfill(rowPadding) + str(c).zfill(columnPadding) + suffix
                     self.model.insertRow(self.model.rowCount())
                     modelRow = self.model.rowCount() - 1
-                    self.model.setData(self.model.index(modelRow, TABLE_CODE), code)
-                    self.model.setData(self.model.index(modelRow, ROW), r)
-                    self.model.setData(self.model.index(modelRow, COLUMN), c)
-                    self.model.setData(self.model.index(modelRow, TEXT_COLOR), textColor)
-                    self.model.setData(self.model.index(modelRow, BACKGROUND_COLOR), backgroundColor)
-                    self.model.setData(self.model.index(modelRow, IS_OBSOLETE), False)
+                    self.model.setData(self.model.index(modelRow, sm.TABLE_CODE), code)
+                    self.model.setData(self.model.index(modelRow, sm.ROW), r)
+                    self.model.setData(self.model.index(modelRow, sm.COLUMN), c)
+                    self.model.setData(self.model.index(modelRow, sm.TXT_COLOR), textColor)
+                    self.model.setData(self.model.index(modelRow, sm.BKG_COLOR), backgroundColor)
+                    self.model.setData(self.model.index(modelRow, sm.OBSOLETE), False)
 
         else:
             for c in range(1, columns + 1):
@@ -325,9 +337,9 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     code = prefix + str(c).zfill(columnPadding) + str(r).zfill(rowPadding) + suffix
                     self.model.insertRows(self.model.rowCount(), 1)
                     modelRow = self.model.rowCount() - 1
-                    self.model.setData(self.model.index(modelRow, TABLE_CODE), code)
-                    self.model.setData(self.model.index(modelRow, ROW), r)
-                    self.model.setData(self.model.index(modelRow, COLUMN), c)
-                    self.model.setData(self.model.index(modelRow, TEXT_COLOR), textColor)
-                    self.model.setData(self.model.index(modelRow, BACKGROUND_COLOR), backgroundColor)
-                    self.model.setData(self.model.index(modelRow, IS_OBSOLETE), False)
+                    self.model.setData(self.model.index(modelRow, sm.TABLE_CODE), code)
+                    self.model.setData(self.model.index(modelRow, sm.ROW), r)
+                    self.model.setData(self.model.index(modelRow, sm.COLUMN), c)
+                    self.model.setData(self.model.index(modelRow, sm.TXT_COLOR), textColor)
+                    self.model.setData(self.model.index(modelRow, sm.BKG_COLOR), backgroundColor)
+                    self.model.setData(self.model.index(modelRow, sm.OBSOLETE), False)

@@ -28,6 +28,7 @@ This module provides order entry dialog and required subcalsses/funtions
 """
 
 # standard library
+from enum import IntEnum
 import logging
 import warnings 
 from decimal import Decimal 
@@ -94,9 +95,18 @@ from App.Ui.ChooseVariantsDialog import Ui_ChooseVariantsDialog
 # logger
 logger = logging.getLogger(__name__)
 
-ID, VARIANTS, DESC, QTY, PRICE, AMOUNT = range(6)
 
-ORDER, TABLE = range(2)
+class two(IntEnum):
+    ID = 0
+    VARIANTS = 1
+    DESCRIPTION = 2
+    QUANTITY = 3
+    PRICE = 4
+    AMOUNT = 5
+
+# class vw(IntEnum):
+#     ORDER = 0
+#     TABLE = 1
 
 
 # launch main order entry dialog
@@ -230,12 +240,12 @@ class BaseOrderDialog(QDialog):
         self.ui.tabWidgetOrder.setSortingEnabled(False)
         self.ui.tabWidgetOrder.setHorizontalHeaderLabels(self.ui.twheader)
         self.ui.tabWidgetOrder.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.ui.tabWidgetOrder.hideColumn(ID)
-        self.ui.tabWidgetOrder.hideColumn(VARIANTS)
-        self.ui.tabWidgetOrder.setColumnWidth(DESC, 250)
-        self.ui.tabWidgetOrder.setColumnWidth(QTY, 70)
-        self.ui.tabWidgetOrder.setColumnWidth(PRICE, 70)
-        self.ui.tabWidgetOrder.setColumnWidth(AMOUNT, 70)
+        self.ui.tabWidgetOrder.hideColumn(two.ID)
+        self.ui.tabWidgetOrder.hideColumn(two.VARIANTS)
+        self.ui.tabWidgetOrder.setColumnWidth(two.DESCRIPTION, 250)
+        self.ui.tabWidgetOrder.setColumnWidth(two.QUANTITY, 70)
+        self.ui.tabWidgetOrder.setColumnWidth(two.PRICE, 70)
+        self.ui.tabWidgetOrder.setColumnWidth(two.AMOUNT, 70)
         self.ui.doubleSpinBoxTotal.setValue(0.0)
         # Department note buttons structural binding
         self.ui.depnote = dict()
@@ -590,15 +600,15 @@ class BaseOrderDialog(QDialog):
         self.ui.radioButton1.setChecked(True)
         # 3. LOOK FOR EXISTING SAME ITEM & VARIANT IN THE ORDER GRID
         for i in range(self.ui.tabWidgetOrder.rowCount()):
-            order_item_id = self.ui.tabWidgetOrder.item(i, ID)
-            order_item_vars = self.ui.tabWidgetOrder.item(i, VARIANTS)
+            order_item_id = self.ui.tabWidgetOrder.item(i, two.ID)
+            order_item_vars = self.ui.tabWidgetOrder.item(i, two.VARIANTS)
             if order_item_id and order_item_vars:
                 same_id = (btn.id == int(order_item_id.data(Qt.ItemDataRole.DisplayRole)))
                 same_vars = (ivars == order_item_vars.data(Qt.ItemDataRole.DisplayRole))
                 if same_id and same_vars:
-                    qty_item = self.ui.tabWidgetOrder.item(i, QTY)
-                    price_item = self.ui.tabWidgetOrder.item(i, PRICE)
-                    amount_item = self.ui.tabWidgetOrder.item(i, AMOUNT)
+                    qty_item = self.ui.tabWidgetOrder.item(i, two.QUANTITY)
+                    price_item = self.ui.tabWidgetOrder.item(i, two.PRICE)
+                    amount_item = self.ui.tabWidgetOrder.item(i, two.AMOUNT)
                     if qty_item and price_item and amount_item:
                         old_qty = int(qty_item.data(Qt.ItemDataRole.DisplayRole))
                         if btn.sc and (btn.level - qty < 0):
@@ -621,33 +631,33 @@ class BaseOrderDialog(QDialog):
         # Column: ID
         cell_id = QTableWidgetItem(str(btn.id))
         cell_id.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
-        self.ui.tabWidgetOrder.setItem(row, ID, cell_id)
+        self.ui.tabWidgetOrder.setItem(row, two.ID, cell_id)
         # Column: VARIANTS
         cell_vars = QTableWidgetItem(ivars)
         cell_vars.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
-        self.ui.tabWidgetOrder.setItem(row, VARIANTS, cell_vars)
+        self.ui.tabWidgetOrder.setItem(row, two.VARIANTS, cell_vars)
         # Column: DESCRIPTION
         full_desc = btn.description + " " + ivars if hasattr(btn, 'description') else ivars
         cell_desc = QTableWidgetItem(full_desc)
         cell_desc.setToolTip(full_desc)
         cell_desc.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
-        self.ui.tabWidgetOrder.setItem(row, DESC, cell_desc)
+        self.ui.tabWidgetOrder.setItem(row, two.DESCRIPTION, cell_desc)
         # Column: QUANTITY
         cell_qty = QTableWidgetItem(str(qty))
         cell_qty.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         cell_qty.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.ui.tabWidgetOrder.setItem(row, QTY, cell_qty)
+        self.ui.tabWidgetOrder.setItem(row, two.QUANTITY, cell_qty)
         # Column: PRICE (Decimal + Decimal)
         total_unit_price = Decimal(str(btn.price)) + priced
         cell_price = QTableWidgetItem(toCurrency(total_unit_price))
         cell_price.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         cell_price.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.ui.tabWidgetOrder.setItem(row, PRICE, cell_price)
+        self.ui.tabWidgetOrder.setItem(row, two.PRICE, cell_price)
         # Column: TOTAL AMOUNT
         cell_amount = QTableWidgetItem(toCurrency(Decimal(qty) * total_unit_price))
         cell_amount.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         cell_amount.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.ui.tabWidgetOrder.setItem(row, AMOUNT, cell_amount)
+        self.ui.tabWidgetOrder.setItem(row, two.AMOUNT, cell_amount)
         # UI adjustments
         self.ui.tabWidgetOrder.scrollToBottom()
         self.recalcTotals()
@@ -668,10 +678,10 @@ class BaseOrderDialog(QDialog):
         qty = int(self.ui.buttonGroupQuantity.checkedButton().text())
         self.ui.radioButton1.setChecked(True)
         # Safe extraction of table items
-        qty_item = self.ui.tabWidgetOrder.item(row, QTY)
-        price_item = self.ui.tabWidgetOrder.item(row, PRICE)
-        amount_item = self.ui.tabWidgetOrder.item(row, AMOUNT)
-        id_item = self.ui.tabWidgetOrder.item(row, ID)
+        qty_item = self.ui.tabWidgetOrder.item(row, two.QUANTITY)
+        price_item = self.ui.tabWidgetOrder.item(row, two.PRICE)
+        amount_item = self.ui.tabWidgetOrder.item(row, two.AMOUNT)
+        id_item = self.ui.tabWidgetOrder.item(row, two.ID)
         if not (qty_item and price_item and amount_item and id_item):
             return  # Safety fallback if cells are not properly initialized
         old_qty = int(qty_item.data(Qt.ItemDataRole.DisplayRole))
@@ -832,7 +842,7 @@ class BaseOrderDialog(QDialog):
         subtotal = Decimal('0.0')
         # 1. SUM ALL ROW AMOUNTS FROM THE ORDER GRID
         for i in range(self.ui.tabWidgetOrder.rowCount()):
-            amount_item = self.ui.tabWidgetOrder.item(i, AMOUNT)
+            amount_item = self.ui.tabWidgetOrder.item(i, two.AMOUNT)
             if amount_item:
                 raw_amount_data = amount_item.data(Qt.ItemDataRole.DisplayRole)
                 # Ensure str cast for fromCurrency to satisfy mypy
@@ -913,7 +923,7 @@ class BaseOrderDialog(QDialog):
         if self.ui.radioButtonTakeAway.isChecked():
             nogood: list[str] = []
             for i in range(self.ui.tabWidgetOrder.rowCount()):
-                item_cell = self.ui.tabWidgetOrder.item(i, ID)
+                item_cell = self.ui.tabWidgetOrder.item(i, two.ID)
                 if item_cell:
                     item_id = int(item_cell.data(Qt.ItemDataRole.DisplayRole))
                     if not is_for_takeaway(item_id):
@@ -946,11 +956,11 @@ class BaseOrderDialog(QDialog):
         order.header['change'] = Decimal(str(self.ui.doubleSpinBoxChange.value()))
         # Extract structured items information from the layout grid rows
         for i in range(self.ui.tabWidgetOrder.rowCount()):
-            id_cell = self.ui.tabWidgetOrder.item(i, ID)
-            vars_cell = self.ui.tabWidgetOrder.item(i, VARIANTS)
-            qty_cell = self.ui.tabWidgetOrder.item(i, QTY)
-            price_cell = self.ui.tabWidgetOrder.item(i, PRICE)
-            amount_cell = self.ui.tabWidgetOrder.item(i, AMOUNT)
+            id_cell = self.ui.tabWidgetOrder.item(i, two.ID)
+            vars_cell = self.ui.tabWidgetOrder.item(i, two.VARIANTS)
+            qty_cell = self.ui.tabWidgetOrder.item(i, two.QUANTITY)
+            price_cell = self.ui.tabWidgetOrder.item(i, two.PRICE)
+            amount_cell = self.ui.tabWidgetOrder.item(i, two.AMOUNT)
             if id_cell and vars_cell and qty_cell and price_cell and amount_cell:
                 line: dict[str, Any] = dict()
                 line['item_id'] = int(id_cell.data(Qt.ItemDataRole.DisplayRole))

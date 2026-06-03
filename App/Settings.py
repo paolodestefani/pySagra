@@ -25,7 +25,6 @@
 
 This module provides application setting dialog
 
-
 """
 
 # standard library
@@ -60,10 +59,6 @@ from App.Core.Gui import COLORS
 
 # logger
 logger = logging.getLogger(__name__)
-
-COMP_ID, COMP_DESC, COMP_SCHEMA, COMP_SYSTEM, COMP_IMAGE = range(5)
-(UC_COMPANY, UC_USER, UC_PROFILE, UC_MENU, UC_TOOLBAR, UC_USER_INS,
- UC_DATE_INS, UC_USER_UPD, UC_DATE_UPD) = range(9)
 
 
 def settings(action: QAction, checked: bool = False) -> None:

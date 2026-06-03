@@ -29,6 +29,7 @@ This module manages application users and user access rights to each company
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -79,14 +80,53 @@ from App.Core.L10n import langCountryFlags
 logger = logging.getLogger(__name__)
 
 
-(V_CODE, V_DESCRIPTION, V_IMAGE, V_SYSTEM, V_ISADMIN,
- V_CAN_EDIT_VIEWS, V_CAN_EDIT_SORTFILTERS, V_CAN_EDIT_REPORTS, V_L10N, V_LASTLOGIN, V_LASTCOMPANY,
- V_USER_INS, V_DATE_INS, V_USER_UPD, V_DATE_UPD) = range(15)
-(CODE, DESCRIPTION, IMAGE, PASSWORD, PWDDATE, CHANGEPWDREQ, SYSTEM, ISADMIN,
- CAN_EDIT_VIEWS, CAN_EDIT_SORTFILTERS, CAN_EDIT_REPORTS, L10N, LASTCOMPANY, LASTLOGIN,
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(18)
-(UC_COMPANY, UC_USER, UC_PROFILE, UC_MENU, UC_TOOLBAR, 
- UC_USER_INS, UC_DATE_INS, UC_USER_UPD, UC_DATE_UPD) = range(9)
+class uin(IntEnum):
+    CODE         = 0
+    DESCRIPTION  = 1
+    IMAGE        = 2
+    SYSTEM       = 3 
+    IS_ADMIN     = 4
+    CE_VIEWS     = 5
+    CE_SORTFIL   = 6
+    CE_REPORTS   = 7
+    L10N         = 8
+    LAST_LOGIN   = 9
+    LAST_COMPANY = 10
+    USER_INS     = 11
+    DATE_INS     = 12
+    USER_UPD     = 13
+    DATE_UPD     = 14
+    
+class usr(IntEnum):
+    CODE         = 0
+    DESCRIPTION  = 1
+    IMAGE        = 2
+    PASSWORD     = 3
+    PWD_DATE     = 4
+    CHANGE_PWD   = 5
+    SYSTEM       = 6
+    IS_ADMIN     = 7
+    CE_VIEWS     = 8
+    CE_SORTFIL   = 9
+    CE_REPORTS   = 10
+    L10N         = 11
+    LAST_COMPANY = 12
+    LAST_LOGIN   = 13
+    USER_INS     = 14
+    DATE_INS     = 15
+    USER_UPD     = 16
+    DATE_UPD     = 17
+    
+class uc(IntEnum):
+    COMPANY      = 0
+    USER         = 1
+    PROFILE      = 2 
+    MENU         = 3
+    TOOLBAR      = 4
+    USER_INS     = 5
+    DATE_INS     = 6
+    USER_UPD     = 7
+    DATE_UPD     = 8
 
 
 def user(action: QAction, checked: bool = False) -> None:
@@ -141,8 +181,8 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('UserIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(V_L10N, RelationDelegate(self, langCountry))
-        self.ui.tableView.setItemDelegateForColumn(V_IMAGE, ImageDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(uin.L10N, RelationDelegate(self, langCountry))
+        self.ui.tableView.setItemDelegateForColumn(uin.IMAGE, ImageDelegate(self))
         # set password/password change
         self.ui.pushButtonSetTemporaryPassword.clicked.connect(self.setTemporaryPassword)
         # signal/slot mappings
@@ -150,27 +190,27 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
         # other widgets
-        self.mapper.addMapping(self.ui.lineEditUser, CODE)
-        self.mapper.addMapping(self.ui.lineEditUserDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.labelImage, IMAGE)
-        self.mapper.addMapping(self.ui.lineEditLastCompany, LASTCOMPANY)
-        self.mapper.addMapping(self.ui.dateTimeEditLastLogin, LASTLOGIN)
+        self.mapper.addMapping(self.ui.lineEditUser, usr.CODE)
+        self.mapper.addMapping(self.ui.lineEditUserDescription, usr.DESCRIPTION)
+        self.mapper.addMapping(self.ui.labelImage, usr.IMAGE)
+        self.mapper.addMapping(self.ui.lineEditLastCompany, usr.LAST_COMPANY)
+        self.mapper.addMapping(self.ui.dateTimeEditLastLogin, usr.LAST_LOGIN)
         self.ui.comboBoxL10n.setItemList(langCountryFlags())
-        self.mapper.addMapping(self.ui.comboBoxL10n, L10N)
-        self.mapper.addMapping(self.ui.dateTimeEditPasswordDate, PWDDATE)
-        self.mapper.addMapping(self.ui.checkBoxForcePasswordChange, CHANGEPWDREQ)
-        self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
-        self.mapper.addMapping(self.ui.checkBoxIsAdmin, ISADMIN)
-        self.mapper.addMapping(self.ui.checkBoxCanEditViews, CAN_EDIT_VIEWS)
-        self.mapper.addMapping(self.ui.checkBoxCanEditSortFilters, CAN_EDIT_SORTFILTERS)
-        self.mapper.addMapping(self.ui.checkBoxCanEditReports, CAN_EDIT_REPORTS)
+        self.mapper.addMapping(self.ui.comboBoxL10n, usr.L10N)
+        self.mapper.addMapping(self.ui.dateTimeEditPasswordDate, usr.PWD_DATE)
+        self.mapper.addMapping(self.ui.checkBoxForcePasswordChange, usr.CHANGE_PWD)
+        self.mapper.addMapping(self.ui.checkBoxSystem, usr.SYSTEM)
+        self.mapper.addMapping(self.ui.checkBoxIsAdmin, usr.IS_ADMIN)
+        self.mapper.addMapping(self.ui.checkBoxCanEditViews, usr.CE_VIEWS)
+        self.mapper.addMapping(self.ui.checkBoxCanEditSortFilters, usr.CE_SORTFIL)
+        self.mapper.addMapping(self.ui.checkBoxCanEditReports, usr.CE_REPORTS)
         # user/company
         self.ui.tableViewUserCompany.setModel(ucModel)
         self.ui.tableViewUserCompany.setLayoutName('UserCompany')
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_COMPANY, RelationDelegate(self, company_lookup))
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_lookup))
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_lookup))
-        self.ui.tableViewUserCompany.setItemDelegateForColumn(UC_TOOLBAR, RelationDelegate(self, toolbar_lookup))
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(uc.COMPANY, RelationDelegate(self, company_lookup))
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(uc.PROFILE, RelationDelegate(self, profile_lookup))
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(uc.MENU, RelationDelegate(self, menu_lookup))
+        self.ui.tableViewUserCompany.setItemDelegateForColumn(uc.TOOLBAR, RelationDelegate(self, toolbar_lookup))
         # signal - slot
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)
@@ -192,9 +232,9 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
 
     def save(self) -> None:
         "Save and ask for password if null (new user)"
-        if self.model.data(self.model.index(self.mapper.currentIndex(), PASSWORD)) is None:
-            userIndex = self.model.index(self.mapper.currentIndex(), CODE)
-            passwordIndex = self.model.index(self.mapper.currentIndex(), PASSWORD)
+        if self.model.data(self.model.index(self.mapper.currentIndex(), usr.PASSWORD)) is None:
+            userIndex = self.model.index(self.mapper.currentIndex(), usr.CODE)
+            passwordIndex = self.model.index(self.mapper.currentIndex(), usr.PASSWORD)
             dlg = SetPasswordDialog(self, self.model, userIndex, passwordIndex)
             dlg.exec()
         super().save()
@@ -245,12 +285,12 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
 
     def setTemporaryPassword(self) -> None:
         "Ask for a temporary password for current user"
-        userIndex = self.model.index(self.mapper.currentIndex(), CODE)
-        passwordIndex = self.model.index(self.mapper.currentIndex(), PASSWORD)
+        userIndex = self.model.index(self.mapper.currentIndex(), usr.CODE)
+        passwordIndex = self.model.index(self.mapper.currentIndex(), usr.PASSWORD)
         dlg = SetPasswordDialog(self, self.model, userIndex, passwordIndex)
         if dlg.exec_() == QDialog.DialogCode.Accepted:
             # if password was modified set for change required
-            cprIndex = self.model.index(self.mapper.currentIndex(), CHANGEPWDREQ)
+            cprIndex = self.model.index(self.mapper.currentIndex(), usr.CHANGE_PWD)
             self.model.setData(cprIndex, True)
 
     def upload(self) -> None:
@@ -322,7 +362,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
 class ChangePasswordDialog(QDialog):
     "Change password dialog"
 
-    def __init__(self, parent: QWidget, user: str, icon: QIcon = None) -> None:
+    def __init__(self, parent: QWidget, user: str, icon: QIcon = QIcon()) -> None:
         super().__init__(parent)
         self.ui = Ui_ChangePasswordDialog()
         self.ui.setupUi(self)

@@ -28,6 +28,7 @@ This module provides events management
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -64,8 +65,18 @@ from App.Core.Scripting import scriptMethod
 # logger
 logger = logging.getLogger(__name__)
 
-(ID, DESCRIPTION, DATE_START, DATE_END, PRICELIST, IMAGE,
- USER_INS, DATE_INS, USER_UPD, DATE_UPD) = range(10)
+
+class evn(IntEnum):
+    ID          = 0
+    DESCRIPTION = 1
+    DATE_START  = 2
+    DATE_END    = 3
+    PRICELIST   = 4
+    IMAGE       = 5
+    USER_INS    = 6
+    DATE_INS    = 7
+    USER_UPD    = 8
+    DATE_UPD    = 9
 
 
 def event(action: QAction, checked: bool = False) -> None:
@@ -103,15 +114,15 @@ class EventForm(FormIndexManager):
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
-        self.ui.tableView.setItemDelegateForColumn(PRICELIST, RelationDelegate(self, price_list_lookup))
-        self.ui.tableView.setItemDelegateForColumn(IMAGE, ImageDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(evn.PRICELIST, RelationDelegate(self, price_list_lookup))
+        self.ui.tableView.setItemDelegateForColumn(evn.IMAGE, ImageDelegate(self))
         # mapper settings
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.dateTimeEditStart, DATE_START) #, b"modelDataDateTime")
-        self.mapper.addMapping(self.ui.dateTimeEditEnd, DATE_END) #, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.lineEditDescription, evn.DESCRIPTION)
+        self.mapper.addMapping(self.ui.dateTimeEditStart, evn.DATE_START) #, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.dateTimeEditEnd, evn.DATE_END) #, b"modelDataDateTime")
         self.ui.comboBoxPriceList.setFunction(price_list_lookup)
-        self.mapper.addMapping(self.ui.comboBoxPriceList, PRICELIST) #, b"modelDataStr")
-        self.mapper.addMapping(self.ui.labelEventImage, IMAGE) #, b"imageBytearray")
+        self.mapper.addMapping(self.ui.comboBoxPriceList, evn.PRICELIST) #, b"modelDataStr")
+        self.mapper.addMapping(self.ui.labelEventImage, evn.IMAGE) #, b"imageBytearray")
         # scripting init
         self.script = scriptInit(self)
 
@@ -120,7 +131,7 @@ class EventForm(FormIndexManager):
         super().mapperIndexChanged(row)
         logger.info('Mapper index changed')
         model = self.mapper.model()
-        event = model.index(self.mapper.currentIndex(), ID).data()
+        event = model.index(self.mapper.currentIndex(), evn.ID).data()
         if is_used(event):
             self.ui.dateTimeEditStart.setDisabled(True)
             self.ui.dateTimeEditEnd.setDisabled(True)
@@ -202,8 +213,8 @@ class EventForm(FormIndexManager):
         self.ui.dateTimeEditStart.setEnabled(True)
         self.ui.dateTimeEditEnd.setEnabled(True)
         self.ui.labelEventUsed.setVisible(False)
-        self.model.setData(self.model.index(currentRow, DATE_START), startDate)
-        self.model.setData(self.model.index(currentRow, DATE_END), endDate)
+        self.model.setData(self.model.index(currentRow, evn.DATE_START), startDate)
+        self.model.setData(self.model.index(currentRow, evn.DATE_END), endDate)
         self.ui.lineEditDescription.setFocus()
 
     @scriptMethod

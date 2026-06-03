@@ -124,8 +124,8 @@ class StatisticsExportDialog(QDialog):
         self.ui.lineEditHeadersFileName.setText(st.value("StatisticsExport/HeadersFileName", ""))
         self.ui.lineEditDetailsFileName.setText(st.value("StatisticsExport/DetailsFileName", ""))
         self.ui.checkBoxIncludeAll.setChecked(st.value("StatisticsExport/IncludeAll", 'false') == 'true')
-        self.ui.comboBoxFromEvent.setCurrentIndex(int(st.value("StatisticsExport/FromEvent", '1', type=int)))
-        self.ui.comboBoxToEvent.setCurrentIndex(int(st.value("StatisticsExport/ToEvent", '1', type=int)))
+        self.ui.comboBoxFromEvent.setCurrentIndex(int(str(st.value("StatisticsExport/FromEvent", '1')))) # int(str(obj)) for mypy
+        self.ui.comboBoxToEvent.setCurrentIndex(int(str(st.value("StatisticsExport/ToEvent", '1')))) # int(str(obj)) for mypy
         # signal slot connections
         self.ui.checkBoxIncludeAll.toggled.connect(self.includeAllEvents)
         self.ui.pushButtonSelectHeaders.clicked.connect(self.selectHeadersClicked)

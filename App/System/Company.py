@@ -29,6 +29,7 @@ user access to each company
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -49,10 +50,6 @@ from PySide6.QtWidgets import QDialog
 # application modules
 from App import session
 from App import currentIcon
-from App.Database import EDSAE  # Database schema already exists (create company sp)
-from App.Database import ECIAE  # Company id already exists (create company sp)
-from App.Database import ECIIU  # Company is in use (drop company sp)
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Company import max_company_code
 from App.Database.Company import create_company
 from App.Database.Company import drop_company
@@ -79,11 +76,22 @@ from App.Core.ExceptionHandler import gui_exception_context
 # logger
 logger = logging.getLogger(__name__)
 
-
-COMP_ID, COMP_DESC, COMP_SYSTEM, COMP_IMAGE = range(4)
-
-(UC_COMPANY, UC_USER, UC_PROFILE, UC_MENU, UC_TOOLBAR, UC_USER_INS,
- UC_DATE_INS, UC_USER_UPD, UC_DATE_UPD) = range(9)
+class cmp(IntEnum):
+    COMP_ID     = 0
+    COMP_DESC   = 1
+    COMP_SYSTEM = 2
+    COMP_IMAGE  = 3
+    
+class uc(IntEnum):
+    COMPANY  = 0
+    USER     = 1 
+    PROFILE  = 2
+    MENU     = 3
+    TOOLBAR  = 4
+    USER_INS = 5
+    DATE_INS = 6
+    USER_UPD = 7
+    DATE_UPD = 8
 
 
 def company(action: QAction, checked: bool = False) -> None:
@@ -125,22 +133,22 @@ class CompanyForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('CompanyIndex')  # after setting model
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(COMP_IMAGE, ImageDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(cmp.COMP_IMAGE, ImageDelegate(self))
         # mapper mappings
-        self.mapper.addMapping(self.ui.spinBoxId, COMP_ID)
-        self.mapper.addMapping(self.ui.lineEditDescription, COMP_DESC)
-        self.mapper.addMapping(self.ui.labelCompanyImage, COMP_IMAGE)
-        self.mapper.addMapping(self.ui.checkBoxSystem, COMP_SYSTEM)
+        self.mapper.addMapping(self.ui.spinBoxId, cmp.COMP_ID)
+        self.mapper.addMapping(self.ui.lineEditDescription, cmp.COMP_DESC)
+        self.mapper.addMapping(self.ui.labelCompanyImage, cmp.COMP_IMAGE)
+        self.mapper.addMapping(self.ui.checkBoxSystem, cmp.COMP_SYSTEM)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # user company
         self.ui.userTableView.setModel(model2)
         self.ui.userTableView.setLayoutName('CompanyUser')
-        self.ui.userTableView.setItemDelegateForColumn(UC_USER, RelationDelegate(self, user_lookup))
-        self.ui.userTableView.setItemDelegateForColumn(UC_PROFILE, RelationDelegate(self, profile_lookup))
-        self.ui.userTableView.setItemDelegateForColumn(UC_MENU, RelationDelegate(self, menu_lookup))
-        self.ui.userTableView.setItemDelegateForColumn(UC_TOOLBAR, RelationDelegate(self, toolbar_lookup))
+        self.ui.userTableView.setItemDelegateForColumn(uc.USER, RelationDelegate(self, user_lookup))
+        self.ui.userTableView.setItemDelegateForColumn(uc.PROFILE, RelationDelegate(self, profile_lookup))
+        self.ui.userTableView.setItemDelegateForColumn(uc.MENU, RelationDelegate(self, menu_lookup))
+        self.ui.userTableView.setItemDelegateForColumn(uc.TOOLBAR, RelationDelegate(self, toolbar_lookup))
         # signal slot connections
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)

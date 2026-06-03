@@ -28,6 +28,7 @@ Management of application menu and menu items
 """
 
 # standard library
+from enum import IntEnum
 import logging
 
 # PySide6
@@ -57,9 +58,18 @@ from App.Database.Menu import duplicate_menu
 logger = logging.getLogger(__name__)
 
 
-CODE, DESCRIPTION, SYSTEM = range(3)
+class mn(IntEnum):
+    CODE        = 0
+    DESCRIPTION = 1
+    SYSTEM      = 2
 
-PARENT, CHILD, ITEMDESCRIPTION, SORTING, ITEMTYPE, ACTION = range(6)
+class mt(IntEnum):
+    PARENT          = 0
+    CHILD           = 1 
+    ITEMDESCRIPTION = 2
+    SORTING         = 3
+    ITEMTYPE        = 4
+    ACTION          = 5
 
 
 def menu(action: QAction, checked: bool = False) -> None:
@@ -125,16 +135,16 @@ class MenusForm(FormIndexManager):
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('MenuIndex')
-        self.ui.tableView.setItemDelegateForColumn(SYSTEM, BooleanDelegate(self))
-        self.mapper.addMapping(self.ui.lineEditCode, CODE)
-        self.mapper.addMapping(self.ui.lineEditDescription, DESCRIPTION)
-        self.mapper.addMapping(self.ui.checkBoxSystem, SYSTEM)
+        self.ui.tableView.setItemDelegateForColumn(mn.SYSTEM, BooleanDelegate(self))
+        self.mapper.addMapping(self.ui.lineEditCode, mn.CODE)
+        self.mapper.addMapping(self.ui.lineEditDescription, mn.DESCRIPTION)
+        self.mapper.addMapping(self.ui.checkBoxSystem, mn.SYSTEM)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
-        self.ui.treeViewMenuItems.setItemDelegateForColumn(ACTION, ActionDelegate(self))
+        self.ui.treeViewMenuItems.setItemDelegateForColumn(mt.ACTION, ActionDelegate(self))
         # signal and slot
         self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)
         
@@ -215,7 +225,7 @@ class MenusForm(FormIndexManager):
         
     def duplicate(self) -> None:
         "Duplicate the current menu"
-        currentMenu = self.model.index(self.mapper.currentIndex(), CODE).data()
+        currentMenu = self.model.index(self.mapper.currentIndex(), mn.CODE).data()
         dlg = DuplicateMenuDialog(self, currentMenu)
         dlg.exec()
         self.reload()
