@@ -286,6 +286,9 @@ class Order():
                 i['fulfillment_date'] = self.header['fulfillment_date']
         # insert
         try:
+            print('Header', self.header)
+            print('Lines', self.lines)
+            print('Headerdeps', headersdep)
             self.header.insert_record()
             t = self.header['order_header_id']
             ev = self.header['event_id']

@@ -54,11 +54,13 @@ def fromCurrency(val: str) -> decimal.Decimal:
             return decimal.Decimal(val)
     else:
         return decimal.Decimal(0)
-
-def toCurrency(val: decimal.Decimal) -> str:
-    "Returns a string rapresentation of currency (decimal) value"
-    return session['qlocale'].toCurrencyString(float(val), ' ')  # = no currency symbol
-
+    
+    
+def toCurrency(val: decimal.Decimal | float | int) -> str:
+    """Return a localized string representation of a currency value without symbols."""
+    # Convert integer cents back to a standard float format strictly for the QLocale formatter
+    float_val = float(val / 100) if isinstance(val, int) else float(val)
+    return session['qlocale'].toCurrencyString(float_val, ' ')  # Space character suppresses the currency symbol
 
 
 # language and country list

@@ -28,7 +28,7 @@ class Ui_SeatMapWidget(object):
     def setupUi(self, SeatMapWidget):
         if not SeatMapWidget.objectName():
             SeatMapWidget.setObjectName(u"SeatMapWidget")
-        SeatMapWidget.resize(805, 529)
+        SeatMapWidget.resize(877, 628)
         font = QFont()
         font.setKerning(True)
         SeatMapWidget.setFont(font)
@@ -320,6 +320,12 @@ class Ui_SeatMapWidget(object):
 
         self.verticalLayout_11.addItem(self.verticalSpacer)
 
+        self.pushButtonDeleteAll = QPushButton(self.pageList)
+        self.pushButtonDeleteAll.setObjectName(u"pushButtonDeleteAll")
+        self.pushButtonDeleteAll.setStyleSheet(u"")
+
+        self.verticalLayout_11.addWidget(self.pushButtonDeleteAll)
+
 
         self.horizontalLayout_9.addLayout(self.verticalLayout_11)
 
@@ -336,7 +342,7 @@ class Ui_SeatMapWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 824, 524))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 74, 24))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.verticalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
@@ -367,16 +373,6 @@ class Ui_SeatMapWidget(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.pushButtonDeleteAll = QPushButton(SeatMapWidget)
-        self.pushButtonDeleteAll.setObjectName(u"pushButtonDeleteAll")
-        self.pushButtonDeleteAll.setStyleSheet(u"")
-
-        self.horizontalLayout_4.addWidget(self.pushButtonDeleteAll)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_5)
-
         self.pushButtonPreview = QPushButton(SeatMapWidget)
         self.pushButtonPreview.setObjectName(u"pushButtonPreview")
         self.pushButtonPreview.setCheckable(True)

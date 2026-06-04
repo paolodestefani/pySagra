@@ -61,5 +61,3 @@ pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm
 
 # exit from venv
 deactivate
-]
-

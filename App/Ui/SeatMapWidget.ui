@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>805</width>
-    <height>529</height>
+    <width>877</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="font">
@@ -462,6 +462,16 @@
              </property>
             </spacer>
            </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonDeleteAll">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Delete All</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -480,8 +490,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>824</width>
-            <height>524</height>
+            <width>74</width>
+            <height>24</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -541,29 +551,6 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="QPushButton" name="pushButtonDeleteAll">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string>Delete All</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_5">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
      <item>
       <widget class="QPushButton" name="pushButtonPreview">
        <property name="text">

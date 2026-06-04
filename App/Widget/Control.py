@@ -783,7 +783,7 @@ class ButtonItem(QPushButton):
         # parameters for stock level logic, variants and price, will be set by the caller
         self.id = None
         self.sc = None 
-        self.price = None
+        self.price: int | None = None
         self.hasVariants = False
         #self.level = None # *** set by caller, triggers __setattr__ logic for colors and enabled state
         self.setFont(QFont(self.setting['order_list_font_family'], self.setting['order_list_font_size'], QFont.Weight.Bold))
@@ -798,20 +798,37 @@ class ButtonItem(QPushButton):
         self.current_text = self.default_text
 
     def __setattr__(self, name, value):
+        # If the database or caller sets 'price' as float, convert it instantly to integer cents
+        if name == 'price' and value is not None:
+            name = 'price_cents'
+            value = int(round(value * 100))
+            
         super().__setattr__(name, value)
+        
+        # Evaluate stock level thresholds and color changes
         if name == 'level':
             if self.sc:
-                if value >= self.setting['warning_stock_level']:
+                # Safely extract the integer level value from the object context
+                # This bypasses any boolean type pollution during fast structural setups
+                current_level = int(self.level) if self.level is not None else 0
+                
+                # Convert settings thresholds from float-strings to integer cents (multiplied by 100)
+                warning_limit = int(round(float(self.setting['warning_stock_level']) * 100))
+                critical_limit = int(round(float(self.setting['critical_stock_level']) * 100))
+                
+                # Evaluate color rules using pure integer comparisons
+                if current_level >= warning_limit:
                     bc, tc = self.default_bg, self.default_text
-                elif self.setting['critical_stock_level'] < value < self.setting['warning_stock_level']:
+                elif critical_limit < current_level < warning_limit:
                     bc, tc = QColor(self.setting['warning_background_color']), QColor(self.setting['warning_text_color'])
-                elif 0 < value <= self.setting['critical_stock_level']:
+                elif 0 < current_level <= critical_limit:
                     bc, tc = QColor(self.setting['critical_background_color']), QColor(self.setting['critical_text_color'])
                 else:
                     bc, tc = QColor(self.setting['disabled_background_color']), QColor(self.setting['disabled_text_color'])
                     self.setEnabled(False)
                 
-                if value > 0: self.setEnabled(True)
+                if current_level > 0: 
+                    self.setEnabled(True)
             else:
                 bc, tc = self.default_bg, self.default_text
                 self.setEnabled(True)
@@ -867,7 +884,10 @@ class ButtonItem(QPushButton):
     def showLevel(self):
         "Update the button text to show the current stock level"
         if self.sc:
-            self.setText(self.caption + f"\n({self.level})")
+            actual_level = self.level / 100
+            # Clean format: drops trailing zeros (e.g. 50.0 becomes 50, 15.50 becomes 15.5)
+            level_str = f"{actual_level:.2f}".rstrip('0').rstrip('.') if actual_level % 1 != 0 else str(int(actual_level))
+            self.setText(self.caption + f"\n({level_str})")
 
     def hideLevel(self):
         "Update the button text to hide the stock level and show only the caption"
