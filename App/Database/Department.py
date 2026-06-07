@@ -73,7 +73,7 @@ ORDER BY sorting;"""
         return cur.fetchall()
 
 
-def get_department(desc: str) -> int:
+def get_department(desc: str) -> int | None:
     "Returns department id of given department description"
     script = t"""
 SELECT department_id 
@@ -83,8 +83,10 @@ WHERE
     AND description = {desc};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-        return cur.fetchall()[0]
+        result = cur.execute(script).fetchone()
+        if result:
+            return result[0]
+        return None
 
 
 def get_department_desc(dep: int) -> str | None:

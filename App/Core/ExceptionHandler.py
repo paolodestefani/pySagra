@@ -60,7 +60,7 @@ error_code_messages = {
     'PA012': _tr("PGError", "Company id already exists (create company sp)"),
     'PA013': _tr("PGError", "Company is in use (drop company sp)"),
 
-    'CCER': _tr("PGError", "Row modified before update/delete"),
+    'CCER': _tr("PGError", "Row modified before update/delete, roaload records"),
     
     # data exceptions
     '22000': _tr("PGError", "Generic data exception"),
@@ -95,7 +95,7 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
         yield
     except PyAppDBConnectionError as er:
         QGuiApplication.restoreOverrideCursor()
-        msg = error_code_messages.get(er.code, _tr("PGError", "Undefined database error"))
+        msg = error_code_messages.get(er.code, _tr("PGError", "Connection error"))
         MessageBoxCritical(parent_widget,
                            _tr("MessageDialog", "Database connection"),
                            er.code,
@@ -107,11 +107,10 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
         # Map standard PostgreSQL SQLSTATE error codes to clear messages
         msg = error_code_messages.get(er.code, _tr("PGError", "Undefined database error"))
         
-        if er.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008'):
-            msg = _tr("Login", "Authentication failed\nwrong user or password")
+        if er.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008', 'CCER'):
             QMessageBox.warning(parent_widget,
                                  _tr('MessageDialog', 'Warning'),
-                                 msg)
+                                 msg)            
         else:
             # Display the custom PySide6 critical dialog box
             MessageBoxCritical(parent_widget, operation_title, er.code, msg, er.message)

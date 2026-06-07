@@ -69,11 +69,12 @@ class prf(IntEnum):
     DESCRIPTION = 1
     SYSTEM      = 2
 
-class pac(IntEnum):
-    PROFILE         = 0
-    ACTION          = 1
-    AUTHORIZATION   = 2
-
+class paa(IntEnum):
+    PROFILE     = 0
+    ACTION      = 1
+    READ        = 2
+    WRITE       = 3
+    EXECUTE     = 4
 
 def authorizations() -> tuple[tuple[str, str], ...]:
     return (('R', _tr('Profile', 'Read')),
@@ -87,6 +88,11 @@ def profile(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     pw = ProfileForm(mw, title, auth)
     pw.applySortFilter()
     mw.addTab(title, pw)
@@ -119,7 +125,7 @@ class DuplicateProfileDialog(QDialog):
 class ProfileForm(FormIndexManager):
     "Profile form management"
     
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = ProfileModel(self)
         idxModel = ProfileIndexModel(self)
@@ -151,9 +157,8 @@ class ProfileForm(FormIndexManager):
         # detail tableview
         self.ui.tableViewActions.setModel(paModel)
         self.ui.tableViewActions.setLayoutName('ProfileAction')
-        #self.ui.tableViewActions.setLayout()
-        self.ui.tableViewActions.setItemDelegateForColumn(pac.ACTION, ActionDelegate(self))
-        self.ui.tableViewActions.setItemDelegateForColumn(pac.AUTHORIZATION, RelationDelegate(self, authorizations))
+        self.ui.tableViewActions.setItemDelegate(GenericDelegate(self))
+        self.ui.tableViewActions.setItemDelegateForColumn(paa.ACTION, ActionDelegate(self))
         # authorization button group
         self.buttonGroup = QButtonGroup(self)
         self.buttonGroup.addButton(self.ui.pushButtonRead)
@@ -169,26 +174,31 @@ class ProfileForm(FormIndexManager):
     def fillActions(self) -> None:
         "Fill actions table view with all actions not already in"
         model = self.ui.tableViewActions.model()
-        current = {model.data(model.index(i, pac.ACTION)) for i in range(model.rowCount())}
+        current = {model.data(model.index(i, paa.ACTION)) for i in range(model.rowCount())}
         actions = {i for i in actionDefinition}
         difference = actions - current
         for i in difference:
-            model.insertRow(model.rowCount())
-            modelRow = model.rowCount() - 1
-            model.setData(model.index(modelRow, pac.ACTION), i)
-            model.setData(model.index(modelRow, pac.AUTHORIZATION), 'X')
+            modelRow = model.rowCount()
+            model.insertRow(modelRow)
+            model.setData(model.index(modelRow, paa.ACTION), i)
+            model.setData(model.index(modelRow, paa.READ), True) # Qt.CheckState.Checked, role=Qt.ItemDataRole.CheckStateRole)
+            model.setData(model.index(modelRow, paa.WRITE), True) #Qt.CheckState.Checked, role=Qt.ItemDataRole.CheckStateRole)
+            model.setData(model.index(modelRow, paa.EXECUTE), True) #Qt.CheckState.Checked, role=Qt.ItemDataRole.CheckStateRole)        
 
     def authorizationButtonClicked(self, button: QPushButton) -> None:
         "Set all action to read/write/execute"
-        if button == self.ui.pushButtonRead:
-            auth = 'R'
-        elif button == self.ui.pushButtonWrite:
-            auth = 'W'
-        else:
-            auth = 'X'
+        match button:
+            case self.ui.pushButtonRead:
+                col = paa.READ
+            case self.ui.pushButtonWrite:
+                col = paa.WRITE
+            case self.ui.pushButtonExecute:
+                col = paa.EXECUTE
         model = self.ui.tableViewActions.model()
         for row in range(model.rowCount()):
-            model.setData(model.index(row, pac.AUTHORIZATION), auth)
+            model.setData(model.index(row, col), 
+                          value=Qt.CheckState.Checked, 
+                          role=Qt.ItemDataRole.CheckStateRole)
 
     def delete(self) -> None:
         "Delete current profile"

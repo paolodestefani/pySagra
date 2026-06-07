@@ -100,6 +100,11 @@ def company(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     cf = CompanyForm(mw, title, auth)
     cf.applySortFilter()
     mw.addTab(title, cf)

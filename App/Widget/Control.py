@@ -28,9 +28,9 @@ This module groups general customized controls used in forms
 """
 
 # standard library
-import os
-import decimal
-from typing import Callable, Any
+from decimal import Decimal
+from typing import Callable
+from typing import Any
 
 # PySide6
 from PySide6.QtCore import QByteArray
@@ -98,20 +98,24 @@ class LabelImage(QLabel):
         ba = QByteArray()
         buf = QBuffer(ba)
         buf.open(QIODeviceBase.OpenModeFlag.WriteOnly)
-        if self.pixmap():
-            self.pixmap().save(buf, "PNG")
-            return buf.data()
-        else:
-            return None
+        if self.pixmap().save(buf, "PNG"):
+            buf.close()
+            return ba
+        return None
 
     def _set_imageBytearray(self, ba: QByteArray|None) -> None:
         "Set/display an image on label"
-        if ba:
+        if ba and not ba.isEmpty():
             pix = QPixmap()
-            pix.loadFromData(ba)
-            super().setPixmap(pix)
+            if pix.loadFromData(ba):
+                super().setPixmap(pix)
+            else:
+                super().clear()
+                self.setText(_tr("Controls", "INVALID IMAGE"))
         else:
-            self.clear()
+            super().clear()
+            self.setText(_tr("Controls", "NO IMAGE"))
+        self.imageChanged.emit()
 
     imageBytearray = Property(QByteArray, 
                               fget=_get_imageBytearray,
@@ -123,11 +127,13 @@ class LabelImage(QLabel):
         "Clear the label"
         super().clear()
         self.setText(_tr("Controls", "NO IMAGE"))
+        self.imageChanged.emit()
         
 
 class SpinBoxDecimal(QDoubleSpinBox):
+    "Custom doublespinbox for show decimal values with None option"
 
-    customValueChanged=Signal(decimal.Decimal)
+    customValueChanged=Signal(Decimal)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
@@ -136,13 +142,13 @@ class SpinBoxDecimal(QDoubleSpinBox):
         self.setRange(-999999999999.99, 999999999999.99)
         self.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-    def _get_modelDataDecimal(self) -> decimal.Decimal|None:
+    def _get_modelDataDecimal(self) -> Decimal|None:
         if self.value() == self.minimum():
             return None
         else:
-            return decimal.Decimal(str(self.value())) # float to string to decimal for keep rounded values
+            return Decimal(str(self.value())) # float to string to decimal for keep rounded values
 
-    def _set_modelDataDecimal(self, value: decimal.Decimal|None) -> None:
+    def _set_modelDataDecimal(self, value: Decimal|None) -> None:
         if value is None:
             self.setValue(self.minimum())
         else:
@@ -156,6 +162,7 @@ class SpinBoxDecimal(QDoubleSpinBox):
 
 
 class SpinBoxInt(QSpinBox):
+    "Custom spinbox for show integer with None option"
 
     customValueChanged=Signal(int)
 
@@ -185,6 +192,7 @@ class SpinBoxInt(QSpinBox):
 
 
 class CheckBox(QCheckBox):
+    "Custom checkbox for boolean with None option"
 
     customCheckStateChanged=Signal()
 
@@ -216,7 +224,7 @@ class CheckBox(QCheckBox):
 
 
 class DateEdit(QLineEdit):
-    "A line edit for date input that accepts Null values"
+    "A line edit for date input with None option"
 
     dateChanged=Signal()
 
@@ -282,7 +290,7 @@ class DateEdit(QLineEdit):
 
 
 class DateTimeEdit(QDateTimeEdit):
-    "A QDateTimeEdit class that accepts Null values"
+    "A QDateTimeEdit class with None option"
 
     customValueChanged = Signal(QDateTime) 
 
@@ -315,7 +323,7 @@ class DateTimeEdit(QDateTimeEdit):
 
 class RelationalComboBox(QComboBox):
     """QComboBox that uses userData + itemText for key-value foreign key
-    or set/get items from a (k, v) list. Can be Null. If available can use icon too"""
+    or set/get items from a (k, v) list. Can be None. If available can use icon too"""
 
     itemChanged=Signal(int)
 
@@ -327,8 +335,8 @@ class RelationalComboBox(QComboBox):
         self.currentIndexChanged.connect(self._on_index_changed)
 
     def _on_index_changed(self, index: int) -> None:
-        # Se l'indice è -1 significa che la combo è stata svuotata da codice (es. clear)
-        # Non dobbiamo emettere il segnale per il mapper in questo caso
+        # If the index is -1 it means that the combo has been emptied by code (e.g. clear)
+        # We don't need to output the signal to the mapper in this case
         if index != -1:
             self.itemChanged.emit(index)
 
@@ -362,7 +370,6 @@ class RelationalComboBox(QComboBox):
                         self.addItem(k, v)
 
     def setItemList(self, items: list) -> None:
-        # Disconnetti temporaneamente il trasferimento del segnale
         self.currentIndexChanged.disconnect(self._on_index_changed)
         self.blockSignals(True)
         self.clear()
@@ -374,7 +381,6 @@ class RelationalComboBox(QComboBox):
                 for v, k in items:
                     self.addItem(k, v)
         self.blockSignals(False)
-        # Riconnetti il segnale
         self.currentIndexChanged.connect(self._on_index_changed)
 
     def showPopup(self) -> None:
@@ -523,7 +529,6 @@ class ColorComboBox(QComboBox):
                             fset=_set_modelDataStr,
                             notify=itemChanged,
                             user=True)
-
 
 
 class CheckableComboBox(QComboBox):
@@ -693,29 +698,29 @@ class CheckableComboBox(QComboBox):
                 model.item(i).setCheckState(Qt.CheckState.Unchecked)
 
 
-class PasswordLineEdit(QLineEdit):
-    """A QLineEdit that encrypt text"""
+# class PasswordLineEdit(QLineEdit):
+#     """A QLineEdit that encrypt text"""
 
-    textChanged=Signal()
+#     textChanged=Signal()
 
-    def __init__(self, parent: QWidget) -> None:
-        super().__init__(parent)
-        self.setEchoMode(QLineEdit.EchoMode.Password)
-        self.setClearButtonEnabled(True)
-        self.setPlaceholderText(_tr("controls", "Type the password here"))
+#     def __init__(self, parent: QWidget) -> None:
+#         super().__init__(parent)
+#         self.setEchoMode(QLineEdit.EchoMode.Password)
+#         self.setClearButtonEnabled(True)
+#         self.setPlaceholderText(_tr("controls", "Type the password here"))
 
-    def _get_modelDataEncrypt(self) -> str:
-        return string_encode(self.text())
+#     def _get_modelDataEncrypt(self) -> str:
+#         return string_encode(self.text())
 
-    def _set_modelDataEncrypt(self, data: str) -> None:
-        if data:
-            self.setText(string_decode(data))
+#     def _set_modelDataEncrypt(self, data: str) -> None:
+#         if data:
+#             self.setText(string_decode(data))
 
-    modelDataEncrypt = Property(str, 
-                                fget=_get_modelDataEncrypt,
-                                fset=_set_modelDataEncrypt,
-                                notify=textChanged,
-                                user=True)
+#     modelDataEncrypt = Property(str, 
+#                                 fget=_get_modelDataEncrypt,
+#                                 fset=_set_modelDataEncrypt,
+#                                 notify=textChanged,
+#                                 user=True)
         
         
 class ButtonSeat(QPushButton):
@@ -775,124 +780,163 @@ class ButtonItem(QPushButton):
     
     def __init__(self, parent: QWidget, text: str, textColor: str, backgroundColor: str) -> None:
         super().__init__(parent)
-        if hasattr(parent, 'setting'):
-            self.setting = parent.setting # link to settings for stock level thresholds and colors
+        
+        # Safe link to parent configuration settings
+        self.setting = getattr(parent, 'setting', {})
+        
         self.description = text or ''
         self.caption = self.description.replace(' ', '\n')
-        self.setText(self.caption)
-        # parameters for stock level logic, variants and price, will be set by the caller
-        self.id = None
-        self.sc = None 
-        self.price: int | None = None
-        self.hasVariants = False
-        #self.level = None # *** set by caller, triggers __setattr__ logic for colors and enabled state
-        self.setFont(QFont(self.setting['order_list_font_family'], self.setting['order_list_font_size'], QFont.Weight.Bold))
+        
+        # Property initialization (prevents conflicts during instantiation)
+        self._price_cents: int | None = None
+        self._stockLevel: int = 0
+        self.id: int | None = None
+        self.hasInventory: bool = False 
+        self.hasVariants: bool = False
+        self._showLevel: bool = False
+        
+        # Font settings and constraints
+        font_family = self.setting.get('order_list_font_family', 'Arial')
+        font_size = int(self.setting.get('order_list_font_size', 11))
+        self.setFont(QFont(font_family, font_size, QFont.Weight.Bold))
         self.setMinimumWidth(65)
-        # variant indicator icon
-        self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25)
-        # base colors from parameters or defaults
+        
+        # Variant indicator icon fallback handling
+        self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25) if 'order_flag' in currentIcon else QPixmap()
+        
+        # Default fallback styling colors
         self.default_bg = QColor(backgroundColor)
         self.default_text = QColor(textColor)
-        # current properties (will be updated by da __setattr__)
         self.current_bg = self.default_bg
         self.current_text = self.default_text
 
-    def __setattr__(self, name, value):
-        # If the database or caller sets 'price' as float, convert it instantly to integer cents
-        if name == 'price' and value is not None:
-            name = 'price_cents'
-            value = int(round(value * 100))
-            
-        super().__setattr__(name, value)
-        
-        # Evaluate stock level thresholds and color changes
-        if name == 'level':
-            if self.sc:
-                # Safely extract the integer level value from the object context
-                # This bypasses any boolean type pollution during fast structural setups
-                current_level = int(self.level) if self.level is not None else 0
-                
-                # Convert settings thresholds from float-strings to integer cents (multiplied by 100)
-                warning_limit = int(round(float(self.setting['warning_stock_level']) * 100))
-                critical_limit = int(round(float(self.setting['critical_stock_level']) * 100))
-                
-                # Evaluate color rules using pure integer comparisons
-                if current_level >= warning_limit:
-                    bc, tc = self.default_bg, self.default_text
-                elif critical_limit < current_level < warning_limit:
-                    bc, tc = QColor(self.setting['warning_background_color']), QColor(self.setting['warning_text_color'])
-                elif 0 < current_level <= critical_limit:
-                    bc, tc = QColor(self.setting['critical_background_color']), QColor(self.setting['critical_text_color'])
-                else:
-                    bc, tc = QColor(self.setting['disabled_background_color']), QColor(self.setting['disabled_text_color'])
-                    self.setEnabled(False)
-                
-                if current_level > 0: 
-                    self.setEnabled(True)
-            else:
-                bc, tc = self.default_bg, self.default_text
-                self.setEnabled(True)
+        # Initialize button display text
+        self.update_button_text()
 
-            self.current_bg = bc
-            self.current_text = tc
-            self.update()
+    # --- PROPERTIES ---
+
+    @property
+    def price(self) -> float | None:
+        return (self._price_cents / 100.0) if self._price_cents is not None else None
+
+    @price.setter
+    def price(self, value: float | None):
+        if value is not None:
+            self._price_cents = int(round(value * 100))
+        else:
+            self._price_cents = None
+
+    @property
+    def stockLevel(self) -> int:
+        return self._stockLevel
+
+    @stockLevel.setter
+    def stockLevel(self, value: int):
+        self._stockLevel = int(value) if value is not None else 0
+        self.recalculate_state_and_colors()
+        self.update_button_text()
+
+    @property
+    def showLevel(self) -> bool:
+        return self._showLevel
+
+    @showLevel.setter
+    def showLevel(self, value: bool):
+        """Intercepts when showLevel changes to instantly refresh the text layout"""
+        self._showLevel = bool(value)
+        self.update_button_text()  # Calculates the new text dynamically (\n or normal)
+        self.update()              # Forces Qt to repaint the button immediately
+
+    def recalculate_state_and_colors(self):
+        """Evaluates stock level thresholds and updates active styling variables"""
+        if not self.hasInventory:
+            self.current_bg = self.default_bg
+            self.current_text = self.default_text
+            self.setEnabled(True)
+            return
+
+        current_level = self._stockLevel
+        
+        # Safe extraction with explicit defaults to prevent configuration crashes
+        warning_limit = int(round(float(self.setting.get('warning_stock_level', 10))))
+        critical_limit = int(round(float(self.setting.get('critical_stock_level', 5))))
+        
+        if current_level >= warning_limit:
+            bc, tc = self.default_bg, self.default_text
+            self.setEnabled(True)
+        elif critical_limit < current_level < warning_limit:
+            bc = QColor(self.setting.get('warning_background_color', '#ffaa00'))
+            tc = QColor(self.setting.get('warning_text_color', '#000000'))
+            self.setEnabled(True)
+        elif 0 < current_level <= critical_limit:
+            bc = QColor(self.setting.get('critical_background_color', '#ff2200'))
+            tc = QColor(self.setting.get('critical_text_color', '#ffffff'))
+            self.setEnabled(True)
+        else:
+            bc = QColor(self.setting.get('disabled_background_color', '#dcdcdc'))
+            tc = QColor(self.setting.get('disabled_text_color', '#888888'))
+            self.setEnabled(False)
+            
+        self.current_bg = bc
+        self.current_text = tc
+        self.update() # Requests a safe canvas repaint operation
+
+    def update_button_text(self):
+        """Calculates button string data outside paintEvent to prevent recursive loops"""
+        if self.hasInventory and self.showLevel:
+            actual_level = self._stockLevel
+            level_str = f"{actual_level:.2f}".rstrip('0').rstrip('.') if actual_level % 1 != 0 else str(int(actual_level))
+            self.setText(f"{self.caption}\n({level_str})")
+        else:
+            self.setText(self.caption)
 
     def paintEvent(self, event):
-        """Custom paint event to draw the button with a 3D effect, custom colors based on stock level
-        and an optional variant indicator icon"""
+        """Custom paint event to draw the button with a 3D effect, custom colors and icons"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        
         option = QStyleOptionButton()
         self.initStyleOption(option)
+        
         margin = 5
         rect = option.rect.adjusted(margin, margin, -margin, -margin)
-        # COLOR LOGIC
+        
+        # Dynamic base color assignment matching state
         base_color = QColor(self.current_bg)
         if not self.isEnabled():
             base_color = QColor(self.setting.get('disabled_background_color', "#dcdcdc"))
-        # GRADIEN FOR 3D EFFECT: light at the top, base color in the middle, darker at the bottom
+            
+        # 3D Depth Linear Gradient Construction
         gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
         if option.state & QStyle.StateFlag.State_Sunken:
-            # on pushed state, invert gradient for pressed effect: darker at the top, base color at the bottom
             gradient.setColorAt(0, base_color.darker(120))
             gradient.setColorAt(1, base_color.darker(110))
         else:
-            # not pushed state, normal gradient with light reflection at the top and shadow at the bottom
-            gradient.setColorAt(0, base_color.lighter(115)) # light reflection at the top
-            gradient.setColorAt(0.5, base_color)            # central color
-            gradient.setColorAt(1, base_color.darker(110))  # base shadow at the bottom
-        # DRAW BACKGROUND WITH GRADIENT AND BORDER
+            gradient.setColorAt(0, base_color.lighter(115))
+            gradient.setColorAt(0.5, base_color)
+            gradient.setColorAt(1, base_color.darker(110))
+            
+        # Draw Rounded Rect Background Container
         painter.setBrush(gradient)
-        # border pen: slightly darker than the base color for a subtle 3D border
         border_color = base_color.darker(150)
         painter.setPen(QPen(border_color, 1))
         painter.drawRoundedRect(rect, 6, 6)
-        # add a light line at the top to simulate the illuminated edge, only if enabled and not pressed
+        
+        # Top Rim Lighting Reflection Detail
         if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
             painter.setPen(QPen(base_color.lighter(130), 1))
             painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
-        # DRAW TEXT
+            
+        # Paint Core Text Layers
         painter.setPen(QColor(self.current_text))
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
-        # DRAW VARIANT INDICATOR ICON IF APPLICABLE
-        if self.hasVariants:
-            icon_rect = QRect(rect.right() - 18, rect.top() - 2, 24, 24) # on right
-            #icon_rect = QRect(rect.left() + 4, rect.top() + 4, 16, 16) # on left
-            painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
-        painter.end()
         
-    def showLevel(self):
-        "Update the button text to show the current stock level"
-        if self.sc:
-            actual_level = self.level / 100
-            # Clean format: drops trailing zeros (e.g. 50.0 becomes 50, 15.50 becomes 15.5)
-            level_str = f"{actual_level:.2f}".rstrip('0').rstrip('.') if actual_level % 1 != 0 else str(int(actual_level))
-            self.setText(self.caption + f"\n({level_str})")
-
-    def hideLevel(self):
-        "Update the button text to hide the stock level and show only the caption"
-        if self.sc:
-            self.setText(self.caption)
+        # Paint Variant Icon Overlays
+        if self.hasVariants and not self.variantIndicatorIcon.isNull():
+            icon_rect = QRect(rect.right() - 18, rect.top() - 2, 24, 24)
+            painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
+            
+        painter.end()
 
 
 class ButtonItemExample(QPushButton):

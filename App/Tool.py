@@ -87,15 +87,15 @@ def eventBasedTool(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     icon = action.icon()
-    if auth != 'X':
-        QMessageBox.information(mw,
-                                _tr('MessageDialog', 'Information'),
-                                _tr('Utility', 'You are not authorized to use this utility'))
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Tool', 'No access right to this function'))
         return
     if not event_lookup():
         QMessageBox.information(mw,
                                 _tr('MessageDialog', 'Information'),
-                                _tr('Utility', 'No event available'))
+                                _tr('Tool', 'No event available'))
         return
     dlg = EventToolDialog(mw, title, icon)
     if dlg.exec() == QDialog.DialogCode.Rejected:
@@ -110,10 +110,10 @@ def deleteTool(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     icon = action.icon()
-    if auth != 'X':
-        QMessageBox.information(mw,
-                                _tr('MessageDialog', 'Information'),
-                                _tr('Utility', 'You are not authorized to use this utility'))
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Tool', 'No access right to this function'))
         return
     dlg = DeleteToolDialog(mw, title, icon)
     if dlg.exec() == QDialog.DialogCode.Rejected:
@@ -128,10 +128,10 @@ def copyTool(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     icon = action.icon()
-    if auth != 'X':
-        QMessageBox.information(mw,
-                                _tr('MessageDialog', 'Information'),
-                                _tr('Utility', 'You are not authorized to use this utility'))
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Tool', 'No access right to this function'))
         return
     dlg = CopyToolDialog(mw, title, icon)
     if dlg.exec() == QDialog.DialogCode.Rejected:
@@ -247,7 +247,7 @@ class DeleteToolDialog(QDialog):
         self.ui.setupUi(self)
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
-        self.ui.groupBoxWarning.setTitle(_tr('Utility', 'warning'))
+        self.ui.groupBoxWarning.setTitle(_tr('Tool', 'warning'))
         self.ui.labelWarning.setText(_tr('Utility', 
                                          "This utility deletes ALL the data from the "
                                          "selected objects of the current company. It's not possible "
@@ -259,8 +259,8 @@ class DeleteToolDialog(QDialog):
         "Proceed with the selected utility"
         
         if QMessageBox.question(self,
-                                _tr("Utility","Delete Tool"),
-                                _tr("Utility", "Are you sure you want to delete all the records "
+                                _tr("MessageDialog","Question"),
+                                _tr("Tool", "Are you sure you want to delete all the records "
                                     "of the selected objects from the current company ?"),
                                 QMessageBox.Yes | QMessageBox.No,  # butons
                                 QMessageBox.No  # default botton
@@ -293,7 +293,7 @@ class DeleteToolDialog(QDialog):
         else:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Utility', 'Operation completed successfully'))
+                                    _tr('Tool', 'Operation completed successfully'))
 
 
 class CopyToolDialog(QDialog):
@@ -308,7 +308,7 @@ class CopyToolDialog(QDialog):
         for i, d in company_list():
             if i != session['current_company']:
                 self.ui.comboBoxCompany.addItem(d, i)
-        self.ui.labelWarning.setText(_tr('Utility', 
+        self.ui.labelWarning.setText(_tr('Tool', 
                                          "This utility append ALL the records from the "
                                          "selected objects of the selected company to the current company. "
                                          "It's not possible to undo this operation. Use with caution!\n"
@@ -320,8 +320,8 @@ class CopyToolDialog(QDialog):
         # selected company id
         company_id = self.ui.comboBoxCompany.currentData()
         if QMessageBox.question(self,
-                                _tr("Utility","Copy Tool"),
-                                _tr("Utility", "Are you sure you want to copy all the records "
+                                _tr("MessageDialog","Question"),
+                                _tr("Tool", "Are you sure you want to copy all the records "
                                     "of the selected objects of the selected company to the current company ?"),
                                 QMessageBox.Yes | QMessageBox.No,  # butons
                                 QMessageBox.No  # default botton
@@ -351,4 +351,4 @@ class CopyToolDialog(QDialog):
         else:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Utility', 'Operation completed successfully'))
+                                    _tr('Tool', 'Operation completed successfully'))

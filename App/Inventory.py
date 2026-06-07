@@ -35,9 +35,15 @@ import logging
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QSettings
+from PySide6.QtCore import QDateTime
+from PySide6.QtGui import QCloseEvent
+from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
+from App.Core.L10n import _tr
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 from App.Database.Lookup import event_lookup
 from App.Database.Setting import Setting
 from App.Widget.Delegate import RelationDelegate
@@ -50,6 +56,7 @@ from App.Database.Lookup import item_with_stock_control_lookup
 from App.Database.Models import InventoryModel
 from App.Database.Models import KitAvailabilityModel
 from App.Database.Models import MenuAvailabilityModel
+from App.Database.Tool import inventory_rebuild
 from App.Ui.InventoryWidget import Ui_InventoryWidget
 
 
@@ -75,6 +82,11 @@ def inventory(action: QAction, checked: bool = False):
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Inventory', 'No access right to this archive'))
+        return
     sw = InventoryForm(mw, title, auth)
     mw.addTab(title, sw)
     logger.info('Stock inventory Form added to main window')
@@ -82,7 +94,7 @@ def inventory(action: QAction, checked: bool = False):
 
 class InventoryForm(FormViewManager[Ui_InventoryWidget]):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         setting = Setting()
         model = InventoryModel(self)
@@ -113,8 +125,6 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
                                                                                      setting['inventory_warning_stock_level'],
                                                                                      setting['inventory_critical_stock_level']))
         self.ui.tableViewItem.setItemDelegateForColumn(inv.NEW_STOCK, NewStockDelegate(self))
-        # stay on NEW_STOCK column
-        #self.ui.tableViewItem.selectionModel().currentChanged.connect(self.columnChanged)
         # kit availability
         self.kitModel = KitAvailabilityModel(self)
         self.ui.tableViewKit.setModel(self.kitModel)
@@ -139,18 +149,25 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
             self.setFilters()
         # splitter
         self.ui.splitter.setStretchFactor(0, 2)
+        # scripting init
+        self.script = scriptInit(self)
 
-    def save(self):
+    @scriptMethod
+    def save(self) -> None:
         super().save()
         logger.info('Saving inventory')
+        # rebuild inventory for new items inserted an already sold
+        inventory_rebuild(self.selectedEvent)
         self.updateFilterConditions(self.selectedEvent)
 
-    def reload(self):
+    @scriptMethod
+    def reload(self) -> None:
         super().reload()
         logger.info('Reloading inventory')
         self.updateFilterConditions(self.selectedEvent)
 
-    def new(self):
+    @scriptMethod
+    def new(self) -> None:
         # set event on new record
         super().new()
         model = self.ui.tableViewItem.model()
@@ -161,7 +178,11 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         newIndex = model.index(newRow, inv.ITEM)
         self.ui.tableViewItem.edit(newIndex)
 
-    def updateFilterConditions(self, event, eventDate=None, dayPart=None):
+    def updateFilterConditions(self, 
+                               event: int,
+                               eventDate: QDateTime | None = None,
+                               dayPart: str | None = None
+                               ) -> None:
         "Update model of item, kit and menu on new event id"
         self.selectedEvent = event
         # stock model
@@ -174,11 +195,13 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         self.menuModel.setParameter('event', event)
         self.menuModel.select()
 
-    def setFilters(self):
+    def setFilters(self) -> None:
         "Filters event and items"
-        self.sortFilterDialog.show()
+        if self.sortFilterDialog:
+            self.sortFilterDialog.show()
         
-    def close(self, *args, **kwargs) -> bool: # avoid signature change for event handler
+    def closeEvent(self, event: QCloseEvent) -> None:
+        "Save splitter status on close event"
         st = QSettings()
         st.setValue("Inventory/SplitterSizes", self.ui.splitter.sizes())
-        return super().close() # return value is used by event handler, so return super() result
+        super().closeEvent(event)

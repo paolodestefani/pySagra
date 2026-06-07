@@ -50,6 +50,7 @@ from PySide6.QtCore import QTranslator
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QDialog
+from PySide6.QtNetwork import QHostInfo
 
 # minimum required version of application components
 from App import MRV_PYTHON
@@ -178,12 +179,18 @@ if __name__ == "__main__":
     # start PySide6 Application
     logger.info('Setting up QApplication')
     app = QApplication(sys.argv)
+    # host name
+    session['computer_name'] = QHostInfo.localHostName()
+    logger.info('Computer name has been set to %s', session['computer_name'])
     # l10n
     logger.info('Setting up QLocale to system locale')
-    lang = QLocale.system().name()[:2]  # = system language
-    # on macos system locale is not correct
+    # set system language
+    lang = QLocale.system().name()[:2]
+    # different behaviour on macOS
     if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-        lang = QLocale().uiLanguages(QLocale.TagSeparator.Underscore)[-1]
+        ui_langs = QLocale().uiLanguages(QLocale.TagSeparator.Underscore)
+        if ui_langs:
+            lang = ui_langs[0][:2]
     # install translators for qt and main application
     logger.info('Installing translators')
     for i in ('login', APPNAME):

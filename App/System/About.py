@@ -81,6 +81,14 @@ def about(action: QAction, checked: bool = False) -> None:
 def systemInfo(action: QAction, checked: bool = False) -> None:
     "System Information action"
     logger.info('Starting system info dialog')
+    mw = session['mainwin']
+    title = action.text()
+    auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this function'))
+        return
     h = SystemInfoDialog(session['mainwin'], action.icon())
     h.show()
     logger.info('System info shown')

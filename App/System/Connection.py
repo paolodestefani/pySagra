@@ -63,8 +63,13 @@ def connection(action: QAction, checked: bool = False) -> None:
     "Show/Edit curent connections"
     logger.info('Starting connections Form')
     mw = session['mainwin']
-    auth = action.data()
     title = action.text()
+    auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     cw = ConnectionForm(mw, title, auth)
     cw.applySortFilter()
     mw.addTab(title, cw)
@@ -75,8 +80,13 @@ def connectionHistory(action: QAction, checked: bool = False) -> None:
     "Show connections history, clear history"
     logger.info('Starting connections history Form')
     mw = session['mainwin']
-    auth = action.data()
     title = action.text()
+    auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     cw = ConnectionHistoryForm(mw, title, auth)
     cw.applySortFilter()
     mw.addTab(title, cw)
@@ -86,7 +96,7 @@ def connectionHistory(action: QAction, checked: bool = False) -> None:
 class ConnectionForm(FormViewManager):
     "Current connections form"
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = ConnectionModel()
         self.setModel(model)
@@ -142,7 +152,7 @@ class ConnectionForm(FormViewManager):
 class ConnectionHistoryForm(FormViewManager):
     "Connections History form"
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = ConnectionHistoryModel()
         self.setModel(model)

@@ -62,7 +62,6 @@ from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.L10n import toCurrency
 from App.Core.Gui import TP
 from App.Database.Setting import Setting
-from App.Database.Setting import SettingClass
 from App.Database.Event import get_event_from_date
 from App.Database.CashDesk import get_cash_desk_description
 from App.Database.Department import department_list
@@ -106,14 +105,21 @@ def orderEntry(action: QAction, checked: bool = False) -> None:
     "Open order dialog"
     logger.info('Starting order entry dialog')
     mw = session['mainwin']
+    title = action.text()
+    auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('OrderEntry', 'No access right to this feature'))
+        return
     # exit if no event available
     if not session['event_id']:
         QMessageBox.warning(mw,
                             _tr('MessageDialog', "Warning"),
-                            _tr('OrderDialog', 'No event available, for order entry '
+                            _tr('OrderEntry', 'No event available, for order entry '
                                 'is necessary to setup an event for the current date'))
         return
-    setting = SettingClass()
+    setting = Setting()
     Ui_OrderDialog: Callable
     if setting['order_entry_ui'] == 0:
         from App.Ui.OrderDialog0 import Ui_OrderDialog0 as Ui_OrderDialog
@@ -239,12 +245,12 @@ class BaseOrderDialog(QDialog):
         self.ui.tables_list_columns = self.setting['table_list_columns']
         
         # Order list table widget structural parameters
-        self.ui.twheader = [_tr('OrderDialog', "ID"),
-                            _tr('OrderDialog', "Variants"),
-                            _tr('OrderDialog', "Item"),
-                            _tr('OrderDialog', "Quantity"),
-                            _tr('OrderDialog', "Price"),
-                            _tr('OrderDialog', "Amount")]
+        self.ui.twheader = [_tr('OrderEntry', "ID"),
+                            _tr('OrderEntry', "Variants"),
+                            _tr('OrderEntry', "Item"),
+                            _tr('OrderEntry', "Quantity"),
+                            _tr('OrderEntry', "Price"),
+                            _tr('OrderEntry', "Amount")]
         self.ui.tabWidgetOrder.setColumnCount(len(self.ui.twheader))
         self.ui.tabWidgetOrder.setSortingEnabled(False)
         self.ui.tabWidgetOrder.setHorizontalHeaderLabels(self.ui.twheader)
@@ -290,13 +296,13 @@ class BaseOrderDialog(QDialog):
         self.ui.lineEditBarCode.editingFinished.connect(self.processWebOrder)
         
         # System Actions and Keyboard Shortcuts
-        ced = QAction(_tr('OrderDialog', 'Change Event and date'), self)
+        ced = QAction(_tr('OrderEntry', 'Change Event and date'), self)
         ced.setShortcut('Ctrl+F12')
         ced.triggered.connect(self.changeEventDate)
         self.addAction(ced)
         self.dateTimeDiff: Optional[int] = None # date time difference for event date change in seconds (int)
         
-        sfb = QAction(_tr('OrderDialog', 'Set focus on web order input'), self)
+        sfb = QAction(_tr('OrderEntry', 'Set focus on web order input'), self)
         sfb.setShortcut('Ctrl+F11')
         sfb.triggered.connect(lambda: self.ui.lineEditBarCode.setFocus())
         self.addAction(sfb)
@@ -321,9 +327,9 @@ class BaseOrderDialog(QDialog):
         "Update window title and cash desk description"
         cd = get_cash_desk_description()
         if not cd:
-            cd = _tr('OrderDialog', 'cash desk name to set')
+            cd = _tr('OrderEntry', 'cash desk name to set')
         self.ui.labelCashDeskDescription.setText(cd)
-        txt = _tr('OrderDialog', "Company: {} User: {} Event: {} Cash Desk: {}  [Press ESC to quit]").format(
+        txt = _tr('OrderEntry', "Company: {} User: {} Event: {} Cash Desk: {}  [Press ESC to quit]").format(
             str(session.get('company_description') or ''),
             str(session.get('app_user_code') or ''),
             str(session.get('event_description') or ''),
@@ -333,7 +339,7 @@ class BaseOrderDialog(QDialog):
         
     def changeEventDate(self) -> None:
         "Change current date/event"
-        dateTime, ok = DateTimeInputDialog(_tr('OrderDialog', 'Select the date for event selection:'))
+        dateTime, ok = DateTimeInputDialog(_tr('OrderEntry', 'Select the date for event selection:'))
         if not ok:
             return
         # set datedifference for current date and selected date, to show correct time in order dialog and print correct date in order report
@@ -373,11 +379,11 @@ class BaseOrderDialog(QDialog):
     def resetAdvice(self) -> None:
         "Reset dialog advice from idle timer"
         self.idleTimer.stop()
-        message = _tr("OrderDialog", "Warning: No order inserted since {} seconds.\n"
+        message = _tr("OrderEntry", "Warning: No order inserted since {} seconds.\n"
                       "It is recommended to update the window data, "
                       "Update it now ?").format(self.setting['inactivity_time'])
         if QMessageBox.question(self,
-                                _tr("OrderDialog", "Question"),
+                                _tr("OrderEntry", "Question"),
                                 message,
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
                                 ) == QMessageBox.StandardButton.Yes:
@@ -397,9 +403,9 @@ class BaseOrderDialog(QDialog):
     def checkCovers(self, value) -> None:
         "Check covers value against max covers setting and show warning if exceeded"
         if value > self.setting['max_covers']:
-            msg = _tr("OrderDialog", "Warning: the number of covers is greater than {}").format(self.setting['max_covers'])
+            msg = _tr("OrderEntry", "Warning: the number of covers is greater than {}").format(self.setting['max_covers'])
             QMessageBox.warning(self,
-                                _tr("OrderDialog", "Warning"),
+                                _tr("MessageDialog", "Warning"),
                                 msg)
             self.ui.spinBoxCovers.setFocus()
 
@@ -409,26 +415,28 @@ class BaseOrderDialog(QDialog):
             return
         if self.ui.stackedWidgetTableOrder.currentIndex() == 0:
             self.ui.stackedWidgetTableOrder.setCurrentIndex(1)
-            self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Order'))
+            self.ui.pushButtonTablesSwitch.setText(_tr('OrderEntry', 'Order'))
         else:
             self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
-            self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Tables'))
+            self.ui.pushButtonTablesSwitch.setText(_tr('OrderEntry', 'Tables'))
 
     def toggleLevel(self, toggled) -> None:
         "Hide/unhide stock level in list buttons"
         for b in self.ui.bgi.buttons():
             if toggled:
-                b.showLevel()
+                b.showLevel = True
             else:
-                b.hideLevel()
+                b.showLevel = False
 
     def resetDialog(self) -> None:
         """Setup initial dialog's values and regenerate dynamic UI elements."""
+        # update settings
+        self.setting.load()
         # Exit if no event is available for the current date
         if not session['event_id']:
             QMessageBox.warning(session['mainwin'],
                                 _tr('MessageDialog', 'Warning'),
-                                _tr('OrderDialog', 'No event available. For order entry '
+                                _tr('OrderEntry', 'No event available. For order entry '
                                     'it is necessary to setup an event for the current date.'))
             st = QSettings()
             st.setValue("OrderDialogGeometry", self.saveGeometry())
@@ -439,7 +447,7 @@ class BaseOrderDialog(QDialog):
         if self.ui.tabWidgetOrder.rowCount() != 0:
             if QMessageBox.question(self,
                                     _tr("MessageDialog", "Question"),
-                                    _tr('OrderDialog', "There are items already entered, "
+                                    _tr('OrderEntry', "There are items already entered, "
                                         "the item list will be cleared. Proceed anyway ?"),
                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                     QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
@@ -473,7 +481,7 @@ class BaseOrderDialog(QDialog):
         
         # Populate the grid with active tables from database/list
         success = False
-        with gui_exception_context(self, _tr('OrderDialog', "Loading tables from database")):
+        with gui_exception_context(self, _tr('OrderEntry', "Loading tables from database")):
             for table_title, row_pos, col_pos, text_color, bg_color, unavailable in table_list():
                 if row_pos is None or col_pos is None:
                     continue
@@ -571,18 +579,18 @@ class BaseOrderDialog(QDialog):
         
         # Dynamic generation of departments and item buttons
         success = False
-        with gui_exception_context(self, _tr('OrderDialog', "Loading items from database")):
+        with gui_exception_context(self, _tr('OrderEntry', "Loading items from database")):
             for dept_id, dept_name in department_list(include_menu=True):
                 tab_pane = QWidget()
                 grid_layout = QGridLayout()
                 grid_layout.setSpacing(self.setting['order_list_spacing'])
                 
                 # Rebuild the grid layout populating item buttons per department
-                for (item_id, item_desc, item_price, row_pos, col_pos, has_stock, has_delivered, txt_color, bg_color,
+                for (item_id, item_desc, item_price, row_pos, col_pos, has_inventory, has_delivered, txt_color, bg_color,
                     has_vars, available_qty) in item_list(session['event_id'], dept_id):
                     if not row_pos or not col_pos:
-                        message = _tr('OrderDialog', "Item '{}' lacks layout position settings, will not be created.").format(item_desc)
-                        QMessageBox.information(self, _tr('OrderDialog', "Warning"), message)
+                        message = _tr('OrderEntry', "Item '{}' lacks layout position settings, will not be created.").format(item_desc)
+                        QMessageBox.information(self, _tr('OrderEntry', "Warning"), message)
                         continue
                     
                     # Instantiate custom ButtonItem with native parameters
@@ -593,11 +601,11 @@ class BaseOrderDialog(QDialog):
                     
                     # 1. SET THE CONTROL FLAG FIRST
                     # We use has_stock (has_inventory_control) to enable stock tracking on the button
-                    btn_item.sc = has_stock  
+                    btn_item.hasInventory = has_inventory  
                     
                     # 2. CONVERT THE TRUE AVAILABLE QUANTITY TO INTEGER CENTS (Multiply by 100)
                     # We read available_qty (the last column 'available') instead of the boolean has_delivered
-                    btn_item.level = int(round(float(available_qty or 0.0) * 100))
+                    btn_item.stockLevel = int(round(float(available_qty or 0.0)))
                     
                     btn_item.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
                     self.ui.bgi.addButton(btn_item, item_id) # Register using item_id as the button group index
@@ -669,7 +677,7 @@ class BaseOrderDialog(QDialog):
         self.ui.radioButton1.setChecked(True)
         
         # 3. VERIFY STOCK LEVEL ON THE BUTTON (Keep native floats for your custom color triggers)
-        if btn.sc and (btn.level - qty_float < 0):
+        if btn.hasInventory and (btn.stockLevel - qty_float < 0):
             return 
             
         # 4. CALCULATE TOTAL SINGLE UNIT PRICE IN INTEGER CENTS
@@ -694,8 +702,8 @@ class BaseOrderDialog(QDialog):
             }
             
         # 6. UPDATE STOCK LEVEL ON THE BUTTON (Triggers color transitions automatically)
-        if btn.sc:
-            btn.level = btn.level - qty_float  
+        if btn.hasInventory:
+            btn.stockLevel = btn.stockLevel - qty_float  
             
         # 7. REFRESH GRAPHICAL INTERFACE
         self.renderOrderTable()
@@ -828,8 +836,8 @@ class BaseOrderDialog(QDialog):
             for b in self.ui.bgi.buttons():
                 btn = cast(Any, b)
                 if btn.id == item_id:
-                    if btn.sc:
-                        btn.level = btn.level + qty_to_remove_float
+                    if btn.hasInventory:
+                        btn.stockLevel = btn.stockLevel + qty_to_remove_float
                     break  # Target button matched, terminate search loop immediately
                     
             # 5. IF QUANTITY DROPS TO ZERO OR LESS, WIPE ITEM FROM CORE DICTIONARY STRUCTURE
@@ -849,8 +857,8 @@ class BaseOrderDialog(QDialog):
         # Prompt the user with a multi-line text input dialog
         text, ok = QInputDialog.getMultiLineText(
             self,
-            _tr("OrderDialog", "Department note"),
-            _tr("OrderDialog", "Message text for {}").format(get_department_desc(bid)),
+            _tr("OrderEntry", "Department note"),
+            _tr("OrderEntry", "Message text for {}").format(get_department_desc(bid)),
             txt
         )
         if ok:
@@ -890,26 +898,26 @@ class BaseOrderDialog(QDialog):
                 prd = items_part[2::4]
                 qty = items_part[3::4]
             except Exception as er:
-                msg = _tr('OrderDialog', "Unrecognized QRC structure:") + f"\n{str(er)}"
+                msg = _tr('OrderEntry', "Unrecognized QRC structure:") + f"\n{str(er)}"
                 QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
                 return
                 
             # Sanity checks for fundamental parameters
             err: list[str] = []
             if qtype != 'PSQRC':
-                err.append(_tr('OrderDialog', "Unrecognized QRC format:") + f" {qtype}")
+                err.append(_tr('OrderEntry', "Unrecognized QRC format:") + f" {qtype}")
             if qdelivery not in ('T', 'A'):
-                err.append(_tr('OrderDialog', "Unrecognized delivery option:") + f" {qdelivery}")
+                err.append(_tr('OrderEntry', "Unrecognized delivery option:") + f" {qdelivery}")
             if qcovers and not qcovers.isdigit():
-                err.append(_tr('OrderDialog', "Unrecognized covers number:") + f" {qcovers}") 
+                err.append(_tr('OrderEntry', "Unrecognized covers number:") + f" {qcovers}") 
             if err:
-                msg = _tr('OrderDialog', "Unrecognized parameters:") + f"\n{'\n'.join(err)}"
+                msg = _tr('OrderEntry', "Unrecognized parameters:") + f"\n{'\n'.join(err)}"
                 QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
                 return           
                 
             # Move UI layout to order view widget
             self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
-            self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Tables'))
+            self.ui.pushButtonTablesSwitch.setText(_tr('OrderEntry', 'Tables'))
             
             if qdelivery == 'T':
                 self.ui.radioButtonTable.setChecked(True)
@@ -927,11 +935,11 @@ class BaseOrderDialog(QDialog):
             # Iterate through extracted order lines
             for i, v, p, q in zip(itm, var, prd, qty):
                 if not i.isdigit():
-                    msg = _tr('OrderDialog', "Unrecognized item id:") + f" {i}"
+                    msg = _tr('OrderEntry', "Unrecognized item id:") + f" {i}"
                     QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
                     return
                 if not q.isdigit():   
-                    msg = _tr('OrderDialog', "Unrecognized quantity:") + f" {q}"
+                    msg = _tr('OrderEntry', "Unrecognized quantity:") + f" {q}"
                     QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
                     return        
                     
@@ -946,7 +954,7 @@ class BaseOrderDialog(QDialog):
                     if raw_button is None:
                         QMessageBox.critical(self,
                                             _tr("MessageDialog", "Critical"),
-                                            _tr('OrderDialog', "Item NOT available in buttons' grid, web order skipped."))
+                                            _tr('OrderEntry', "Item NOT available in buttons' grid, web order skipped."))
                         return 
                         
                     # Cast to Any to prevent mypy exceptions on custom attributes
@@ -960,7 +968,7 @@ class BaseOrderDialog(QDialog):
                         
             # Warn the operator of unavailable items that were skipped
             if unavailable:
-                msg = _tr("OrderDialog", "These items are not available and not included in the order:\n")
+                msg = _tr("OrderEntry", "These items are not available and not included in the order:\n")
                 msg += "\n".join(["{:>2}  {:<20}".format(count, name).replace('\n', ' ')
                                 for name, count in unavailable.items()])
                 QMessageBox.warning(self, _tr("MessageDialog", "Warning"), msg)
@@ -1036,7 +1044,7 @@ class BaseOrderDialog(QDialog):
         # ----------------------------------------------------------
         # Check if the order contains at least one item
         if len(self.order_lines) == 0:
-            msg = _tr('OrderDialog', "No item inserted!")
+            msg = _tr('OrderEntry', "No item inserted!")
             QMessageBox.warning(self, _tr('MessageDialog', "Warning"), msg)
             return
             
@@ -1044,7 +1052,7 @@ class BaseOrderDialog(QDialog):
         if (self.setting['mandatory_table_number']
                 and self.ui.radioButtonTable.isChecked()
                 and not self.ui.lineEditTable.text().strip()):
-            msg = _tr("OrderDialog", "The table number is missing!")
+            msg = _tr("OrderEntry", "The table number is missing!")
             QMessageBox.warning(self, _tr("MessageDialog", "Warning"), msg)
             self.ui.lineEditTable.setFocus()
             return
@@ -1053,7 +1061,7 @@ class BaseOrderDialog(QDialog):
         if (self.setting['mandatory_table_number'] and self.setting['use_table_list']
                 and self.ui.radioButtonTable.isChecked()):
             if not table_exists(self.ui.lineEditTable.text().strip()):
-                msg = _tr("OrderDialog", "The table number does not exist, use it anyway ?")
+                msg = _tr("OrderEntry", "The table number does not exist, use it anyway ?")
                 if QMessageBox.question(self,
                                         _tr("MessageDialog", "Question"),
                                         msg,
@@ -1063,14 +1071,14 @@ class BaseOrderDialog(QDialog):
                     
         # Validate that a customer name is provided for takeaway operations
         if self.ui.radioButtonTakeAway.isChecked() and not self.ui.lineEditCustomerName.text().strip():
-            msg = _tr("OrderDialog", "Customer's name is missing!")
+            msg = _tr("OrderEntry", "Customer's name is missing!")
             QMessageBox.warning(self, _tr("MessageDialog", "Warning"), msg)
             self.ui.lineEditCustomerName.setFocus()
             return
             
         # Double check if covers/seats are missing despite being a table order
         if self.ui.radioButtonTable.isChecked() and not self.ui.spinBoxCovers.value():
-            msg = _tr("OrderDialog", "Warning: there are no seats even "
+            msg = _tr("OrderEntry", "Warning: there are no seats even "
                                     "though delivery to the table has been indicated,\n"
                                     "do you want to correct it?")
             if QMessageBox.question(self,
@@ -1085,7 +1093,7 @@ class BaseOrderDialog(QDialog):
         subtotal_check = self.ui.doubleSpinBoxSubTotal.value()
         discount_check = self.ui.doubleSpinBoxDiscount.value()
         if discount_check > subtotal_check:
-            msg = _tr("OrderDialog", "Discount amount greater than the total amount!")
+            msg = _tr("OrderEntry", "Discount amount greater than the total amount!")
             QMessageBox.warning(self, _tr("MessageDialog", "Warning"), msg)
             self.ui.doubleSpinBoxDiscount.setFocus()
             self.ui.doubleSpinBoxDiscount.selectAll()
@@ -1100,7 +1108,7 @@ class BaseOrderDialog(QDialog):
                 if not is_for_takeaway(item_id):
                     nogood.append(get_item_desc(item_id))
             if nogood:
-                msg = _tr('OrderDialog', "Warning: the following items are not available for take away:\n"
+                msg = _tr('OrderEntry', "Warning: the following items are not available for take away:\n"
                                         "- {}\n\nDo i proceed anyway ?".format("\n- ".join(nogood)))
                 if QMessageBox.question(self,
                                         _tr("MessageDialog", "Question"),
@@ -1152,7 +1160,7 @@ class BaseOrderDialog(QDialog):
         ofsi = order.out_of_stock()
         if ofsi:
             items = [str(item) for item in ofsi]
-            msg = (_tr('OrderDialog', "Warning: these items are unavailable "
+            msg = (_tr('OrderEntry', "Warning: these items are unavailable "
                                     "for the current order:\n\n"
                                     "- {0}\n\nDo i proceed anyway ?").format("\n- ".join(items)))
             if QMessageBox.question(self,
@@ -1168,7 +1176,7 @@ class BaseOrderDialog(QDialog):
         # DATABASE COMMIT OPERATION
         # ---------------------------------------------------------------------
         success = False
-        with gui_exception_context(self, _tr('OrderDialog', "Saving order to database")):
+        with gui_exception_context(self, _tr('OrderEntry', "Saving order to database")):
             ti, used_dep = order.insert()  # ti = order header reference key ID
             success = True
         if not success:
@@ -1178,19 +1186,19 @@ class BaseOrderDialog(QDialog):
         # ---------------------------------------------------------------------
         # Print customer receipt copy
         if self.setting['print_customer_copy']:
-            with gui_exception_context(self, _tr('OrderDialog', "Printing order customer copy")):
+            with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy")):
                 printer = get_printer_name(self.setting['customer_printer_class'], session['hostname'])
                 printOrderReport(ti, printer)
         # covers copy
         if self.setting['print_cover_copy'] and order.header['delivery'] == 'T' and order.header['covers']:
-            with gui_exception_context(self, _tr('OrderDialog', "Printing order cover copy")):
+            with gui_exception_context(self, _tr('OrderEntry', "Printing order cover copy")):
                 printer = get_printer_name(self.setting['cover_printer_class'], session['hostname'])
                 printOrderCoverReport(ti, printer)
         # ---------------------------------------------------------------------
         # SEPARATE DEPARTMENT COPIES PRINT DISPATCH
         # ---------------------------------------------------------------------
         if self.setting['print_department_copy']:
-            with gui_exception_context(self, _tr('OrderDialog', "Printing order department copies")):
+            with gui_exception_context(self, _tr('OrderEntry', "Printing order department copies")):
                 for dept_id in used_dep:
                     if dept_id is None:
                         continue  # Skip if department ID is not valid
@@ -1221,7 +1229,7 @@ class BaseOrderDialog(QDialog):
         
     def reject(self) -> None:
         "Close the dialog"
-        msg = _tr("OrderDialog", "Do you want to exit the order entry?")
+        msg = _tr("OrderEntry", "Do you want to exit the order entry?")
         if QMessageBox.question(self,
                                 _tr("MessageDialog", "Question"),
                                 msg,

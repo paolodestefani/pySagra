@@ -25,7 +25,6 @@
 
 This module provides a form to manage tables archive
 
-
 """
 
 # standard library
@@ -46,7 +45,7 @@ from PySide6.QtWidgets import QSizePolicy
 from App import session
 from App.Database.SeatMap import table_delete
 from App.Database.Models import SeatMapModel
-from App.Database.Setting import SettingClass
+from App.Database.Setting import Setting
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Scripting import scriptInit
@@ -90,6 +89,11 @@ def seatMap(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('SeatMap', 'No access right to this archive'))
+        return
     tw = SeatMapForm(mw, title, auth)
     tw.reload()
     mw.addTab(title, tw)
@@ -98,7 +102,7 @@ def seatMap(action: QAction, checked: bool = False) -> None:
 
 class SeatMapForm(FormManager[Ui_SeatMapWidget]):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = SeatMapModel(self)
         self.setModel(model)
@@ -129,7 +133,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         # map view to mapper and mapper to view
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
         self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
-        self.setting = SettingClass()
+        self.setting = Setting()
         # generate tables
         self.bgcolor = '#007f00' # default background color for generated tables
         self.txcolor = '#FFFFFF' # default text color for generated tables
@@ -156,12 +160,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.pushButtonChooseText.clicked.connect(self.chooseText)
         self.ui.pushButtonGenerateTables.clicked.connect(self.generateTableNumbers)
         self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
-        #self.ui.pushButtonGenerateTables.clicked.connect(self.generateTables)
         self.ui.pushButtonPreview.clicked.connect(self.showPreview)
-        # initial value
-        self.ui.pushButtonPreview.setText(_tr("StandTableSeatMap", "Swith to Preview"))
-        self.ui.groupBoxBaseGeometry.setVisible(False)
-        self.ui.groupBoxMinimunSize.setVisible(False)
+        self.ui.pushButtonEdit.clicked.connect(self.showEdit)
         # scripting init
         self.script = scriptInit(self)
         #self.updateExample()
@@ -180,7 +180,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         table = self.model.data(self.model.index(self.mapper.currentIndex(), sm.TABLE_CODE))
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
-                                _tr('Table', "Are you sure you want to delete table {} ?".format(table)),
+                                _tr('SeatMap', "Are you sure you want to delete table {} ?".format(table)),
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
@@ -192,7 +192,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         "Delete all tables"
         if QMessageBox.question(self,
                                 _tr("MessageDialog", "Question"),
-                                _tr("Table", "Are you sure you want to delete ALL tables ?"),
+                                _tr("SeatMap", "Are you sure you want to delete ALL tables ?"),
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                 QMessageBox.StandardButton.No
                                 ) == QMessageBox.StandardButton.Yes:
@@ -206,24 +206,16 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         super().reload()
     
     def showPreview(self, clicked: bool) -> None:
-        "Show/Hide preview of th tables/Buttons available in the model"
-        if clicked:
-            self.ui.stackedWidget.setCurrentIndex(vw.PREVIEW)
-            self.ui.pushButtonPreview.setText(_tr("StandTable", "Back to Edit"))
-            self.ui.groupBoxBaseGeometry.setVisible(True)
-            self.ui.groupBoxMinimunSize.setVisible(True)
-        else:
-            self.ui.stackedWidget.setCurrentIndex(vw.EDIT)
-            self.ui.pushButtonPreview.setText(_tr("StandTable", "Swith to Preview"))
-            self.ui.groupBoxBaseGeometry.setVisible(False)
-            self.ui.groupBoxMinimunSize.setVisible(False)
-            return
+        "Show/Hide preview of the tables/Buttons available in the model"
+        # switch to preview
+        self.ui.stackedWidget.setCurrentIndex(vw.PREVIEW)
         # save geometry
         self.setting['table_list_rows'] = self.ui.spinBoxRows.value()
         self.setting['table_list_columns'] = self.ui.spinBoxColumns.value()
         self.setting['table_list_spacing'] = self.ui.spinBoxSpacing.value()
-        # create a preview
-        # buttons for tables
+        with gui_exception_context(self, _tr("SeatMap", "Save settings")):
+            self.setting.save()
+        # create preview buttons for tables
         # clean first
         while self.ui.gridLayoutPreview.count():
             w = self.ui.gridLayoutPreview.takeAt(0).widget()
@@ -261,6 +253,9 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
                     self.ui.gridLayoutPreview.addWidget(w, r, c)
                     
+    def showEdit(self, clicked: bool)-> None:
+        self.ui.stackedWidget.setCurrentIndex(vw.EDIT)
+        
     @scriptMethod
     def print(self) -> None:
         "Tables report"

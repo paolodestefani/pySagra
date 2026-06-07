@@ -68,6 +68,11 @@ def settings(action: QAction, checked: bool = False) -> None:
     title = action.text()
     icon = action.icon()
     auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Settings', 'No access right to this function'))
+        return
     sd = SettingsDialog(mw, title, icon, auth)
     sd.exec_()
     logger.info('Settings dialog shown')
@@ -84,7 +89,7 @@ class SettingsDialog(QDialog):
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         success = False
-        with gui_exception_context(self, _tr("Setting", "Load settings")):
+        with gui_exception_context(self, _tr("Settings", "Load settings")):
             self.setting = Setting()
             success = True
         if not success:
@@ -93,9 +98,9 @@ class SettingsDialog(QDialog):
         self.ui.horizontalSliderLunch.setValue(self.setting['lunch_start_time']) # initially slider/spinbox are not connected
         self.ui.spinBoxDinner.setValue(self.setting['dinner_start_time'])
         self.ui.horizontalSliderDinner.setValue(self.setting['dinner_start_time']) # initially slider/spinbox are not connected
-        self.ui.comboBoxOrderUI.addItems([_tr('Setting', 'Standard'),
-                                          _tr('Setting', 'Totals in one column'),
-                                          _tr('Setting', 'Maximize items room')])
+        self.ui.comboBoxOrderUI.addItems([_tr('Settings', 'Standard'),
+                                          _tr('Settings', 'Totals in one column'),
+                                          _tr('Settings', 'Maximize items room')])
         self.ui.comboBoxOrderUI.setCurrentIndex(self.setting['order_entry_ui'])
         if self.setting['default_delivery_type'] == 'T':
             self.ui.radioButtonTable.setChecked(True)
@@ -111,10 +116,10 @@ class SettingsDialog(QDialog):
             self.ui.radioButtonDayBased.setChecked(True)
         else:
             self.ui.radioButtonDayPartBased.setChecked(True) # day (P)art based 
-        for i, j in [('N', _tr('Setting', 'North')),
-                     ('S', _tr('Setting', 'South')),
-                     ('E', _tr('Setting', 'East')),
-                     ('W', _tr('Setting', 'West'))]:
+        for i, j in [('N', _tr('Settings', 'North')),
+                     ('S', _tr('Settings', 'South')),
+                     ('E', _tr('Settings', 'East')),
+                     ('W', _tr('Settings', 'West'))]:
             self.ui.comboBoxTabPosition.addItem(j, i)
         self.ui.comboBoxTabPosition.setCurrentIndex(self.ui.comboBoxTabPosition.findData(self.setting['order_list_tab_position']))
         self.ui.spinBoxWarningLevel.setDecimals(self.setting['quantity_decimal_places'])
@@ -145,7 +150,7 @@ class SettingsDialog(QDialog):
         self.ui.colorComboBoxDB.setCurrentColor(self.setting['disabled_background_color'])
         self.ui.colorComboBoxDT.setColorList(COLORS)
         self.ui.colorComboBoxDT.setCurrentColor(self.setting['disabled_text_color'])
-        
+        # print
         self.ui.checkBoxCustomerCopy.setChecked(self.setting['print_customer_copy'])
         self.ui.checkBoxDepartmentCopy.setChecked(self.setting['print_department_copy'])
         self.ui.checkBoxCoverCopy.setChecked(self.setting['print_cover_copy'])
@@ -205,9 +210,9 @@ class SettingsDialog(QDialog):
             self.ui.labelInactivity.setEnabled(True)
             self.ui.spinBoxInactivityTime.setEnabled(True)
         # restore settings
-        st = QSettings(self)
-        if st.value("DialogGeometry/Settings"):
-            self.restoreGeometry(st.value("DialogGeometry/Settings"))
+        st = QSettings()
+        if st.value("SettingsDialog/Geometry"):
+            self.restoreGeometry(st.value("SettingsDialog/Geometry"))
         # signal/slot
         # slider/spinbox sincro
         self.ui.horizontalSliderLunch.valueChanged.connect(self.lunchSliderChanged)
@@ -224,7 +229,6 @@ class SettingsDialog(QDialog):
         self.ui.colorComboBoxCT.currentIndexChanged.connect(self.updateExampleButtons)
         self.ui.colorComboBoxDB.currentIndexChanged.connect(self.updateExampleButtons)
         self.ui.colorComboBoxDT.currentIndexChanged.connect(self.updateExampleButtons)
-        self.ui.buttonBox.clicked.connect(self.clicked)
         # initial example buttons
         self.updateExampleButtons()
         self.updateExampleNormalButton()
@@ -266,13 +270,8 @@ class SettingsDialog(QDialog):
         self.ui.pushButtonExampleNL.setBackgroundColor(self.ui.colorComboBoxBackground.currentColor())
         self.ui.pushButtonExampleNL.setTextColor(self.ui.colorComboBoxText.currentColor())
 
-    def clicked(self, button: QPushButton) -> None:
-        "Call Apply on clicked Ok or Apply button"
-        if self.ui.buttonBox.standardButton(button) == QDialogButtonBox.StandardButton.Apply:
-            self.apply()
-
     @scriptMethod
-    def apply(self) -> bool:
+    def accept(self) -> None:
         self.setting['lunch_start_time'] = self.ui.spinBoxLunch.value()
         self.setting['dinner_start_time'] = self.ui.spinBoxDinner.value()
         if self.ui.radioButtonTable.isChecked():
@@ -347,31 +346,29 @@ class SettingsDialog(QDialog):
         if self.setting['print_customer_copy']:
             if not self.setting['customer_report'] or not self.setting['customer_printer_class']:
                 title = _tr("MessageDialog", "Critical")
-                msg = _tr("Setting", "If print customer copy is selected you must provide a customer report and printer class")
+                msg = _tr("Settings", "If print customer copy is selected you must provide a customer report and printer class")
                 QMessageBox.critical(self, title, msg)
-                return False # avoid dialog close
+                return
         if self.setting['print_department_copy']:
             if not self.setting['department_report']:
                 title = _tr("MessageDialog", "Critical")
-                msg = _tr("Setting", "If print department copy is selected you must provide a department report")
+                msg = _tr("Settings", "If print department copy is selected you must provide a department report")
                 QMessageBox.critical(self, title, msg)
-                return False # avoid dialog close
+                return
         if self.setting['print_cover_copy']:
             if not self.setting['cover_report'] or not self.setting['cover_printer_class']:
                 title = _tr("MessageDialog", "Critical")
-                msg = _tr("Setting", "If print cover copy is selected you must provide a cover report and printer class")
+                msg = _tr("Settings", "If print cover copy is selected you must provide a cover report and printer class")
                 QMessageBox.critical(self, title, msg)
-                return False # avoid dialog close
+                return
         success = False
-        with gui_exception_context(self, _tr("Setting", "Save settings")):
+        with gui_exception_context(self, _tr("Settings", "Save settings")):
             self.setting.save()
             success = True
-        return success
-
-    @scriptMethod
-    def accept(self) -> None:
-        if self.apply():
-            # save settings
-            st = QSettings(self)
-            st.setValue("DialogGeometry/Settings", self.saveGeometry())
-        QDialog.accept(self)
+        if success:    
+            # save geometry
+            st = QSettings()
+            st.setValue("SettingsDialog/Geometry", self.saveGeometry())
+            QDialog.accept(self)
+        else:
+            QDialog.reject(self)

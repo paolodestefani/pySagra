@@ -41,6 +41,8 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
+from App.Core.Scripting import scriptInit
+from App.Core.Scripting import scriptMethod
 from App.Database.Models import ItemsOrderedDeliveredModel
 from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import QuantityDelegate
@@ -77,6 +79,11 @@ def orderedDelivered(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('OrderedDelivered', 'No access right to this archive'))
+        return
     su = OrderedDeliveredForm(mw, title, auth)
     mw.addTab(title, su)
     logger.info('Ordered delivered Form added to main window')
@@ -84,7 +91,7 @@ def orderedDelivered(action: QAction, checked: bool = False) -> None:
 
 class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = ItemsOrderedDeliveredModel(self)
         self.setModel(model)
@@ -114,6 +121,8 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
             self.updateFilterConditions(session['event_id'])
         else:
             self.sortFilterDialog.show()
+        # scripting init
+        self.script = scriptInit(self)
         
     def updateFilterConditions(self, event, eventDate=None, dayPart=None):
         "Filter model based on filter dialog selections"

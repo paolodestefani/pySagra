@@ -45,8 +45,6 @@ from App import APPVERSIONMINOR
 from App import session
 from App.Database import MRV_PGSQL
 
-from App.Database import EWADB
-
 # exceptions
 from App.Database.Exceptions import PyAppDBConnectionError
 from App.Database.Exceptions import PyAppDBError
@@ -118,7 +116,7 @@ SELECT EXISTS(SELECT 1
                 cur.execute(sql)
                 if not cur.fetchone():
                     logging.critical("Database '%s' is not an application database", par['database'])
-                    raise PyAppDBError(EWADB, f"Database '{par['database']}' is not an application database")
+                    raise PyAppDBError("PA0002", f"Database '{par['database']}' is not an application database")
                 logging.info("DB is verified as an application database")
         except psycopg.Error as er:
             logger.error("*** DATABASE ERROR ***\nSQL State: %s\n%s", er.diag.sqlstate, str(er))

@@ -44,7 +44,9 @@ def get_actions() -> list[tuple]:
     script = """
 SELECT 
     pa.action,
-    pa.auth
+    pa.read,
+    pa.write,
+    pa.execute
 FROM system.profile_action pa
 JOIN system.connection cn ON pa.profile_code = cn.profile_code
 JOIN system.app_user u ON cn.app_user_code = u.user_code

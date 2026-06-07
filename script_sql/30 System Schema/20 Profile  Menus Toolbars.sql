@@ -84,7 +84,9 @@ CREATE TABLE profile_action (
     --
     profile_code            varchar(48),
     action                  varchar(48),
-    auth                    char,
+    read                    boolean NOT NULL DEFAULT True,
+    write                   boolean NOT NULL DEFAULT True,
+    execute                 boolean NOT NULL DEFAULT True,
     --
     CONSTRAINT profile_action_pk 
         PRIMARY KEY (profile_code, action) 
@@ -92,9 +94,7 @@ CREATE TABLE profile_action (
     CONSTRAINT profile_action_profile_fk 
         FOREIGN KEY (profile_code) 
         REFERENCES profile (profile_code)
-        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
-    CONSTRAINT profile_action_auth_check 
-        CHECK (auth IN ('R', 'W', 'X'))
+        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE
 )
 TABLESPACE {pyAppPgTablesTS};
 COMMENT ON TABLE profile_action IS 

@@ -28,6 +28,7 @@ This module provides classes and functions for databse settings management
 """
 
 # standard library
+from typing import Any
 import logging
 
 # application modules
@@ -47,7 +48,7 @@ logger = logging.getLogger(__name__)
 class SettingClass():
     "A dict like class for get/set a single setting parmeter"
 
-    def __getitem__(self, key: str) -> str | None:
+    def __getitem__(self, key: str) -> Any | None:
         "Get value for key from setting table"
         # use fstring because field names are not used for cursor parameters
         # t-strings don't work as of psycopg 3.3.4

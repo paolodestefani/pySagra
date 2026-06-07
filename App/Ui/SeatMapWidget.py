@@ -28,27 +28,29 @@ class Ui_SeatMapWidget(object):
     def setupUi(self, SeatMapWidget):
         if not SeatMapWidget.objectName():
             SeatMapWidget.setObjectName(u"SeatMapWidget")
-        SeatMapWidget.resize(877, 628)
+        SeatMapWidget.resize(734, 607)
         font = QFont()
         font.setKerning(True)
         SeatMapWidget.setFont(font)
-        self.verticalLayout_8 = QVBoxLayout(SeatMapWidget)
-        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_11 = QVBoxLayout(SeatMapWidget)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.stackedWidget = QStackedWidget(SeatMapWidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.pageList = QWidget()
         self.pageList.setObjectName(u"pageList")
-        self.verticalLayout_12 = QVBoxLayout(self.pageList)
+        self.verticalLayout_13 = QVBoxLayout(self.pageList)
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.verticalLayout_12 = QVBoxLayout()
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
-        self.horizontalLayout_9 = QHBoxLayout()
-        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
         self.tableView = EnhancedTableView(self.pageList)
         self.tableView.setObjectName(u"tableView")
 
-        self.horizontalLayout_9.addWidget(self.tableView)
+        self.horizontalLayout_11.addWidget(self.tableView)
 
-        self.verticalLayout_11 = QVBoxLayout()
-        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.verticalLayout_10 = QVBoxLayout()
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.groupBoxTablePosition = QGroupBox(self.pageList)
         self.groupBoxTablePosition.setObjectName(u"groupBoxTablePosition")
         self.verticalLayout_9 = QVBoxLayout(self.groupBoxTablePosition)
@@ -111,12 +113,12 @@ class Ui_SeatMapWidget(object):
         self.verticalLayout_9.addLayout(self.horizontalLayout_6)
 
 
-        self.verticalLayout_11.addWidget(self.groupBoxTablePosition)
+        self.verticalLayout_10.addWidget(self.groupBoxTablePosition)
 
         self.groupBoxTableCode = QGroupBox(self.pageList)
         self.groupBoxTableCode.setObjectName(u"groupBoxTableCode")
-        self.verticalLayout_10 = QVBoxLayout(self.groupBoxTableCode)
-        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.verticalLayout_8 = QVBoxLayout(self.groupBoxTableCode)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.verticalLayout_2 = QVBoxLayout()
@@ -186,16 +188,15 @@ class Ui_SeatMapWidget(object):
         self.horizontalLayout_2.addLayout(self.gridLayout)
 
 
-        self.verticalLayout_10.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_2)
 
 
-        self.verticalLayout_11.addWidget(self.groupBoxTableCode)
+        self.verticalLayout_10.addWidget(self.groupBoxTableCode)
 
         self.groupBoxButtonColor = QGroupBox(self.pageList)
         self.groupBoxButtonColor.setObjectName(u"groupBoxButtonColor")
         self.verticalLayout = QVBoxLayout(self.groupBoxButtonColor)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.pushButtonChooseBackground = QPushButton(self.groupBoxButtonColor)
@@ -295,8 +296,22 @@ class Ui_SeatMapWidget(object):
 
         self.verticalLayout.addLayout(self.gridLayout_2)
 
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.pushButtonGenerateTables = QPushButton(self.groupBoxButtonColor)
+        self.pushButtonGenerateTables.setObjectName(u"pushButtonGenerateTables")
 
-        self.verticalLayout_11.addWidget(self.groupBoxButtonColor)
+        self.horizontalLayout_10.addWidget(self.pushButtonGenerateTables)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_4)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_10)
+
+
+        self.verticalLayout_10.addWidget(self.groupBoxButtonColor)
 
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
@@ -304,33 +319,45 @@ class Ui_SeatMapWidget(object):
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
 
-        self.pushButtonGenerateTables = QPushButton(self.pageList)
-        self.pushButtonGenerateTables.setObjectName(u"pushButtonGenerateTables")
-
-        self.horizontalLayout_8.addWidget(self.pushButtonGenerateTables)
-
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_8.addItem(self.horizontalSpacer_4)
-
-
-        self.verticalLayout_11.addLayout(self.horizontalLayout_8)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_11.addItem(self.verticalSpacer)
-
         self.pushButtonDeleteAll = QPushButton(self.pageList)
         self.pushButtonDeleteAll.setObjectName(u"pushButtonDeleteAll")
         self.pushButtonDeleteAll.setStyleSheet(u"")
 
-        self.verticalLayout_11.addWidget(self.pushButtonDeleteAll)
+        self.horizontalLayout_8.addWidget(self.pushButtonDeleteAll)
+
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer_6)
 
 
-        self.horizontalLayout_9.addLayout(self.verticalLayout_11)
+        self.verticalLayout_10.addLayout(self.horizontalLayout_8)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_10.addItem(self.verticalSpacer)
+
+
+        self.horizontalLayout_11.addLayout(self.verticalLayout_10)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_11)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.pushButtonPreview = QPushButton(self.pageList)
+        self.pushButtonPreview.setObjectName(u"pushButtonPreview")
+
+        self.horizontalLayout_9.addWidget(self.pushButtonPreview)
+
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_9.addItem(self.horizontalSpacer_5)
 
 
         self.verticalLayout_12.addLayout(self.horizontalLayout_9)
+
+
+        self.verticalLayout_13.addLayout(self.verticalLayout_12)
 
         self.stackedWidget.addWidget(self.pageList)
         self.pagePreview = QWidget()
@@ -342,11 +369,9 @@ class Ui_SeatMapWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 74, 24))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 684, 492))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
-        self.verticalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.verticalLayout_7.setContentsMargins(5, 5, 5, 5)
         self.framePreview = QFrame(self.scrollAreaWidgetContents)
         self.framePreview.setObjectName(u"framePreview")
         self.framePreview.setFrameShape(QFrame.Shape.StyledPanel)
@@ -367,23 +392,19 @@ class Ui_SeatMapWidget(object):
 
         self.verticalLayout_4.addWidget(self.scrollArea)
 
-        self.stackedWidget.addWidget(self.pagePreview)
-
-        self.verticalLayout_8.addWidget(self.stackedWidget)
-
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.pushButtonPreview = QPushButton(SeatMapWidget)
-        self.pushButtonPreview.setObjectName(u"pushButtonPreview")
-        self.pushButtonPreview.setCheckable(True)
+        self.pushButtonEdit = QPushButton(self.pagePreview)
+        self.pushButtonEdit.setObjectName(u"pushButtonEdit")
+        self.pushButtonEdit.setCheckable(False)
 
-        self.horizontalLayout_4.addWidget(self.pushButtonPreview)
+        self.horizontalLayout_4.addWidget(self.pushButtonEdit)
 
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
 
-        self.groupBoxBaseGeometry = QGroupBox(SeatMapWidget)
+        self.groupBoxBaseGeometry = QGroupBox(self.pagePreview)
         self.groupBoxBaseGeometry.setObjectName(u"groupBoxBaseGeometry")
         self.verticalLayout_3 = QVBoxLayout(self.groupBoxBaseGeometry)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -429,7 +450,7 @@ class Ui_SeatMapWidget(object):
 
         self.horizontalLayout_4.addWidget(self.groupBoxBaseGeometry)
 
-        self.groupBoxMinimunSize = QGroupBox(SeatMapWidget)
+        self.groupBoxMinimunSize = QGroupBox(self.pagePreview)
         self.groupBoxMinimunSize.setObjectName(u"groupBoxMinimunSize")
         self.verticalLayout_5 = QVBoxLayout(self.groupBoxMinimunSize)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
@@ -469,7 +490,11 @@ class Ui_SeatMapWidget(object):
         self.horizontalLayout_4.addWidget(self.groupBoxMinimunSize)
 
 
-        self.verticalLayout_8.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_4)
+
+        self.stackedWidget.addWidget(self.pagePreview)
+
+        self.verticalLayout_11.addWidget(self.stackedWidget)
 
 
         self.retranslateUi(SeatMapWidget)
@@ -511,6 +536,7 @@ class Ui_SeatMapWidget(object):
         self.pushButtonGenerateTables.setText(QCoreApplication.translate("SeatMapWidget", u"Generate table numbers", None))
         self.pushButtonDeleteAll.setText(QCoreApplication.translate("SeatMapWidget", u"Delete All", None))
         self.pushButtonPreview.setText(QCoreApplication.translate("SeatMapWidget", u"Preview", None))
+        self.pushButtonEdit.setText(QCoreApplication.translate("SeatMapWidget", u"Edit", None))
         self.groupBoxBaseGeometry.setTitle(QCoreApplication.translate("SeatMapWidget", u"Base geometry", None))
         self.label.setText(QCoreApplication.translate("SeatMapWidget", u"Rows", None))
         self.label_2.setText(QCoreApplication.translate("SeatMapWidget", u"Columns", None))

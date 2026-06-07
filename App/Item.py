@@ -60,7 +60,7 @@ from App.Database.Models import ItemVariantModel
 from App.Database.Models import KitPartModel
 from App.Database.Models import MenuPartModel
 from App.Database.Models import PriceListItemModel
-from App.Database.Setting import SettingClass
+from App.Database.Setting import Setting
 from App.Database.Lookup import item_with_variant_lookup
 from App.Database.Lookup import kit_part_lookup
 from App.Database.Lookup import menu_part_lookup
@@ -176,6 +176,11 @@ def item(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Inventory', 'No access right to this archive'))
+        return
     iw = ItemForm(mw, title, auth)
     iw.applySortFilter()
     mw.addTab(title, iw)
@@ -194,11 +199,8 @@ class ChooseItemDialog(QDialog):
 
 class ItemForm(FormIndexManager):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
-        # scripting init
-        self.script = scriptInit(self)
-        # scripting init
         model = ItemModel(self)
         idxModel = ItemIndexModel(self)
         modelv = ItemVariantModel(self)
@@ -229,7 +231,7 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonAddPri.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemovePri.setIcon(currentIcon['edit_remove'])
         # setting
-        self.setting = SettingClass()
+        self.setting = Setting()
         # signal slot connections
         self.ui.checkBoxVariants.toggled[bool].connect(self.ui.tabVariants.setEnabled)
         self.ui.comboBoxType.currentIndexChanged.connect(self.itemTypeChanged)
@@ -286,7 +288,7 @@ class ItemForm(FormIndexManager):
         self.ui.tableViewPrices.setItemDelegateForColumn(prc.LIST, RelationDelegate(self, price_list_lookup))
         self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, AmountDelegate(self))
         # self.toFirst() not here because we need to set models first
-        self.ui.checkBoxVariants.stateChanged.connect(self.hasVariantsStateChanged)
+        self.ui.checkBoxVariants.checkStateChanged.connect(self.hasVariantsStateChanged)
         self.ui.pushButtonCopyVariants.clicked.connect(self.copyVariants)
         self.ui.lineEditDescription.editingFinished.connect(self.copyDescription)
         self.ui.checkBoxSalable.toggled.connect(self.salableToggled)
@@ -305,7 +307,10 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonRemoveMen.clicked.connect(self.ui.tableViewMenuItems.remove)
         self.ui.pushButtonAddPri.clicked.connect(self.ui.tableViewPrices.add)
         self.ui.pushButtonRemovePri.clicked.connect(self.ui.tableViewPrices.remove)
-
+         # scripting init
+        self.script = scriptInit(self)
+        # scripting init
+        
     def copyDescription(self):
         "Copy item description to item customer description on editingFinished of description lineEdit"
         if not self.ui.lineEditCustomerDescription.text():
@@ -354,6 +359,7 @@ class ItemForm(FormIndexManager):
             model.setData(model.index(modelRow, vnt.PRICE), pd)
 
     def itemTypeChanged(self, index):
+        self.ui.comboBoxType.blockSignals(True)
         if self.ui.comboBoxType.modelDataStr == 'K':
             self.ui.tableViewComponents.setEnabled(True)
             self.ui.tableViewMenuItems.setDisabled(True)
@@ -381,6 +387,7 @@ class ItemForm(FormIndexManager):
             self.ui.checkBoxDeliveredControl.setEnabled(True)
             self.ui.checkBoxKitPart.setEnabled(True)
             self.ui.checkBoxMenuPart.setEnabled(True)
+        self.ui.comboBoxType.blockSignals(False)
 
     @scriptMethod
     def new(self):

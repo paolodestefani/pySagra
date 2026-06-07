@@ -55,11 +55,15 @@ VALUES (
 INSERT INTO system.profile_action (
     profile_code,
     action,
-    auth)
+    read,
+    write,
+    execute)
 SELECT 
     {new_code},
     action,
-    auth
+    read,
+    write,
+    execute
 FROM system.profile_action
 WHERE profile_code = {from_code};"""
     # Unified context managers in the recommended evaluation order

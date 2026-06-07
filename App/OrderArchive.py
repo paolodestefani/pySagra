@@ -32,6 +32,7 @@ from enum import IntEnum
 import logging
 
 # PySide6
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -165,6 +166,11 @@ def orderArchive(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('OrderArchive', 'No access right to this archive'))
+        return
     ow = OrderForm(mw, title, auth)
     #ow.reload() # reload after filtering
     mw.addTab(title, ow)
@@ -173,7 +179,7 @@ def orderArchive(action: QAction, checked: bool = False) -> None:
 
 class OrderForm(FormIndexManager):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = OrderHeaderModel(self)
         idxModel = OrderHeaderIndexModel(self)
@@ -267,7 +273,9 @@ class OrderForm(FormIndexManager):
     def updateFormWidgets(self):
         "Enable/disable widgets"
         self.ui.checkBoxPrintCustomerCopy.setEnabled(self.setting['print_customer_copy'])
-        if self.ui.comboBoxDelivery.currentData() == 'T':
+        row = self.mapper.currentIndex()
+        delivery_type = self.model.data(self.model.index(row, ordh.DELIVERY), Qt.ItemDataRole.EditRole)
+        if delivery_type == 'T':
             if self.setting['print_cover_copy']:
                 self.ui.checkBoxPrintCoverCopy.setEnabled(True)
             self.ui.lineEditTableNumber.setEnabled(True)
@@ -307,6 +315,9 @@ class OrderForm(FormIndexManager):
     @scriptMethod
     def reprint(self, checked=False):
         "Print again the selected order copy"
+        current_row = self.mapper.currentIndex()
+        if current_row < 0:
+            return
         # PRINT ORDER
         setting = Setting()
         # get order id

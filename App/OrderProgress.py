@@ -78,6 +78,13 @@ def orderProgress(action: QAction, checked: bool = False) -> None:
     "Order progress"
     logger.info('Starting order progress dialog')
     mw = session['mainwin']
+    title = action.text()
+    auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('OrderProgress', 'No access right to this feature'))
+        return
     # exit if no event available
     if not session['event_id']:
         QMessageBox.warning(mw,
@@ -95,7 +102,7 @@ def orderProgress(action: QAction, checked: bool = False) -> None:
 
 class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
     
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         self.tabName = title
         self.helpLink = None

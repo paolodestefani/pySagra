@@ -135,6 +135,11 @@ def user(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     uf = UsersForm(mw, title, auth)
     uf.applySortFilter()
     mw.addTab(title, uf)
@@ -155,7 +160,7 @@ def changePassword(action: QAction, checked: bool = False) -> None:
 class UsersForm(FormIndexManager[Ui_UserWidget]):
     "User form management"
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = UserModel(self)
         idxModel = UserIndexModel(self)

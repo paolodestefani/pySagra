@@ -86,6 +86,12 @@ def customization(action: QAction, checked: bool = False) -> None:
     title = action.text()
     icon = action.icon()
     auth = action.data()
+    auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this function'))
+        return
     dialog = CustomizationsDialog(mw, title, icon, auth)
     dialog.show()
     logger.info('Customization dialog shown')

@@ -242,7 +242,7 @@ def createActionDictionary(mw) -> None:
 
     actionDefinition['sys_quit'] = (
         _tr("Action", 'Quit'),
-        mw.close,
+        lambda _: mw.close(), # avoid partial argument that is not required in closeEvent
         False,
         'system_quit',
         QKeySequence.StandardKey.Quit,

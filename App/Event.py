@@ -85,6 +85,11 @@ def event(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Event', 'No access right to this archive'))
+        return
     ew = EventForm(mw, title, auth)
     ew.reload()
     mw.addTab(title, ew)
@@ -93,7 +98,7 @@ def event(action: QAction, checked: bool = False) -> None:
 
 class EventForm(FormIndexManager):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = EventModel(self)
         idxModel = EventIndexModel(self)
@@ -118,15 +123,15 @@ class EventForm(FormIndexManager):
         self.ui.tableView.setItemDelegateForColumn(evn.IMAGE, ImageDelegate(self))
         # mapper settings
         self.mapper.addMapping(self.ui.lineEditDescription, evn.DESCRIPTION)
-        self.mapper.addMapping(self.ui.dateTimeEditStart, evn.DATE_START) #, b"modelDataDateTime")
-        self.mapper.addMapping(self.ui.dateTimeEditEnd, evn.DATE_END) #, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.dateTimeEditStart, evn.DATE_START)
+        self.mapper.addMapping(self.ui.dateTimeEditEnd, evn.DATE_END)
         self.ui.comboBoxPriceList.setFunction(price_list_lookup)
-        self.mapper.addMapping(self.ui.comboBoxPriceList, evn.PRICELIST) #, b"modelDataStr")
-        self.mapper.addMapping(self.ui.labelEventImage, evn.IMAGE) #, b"imageBytearray")
+        self.mapper.addMapping(self.ui.comboBoxPriceList, evn.PRICELIST)
+        self.mapper.addMapping(self.ui.labelEventImage, evn.IMAGE)
         # scripting init
         self.script = scriptInit(self)
 
-    def mapperIndexChanged(self, row):
+    def mapperIndexChanged(self, row) -> None:
         "Check if have already movement for the event, in this case can't modifiy any date"
         super().mapperIndexChanged(row)
         logger.info('Mapper index changed')
@@ -156,13 +161,11 @@ class EventForm(FormIndexManager):
         pix = QPixmap(f)
         if pix.width() > 640 or pix.height() > 480:
             pix = pix.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
-            self.ui.labelEventImage.setPixmap(pix)
             QMessageBox.warning(self,
                                 _tr("MessageDialog", "Warning"),
                                 _tr('Event', "The selected image is too big, it was"
                                     "automatically resized to the max allowed size of 640x480 pixels"))
-        else:
-            self.ui.labelEventImage.setPixmap(pix)
+        self.ui.labelEventImage.setPixmap(pix)
         # save path
         st.setValue("PathImagesEvents", QFileInfo(f).path())
         if hasattr(self.model, 'isDirty'):
@@ -183,8 +186,8 @@ class EventForm(FormIndexManager):
                                            _tr("Event", "Portable Network Graphics (*.png);;All files (*.*)"))
         if f == "":
             return
-        pix = self.ui.labelEventImage.pixmap()
-        if pix.save(f):
+        img = self.ui.labelEventImage.pixmap().toImage()
+        if img.save(f, 'PNG'):
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),
                                     _tr("Event", "Image file saved"))
@@ -203,7 +206,7 @@ class EventForm(FormIndexManager):
             self.model.userDataChanged.emit()
 
     @scriptMethod
-    def new(self):
+    def new(self) -> None:
         super().new()
         currentRow = self.mapper.currentIndex()
         startDate = QDateTime.currentDateTime()
@@ -218,31 +221,31 @@ class EventForm(FormIndexManager):
         self.ui.lineEditDescription.setFocus()
 
     @scriptMethod
-    def save(self):
+    def save(self) -> None:
         "Save and update current event"
         super().save()
         get_current_event()
 
     @scriptMethod
-    def delete(self):
+    def delete(self) -> None:
         "Delete and update current event"
         msg = _tr('Event', "Are you sure you want to delete this event ?")
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 f"{msg}\n{self.ui.lineEditDescription.text()}",
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
         super().delete()
         get_current_event()
 
     @scriptMethod
-    def reload(self):
+    def reload(self) -> None:
         super().reload()
 
     @scriptMethod
-    def print(self):
+    def print(self) -> None:
         "Event report"
         dialog = PrintDialog(self, 'EVENT')
         dialog.show()

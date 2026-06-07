@@ -32,18 +32,18 @@ MRV_PGSQL   = 130000  # postgres minimum compatible version
 
 # database application error codes
 
-EWDBS = 'PA001'  # wrong database server version (connect sp)
-EWADB = 'PA002'  # wrong application database (connect sp)
-EWAPV = 'PA003'  # wrong application database version (connect sp)
-EUKNU = 'PA004'  # authentication failed, user does not exist (connect sp)
-EPWDR = 'PA005'  # a password is required (connect sp)
-EWPWD = 'PA006'  # authentication failed, wrong password (connect sp)
-EUKNC = 'PA007'  # Unknown company (change company)
-ENACR = 'PA008'  # No access rights to required company (change company)
-ENKCC = 'PA009'  # Can not kill current connection (kill client)
-EDSAE = 'PA011'  # Database schema already exists (create company sp)
-ECIAE = 'PA012'  # Company id already exists (create company sp)
-ECIIU = 'PA013'  # Company is in use (drop company sp)
+# EWDBS = 'PA001'  # wrong database server version (connect sp)
+# EWADB = 'PA002'  # wrong application database (connect sp)
+# EWAPV = 'PA003'  # wrong application database version (connect sp)
+# EUKNU = 'PA004'  # authentication failed, user does not exist (connect sp)
+# EPWDR = 'PA005'  # a password is required (connect sp)
+# EWPWD = 'PA006'  # authentication failed, wrong password (connect sp)
+# EUKNC = 'PA007'  # Unknown company (change company)
+# ENACR = 'PA008'  # No access rights to required company (change company)
+# ENKCC = 'PA009'  # Can not kill current connection (kill client)
+# EDSAE = 'PA011'  # Database schema already exists (create company sp)
+# ECIAE = 'PA012'  # Company id already exists (create company sp)
+# ECIIU = 'PA013'  # Company is in use (drop company sp)
 
 # other parameters
 

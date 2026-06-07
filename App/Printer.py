@@ -87,6 +87,11 @@ def printer(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Printer', 'No access right to this archive'))
+        return
     pf = PrinterForm(mw, title, auth)
     pf.reload()
     mw.addTab(title, pf)
@@ -95,7 +100,7 @@ def printer(action: QAction, checked: bool = False) -> None:
 
 class PrinterForm(FormIndexManager):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = PrinterModel(self)
         idxModel = PrinterIndexModel(self)
@@ -173,7 +178,7 @@ class PrinterForm(FormIndexManager):
             if index.data() == self.hostName:
                 QMessageBox.information(self,
                                         _tr("MessageDialog", "Information"),
-                                        _tr("Printers", "There is already a record with current computer name"))
+                                        _tr("Printer", "There is already a record with current computer name"))
                 return
         cr = self.ui.printersTableView.model().rowCount() # must be before add, with add model have already a new row
         self.ui.printersTableView.add()
@@ -188,7 +193,7 @@ class PrinterForm(FormIndexManager):
         if index.data() != self.hostName:
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),
-                                    _tr("Printers", "You can remove only the record with current computer name"))
+                                    _tr("Printer", "You can remove only the record with current computer name"))
             return
         self.ui.printersTableView.remove()
 

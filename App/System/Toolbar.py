@@ -75,6 +75,11 @@ def toolbar(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     tf = ToolbarForm(mw, title, auth)
     tf.applySortFilter()
     mw.addTab(title, tf)
@@ -84,7 +89,7 @@ def toolbar(action: QAction, checked: bool = False) -> None:
 class ToolbarForm(FormIndexManager):
     "Toolbar form management"
 
-    def __init__(self, parent: QWidget, title: str, auth: str)-> None: # no parent for tabwidget widget pages
+    def __init__(self, parent: QWidget, title: str, auth: tuple)-> None: # no parent for tabwidget widget pages
         super().__init__(parent, auth)
         model = ToolbarModel()
         idxModel = ToolbarIndexModel()

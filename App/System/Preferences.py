@@ -31,13 +31,10 @@ Preferences allow to set/modify user preferences: ui theme, icon set, font, ecc.
 import logging
 
 # PySide6
-from PySide6.QtCore import Qt
-from PySide6.QtCore import QDirIterator
 from PySide6.QtCore import QSysInfo
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QIcon
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QToolBar
 from PySide6.QtWidgets import QDialog
@@ -48,18 +45,16 @@ from PySide6.QtWidgets import QStyleFactory
 from PySide6.QtWidgets import QPushButton
 
 # application modules
-from App import APPNAME
 from App import session
-from App import currentAction
-from App import actionDefinition
-from App import currentIcon
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import CS, IT, TBS, TP
+from App.Core.Gui import CS
+from App.Core.Gui import IT
+from App.Core.Gui import TBS
+from App.Core.Gui import TP
 from App.Core.Gui import setTheme
 from App.Core.Gui import setColorScheme
 from App.Core.Gui import setIcon
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences
 from App.Ui.PreferencesDialog import Ui_PreferencesDialog
@@ -73,10 +68,15 @@ def preferences(action: QAction, checked: bool = False) -> None:
     "Launch preferences dialog"
     logger.info('Starting preferences dialog')
     mw = session['mainwin']
-    auth = action.data()
     title = action.text()
     icon = action.icon()
-    dialog = PreferencesDialog(mw, title, icon, auth)
+    auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this function'))
+        return
+    dialog = PreferencesDialog(mw, title, icon)
     dialog.show()
     logger.info('Preferences dialog shown')
 
@@ -84,7 +84,7 @@ def preferences(action: QAction, checked: bool = False) -> None:
 class PreferencesDialog(QDialog):
     "Preferences dialog"
 
-    def __init__(self, parent: QTabWidget, title: str, icon: QIcon, auth: str) -> None:
+    def __init__(self, parent: QTabWidget, title: str, icon: QIcon) -> None:
         super().__init__(parent)
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self)

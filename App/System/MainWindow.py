@@ -45,6 +45,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QPainter
 from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QPaintEvent
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QStyle
@@ -103,7 +104,7 @@ def createActions(mainWindow: MainWindow) -> None:
     action: QAction|QWidgetAction
     # create active actions for user's profile
     with gui_exception_context(mainWindow, _tr('MainWindow', 'Create actions')):
-        for act, aut in get_actions(): # base
+        for act, read, write, execute in get_actions(): # base
             if act not in actionDefinition:
                 continue
             if act == 'edit_counter':
@@ -116,7 +117,7 @@ def createActions(mainWindow: MainWindow) -> None:
             
             action.setMenuRole(actionDefinition[act][MERO])
             
-            action.setData(aut) # authorization
+            action.setData((read, write, execute)) # authorization
 
             if actionDefinition[act][SLOT]:  # slot, passing qaction
                 action.triggered.connect(partial(actionDefinition[act][SLOT], action))
@@ -583,7 +584,7 @@ class MainWindow(QMainWindow):
         # update status bar
         self.updateStatusBar()
 
-    def close(self, *args, **kwargs) -> bool: # avoid signature change for event handler
+    def closeEvent(self, event: QCloseEvent) -> None:
         "Confirm exiting request on closing"
         msg = _tr('MainWindow', 'Are you sure you want to quit')
         if QMessageBox.question(self,
@@ -601,14 +602,13 @@ class MainWindow(QMainWindow):
             # disconnect
             logger.info("DB disconnection")
             appconn.close()
-            #event.accept()
+            # last log messsage
             logger.info('Closing the application')
             logger.info('****************************************')
-            super().close()
+            event.accept()
         else:
-            #event.ignore()
-            return False
-        return True
+            event.ignore()
+           
 
     def helpLink(self) -> str:
         "Return context help link if available"

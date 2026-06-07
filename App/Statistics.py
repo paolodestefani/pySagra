@@ -78,6 +78,11 @@ def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Statistics', 'No access right to this function'))
+        return
     af = AnalysisForm(mw, title, auth)
     mw.addTab(title, af)
     logger.info('Statistical Analysis added to main window')
@@ -87,6 +92,13 @@ def statisticsPrint(action: QAction, checked: bool = False) -> None:
     "Print statistic reports"
     logger.info('Starting statistics consumption dialog')
     mw = session['mainwin']
+    title = action.text()
+    auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Statistics', 'No access right to this function'))
+        return
     dialog = PrintDialog(mw, 'STATISTICS')
     dialog.show()
     logger.info('Statistics consumption dialog shown')
@@ -99,6 +111,11 @@ def statisticsExport(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     icon = action.icon()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Statistics', 'No access right to this function'))
+        return
     dlg = StatisticsExportDialog(mw, title, icon, auth)
     dlg.exec_()
     logger.info('Statistics  export dialog shown')
@@ -163,9 +180,9 @@ class StatisticsExportDialog(QDialog):
         else:
             path = QDir.currentPath()
         fname, t = QFileDialog.getSaveFileName(self,
-                                               _tr("View", "Select file name and path"),
+                                               _tr("Statistics", "Select file name and path"),
                                                path,
-                                               _tr("View", "Comma separated values (*.csv);;All files (*.*)"))
+                                               _tr("Statistics", "Comma separated values (*.csv);;All files (*.*)"))
         if not fname: # clicked cancel
             return
         self.ui.lineEditDetailsFileName.setText(fname)
@@ -217,7 +234,7 @@ class StatisticsExportDialog(QDialog):
         else:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Utility', 'Operation completed successfully'))
+                                    _tr('Statistics', 'Operation completed successfully'))
         # save settings
         st = QSettings()
         st.setValue("StatisticsExport/IncludeAll", self.checkBoxIncludeAll.isChecked())

@@ -166,6 +166,11 @@ def scripting(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     sw = ScriptingForm(mw, title, auth)
     sw.applySortFilter()
     mw.addTab(title, sw)
@@ -175,7 +180,7 @@ def scripting(action: QAction, checked: bool = False) -> None:
 class ScriptingForm(FormIndexManager):
     "Form for python scripting management"
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = ScriptingModel(self)
         idxModel = ScriptingIndexModel(self)
@@ -208,7 +213,7 @@ class ScriptingForm(FormIndexManager):
         self.mapper.addMapping(self.ui.textEditScript, scr.SCRIPT)#, b"plainText")
         # set font
         st = QSettings()
-        self.editorFont: QFont = cast(QFont, st.value("Scripting/EditorFont", QFont('Courier', 8), type=QFont))
+        self.editorFont: QFont = cast(QFont, st.value("Scripting/EditorFont", QFont('Courier New', 8), type=QFont))
         self.ui.textEditScript.setFont(self.editorFont)
         self.ui.fontComboBox.setCurrentFont(self.editorFont)
         self.ui.spinBoxFontSize.setValue(self.editorFont.pointSize())
@@ -300,7 +305,7 @@ class ScriptingForm(FormIndexManager):
                     f"_{self.model.index(row, scr.TRIGGER).data()}"
                     f".scp.zip")
         with gui_exception_context(self,
-                       _tr('Scripting', "Saving current script to file")):
+                                   _tr('Scripting', "Saving current script to file")):
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                 zf.writestr('class', self.model.index(row, scr.CLASS).data())
                 zf.writestr('method', self.model.index(row, scr.METHOD).data())
@@ -349,18 +354,16 @@ class ScriptingForm(FormIndexManager):
             # update settings
             st.setValue("Scripting/PathScripts", directory)
 
-
     def upload(self) -> None:
         "Upload one script file from directory"
         st = QSettings()
         path = st.value("Scripting/PathScripts", QDir.current().path())
-        fileName, t = QFileDialog.getOpenFileName(self,
+        fileName, _ = QFileDialog.getOpenFileName(self,
                                                   _tr('Scripts', "Select the file to import"),
                                                   str(path),
                                                   "*.scp.zip")
         if fileName == "":
             return
-
         with gui_exception_context(self, _tr('Scripting', "Uploading script file")):
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                 cls = zf.read('class').decode('utf-8')
@@ -372,7 +375,6 @@ class ScriptingForm(FormIndexManager):
         
             with gui_exception_context(self, _tr('Scripting', "Saving script file to database")):
                 load_script(cls, mth, trg, True if act == 'True' else False, int(cmp), pys)
-            
                 self.reload()
                 QMessageBox.information(self,
                                         _tr('MessageDialog', "information"),
@@ -387,7 +389,7 @@ class ScriptingForm(FormIndexManager):
                                                      str(path))
         if directory == "":
             return
-
+        
         it = QDirIterator(QDir(directory), QDirIterator.IteratorFlag.NoIteratorFlags)
         while it.hasNext():
             it.next()

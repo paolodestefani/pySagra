@@ -36,7 +36,7 @@ import logging
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QStyledItemDelegate
-from PySide6.QtNetwork import QHostInfo
+from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
@@ -69,6 +69,12 @@ def cashDesk(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
+        
     dw = CashDeskForm(mw, title, auth)
     dw.reload()
     mw.addTab(title, dw)
@@ -77,10 +83,8 @@ def cashDesk(action: QAction, checked: bool = False) -> None:
 
 class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
-        self.ui = Ui_CashDeskWidget()
-        self.ui.setupUi(self)
         model = CashDeskModel(self)
         self.setModel(model)
         self.tabName = title
@@ -90,6 +94,8 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, False, False, False, False,
                                 False, False, False, False)
+        self.ui = Ui_CashDeskWidget()
+        self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('CashDesk')
         self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
@@ -104,7 +110,7 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         row = model.rowCount() - 1
         index = model.index(row, cd.COMPUTER)
         # set the computer name
-        model.setData(index, QHostInfo.localHostName())
+        model.setData(index, session['computer_name'])
         # force cell editing
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)

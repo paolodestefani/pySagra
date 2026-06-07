@@ -94,6 +94,11 @@ def salesSummary(action: QAction, checked: bool = False):
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('SalesSummary', 'No access right to this feature'))
+        return
     cw = SalesSummaryForm(mw, title, auth)
     mw.addTab(title, cw)
     logger.info('Sales summary Form added to main window')
@@ -101,7 +106,7 @@ def salesSummary(action: QAction, checked: bool = False):
 
 class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = SalesSummaryModel(self)
         model.setParameter('event_id', session['event_id'])

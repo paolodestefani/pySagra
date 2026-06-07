@@ -94,6 +94,11 @@ def priceList(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('PriceList', 'No access right to this archive'))
+        return
     plw = PriceListForm(mw, title, auth)
     plw.reload()
     mw.addTab(title, plw)
@@ -109,7 +114,7 @@ class PriceListWidget(QWidget, Ui_PriceListWidget):
 
 class PriceListForm(FormIndexManager):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = PriceListModel(self)
         idxModel = PriceListIndexModel(self)

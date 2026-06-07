@@ -78,6 +78,12 @@ def menu(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     mf = MenusForm(mw, title, auth)
     mf.reload()
     mw.addTab(title, mf)
@@ -112,7 +118,7 @@ class DuplicateMenuDialog(QDialog):
 class MenusForm(FormIndexManager):
     "Form for menu management, showing menu list and menu items treeview for each menu"
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None: # no parent for tabwidget widget pages
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None: # no parent for tabwidget widget pages
         super().__init__(parent, auth)
         model = MenuModel()
         idxModel = MenuIndexModel()

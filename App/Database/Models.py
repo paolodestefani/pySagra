@@ -426,7 +426,9 @@ class ProfileActionModel(TableModel):
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("profile_code", _tr('Models', 'Profile'), False, 'str'),
                         ("action", _tr('Models', 'Action'), False, 'str'),
-                        ("auth", _tr('Models', 'Authorization'), False, 'str'),
+                        ("read", _tr('Models', 'Read'), False, 'bool'),
+                        ("write", _tr('Models', 'Write'), False, 'bool'),
+                        ("execute", _tr('Models', 'Execute'), False, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),

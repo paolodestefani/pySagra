@@ -64,9 +64,14 @@ logger = logging.getLogger(__name__)
 def updateWOS(action: QAction, checked: bool = False) -> None:
     logger.info('Starting update web order server dialog')
     mw = session['mainwin']
-    auth = action.data()
     title = _tr("UpdateWOS", "Update Web Order Server")
+    auth = action.data()
     icon = action.icon()
+    if not auth[2]: # no execute permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('UpdateWOS', 'No access right to this function'))
+        return
     dialog = UpdateWebOrderServerDialog(mw, title, icon, auth)
     dialog.show()
     logger.info('Web order server dialog shown')
@@ -175,7 +180,7 @@ class UpdateWebOrderServerDialog(QDialog):
         if success:
             logger.info('Web order server updated successfully') 
             QMessageBox.information(self,
-                                    _tr("Weborder server", "Update Web Order Server"),
-                                    _tr("Weborder server", "Web order server updated successfully."),
+                                    _tr("MessageDialog", "Information"),
+                                    _tr("UpdateWOS", "Web order server updated successfully."),
                                     QMessageBox.StandardButton.Ok)
                 

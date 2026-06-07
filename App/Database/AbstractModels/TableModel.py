@@ -28,7 +28,8 @@ This module contains generic and reusable table models for database tables
 """
 
 # standard library
-import decimal
+from enum import IntEnum
+from decimal import Decimal
 import logging
 from typing import Any
 from typing import cast
@@ -54,13 +55,23 @@ from App.Core.Database import db_exception_context
 from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Connect import appconn
 
+
 # logger
 logger = logging.getLogger(__name__)
 
 
-UPDATED, INSERTED, DELETED = range(3)
+# state
+class stt(IntEnum):
+    UPDATED     = 0
+    INSERTED    = 1
+    DELETED     = 2
 
-FIELD, DESCRIPTION, RO, TYPE = range(4) # field columns attributes
+# field columns attributes
+class cla(IntEnum):
+    FIELD       = 0
+    DESCRIPTION = 1
+    RO          = 2
+    TYPE        = 3 
 
 
 
@@ -105,34 +116,32 @@ class QueryModel(QAbstractTableModel):
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
 
     def data(self,
-             index: QModelIndex | QPersistentModelIndex = QModelIndex(),
-             role: int = Qt.ItemDataRole.DisplayRole
-             ) -> Any:
-        "Returns the required data from dataSet"    
-        # sometimes dataSet could be empty
+         index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+         role: int = Qt.ItemDataRole.DisplayRole
+         ) -> Any:
+        """Returns the required data from dataSet for read-only visualization."""
         if (not index.isValid() 
-            or index.row() > self.rowCount()
-            or index.column() > self.columnCount()):
+            or index.row() >= self.rowCount()
+            or index.column() >= self.columnCount()):
             return None
-        row = index.row()
-        col = index.column()
-        result = self.dataSet[row, col]
+
+        # O(1) safe lookup using the (row, col) tuple key. Returns None if the coordinate is missing.
+        result = self.dataSet.get((index.row(), index.column()))
+
         match role:
             case Qt.ItemDataRole.DisplayRole:
-                if isinstance(result, bool):
-                    return None # do not return text for bool, checkbox is managed in CheckStateRole
-                return result
+                # Hide text for booleans since the checkbox in CheckStateRole is sufficient
+                return None if isinstance(result, bool) else result
+
+            case Qt.ItemDataRole.CheckStateRole if isinstance(result, bool):
+                return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+
             case Qt.ItemDataRole.TextAlignmentRole:
-                # numbers aligned right anything else aligned left
-                if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
-                    return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-                else:
-                    return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-            case Qt.ItemDataRole.CheckStateRole:
-                if isinstance(result, bool):
-                    return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
-                else:
-                    return None
+                # Right-align numbers and dates, but explicitly exclude booleans (since bool is a subclass of int)
+                if isinstance(result, (int, float, Decimal, QDate, QDateTime)) and not isinstance(result, bool):
+                    return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
             case _:
                 return None
 
@@ -144,7 +153,7 @@ class QueryModel(QAbstractTableModel):
         "Returns header data for row (field header)/column (columns number) headers"
         if orientation == Qt.Orientation.Horizontal:
             if role == Qt.ItemDataRole.DisplayRole:
-                return self.columns[section][DESCRIPTION] # section = column number
+                return self.columns[section][cla.DESCRIPTION] # section = column number
             else:
                 return None
         if orientation == Qt.Orientation.Vertical:
@@ -178,7 +187,7 @@ class QueryModel(QAbstractTableModel):
         for r in range(self.rowCount() - int(self.hasTotalsRow)):
             row = [self.dataSet[r, c] for c in range(self.columnCount())]
             data.append(row)
-        dt = self.columns[column][TYPE]
+        dt = self.columns[column][cla.TYPE]
         null_map: dict[str, Any] = {
             'int': 0,
             'str': "",
@@ -238,7 +247,7 @@ class QueryModel(QAbstractTableModel):
         if column is None: # empty master table or new record
             self.filterCondition.append(('True = %s', False))
         else:
-            field = f"{self.columns[column][FIELD]}"
+            field = f"{self.columns[column][cla.FIELD]}"
             self.filterCondition.append((f'{field} = %s', value))
         self.select()
 
@@ -320,37 +329,37 @@ class QueryWithParamsModel(QAbstractTableModel):
         if not index.isValid():
             return Qt.ItemFlag.NoItemFlags
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
-
+        
     def data(self,
              index: QModelIndex | QPersistentModelIndex = QModelIndex(),
              role: int = Qt.ItemDataRole.DisplayRole
              ) -> Any:
-        "Returns the required data from dataSet"
+        """Returns the required data from dataSet for read-only visualization."""
         if (not index.isValid() 
-            or index.row() > self.rowCount()
-            or index.column() > self.columnCount()):
+            or index.row() >= self.rowCount()
+            or index.column() >= self.columnCount()):
             return None
-        row = index.row()
-        col = index.column()
-        result = self.dataSet[row, col]
+
+        # O(1) safe lookup using the (row, col) tuple key. Returns None if the coordinate is missing.
+        result = self.dataSet.get((index.row(), index.column()))
+
         match role:
             case Qt.ItemDataRole.DisplayRole:
-                if isinstance(result, bool):
-                    return None # do not return text for bool, checkbox is managed in CheckStateRole
-                return result
+                # Hide text for booleans since the checkbox in CheckStateRole is sufficient
+                return None if isinstance(result, bool) else result
+
+            case Qt.ItemDataRole.CheckStateRole if isinstance(result, bool):
+                return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+
             case Qt.ItemDataRole.TextAlignmentRole:
-                # numbers aligned right anything else aligned left
-                if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
-                    return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-                else:
-                    return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-            case Qt.ItemDataRole.CheckStateRole:
-                if isinstance(result, bool):
-                    return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
-                else:
-                    return None
+                # Right-align numbers and dates, but explicitly exclude booleans (since bool is a subclass of int)
+                if isinstance(result, (int, float, Decimal, QDate, QDateTime)) and not isinstance(result, bool):
+                    return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
             case _:
                 return None
+
 
     def headerData(self, 
                    section: int,
@@ -360,7 +369,7 @@ class QueryWithParamsModel(QAbstractTableModel):
         "Returns header data for row (field header)/column (columns number) headers"
         if orientation == Qt.Orientation.Horizontal:
             if role == Qt.ItemDataRole.DisplayRole:
-                return self.columns[section][DESCRIPTION]
+                return self.columns[section][cla.DESCRIPTION]
             else:
                 return None
         if orientation == Qt.Orientation.Vertical:
@@ -387,7 +396,7 @@ class QueryWithParamsModel(QAbstractTableModel):
         for r in range(self.rowCount() - int(self.hasTotalsRow)):
             row = [self.dataSet[r, c] for c in range(self.columnCount())]
             data.append(row)
-        dt = self.columns[column][TYPE]
+        dt = self.columns[column][cla.TYPE]
         null_map: dict[str, Any] = {
             'int': 0,
             'str': "",
@@ -503,48 +512,52 @@ class TableModel(QAbstractTableModel):
         if not index.isValid():
             return Qt.ItemFlag.NoItemFlags
         f = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
-        is_bool = self.columns[index.column()][TYPE] == 'bool'
-        is_ro = self.columns[index.column()][RO]
+        is_bool = self.columns[index.column()][cla.TYPE] == 'bool'
+        is_ro = self.columns[index.column()][cla.RO]
         if not is_ro:
             f |= Qt.ItemFlag.ItemIsEditable
             if is_bool:
                 f |= Qt.ItemFlag.ItemIsUserCheckable
         return f
 
-    def data(self,
-             index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+    def data(self, 
+             index: QModelIndex | QPersistentModelIndex, 
              role: int = Qt.ItemDataRole.DisplayRole
              ) -> Any:
-        "Returns the required data from dataSet"
-        # sometimes dataSet could be empty
-        if (not index.isValid() 
-            or index.row() > self.rowCount()
-            or index.column() > self.columnCount()):
+        """Returns data from the dataSet structured as a list of dictionaries (key = column index)."""
+        if not index.isValid() or index.row() >= len(self.dataSet):
             return None
-        row = index.row()
-        col = index.column()
-        if len(self.dataSet) <= row:
+
+        row, col = index.row(), index.column()
+        is_bool_column = (self.columns[col][cla.TYPE] == 'bool')
+
+        # Safe CheckStateRole handling for boolean columns (even if key is missing or None)
+        if role == Qt.ItemDataRole.CheckStateRole and is_bool_column:
+            value = self.dataSet[row].get(col)
+            return Qt.CheckState.Checked if value else Qt.CheckState.Unchecked
+
+        # Early exit if the column key does not exist in the row dictionary
+        if col not in self.dataSet[row]:
             return None
-        if not col in self.dataSet[row]:
-            return None
+
         result = self.dataSet[row][col]
+
         match role:
             case Qt.ItemDataRole.EditRole:
                 return result
+
             case Qt.ItemDataRole.DisplayRole:
-                if isinstance(result, bool):
-                    return None # do not return text for bool, checkbox is managed in CheckStateRole
+                # Prevent displaying "True"/"False" text if it is a boolean column
+                if is_bool_column or isinstance(result, bool):
+                    return None
                 return result
+
             case Qt.ItemDataRole.TextAlignmentRole:
-                # numbers aligned right anything else aligned left
-                if isinstance(result, (int, decimal.Decimal, QDate, QDateTime)):
-                    return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
-                else:
-                    return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-            case Qt.ItemDataRole.CheckStateRole:
-                if isinstance(result, bool):
-                    return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
-                return None
+                # Right-align numbers and dates (explicitly excluding booleans)
+                if isinstance(result, (int, float, Decimal, QDate, QDateTime)) and not isinstance(result, bool):
+                    return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
             case _:
                 return None
 
@@ -553,39 +566,48 @@ class TableModel(QAbstractTableModel):
             value: Any = None,
             role: int = Qt.ItemDataRole.EditRole
             ) -> bool:
-        """Set data in dataSet and mark row as modified"""
+        """Sets data in dataSet, handles type conversions internally, and marks row as modified."""
         if not index.isValid() or index.row() >= len(self.dataSet):
             return False
-        row = index.row()
-        col = index.column()
+            
+        row, col = index.row(), index.column()
         record = self.dataSet[row]
+        
+        # Declare new_value as Any to satisfy mypy type checking across different roles
+        new_value: Any
 
-        # for boolean value we use CheckStateRole and convert to bool, for any other value we use EditRole
+        # 1. Standardize the input value based on the role
         if role == Qt.ItemDataRole.CheckStateRole:
-            new_value = (value == Qt.CheckState.Checked or value == Qt.CheckState.Checked.value)
-            if record[col] == new_value:
-                return False
-            record[col] = new_value  # unleash Record.__setitem__
-            self.isDirty = True
-            self.dataChanged.emit(index, index, [role, Qt.ItemDataRole.DisplayRole])
-            self.userDataChanged.emit()
-            return True
+            # Normalize both enum and raw int values from Qt
+            new_value = (value in (Qt.CheckState.Checked, Qt.CheckState.Checked.value))
+            
+        elif role == Qt.ItemDataRole.EditRole:
+            # Safe fallback if a CheckState is accidentally passed to EditRole
+            if isinstance(value, Qt.CheckState):
+                new_value = (value == Qt.CheckState.Checked)
+            elif isinstance(value, str):
+                # Convert empty strings to None for proper PostgreSQL NULL handling
+                new_value = value if value.strip() else None
+            else:
+                new_value = value
+                
+        else:
+            return False
 
-        # for text and other value we use EditRole
-        if role == Qt.ItemDataRole.EditRole:
-            if record[col] == value:
-                return False
-            # empty string as Null value
-            if isinstance(value, str):
-                value = value or None
-            # modify the data: Record.__setitem__ will set is_modified = True
-            record[col] = value
-            self.isDirty = True
-            # notify the view that the data has changed
-            self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
-            self.userDataChanged.emit()
-            return True
-        return False
+        # 2. Prevent unnecessary updates if the value remains unchanged
+        if record.get(col) == new_value:
+            return False
+
+        # 3. Apply changes and emit all tracking signals in a single place
+        record[col] = new_value
+        self.isDirty = True
+        
+        # Refresh both roles to ensure View, Delegates, and Checkboxes stay in sync
+        self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole, Qt.ItemDataRole.CheckStateRole])
+        self.userDataChanged.emit()
+        
+        return True
+
 
     # def hiddenSetData(self, row: int, column: int, value: Any) -> None:
     #     "Set data without emitting dataChanged signal"
@@ -625,7 +647,7 @@ class TableModel(QAbstractTableModel):
             # *** UPDATE and INSERT ***
             # loop through all records, if is_new is True do insert, if is_modified is True do update, 
             # if both are False do nothing
-            for record in self.dataSet:
+            for row_idx, record in enumerate(self.dataSet):
                 if record.is_new and record.is_modified:
                     print("***** Record marked as NEW and MODIFIED, possible logical error! *****")
                 # --- UPDATE ---
@@ -638,15 +660,15 @@ class TableModel(QAbstractTableModel):
                         raise PyAppDBConcurrencyError()
                     # list of fields to update, only non read only fields with a field name
                     # (calculated fields have None as field name)
-                    upd_fields = [c[FIELD] for c in self.columns if c[FIELD] and not c[RO]]
+                    upd_fields = [c[cla.FIELD] for c in self.columns if c[cla.FIELD] and not c[cla.RO]]
                     fields_str = ", ".join([f"{f} = %({f})s" for f in upd_fields])
                     where_str = " AND ".join([f"{k} = %({k})s" for k in record.pkey])
-                    fieldsback = ", ".join([i[FIELD] for i in self.columns if i[FIELD]] + [OVFIELD])
+                    fieldsback = ", ".join([i[cla.FIELD] for i in self.columns if i[cla.FIELD]] + [OVFIELD])
                     
                     script = f"UPDATE {self.table} SET {fields_str} WHERE {where_str} RETURNING {fieldsback};"
                     
                     # mapping arguments for update, only non read only fields with a field name
-                    upd_args = {self.columns[i][FIELD]: record[i] for i in range(len(self.columns)) if self.columns[i][FIELD]}
+                    upd_args = {self.columns[i][cla.FIELD]: record[i] for i in range(len(self.columns)) if self.columns[i][cla.FIELD]}
                     upd_args.update(record.pkey)
                     cur.execute(script, upd_args)
                     res = cur.fetchone()
@@ -656,14 +678,12 @@ class TableModel(QAbstractTableModel):
                         record.object_version = res[-1]
                         record.is_modified = False # Reset flag
                     # notify of changes
-                    # calculate the index of the current row in the dataset
-                    row_idx = self.dataSet.index(record) 
                     index_start = self.index(row_idx, 0) # index of the first column of the row
                     index_end = self.index(row_idx, self.columnCount() - 1) # index of the last column of the row
                     self.dataChanged.emit(index_start, index_end, [Qt.ItemDataRole.DisplayRole])
                 # --- INSERT ---
                 elif record.is_new:
-                    fieldList = [i[FIELD] for i in self.columns if i[FIELD] and not i[RO]]
+                    fieldList = [i[cla.FIELD] for i in self.columns if i[cla.FIELD] and not i[cla.RO]]
                     if self.automaticPKey:
                         for pk_f in self.primaryKey:
                             if pk_f in fieldList: 
@@ -680,12 +700,15 @@ class TableModel(QAbstractTableModel):
                         args['company_id'] = session['current_company']
                     fields_str = ", ".join(fieldList)
                     placeholders = ", ".join([f"%({f})s" for f in fieldList])
-                    fieldsback = ", ".join([i[FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])
+                    fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns] + list(self.primaryKey) + [OVFIELD])
                     
                     script = f"INSERT INTO {self.table} ({fields_str}) VALUES ({placeholders}) RETURNING {fieldsback};"
                     
                     # arguments for insert, only non read only fields with a field name
-                    ins_args = {self.columns[i][FIELD]: record[i] for i in range(len(self.columns)) if self.columns[i][FIELD] and not self.columns[i][RO]}
+                    ins_args = {self.columns[i][cla.FIELD]: record[i] 
+                                for i in range(len(self.columns)) 
+                                if self.columns[i][cla.FIELD] 
+                                and not self.columns[i][cla.RO]}
                     ins_args.update(args)
                     
                     cur.execute(script, ins_args)
@@ -700,8 +723,6 @@ class TableModel(QAbstractTableModel):
                         record.is_new = False
                         record.is_modified = False
                     # notify of changes
-                    # calculate the index of the current row in the dataset
-                    row_idx = self.dataSet.index(record) 
                     index_start = self.index(row_idx, 0) # index of the first column of the row
                     index_end = self.index(row_idx, self.columnCount() - 1) # index of the last column of the row
                     self.dataChanged.emit(index_start, index_end, [Qt.ItemDataRole.DisplayRole])
@@ -726,7 +747,7 @@ class TableModel(QAbstractTableModel):
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
         "Returns header data for row (field header)/column (columns number) headers"
         if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
-            return self.columns[section][DESCRIPTION]
+            return self.columns[section][cla.DESCRIPTION]
         if orientation == Qt.Orientation.Vertical:
             if role == Qt.ItemDataRole.DisplayRole:
                 return super().headerData(section, orientation, role)
@@ -745,7 +766,7 @@ class TableModel(QAbstractTableModel):
         self.beginInsertRows(parent, position, position + count - 1)
         
         for i in range(position, position + count):
-            data_dict = {idx: self.newRecordDefault.get(col[FIELD]) 
+            data_dict = {idx: self.newRecordDefault.get(col[cla.FIELD]) 
                         for idx, col in enumerate(self.columns)}
             new_record = Record(data_dict, pkey=None, object_version=0)
             new_record.is_new = True
@@ -782,7 +803,7 @@ class TableModel(QAbstractTableModel):
             return
         self.layoutAboutToBeChanged.emit()
         # manage Null values
-        dt = self.columns[column][TYPE]
+        dt = self.columns[column][cla.TYPE]
         nv = {'int': 0,
               'str': "",
               'float': 0.0,
@@ -804,7 +825,7 @@ class TableModel(QAbstractTableModel):
         if column is None: # empty master table or new record
             self.filterCondition.append(('True = %s', False))
         else:
-            field = f"{self.columns[column][FIELD]}"
+            field = f"{self.columns[column][cla.FIELD]}"
             self.filterCondition.append((f'{field} = %s', value))
         self.select()
  
@@ -831,11 +852,12 @@ class TableModel(QAbstractTableModel):
 
     def fieldName(self, column: int) -> str:
         "Return field name for column number"
-        return self.columns[column][FIELD]
+        return self.columns[column][cla.FIELD]
 
     def fieldColumn(self, fieldName: str) -> int:
         "Return column number for field name"
-        i = self.columns.index([i for i in self.columns if i[FIELD] == fieldName][0]) # index the list of tuple with 1 element, [0] returns the tuple (no list)
+        i = self.columns.index([i for i in self.columns 
+                                if i[cla.FIELD] == fieldName][0]) # index the list of tuple with 1 element, [0] returns the tuple (no list)
         return i
 
     def select(self, 
@@ -845,7 +867,7 @@ class TableModel(QAbstractTableModel):
         "Fetch rows from DB creating the sql select statement and filling the dataset"
         # select fields + primary key fields + object version field
         # None fields (usually calculated fields) are converted to Null string
-        fields = ", ".join([f"{i[FIELD] or 'Null'}" for i in self.columns]
+        fields = ", ".join([f"{i[cla.FIELD] or 'Null'}" for i in self.columns]
                            + [f"{i}" for i in self.primaryKey]
                            + [OVFIELD])
 

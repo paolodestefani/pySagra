@@ -89,16 +89,17 @@ class rpt(IntEnum):
     DATE_UPD    = 10
 
 
-
-FORM, GRID = range(2)
-
-
 def report(action: QAction, checked: bool = False) -> None:
     "Show/Edit reports"
     logger.info('Starting report Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('CashDesk', 'No access right to this archive'))
+        return
     # cursor wait
     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     rf = ReportForm(mw, title, auth)
@@ -112,7 +113,7 @@ def report(action: QAction, checked: bool = False) -> None:
 class ReportForm(FormIndexManager):
     "Report form management"
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = ReportModel(self)
         idxModel = ReportIndexModel(self)

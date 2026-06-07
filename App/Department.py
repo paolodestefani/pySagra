@@ -35,9 +35,11 @@ import logging
 # PySide6
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
+from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Database.Lookup import printer_class_lookup
@@ -72,6 +74,11 @@ def department(action: QAction, checked: bool = False) -> None:
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
+    if not auth[0]: # no read permission
+        QMessageBox.warning(mw,
+                            _tr('MessageDialog', "Warning"),
+                            _tr('Department', 'No access right to this archive'))
+        return
     dw = DepartmentForm(mw, title, auth)
     dw.reload()
     mw.addTab(title, dw)
@@ -80,7 +87,7 @@ def department(action: QAction, checked: bool = False) -> None:
 
 class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = DepartmentModel(self)
         self.setModel(model)

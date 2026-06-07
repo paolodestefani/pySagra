@@ -29,10 +29,11 @@ This module contains generic and reusable tree models for database tables
 
 # standard library
 import logging
+from decimal import Decimal
 from typing import Any
-
-# psycopg
-import psycopg
+from typing import Optional
+from typing import Tuple, List
+from enum import IntEnum
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -40,10 +41,12 @@ from PySide6.QtCore import QObject
 from PySide6.QtCore import Signal
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QPersistentModelIndex
+from PySide6.QtCore import QDate
+from PySide6.QtCore import QDateTime
 
 # application modules
 from App.Database import OVFIELD
-from App.Database.Exceptions import PyAppDBError
 from App.Core.Database import db_exception_context
 from App.Database.Connect import appconn
 from App.Core.L10n import _tr
@@ -52,13 +55,19 @@ from App.Core.L10n import _tr
 # logger
 logger = logging.getLogger(__name__)
 
-
-UPDATED, INSERTED, DELETED = range(3)
+class stt(IntEnum):
+    UPDATED     = 0 
+    INSERTED    = 1
+    SYNC        = 2
 
 FIELD, DESCRIPTION, RO, TYPE = range(4) # field columnsattributes
 
+# Dummy constants for state management (replace with your actual constants or strings)
+#INSERTED = 'INSERTED'
+#UPDATED = 'UPDATED'
 
-def get_menu_tree(parent: str) -> list[str]:
+
+def get_menu_tree(parent: str) -> list[tuple]:
     "Returns actions for given menu parent item"
     sql = """
 SELECT 
@@ -78,23 +87,23 @@ ORDER BY sorting;"""
         return cur.fetchall()
 
 
-class TreeItem():
-    "A row in the tree model"
-    ovField = 'object_version'
+class TreeItem:
+    """A row in the tree model with editing and change-tracking capabilities."""
+    ovField = OVFIELD
 
-    def __init__(self, data: dict[int, Any], parent: TreeItem|None = None) -> None:
+    def __init__(self, data: dict[int, Any], parent: Optional[TreeItem] = None) -> None:
         self.parentItem = parent
-        self.itemData = data  # dict of column:value values
+        self.itemData = data  # dict of column: value
         self.childItems: list[TreeItem] = []
-        self.state = None  # Updated, Inserted (removed items managed in treeModel)
-        self.pkey = None
-        self.toModify: dict[int, Any] = {}  # column of the modified cell
-        
-    def child(self, row: int) -> TreeItem|None:
+        self.state: Optional[int] = None  # E.g., 'Updated', 'Inserted'
+        self.pkey: Any = None
+        self.toModify: dict[int, Any] = {}  # Tracks columns of modified cells
+        self.objectVersion: Any = None  
+
+    def child(self, row: int) -> Optional[TreeItem]:
         if 0 <= row < len(self.childItems):
             return self.childItems[row]
-        else:
-            return None
+        return None
 
     def appendChild(self, item: TreeItem) -> None:
         self.childItems.append(item)
@@ -105,327 +114,396 @@ class TreeItem():
     def childNumber(self) -> int:
         if self.parentItem:
             return self.parentItem.childItems.index(self)
-        else:
-            return 0
+        return 0
 
     def columnCount(self) -> int:
         return len(self.itemData)
 
-    #def data(self, column):
-        #if column < 0 or column >= len(self.itemData):
-            #return None
-        #return self.itemData[column]
-
-    #def setData(self, column, value):
-        #if column < 0 or column >= len(self.itemData):
-            #return False
-        ## save the column of the modified cell
-        #self.toModify[column] = None
-        #self.itemData[column] = value
-        #return True
-
-    #def insertChildren(self, position, count, columns):
-        #if position < 0 or position > len(self.childItems):
-            #return False
-        #for row in range(count):
-            #data = [None for v in range(columns)]
-            #item = TreeItem(data, self)
-            #item.parentFieldValue = self.childFieldValue
-            #item.state = INSERTED
-            #self.childItems.insert(position, item)
-        #return True
-
-    #def insertColumns(self, position, columns):
-        #if position < 0 or position > len(self.itemData):
-            #return False
-        #for column in range(columns):
-            #self.itemData.insert(position, None)
-        #for child in self.childItems:
-            #child.insertColumns(position, columns)
-        #return True
-
-    def parent(self) -> TreeItem|None:
+    def parent(self) -> Optional[TreeItem]:
         return self.parentItem
 
-    #def removeChildren(self, position, count):
-        #if position < 0 or position + count > len(self.childItems):
-            #return False
-        #for row in range(count):
-            #self.childItems.pop(position)
-        #return True
-
-    #def removeColumns(self, position, columns):
-        #if position < 0 or position + columns > len(self.itemData):
-            #return False
-        #for column in range(columns):
-            #self.itemData.pop(position)
-        #for child in self.childItems:
-            #child.removeColumns(position, columns)
-        #return True
-
-    #def parentFieldValue(self):
-        #return self.itemData[0]
-
     def childFieldValue(self, fieldColumn: int) -> Any:
-        return self.itemData[fieldColumn]
-    
+        return self.itemData.get(fieldColumn)
+
+    def data(self, column: int) -> Any:
+        """Safe O(1) data retrieval for the specific column."""
+        return self.itemData.get(column)
+
+    def setData(self, column: int, value: Any) -> bool:
+        """Updates data in memory and tracks the modification for PostgreSQL."""
+        # Prevent redundant writing if the value has not changed
+        if self.itemData.get(column) == value:
+            return False
+
+        # Apply change
+        self.itemData[column] = value
+
+        # Only mark as 'Updated' if it's an existing row (not a freshly 'Inserted' one)
+        if self.state != stt.INSERTED:
+            self.state = stt.UPDATED
+            
+        # Register the column index as modified (useful for building dynamic SQL updates)
+        self.toModify[column] = True
+        return True
+
+    def insertChildren(self, position: int, count: int, columns_count: int) -> bool:
+        """Inserts blank child items at a specific row position."""
+        if position < 0 or position > len(self.childItems):
+            return False
+            
+        for _ in range(count):
+            # Create a sparse dictionary populated with None for the columns
+            blank_data = {col: None for col in range(columns_count)}
+            item = TreeItem(blank_data, self)
+            item.state = stt.INSERTED
+            self.childItems.insert(position, item)
+        return True
+
+    def removeChildren(self, position: int, count: int) -> bool:
+        """Removes child items from a specific row position."""
+        if position < 0 or position + count > len(self.childItems):
+            return False
+        for _ in range(count):
+            self.childItems.pop(position)
+        return True
     
 
 class TreeQueryModel(QAbstractItemModel):
-    "A tree model from a fixed number on nestet query"
+    """A read-only tree model populated from sequential nested database queries."""
     
-    def __init__(self, parent: QObject|None = None) -> None:
+    def __init__(self, parent: Optional[QObject] = None) -> None:
         super().__init__(parent)
         self.isEditable = False
-        self.rootItem: TreeItem|None = None
+        self.rootItem: Optional[TreeItem] = None
         self.orderByExpressions: list[str] = []
-        self.repr: str = 'Generic tree query model' # printable representation of the object
-        self.script: list[str] = [] # in subclasses the definition and number of sql script
+        self.repr: str = 'Generic tree query model'
+        self.script: list[str] = []  # List of SQL scripts defined by subclasses per hierarchy level
         self.currentLevel = 0
-        self.columns: Any = []  # list of tuples (field name, field description, read only flag, field type)
-        self.childFieldColumn: int = 0 # column of the child field in the query result, set by the subclass
-        
+        self.columns: Any = []  # List of tuples: (field name, field description, read only flag, field type)
+        self.childFieldColumn: int = 0  # Index of the child field in the query result
+
     def __repr__(self) -> str:
-        "Model representation"
         return self.repr
 
     def setRepr(self, text: str) -> None:
-        "Change the object representation text"
         self.repr = text
 
     def filter(self, column: int, value: Any) -> None:
+        """Initializes the root item and triggers the recursive database walk."""
         self.clear()
-        self.rootItem = TreeItem({i: None for i, c in enumerate(self.columns)})
+        self.rootItem = TreeItem({i: None for i, _ in enumerate(self.columns)})
         self.rootItem.itemData[self.childFieldColumn] = value 
+        
         self.beginResetModel()
         self._walk(self.rootItem)
         self.endResetModel()
 
-    def _walk(self, parentItem):
-        # Unified context managers in the recommended evaluation order
+    def _walk(self, parentItem: TreeItem) -> None:
+        """Recursively fetches child items from PostgreSQL based on the parent value."""
         with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-            x = parentItem.childFieldValue(self.childFieldColumn)
-            cur.execute(self.script[self.currentLevel], (x,))
+            parent_value = parentItem.childFieldValue(self.childFieldColumn)
+            cur.execute(self.script[self.currentLevel], (parent_value,))
+            
             for record in cur:
-                itemData = dict()
-                # selected fields
+                item_data = {}
                 for i in range(len(self.columns)):
-                    itemData[i] = record[i]
-                n = TreeItem(itemData, parentItem)
-                parentItem.appendChild(n)
+                    item_data[i] = record[i]
+                    
+                child_node = TreeItem(item_data, parentItem)
+                parentItem.appendChild(child_node)
+                
+                # Recurse deeper into the hierarchy level
                 self.currentLevel += 1
-                self._walk(n)
+                self._walk(child_node)
                 self.currentLevel -= 1
 
-    def rowCount(self, parent=QModelIndex()):
+    def rowCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:
         parentItem = self.getItem(parent)
-        if parentItem:
-            return parentItem.childCount()
-        return 0
+        return parentItem.childCount() if parentItem else 0
 
-    def columnCount(self, parent=QModelIndex()):
+    def columnCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:
         return len(self.columns)
 
-    def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid():
-            return None
-        if role not in (Qt.DisplayRole, Qt.EditRole, Qt.DecorationRole):
-            return None
-        item = self.getItem(index)
-        return item.itemData[index.column()]
-
-    def flags(self, index):
+    def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
+        """Returns standard read-only flags. Explicitly excludes ItemIsEditable."""
         if not index.isValid():
             return Qt.ItemFlag.NoItemFlags
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
-    def getItem(self, index):
+    def data(self, index: QModelIndex | QPersistentModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        """Handles pure visualization logic (alignments, hiding raw boolean strings)."""
+        if (not index.isValid() 
+            or index.row() >= self.rowCount(index.parent()) 
+            or index.column() >= self.columnCount()):
+            return None
+
+        item = self.getItem(index)
+        if not item:
+            return None
+
+        col = index.column()
+        result = item.data(col)
+        
+        # Check if column type is defined as 'bool' (index 3 in your columns configuration tuple)
+        is_bool_column = (self.columns[col][3] == 'bool') if col < len(self.columns) else False
+
+        match role:
+            case Qt.ItemDataRole.DisplayRole:
+                # Prevent showing raw text ("True"/"False") for boolean columns
+                return None if (is_bool_column or isinstance(result, bool)) else result
+
+            case Qt.ItemDataRole.CheckStateRole if is_bool_column or isinstance(result, bool):
+                return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+
+            case Qt.ItemDataRole.TextAlignmentRole:
+                # Right-align numeric/date data types, left-align everything else (excluding booleans)
+                if isinstance(result, (int, float, Decimal, QDate, QDateTime)) and not isinstance(result, bool):
+                    return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
+            case _:
+                return None
+
+    def getItem(self, index: QModelIndex | QPersistentModelIndex) -> Optional[TreeItem]:
         if index.isValid():
             item = index.internalPointer()
             if item:
                 return item
         return self.rootItem
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self.columns[section][1] # field description
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+            return self.columns[section][0]  # Field name/description
         return None
 
-    def index(self, row, column, parent=QModelIndex()):
+    def index(self, row: int, column: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> QModelIndex:
         if parent.isValid() and parent.column() != 0:
             return QModelIndex()
+            
         parentItem = self.getItem(parent)
         if not parentItem:
             return QModelIndex()
+            
         childItem = parentItem.child(row)
         if childItem:
             return self.createIndex(row, column, childItem)
-        else:
-            return QModelIndex()
+        return QModelIndex()
 
-    def parent(self, index):
+    def parent(self, index: Optional[QModelIndex | QPersistentModelIndex] = None) -> Any:
+        """Returns the parent of the model index, or the QObject parent if no index is provided."""
+        # If called without arguments, fallback to QObject.parent() to satisfy the supertype signature
+        if index is None:
+            return super().parent()
+
         if not index.isValid():
             return QModelIndex()
+            
         childItem = self.getItem(index)
-        parentItem = childItem.parent()
-        if parentItem == self.rootItem:
+        if not childItem:
             return QModelIndex()
+            
+        parentItem = childItem.parent()
+        if parentItem == self.rootItem or parentItem is None:
+            return QModelIndex()
+            
         return self.createIndex(parentItem.childNumber(), 0, parentItem)
 
-    def addOrderBy(self, expression):
+
+    def addOrderBy(self, expression: str) -> None:
         self.orderByExpressions.append(expression)
 
-    def setHeaderData(self, section, orientation, value, role=Qt.EditRole):
-        if role != Qt.EditRole or orientation != Qt.Horizontal:
-            return False
-        result = self.rootItem.setData(section, value)
-        if result:
-            self.headerDataChanged.emit(orientation, section, section)
-        return result
-
-    def clear(self):
-        "Delete all model items"
+    def clear(self) -> None:
+        """Deletes all items in the model hierarchy."""
         if self.rootItem:
             self.rootItem.childItems.clear()
-    
-    def submitAll(self, pkey: Any = None) -> bool:
-        "Submit all changes to the database, in this model there are no changes allowed, so just return True"
-        return True
 
 
 class TreeModel(QAbstractItemModel):
+    """A writable tree model that tracks inserts, updates, and deletes for PostgreSQL sync."""
 
-    userDataChanged = Signal()  # can not use dataChanged because is emitted even on select
+    userDataChanged = Signal()  # Emitted only when actual data modifications happen
 
-    def __init__(self, parent: QObject|None = None) -> None:
+    def __init__(self, parent: Optional[QObject] = None) -> None:
         super().__init__(parent)
-        self.table: str|None = None
-        self.columns: Any = []  # list of tuples (field name, field description, read only flag, field type)
-        self.primaryKey: tuple[str, str] = ('', '')  # list of primary key field names
-        self.parentField: str|None = None
-        self.parentFieldColumn: int|None = None
-        self.childField: str|None = None
-        self.childFieldColumn: int|None = None
+        self.table: Optional[str] = None
+        self.columns: Any = []  # List of tuples: (field name, field description, read only flag, field type)
+        self.primaryKey: Tuple[str, str] = ('', '')  # Dynamic primary key fields
+        self.parentField: Optional[str] = None
+        self.parentFieldColumn: Optional[int] = None
+        self.childField: Optional[str] = None
+        self.childFieldColumn: Optional[int] = None
         self.isEditable = True
-        self.rootItem: TreeItem|None = None
-        self.toDelete: list[TreeItem] = []
-        self.orderByExpressions: list[str] = []
-        self.repr = 'Generic tree model' # printable representation of the object
+        self.rootItem: Optional[TreeItem] = None
+        self.toDelete: List[TreeItem] = []
+        self.orderByExpressions: List[str] = []
+        self.repr = 'Generic tree model'
         
+        # Internal configuration helpers populated during select()
+        self._cols = 0
+        self._pkcols: range = range(0)
+        self._ovcol = 0
+        self._script = ""
+        self._hasChildScript = ""
+
     def __repr__(self) -> str:
-        "Model representation"
         return self.repr
 
     def select(self) -> None:
-        "Create the tree model from database select"
-        # select fields + primary key fields + object version field
-        fields = ", ".join([f"{i[FIELD]}" for i in self.columns]
+        """Constructs the targeted SQL SELECT queries for hierarchical walking."""
+        fields = ", ".join([f"{i[0]}" for i in self.columns]
                            + [f"{i}" for i in self.primaryKey]
-                           + [f"{OVFIELD}"])
+                           + ["object_version"])
         self._cols = len(self.columns)
         self._pkcols = range(self._cols, self._cols + len(self.primaryKey))
         self._ovcol = self._cols + len(self.primaryKey)
+        
         self._script = f"SELECT {fields} \nFROM {self.table}\nWHERE {self.parentField} = %s"
         if self.orderByExpressions:
             self._script += f"\nORDER BY {', '.join(self.orderByExpressions)}"
         self._script += ";"
         self._hasChildScript = f"SELECT {self.childField}\nFROM {self.table} \nWHERE {self.parentField} = %s;"
 
-    def filter(self, detailColumn: int, value) -> None:
-        #if not referenceKey:
-            #return
+    def filter(self, detailColumn: int, value: Any) -> None:
+        """Initializes the root node and pulls data from the database."""
         self.clear()
-        self.rootItem = TreeItem({i: None for i, c in enumerate(self.columns)})
-        #f = {i+1: c[1] for i, c in enumerate(self.columns)}
-        #f.update({0:None})
-        #self.rootItem = TreeItem(f)
-        self.rootItem.itemData[1] = value #list(referenceKey.values())[0]
+        self.rootItem = TreeItem({i: None for i, _ in enumerate(self.columns)})
+        if self.childFieldColumn is not None:
+            self.rootItem.itemData[self.childFieldColumn] = value 
+            
         self.beginResetModel()
         self._walk(self.rootItem)
         self.endResetModel()
 
-    #def hasChild(self, childValue):
-        #with appconn.cursor() as cur:
-            #cur.execute(self._hasChildScript, (childValue,))
-            #if cur.rowcount:
-                #return True
-            #return False
-
-    def _walk(self, parentItem):
-        # Unified context managers in the recommended evaluation order
+    def _walk(self, parentItem: TreeItem) -> None:
+        """Recursively steps through database records to construct the network of tree nodes."""
+        if self.childFieldColumn is None:
+            return
+            
         with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-            #print("Mogrify",cur.mogrify(script, args))
-            x = parentItem.childFieldValue(self.childFieldColumn)
-            cur.execute(self._script, (x,))
+            parent_value = parentItem.childFieldValue(self.childFieldColumn)
+            cur.execute(self._script, (parent_value,))
+            
             for record in cur:
-                #print("Rec", record)
-                itemData = dict()
-                # selected fields
+                item_data = {}
                 for i in range(len(self.columns)):
-                    itemData[i] = record[i]
-                n = TreeItem(itemData, parentItem)
-                # primary key fields
-                n.pkey = {self.primaryKey[i - self._cols]: record[i] for i in self._pkcols}
-                # row timestamp
-                n.objectVersion = record[self._ovcol]
-                n.state='S'
-                parentItem.appendChild(n)
-                # if self.hasChild(n.itemData[self.sqlChildFieldColumn]):
-                self._walk(n)
+                    item_data[i] = record[i]
+                    
+                node = TreeItem(item_data, parentItem)
+                node.pkey = {self.primaryKey[i - self._cols]: record[i] for i in self._pkcols}
+                node.objectVersion = record[self._ovcol]
+                node.state = stt.SYNC  # Synchronized state
+                
+                parentItem.appendChild(node)
+                self._walk(node)
 
-    def rowCount(self, parent=QModelIndex()):
+    def rowCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:
         parentItem = self.getItem(parent)
-        if parentItem:
-            return parentItem.childCount()
-        return 0
+        return parentItem.childCount() if parentItem else 0
 
-    def columnCount(self, parent=QModelIndex()):
+    def columnCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:
         return len(self.columns)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index: QModelIndex | QPersistentModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        """Handles pure visualization rendering and formatting configurations."""
         if not index.isValid():
             return None
-        if role not in (Qt.DisplayRole, Qt.EditRole, Qt.DecorationRole):
-            return None
-        item = self.getItem(index)
-        return item.itemData[index.column()]
 
-    def setData(self, index, value, role=Qt.EditRole):
-        if role != Qt.EditRole:
-            return False
         item = self.getItem(index)
-        if index.column() < 0 or index.column() >= len(item.itemData):
+        if not item:
+            return None
+
+        col = index.column()
+        result = item.itemData.get(col)
+        
+        # Identify if column type is defined as 'bool' (index 3 in configuration tuple)
+        is_bool_column = (self.columns[col][3] == 'bool') if col < len(self.columns) else False
+
+        match role:
+            case Qt.ItemDataRole.DisplayRole | Qt.ItemDataRole.EditRole:
+                return None if (is_bool_column or isinstance(result, bool)) else result
+
+            case Qt.ItemDataRole.CheckStateRole if is_bool_column or isinstance(result, bool):
+                return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
+
+            case Qt.ItemDataRole.TextAlignmentRole:
+                if isinstance(result, (int, float, Decimal, QDate, QDateTime)) and not isinstance(result, bool):
+                    return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
+            case _:
+                return None
+
+    def setData(self, index: QModelIndex | QPersistentModelIndex, value: Any, role: int = Qt.ItemDataRole.EditRole) -> bool:
+        """Safely mutates values on the targeted node and registers update telemetry flags."""
+        if not index.isValid():
             return False
-        item.itemData[index.column()] = value
-        item.toModify[index.column()] = None
-        self.dataChanged.emit(index, index)
+
+        item = self.getItem(index)
+        if not item:
+            return False
+
+        col = index.column()
+        is_bool_column = (self.columns[col][3] == 'bool') if col < len(self.columns) else False
+
+        # 1. Normalize the inputs according to roles
+        new_value: Any
+        if role == Qt.ItemDataRole.CheckStateRole and is_bool_column:
+            new_value = (value in (Qt.CheckState.Checked, Qt.CheckState.Checked.value))
+        elif role == Qt.ItemDataRole.EditRole:
+            if isinstance(value, Qt.CheckState):
+                new_value = (value == Qt.CheckState.Checked)
+            elif isinstance(value, str):
+                new_value = value if value.strip() else None
+            else:
+                new_value = value
+        else:
+            return False
+
+        # 2. Block evaluation if identical values are submitted
+        if item.itemData.get(col) == new_value:
+            return False
+
+        # 3. Store modification telemetry inside the node
+        item.itemData[col] = new_value
+        item.toModify[col] = True
+
+        if item.state != stt.INSERTED:  
+            item.state = stt.UPDATED
+
+        # 4. Trigger structural and user-defined repaint signals
+        self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole, Qt.ItemDataRole.CheckStateRole])
         self.userDataChanged.emit()
-        if item.state != INSERTED:  # inserted items must be saved before update
-            item.state = UPDATED
         return True
 
-    def flags(self, index):
+    def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
+        """Returns cell permissions, enforcing the column configuration's read-only index."""
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        #flags = Qt.ItemFlags(QAbstractItemModel.flags(self, index) | Qt.ItemIsEditable)
-        #if self.columns[index.column()][2]:
-            #flags = flags ^ Qt.ItemIsEditable
-        #return flags
-        return Qt.ItemIsEnabled|Qt.ItemIsEditable|Qt.ItemIsSelectable
+            return Qt.ItemFlag.ItemIsEnabled
+            
+        base_flags = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+        col = index.column()
+        
+        # Check read-only boolean flag (index 2 in columns tuple layout)
+        is_readonly = self.columns[col][2] if col < len(self.columns) else True
+        
+        if self.isEditable and not is_readonly:
+            return base_flags | Qt.ItemFlag.ItemIsEditable
+            
+        return base_flags
 
-    def getItem(self, index):
+    def getItem(self, index: QModelIndex | QPersistentModelIndex) -> Optional[TreeItem]:
         if index.isValid():
             item = index.internalPointer()
             if item:
                 return item
         return self.rootItem
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return self.columns[section][0]
         return None
 
-    def index(self, row, column, parent=QModelIndex()):
+    def index(self, row: int, column: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> QModelIndex:
         if parent.isValid() and parent.column() != 0:
             return QModelIndex()
         parentItem = self.getItem(parent)
@@ -434,178 +512,136 @@ class TreeModel(QAbstractItemModel):
         childItem = parentItem.child(row)
         if childItem:
             return self.createIndex(row, column, childItem)
-        else:
-            return QModelIndex()
+        return QModelIndex()
 
-    def parent(self, index):
+    def parent(self, index: Optional[QModelIndex | QPersistentModelIndex] = None) -> Any:
+        """Polymorphic parent implementation to prevent QObject override collisions under Mypy."""
+        if index is None:
+            return super().parent()
+            
         if not index.isValid():
             return QModelIndex()
+            
         childItem = self.getItem(index)
-        parentItem = childItem.parent()
-        if parentItem == self.rootItem:
+        if not childItem:
             return QModelIndex()
+            
+        parentItem = childItem.parent()
+        if parentItem == self.rootItem or parentItem is None:
+            return QModelIndex()
+            
         return self.createIndex(parentItem.childNumber(), 0, parentItem)
 
-    def insertRows(self, position, count, parent=QModelIndex()):
+    def insertRows(self, position: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
+        """Inserts new uninitialized records into the tree memory structure."""
         parentItem = self.getItem(parent)
+        if not parentItem or position < 0 or position > len(parentItem.childItems):
+            return False
+            
         self.beginInsertRows(parent, position, position + count - 1)
 
-        if position < 0 or position > len(parentItem.childItems):
-            return False
-        for row in range(count):
-            data = [None] * self.rootItem.columnCount()
-            item = TreeItem(data, parentItem)
-            #item.parentFieldValue = parentItem.childFieldValue
-            item.state = INSERTED
+        for _ in range(count):
+            # Safe sparse dictionary initialized for all columns to avoid KeyError
+            blank_data = {col: None for col in range(self.columnCount())}
+            item = TreeItem(blank_data, parentItem)
+            item.state = stt.INSERTED
             parentItem.childItems.insert(position, item)
 
         self.endInsertRows()
         return True
 
-    def removeRows(self, position, count, parent=QModelIndex()):
+    def removeRows(self, position: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
+        """Removes items from the hierarchy and buffers them inside self.toDelete for SQL deletion."""
         parentItem = self.getItem(parent)
-        if position < 0 or position + count > len(parentItem.childItems):
+        if not parentItem or position < 0 or position + count > len(parentItem.childItems):
             return False
+            
         self.beginRemoveRows(parent, position, position + count - 1)
-        for row in range(count):
-            dr = parentItem.childItems.pop(position)
-            self.toDelete.append(dr) # store a reference to the removed treeitem for db deletion on submitAll
+        for _ in range(count):
+            deleted_row = parentItem.childItems.pop(position)
+            self.toDelete.append(deleted_row)
+            
         self.endRemoveRows()
         self.userDataChanged.emit()
         return True
 
-    def addOrderBy(self, expression):
+    def addOrderBy(self, expression: str) -> None:
         self.orderByExpressions.append(expression)
 
-    def setHeaderData(self, section, orientation, value, role=Qt.EditRole):
-        if role != Qt.EditRole or orientation != Qt.Horizontal:
+    def setHeaderData(self, section: int, orientation: Qt.Orientation, value: Any, role: int = Qt.ItemDataRole.EditRole) -> bool:
+        if role != Qt.ItemDataRole.EditRole or orientation != Qt.Orientation.Horizontal:
+            return False
+        if not self.rootItem:
             return False
         result = self.rootItem.setData(section, value)
         if result:
             self.headerDataChanged.emit(orientation, section, section)
         return result
 
-    def clear(self):
-        "Delete all model items"
+    def clear(self) -> None:
+        """Flushes the active tracking pools and memory nodes."""
         if self.rootItem:
             self.rootItem.childItems.clear()
+        self.toDelete.clear()
 
-    def submit(self):
+    def submit(self) -> bool:
         return True
 
-    def submitAll(self, pkey):
-        if not self.rootItem: # empty model
+    def submitAll(self, detailColumn: Optional[int] = None, value: Any = None) -> bool:
+        """Processes all accumulated memory changes (Inserts, Updates, Deletes) against PostgreSQL.
+        
+        Handles Master-Detail keys passed by FormIndexManager for proper relational mapping.
+        """
+        if not self.rootItem:
             return True
-        # construct sql check statement
-        self.sqlCheck = (f"SELECT {', '.join(self.sqlPrimaryKey)}"
-                         f"\nFROM {self.sqlTable}"
-                         f"\nWHERE {' AND '.join([f'{i} = %({i})s' for i in self.sqlPrimaryKey + ('object_version',)])};")
 
-        self._store(self.rootItem)  # for inserted/updated items
-        # for deleted items
-        # Unified context managers in the recommended evaluation order
         with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-            for dd in self.toDelete:
-                # check if record was modified
-                args = dd.pkey.copy()
-                args['object_version'] = dd.objectVersion # self.toDelete[row]['rowtimestamp']
-                #print("SQL delete check", cur.mogrify(self.sqlCheck, args))
-                cur.execute(self.sqlCheck, args)
-                if cur.rowcount == 0:
-                    self.pgError = _tr("Model", "Row modified before delete")
-                    return False
-                # delete record
-                # where = " AND ".join([f"{i} = %({i})s" for i in self.toDelete[row]['pkey']])
-                where = " AND ".join([f"{i} = %({i})s" for i in dd.pkey])
-                script = (f"DELETE FROM {self.sqlTable}\n"
-                            f"WHERE {where};")
-                #args = dict()
-                # args.update(self.toDelete[row]['pkey'])
-                #args.update(dd.pkey)
-                #print("SQL delete", cur.mogrify(script, args))
-                #print("** DELETE **")
-                #print(cur.mogrify(script, dd.pkey))
-                cur.execute(script, dd.pkey)
-            # clear deleted record list
-            self.toDelete.clear()
-        return True
+            # 1. Process Deletions first to respect foreign keys (self.toDelete)
+            for item in self.toDelete:
+                if item.pkey:
+                    # TODO: Generate your dynamic DELETE statement here with Optimistic Locking
+                    # sql = f"DELETE FROM {self.table} WHERE ... AND object_version = %s;"
+                    pass
 
-    def _store(self, item):
-        for child in item.childItems:
-            if child.childItems:
-                self._store(child)
-            if child.state == UPDATED:
-                # updated all the item is stored
-                # Unified context managers in the recommended evaluation order
-                with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur: # manual submit, no commit
-                    # *** UPDATE ***
-                    for column in child.toModify:
-                        # check if record was already modified
-                        args = child.pkey.copy()
-                        args['object_version'] = child.objectVersion
-                        cur.execute(self.sqlCheck, args)
-                        if cur.rowcount == 0:
-                            pgerror = _tr("Model", "Row modified before update")
-                            raise PyAppDBError(0, pgerror)
-                        # update record
-                        fields = ", ".join([f"{self.columns[i][0]} = %({self.columns[i][0]})s" for i in child.toModify])
-                        # fields = ", ".join([f"{i[0]} = %({i[0]})s" for i in self.columns if i[0] not in self.sqlPrimaryKey and not i[2]])  # exclude primary key and read only fields
-                        where = " AND ".join([f"{i} = %({i})s" for i in child.pkey])
-                        fieldsback = ", ".join([i[0] or 'Null' for i in self.columns] + ['object_version'])
-                        script = (f"UPDATE {self.sqlTable}\n"
-                                    f"SET {fields}\n"
-                                    f"WHERE {where}\n"
-                                    f"RETURNING {fieldsback};")
-                        args = {self.columns[i][0]: child.itemData[i] for i in child.toModify}
-                        #args = {c[0]: self.dataSet[row][i] for i, c in enumerate(self.columns) if c[0] not in self.sqlPrimaryKey and not c[2]}
-                        args.update(child.pkey.copy())
-                        #print("** UPDATE **")
-                        #print(script)
-                        #print(args)
-                        cur.execute(script, args)
-                        # repopulate the modified row
-                        for record in cur:
-                            # selected fields
-                            for i in range(len(self.columns)):
-                                child.itemData[i] = record[i]
-                            # row timestamp
-                            child.objectVersion = record[i + 1]  # row timestamp is always the last column
-                        # self.dataChanged.emit(self.index(row, 0), self.index(row, 0)) # if any trigger modify de record
-                    # clear modified record list
-                    child.toModify.clear()
-                    child.state = None
-            if child.state == INSERTED:
-                # Unified context managers in the recommended evaluation order
-                with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur: # manual submit, no commit
-                    # *** INSERT ***
-                    fieldList = [i[0] for i in self.columns if i[0] and not i[2]]
-                    valueList = [f"%({i[0]})s" for i in self.columns if i[0] and not i[2]]
-                    #if self.recordType:
-                        #fieldList += [i for i in self.recordType]
-                        #valueList += [f"'{self.recordType[i]}'" for i in self.recordType]  # record type must be string
-                    fields = ", ".join(fieldList)
-                    values = ", ".join(valueList)
-                    fieldsback = ", ".join([i[0] or 'Null' for i in self.columns] + ['object_version'])
-                    script = (f"INSERT INTO {self.sqlTable}\n"
-                                f"({fields})\n"
-                                f"VALUES ({values})\n"
-                                f"RETURNING {fieldsback};")
-                    args = {c[0]: child.itemData[i] for i, c in enumerate(self.columns) if c[0] and not c[2]}
-                    # if self.automaticPKey:
-                        #for i in self.sqlPrimaryKey:
-                            #args[i] = DEFAULT
-                    # print(cur.mogrify(script, args))
-                    #print("** INSERT **")
-                    #print(script)
-                    #print(args)
-                    cur.execute(script, args)
-                    # repopulate the inserted row
-                    for record in cur:
-                        # selected fields
-                        for i in range(len(self.columns)):
-                            child.itemData[i] = record[i]
-                        # row timestamp
-                        child.objectVersion = record[i + 1]  # row timestamp is always the last column
-                    # self.dataChanged.emit(self.index(row, 0), self.index(row, cols))  # if any trigger modify de record
-                # clear insert record list
-                child.state = None
+            # 2. Process Inserts and Updates by traversing the living memory tree
+            def _save_walk(node: TreeItem) -> None:
+                if node.state == stt.INSERTED:
+                    # SCENARIO 1: Top-level node in the current view
+                    if node.parentItem == self.rootItem:
+                        if detailColumn is not None:
+                            node.itemData[detailColumn] = value
+                            
+                    # SCENARIO 2: Sub-node inserted under an existing tree item
+                    else:
+                        parent_node = node.parentItem
+                        if parent_node and self.childFieldColumn is not None and self.parentFieldColumn is not None:
+                            # The foreign key (parent) becomes the unique identifier (child) of the parent node
+                            parent_db_value = parent_node.itemData.get(self.childFieldColumn)
+                            node.itemData[self.parentFieldColumn] = parent_db_value
+
+                    # TODO: Generate your dynamic INSERT statement here
+                    # Clear tracking state ONLY if it was processed
+                    node.state = stt.SYNC
+                    node.toModify.clear()
+
+                elif node.state == stt.UPDATED:
+                    # TODO: Generate your dynamic UPDATE statement here based on node.toModify
+                    # Use node.objectVersion for Optimistic Locking verification
+                    
+                    # Clear tracking state ONLY if it was processed
+                    node.state = stt.SYNC
+                    node.toModify.clear()
+
+                # Keep stepping through child objects recursively (always explore the tree)
+                for child in node.childItems:
+                    _save_walk(child)
+
+            # Start the saving process from the top-level items under rootItem
+            for child in self.rootItem.childItems:
+                _save_walk(child)
+
+            # Clear deletion pool since all queued records are flushed to db
+            self.toDelete.clear()
+            self.isDirty = False
+            
+        return True

@@ -23,6 +23,6 @@
 
 """Core package
 
-This package contains core modules used by the application
+This package contains core modules used by the other application's modules
 
 """
