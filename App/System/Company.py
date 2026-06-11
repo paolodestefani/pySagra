@@ -101,9 +101,11 @@ def company(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     cf = CompanyForm(mw, title, auth)
     cf.applySortFilter()
@@ -115,7 +117,7 @@ class CompanyForm(FormIndexManager):
     """Form for management of companies: creation, deletion, modification
      and user access to each company"""
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         model = CompanyModel()
         idxModel = CompanyIndexModel()
@@ -160,6 +162,14 @@ class CompanyForm(FormIndexManager):
         self.ui.pushButtonUpload.clicked.connect(self.upload)
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
+        
+    def mapperIndexChanged(self, index):
+        # disable save option for system companies
+        super().mapperIndexChanged(index)
+        if self.ui.checkBoxSystem.isChecked():
+            self.write_perm = False
+        else:
+            self.write_perm = True
 
     def add(self) -> None:
         "Add a new user company relation"
@@ -173,10 +183,12 @@ class CompanyForm(FormIndexManager):
         "Upload company image file"
         st = QSettings()
         path = st.value("PathImagesCompanies", QDir.current().path())
-        f, t = QFileDialog.getOpenFileName(self,
-                                           _tr('Company', "Select the image to upload"),
-                                           str(path),
-                                           _tr('Company', "Portable Network Graphics (*.png);;All files (*.*)"))
+        f, t = QFileDialog.getOpenFileName(
+            self,
+            _tr('Company', "Select the image to upload"),
+            str(path),
+            _tr('Company', "Portable Network Graphics (*.png);;All files (*.*)")
+            )
 
         if f == "":
             return
@@ -184,10 +196,12 @@ class CompanyForm(FormIndexManager):
         if pix.width() > 640 or pix.height() > 480:
             pix = pix.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
             self.ui.labelCompanyImage.setPixmap(pix)
-            QMessageBox.warning(self,
-                                _tr('MessageDialog', "Warning"),
-                                _tr('Company', "The selected image is too big, it was"
-                                    "automatically resized to the max allowed size of 640x480 pixels"))
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('Company', "The selected image is too big, it was"
+                    "automatically resized to the max allowed size of 640x480 pixels")
+            )
         else:
             self.ui.labelCompanyImage.setPixmap(pix)
         st.setValue("PathImagesCompanies", QFileInfo(f).path())
@@ -202,21 +216,27 @@ class CompanyForm(FormIndexManager):
             return
         st = QSettings()
         path = st.value("PathImagesCompanies", QDir.current().path())
-        f, t = QFileDialog.getSaveFileName(self,
-                                           _tr('Company', "Select the destination file name"),
-                                           str(path),
-                                           _tr('Company', "Portable Network Graphics (*.png);;All files (*.*)"))
+        f, t = QFileDialog.getSaveFileName(
+            self,
+            _tr('Company', "Select the destination file name"),
+            str(path),
+            _tr('Company', "Portable Network Graphics (*.png);;All files (*.*)")
+            )
         if f == "":
             return
         pix = self.ui.labelCompanyImage.pixmap()
         if pix.save(f):
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Company', "Image file saved"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Company', "Image file saved")
+            )
         else:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 _tr('Company', "Error on saving image file"))
+            QMessageBox.critical(
+                self,
+                _tr('MessageDialog', "Critical"),
+                _tr('Company', "Error on saving image file")
+            )
 
     def removeImage(self, checked: bool) -> None:
         "Remove company image"
@@ -238,40 +258,48 @@ class CompanyForm(FormIndexManager):
         companyId = self.ui.spinBoxId.value()
         companyDescription = self.ui.lineEditDescription.text()
         if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Company', "Is not possible to delete a system company"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Company', "Is not possible to delete a system company")
+            )
             return
         if company_is_in_use(companyId):
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Company', "Is not possible to delete this company because it is currently in use"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Company', "Is not possible to delete this company because it is currently in use")
+            )
             return
         msg = _tr('Company', "Delete this company ?")
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                f"{msg}\n{companyId} {companyDescription}",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            f"{msg}\n{companyId} {companyDescription}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                _tr('Company', "It is possible to restore the "
-                                    "company only if you have a valid copy of "
-                                    "the database\nProceed anyway ?"),
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            _tr('Company', "It is possible to restore the "
+                "company only if you have a valid copy of "
+                "the database\nProceed anyway ?"),
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         with gui_exception_context(self, _tr('Company', "Deleting company")):
             drop_company(companyId)
             
             logger.info('Company %s/%s deleted', companyId, companyDescription)
             
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Company', "Company deleted"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Company', "Company deleted")
+            )
             self.reload()
             self.toFirst()
 
@@ -299,22 +327,26 @@ class NewCompanyDialog(QDialog):
         "Upload company image file"
         st = QSettings()
         path = st.value("PathImages", QDir.current().path())
-        f, t = QFileDialog.getOpenFileName(self,
-                                           _tr('Company', "Select the image file to upload"),
-                                           str(path),
-                                           _tr('Company', "Portable Network "
-                                               "Graphics (*.png);;All files (*.*)"))
+        f, t = QFileDialog.getOpenFileName(
+            self,
+            _tr('Company', "Select the image file to upload"),
+            str(path),
+            _tr('Company', "Portable Network "
+                "Graphics (*.png);;All files (*.*)")
+            )
         if f == "":
             return
         pix = QPixmap(f)
         if pix.width() > 640 or pix.height() > 480:
             pix = pix.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
             self.ui.labelImage.setPixmap(pix)
-            QMessageBox.warning(self,
-                                _tr('MessageDialog', "Warning"),
-                                _tr('Company', "The selected image is too big, "
-                                    "it was automaticlly resized to the max "
-                                    "allowed size of 640x480 pixels"))
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('Company', "The selected image is too big, "
+                    "it was automaticlly resized to the max "
+                    "allowed size of 640x480 pixels")
+            )
         else:
             self.ui.labelImage.setPixmap(pix)
         st.setValue("PathImages", QFileInfo(f).path())
@@ -326,12 +358,13 @@ class NewCompanyDialog(QDialog):
 
     def accept(self) -> None:
         "Create the new company with the specified data"
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                _tr('Company', "Create the new company ?"),
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            _tr('Company', "Create the new company ?"),
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         companyCode = self.ui.spinBoxCode.value()
         companyDescription = self.ui.lineEditDescription.text()
@@ -358,8 +391,10 @@ class NewCompanyDialog(QDialog):
                                userMenu,
                                userToolbar)
         
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Company', "Company created succesfully"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Company', "Company created succesfully")
+            )
             logger.info('New company %s/%s created', companyCode, companyDescription)
             super().accept()

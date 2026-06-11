@@ -36,12 +36,10 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QInputDialog
-from PySide6.QtWidgets import QVBoxLayout
 
 # application modules
 from App import session
 from App import currentIcon
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Connections import kill_client
 from App.Database.Connections import delete_connection_history
 from App.Database.System import pa_setting
@@ -66,9 +64,11 @@ def connection(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     cw = ConnectionForm(mw, title, auth)
     cw.applySortFilter()
@@ -83,9 +83,11 @@ def connectionHistory(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     cw = ConnectionHistoryForm(mw, title, auth)
     cw.applySortFilter()
@@ -124,23 +126,29 @@ class ConnectionForm(FormViewManager):
         cir = self.view.selectionModel().currentIndex().row()
         pid = self.model.index(cir, 0).data() # pid on column 0
         if pid is None:
-            QMessageBox.warning(self,
-                                _tr('MessageDialog', 'Warning'),
-                                _tr('Connection', "You must select a connection record first"),
-                                QMessageBox.StandardButton.NoButton)
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', 'Warning'),
+                _tr('Connection', "You must select a connection record first"),
+                QMessageBox.StandardButton.NoButton
+            )
             return
         if pid == session['session_id']:
-            QMessageBox.warning(self,
-                                _tr('MessageDialog', 'Warning'),
-                                _tr('Connection', "Cant't kill current connection"),
-                                QMessageBox.StandardButton.NoButton)
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', 'Warning'),
+                _tr('Connection', "Cant't kill current connection"),
+                QMessageBox.StandardButton.NoButton
+            )
             return
         msg = _tr('Connection', "Are you sure you want to kill PID")
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                f"{msg}: {pid} ?",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
-                                QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            f"{msg}: {pid} ?",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+            ) == QMessageBox.StandardButton.Yes:
             with gui_exception_context(self, _tr('Connection', "Kill client")):
                 kill_client(pid)
 
@@ -191,37 +199,44 @@ class ConnectionHistoryForm(FormViewManager):
 
     def deleteOlder(self) -> None:
         "Delete records of log history table"
-        days, ok = QInputDialog.getInt(self,
-                                        _tr('Connection', 'Delete older records'),
-                                        _tr('Connection', 'Number of days for deletion'),
-                                        180,
-                                        0,
-                                        2147483647,
-                                        1)
+        days, ok = QInputDialog.getInt(
+            self,
+            _tr('Connection', 'Delete older records'),
+            _tr('Connection', 'Number of days for deletion'),
+            180,
+            0,
+            2147483647,
+            1
+            )
         if not ok:
             return
         with gui_exception_context(self, _tr('Connection', 'Delete older records')):
             delete_connection_history(days)
             self.reload()
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', 'information'),
-                                    _tr('Connection', 'Older records deletion completed'))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', 'information'),
+                _tr('Connection', 'Older records deletion completed')
+            )
 
     def deleteAll(self) -> None:
         "Delete records of log history table"
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                _tr('Connection', "Are you sure you want to delete ALL records ?"),
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            _tr('Connection', "Are you sure you want to delete ALL records ?"),
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         with gui_exception_context(self, _tr('Connection', 'Delete all records')):
             delete_connection_history(0)
             self.reload()
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', 'information'),
-                                    _tr('Connection', 'Log records deletion completed'))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', 'information'),
+                _tr('Connection', 'Log records deletion completed')
+            )
 
     def deleteSetting(self) -> None:
         "Set automatic deletion settings for connection history"
@@ -231,9 +246,11 @@ class ConnectionHistoryForm(FormViewManager):
         with gui_exception_context(self, _tr('Connection', 'Set automatic deletion settings')):
             pa_setting_set('clear_connection_history', days)
             self.reload()
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', 'Information'),
-                                    _tr('Connection', 'Configuration updated'))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', 'Information'),
+                _tr('Connection', 'Configuration updated')
+            )
 
     def export(self) -> None:
         "Export connections history list to file"

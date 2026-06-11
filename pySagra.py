@@ -35,7 +35,6 @@ import traceback
 import types
 import logging
 import argparse
-import platform
 
 # check component version modules
 from sys import version_info

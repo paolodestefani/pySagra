@@ -138,9 +138,11 @@ class HelpDialog(QDialog):
         "Find text"
         self.ui.textBrowserContent.setFocus()
         if not self.ui.textBrowserContent.find(self.ui.lineEditFind.text()):
-            QMessageBox.warning(self,
-                                _tr('Help', "Warning"),
-                                _tr('Help', "Text not found"))
+            QMessageBox.warning(
+                self,
+                _tr('Help', "Warning"),
+                _tr('Help', "Text not found")
+            )
             self.ui.textBrowserContent.home()
             cur = self.ui.textBrowserContent.textCursor()
             cur.setPosition(0, QTextCursor.MoveMode.MoveAnchor)

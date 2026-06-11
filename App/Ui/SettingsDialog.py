@@ -552,6 +552,11 @@ class Ui_SettingsDialog(object):
 
         self.verticalLayout_8.addWidget(self.checkBoxMandatoryTableNumber)
 
+        self.checkBoxMandatoryName = QCheckBox(self.groupBox_5)
+        self.checkBoxMandatoryName.setObjectName(u"checkBoxMandatoryName")
+
+        self.verticalLayout_8.addWidget(self.checkBoxMandatoryName)
+
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.label_20 = QLabel(self.groupBox_5)
@@ -917,6 +922,16 @@ class Ui_SettingsDialog(object):
         self.verticalLayout_21.setObjectName(u"verticalLayout_21")
         self.gridLayout_7 = QGridLayout()
         self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.label_24 = QLabel(self.groupBox_14)
+        self.label_24.setObjectName(u"label_24")
+
+        self.gridLayout_7.addWidget(self.label_24, 0, 0, 1, 1)
+
+        self.label_9 = QLabel(self.groupBox_14)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout_7.addWidget(self.label_9, 0, 2, 1, 1)
+
         self.lineEditCurrencySymbol = QLineEdit(self.groupBox_14)
         self.lineEditCurrencySymbol.setObjectName(u"lineEditCurrencySymbol")
         sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
@@ -927,27 +942,28 @@ class Ui_SettingsDialog(object):
         self.lineEditCurrencySymbol.setMaximumSize(QSize(100, 16777215))
         self.lineEditCurrencySymbol.setMaxLength(3)
 
-        self.gridLayout_7.addWidget(self.lineEditCurrencySymbol, 0, 4, 1, 1)
+        self.gridLayout_7.addWidget(self.lineEditCurrencySymbol, 0, 6, 1, 1)
 
-        self.label_24 = QLabel(self.groupBox_14)
-        self.label_24.setObjectName(u"label_24")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_7.addWidget(self.label_24, 0, 0, 1, 1)
-
-        self.spinBoxQuantityDecimals = QSpinBox(self.groupBox_14)
-        self.spinBoxQuantityDecimals.setObjectName(u"spinBoxQuantityDecimals")
-        self.spinBoxQuantityDecimals.setMaximum(2)
-
-        self.gridLayout_7.addWidget(self.spinBoxQuantityDecimals, 0, 1, 1, 1)
+        self.gridLayout_7.addItem(self.horizontalSpacer, 0, 4, 1, 1)
 
         self.label_25 = QLabel(self.groupBox_14)
         self.label_25.setObjectName(u"label_25")
 
-        self.gridLayout_7.addWidget(self.label_25, 0, 3, 1, 1)
+        self.gridLayout_7.addWidget(self.label_25, 0, 5, 1, 1)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.spinBoxQuantityDecimals = QSpinBox(self.groupBox_14)
+        self.spinBoxQuantityDecimals.setObjectName(u"spinBoxQuantityDecimals")
+        self.spinBoxQuantityDecimals.setMaximum(4)
 
-        self.gridLayout_7.addItem(self.horizontalSpacer, 0, 2, 1, 1)
+        self.gridLayout_7.addWidget(self.spinBoxQuantityDecimals, 0, 1, 1, 1)
+
+        self.spinBoxPriceDecimals = QSpinBox(self.groupBox_14)
+        self.spinBoxPriceDecimals.setObjectName(u"spinBoxPriceDecimals")
+        self.spinBoxPriceDecimals.setMaximum(10)
+
+        self.gridLayout_7.addWidget(self.spinBoxPriceDecimals, 0, 3, 1, 1)
 
 
         self.verticalLayout_21.addLayout(self.gridLayout_7)
@@ -1226,6 +1242,7 @@ class Ui_SettingsDialog(object):
         self.checkBoxShowInventory.setText(QCoreApplication.translate("SettingsDialog", u"Always show inventory", None))
         self.checkBoxAutoVariants.setText(QCoreApplication.translate("SettingsDialog", u"Show variants automatically", None))
         self.checkBoxMandatoryTableNumber.setText(QCoreApplication.translate("SettingsDialog", u"Mandatory table number", None))
+        self.checkBoxMandatoryName.setText(QCoreApplication.translate("SettingsDialog", u"Mandatory name for takeaway", None))
         self.label_20.setText(QCoreApplication.translate("SettingsDialog", u"Max covers value", None))
         self.groupBox.setTitle(QCoreApplication.translate("SettingsDialog", u"Order number based on", None))
         self.radioButtonEventBased.setText(QCoreApplication.translate("SettingsDialog", u"Event", None))
@@ -1257,6 +1274,7 @@ class Ui_SettingsDialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab4), QCoreApplication.translate("SettingsDialog", u"Control report and view", None))
         self.groupBox_14.setTitle(QCoreApplication.translate("SettingsDialog", u"Formats", None))
         self.label_24.setText(QCoreApplication.translate("SettingsDialog", u"Decimal places for quantity", None))
+        self.label_9.setText(QCoreApplication.translate("SettingsDialog", u"Decimal places for price", None))
         self.label_25.setText(QCoreApplication.translate("SettingsDialog", u"Currency symbol", None))
         self.groupBox_10.setTitle(QCoreApplication.translate("SettingsDialog", u"New item normal stock level colors", None))
         self.labelYellow_12.setText(QCoreApplication.translate("SettingsDialog", u"Background color", None))

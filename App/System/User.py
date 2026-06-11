@@ -136,9 +136,11 @@ def user(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     uf = UsersForm(mw, title, auth)
     uf.applySortFilter()
@@ -255,25 +257,29 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         userId = self.ui.lineEditUser.text()
         userDescription = self.ui.lineEditUserDescription.text()
         if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('User', "It is not possible to delete a system user"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('User', "It is not possible to delete a system user")
+            )
             return
         msg = _tr('User', "Are you sure you want to delete this user ?")
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                f"{msg}\n{userId} - {userDescription}",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            f"{msg}\n{userId} - {userDescription}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         # ok, delete
         super().delete()
 
     def mapperIndexChanged(self, row: int) -> None:
         "Change sittings on change record"
-        super().mapperIndexChanged(row)
+        super().mapperIndexChanged(row)         
         if self.ui.checkBoxSystem.isChecked():
+            self.write_perm = False
             self.ui.lineEditUserDescription.setReadOnly(True)
             self.ui.comboBoxL10n.setDisabled(True)
             self.ui.pushButtonUpload.setDisabled(True)
@@ -281,6 +287,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             self.ui.pushButtonDelete.setDisabled(True)
             self.ui.checkBoxIsAdmin.setDisabled(True)  # setChackable don't work...
         else:
+            self.write_perm = True
             self.ui.lineEditUserDescription.setReadOnly(False)
             self.ui.comboBoxL10n.setDisabled(False)
             self.ui.pushButtonUpload.setDisabled(False)
@@ -313,10 +320,12 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         if pix.width() > 640 or pix.height() > 480:
             pix = pix.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
             self.ui.labelImage.setPixmap(pix)
-            QMessageBox.warning(self,
-                                _tr('MessageDialog', "Warning"),
-                                _tr('User', "The selected image is too big, it was"
-                                    "automaticlly resized to the max allowed size of 640x480 pixels"))
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('User', "The selected image is too big, it was"
+                    "automaticlly resized to the max allowed size of 640x480 pixels")
+            )
         else:
             self.ui.labelImage.setPixmap(pix)
         st.setValue("User/PathImages", QFileInfo(f).path())
@@ -338,13 +347,17 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             return
         pix = self.ui.labelImage.pixmap()
         if pix.save(f):
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('User', "Image file saved"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('User', "Image file saved")
+            )
         else:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 _tr('User', "Error on saving image file"))
+            QMessageBox.critical(
+                self,
+                _tr('MessageDialog', "Critical"),
+                _tr('User', "Error on saving image file")
+            )
 
     def removeImage(self, checked: bool) -> None:
         "Remove company image"
@@ -386,25 +399,31 @@ class ChangePasswordDialog(QDialog):
         # check not null and correct password
         if (self.ui.lineEditNewPassword.text() == '' or
             self.ui.lineEditConfirmPassword.text() == ''):
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 _tr('ChangePassword', "Insert a valid password "
-                                     "on both the line edit boxes"))
+            QMessageBox.critical(
+                self,
+                _tr('MessageDialog', "Critical"),
+                _tr('ChangePassword', "Insert a valid password "
+                    "on both the line edit boxes")
+            )
             return
         if self.ui.lineEditNewPassword.text() != self.ui.lineEditConfirmPassword.text():
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 _tr('ChangePassword', "The Inserted password "
-                                     "in the 'New password' does not match "
-                                     "that of the 'Confirm password'"))
+            QMessageBox.critical(
+                self,
+                _tr('MessageDialog', "Critical"),
+                _tr('ChangePassword', "The Inserted password "
+                    "in the 'New password' does not match "
+                    "that of the 'Confirm password'")
+            )
             return
         with gui_exception_context(self, _tr('ChangePassword', 'Change password')):
             change_password(self.ui.lineEditUser.text(),
                             self.ui.lineEditNewPassword.text())
         
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('ChangePassword', "Password changed successfully"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('ChangePassword', "Password changed successfully")
+            )
         QDialog.accept(self)
 
 
@@ -424,13 +443,18 @@ class SetPasswordDialog(ChangePasswordDialog):
     def accept(self) -> None:
         # check correct password
         if self.ui.lineEditConfirmPassword.text() == '':
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', "Critical"),
-                                 _tr('ChangePassword', "Insert a valid password on both the line edit"))
+            QMessageBox.critical(
+                self,
+                _tr('MessageDialog', "Critical"),
+                _tr('ChangePassword', "Insert a valid password on both the line edit")
+            )
             return
         if self.ui.lineEditNewPassword.text() != self.ui.lineEditConfirmPassword.text():
-            QMessageBox.critical(self, _tr('MessageDialog', "Critical"),
-                                 _tr('ChangePassword', "New password and confirmed password does not match"))
+            QMessageBox.critical(
+                self, 
+                _tr('MessageDialog', "Critical"),
+                _tr('ChangePassword', "New password and confirmed password does not match")
+            )
             return
         # return encrypted password to model
         ep = encrypt_password(self.ui.lineEditNewPassword.text())

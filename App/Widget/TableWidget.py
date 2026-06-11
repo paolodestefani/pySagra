@@ -44,14 +44,6 @@ from PySide6.QtWidgets import QAbstractItemView
 # application modules
 
 
-# navigation status settings
-
-(NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST, FILTER, ADD,
- REMOVE, CHANGE, PRINT, EXPORT) = range(14)
-
-VIEW, EDIT = range(2)
-FORM, GRID = range(2)
-
 
 class TableWidgetItem(QTableWidgetItem):
     

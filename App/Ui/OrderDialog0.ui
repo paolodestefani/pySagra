@@ -129,6 +129,9 @@
           </property>
           <item>
            <widget class="QSpinBox" name="spinBoxCovers">
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+            </property>
             <property name="minimum">
              <number>0</number>
             </property>
@@ -875,6 +878,9 @@
                   <property name="alignment">
                    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                   </property>
+                  <property name="buttonSymbols">
+                   <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                  </property>
                   <property name="showGroupSeparator" stdset="0">
                    <bool>true</bool>
                   </property>
@@ -994,6 +1000,9 @@
                     <property name="alignment">
                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                     </property>
+                    <property name="buttonSymbols">
+                     <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                    </property>
                     <property name="showGroupSeparator" stdset="0">
                      <bool>true</bool>
                     </property>
@@ -1022,6 +1031,9 @@
                    <widget class="QDoubleSpinBox" name="doubleSpinBoxChange">
                     <property name="alignment">
                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                    <property name="readOnly">
+                     <bool>true</bool>
                     </property>
                     <property name="buttonSymbols">
                      <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>

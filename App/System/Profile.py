@@ -45,13 +45,11 @@ from App import session
 from App import currentIcon
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Profile import duplicate_profile
 from App.Database.Models import ProfileIndexModel
 from App.Database.Models import ProfileModel
 from App.Database.Models import ProfileActionModel
 from App.System.Action import actionDefinition
-from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager
@@ -89,9 +87,11 @@ def profile(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     pw = ProfileForm(mw, title, auth)
     pw.applySortFilter()
@@ -116,9 +116,11 @@ class DuplicateProfileDialog(QDialog):
                               self.ui.lineEditCode.text(),
                               self.ui.lineEditDescription.text())
             logger.info("On duplicate profile: operation completed successfully")
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Profile', "Profile duplicated"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Profile', "Profile duplicated")
+            )
         super().accept()
 
 
@@ -199,22 +201,34 @@ class ProfileForm(FormIndexManager):
             model.setData(model.index(row, col), 
                           value=Qt.CheckState.Checked, 
                           role=Qt.ItemDataRole.CheckStateRole)
+            
+    def mapperIndexChanged(self, index):
+        # disable save option for system profiles
+        super().mapperIndexChanged(index)
+        if self.ui.checkBoxSystem.isChecked():
+            self.write_perm = False
+        else:
+            self.write_perm = True
+            
 
     def delete(self) -> None:
         "Delete current profile"
         if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Profile', "Is not possible to delete a system profile"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Profile', "Is not possible to delete a system profile")
+            )
             return
         profile = self.ui.lineEditCode.text()
         description = self.ui.lineEditDescription.text()
         msg = _tr('Profile', "Are you sure you want to delete this profile ?")
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                f"{msg}\n{profile} - {description}",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            f"{msg}\n{profile} - {description}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
+            ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 
@@ -237,14 +251,14 @@ class ProfileForm(FormIndexManager):
     def add(self) -> None:
         "Add a row to detail view"
         # only on non system profile
-        if not self.ui.checkBoxSystem.isChecked():
-            self.ui.tableViewActions.add()
+        #if not self.ui.checkBoxSystem.isChecked():
+        self.ui.tableViewActions.add()
 
     def remove(self) -> None:
         "Remove current row from detail view"
         # only on non system profile
-        if not self.ui.checkBoxSystem.isChecked():
-            self.ui.tableViewActions.remove()
+        #if not self.ui.checkBoxSystem.isChecked():
+        self.ui.tableViewActions.remove()
 
     def print(self) -> None:
         "Print profiles list"

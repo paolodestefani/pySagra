@@ -143,6 +143,11 @@ class Ui_ScriptingWidget(object):
 
         self.verticalLayout_3.addWidget(self.plainTextEditNote)
 
+        self.checkBoxSystem = QCheckBox(self.groupBox_7)
+        self.checkBoxSystem.setObjectName(u"checkBoxSystem")
+
+        self.verticalLayout_3.addWidget(self.checkBoxSystem)
+
 
         self.horizontalLayout_6.addWidget(self.groupBox_7)
 
@@ -247,6 +252,7 @@ class Ui_ScriptingWidget(object):
         self.checkBoxActive.setText(QCoreApplication.translate("ScriptingWidget", u"Active", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("ScriptingWidget", u"Python script", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("ScriptingWidget", u"Note", None))
+        self.checkBoxSystem.setText(QCoreApplication.translate("ScriptingWidget", u"System", None))
         self.label_5.setText(QCoreApplication.translate("ScriptingWidget", u"Font", None))
         self.pushButtonDownload.setText(QCoreApplication.translate("ScriptingWidget", u"Download ...", None))
         self.pushButtonUpload.setText(QCoreApplication.translate("ScriptingWidget", u"Upload ...", None))

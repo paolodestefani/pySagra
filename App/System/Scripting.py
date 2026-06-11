@@ -147,11 +147,12 @@ class scr(IntEnum):
     NOTE        = 5
     COMPANY     = 6
     ACTIVE      = 7
-    SCRIPT      = 8
-    USER_INS    = 9
-    DATE_INS    = 10
-    USER_UPD    = 11
-    DATE_UPD    = 12
+    SYSTEM      = 8
+    SCRIPT      = 9
+    USER_INS    = 10
+    DATE_INS    = 11
+    USER_UPD    = 12
+    DATE_UPD    = 13
 
 
 def runOptions() -> list[tuple[str, str]]:
@@ -167,9 +168,11 @@ def scripting(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     sw = ScriptingForm(mw, title, auth)
     sw.applySortFilter()
@@ -211,6 +214,10 @@ class ScriptingForm(FormIndexManager):
         self.mapper.addMapping(self.ui.comboBoxCompany, scr.COMPANY, b"modelDataInt")#, b"modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxActive, scr.ACTIVE)
         self.mapper.addMapping(self.ui.textEditScript, scr.SCRIPT)#, b"plainText")
+        self.mapper.addMapping(self.ui.checkBoxSystem, scr.SYSTEM)
+        # make system checkbox not user editable
+        self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # set font
         st = QSettings()
         self.editorFont: QFont = cast(QFont, st.value("Scripting/EditorFont", QFont('Courier New', 8), type=QFont))
@@ -236,6 +243,14 @@ class ScriptingForm(FormIndexManager):
         self.ui.comboBoxMethod.clear()
         self.ui.comboBoxMethod.addItems(SCRIPTABLE.get(self.ui.comboBoxClass.currentText()) or [])  # on New text is empty
 
+    def mapperIndexChanged(self, index):
+        # disable save option for system profiles
+        super().mapperIndexChanged(index)
+        if self.ui.checkBoxSystem.isChecked():
+            self.write_perm = False
+        else:
+            self.write_perm = True
+            
     def new(self) -> None:
         "New script"
         super().new()
@@ -250,19 +265,22 @@ class ScriptingForm(FormIndexManager):
                 self.ui.comboBoxTrigger.currentData() == 'B'):
             msg = _tr('Scripting', "Warning: script linked to an __init__ "
                       "method will be executed only if trigger is set to 'after'")
-            QMessageBox.warning(self,
-                                _tr('MessageDialog', 'information'),
-                                msg)
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', 'information'),
+                msg
+            )
 
     def delete(self) -> None:
         "Delete current script"
         msg = _tr('Scripting', 'Delete current script ?')
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', 'Question'),
-                                f"{msg}",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', 'Question'),
+            f"{msg}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 
@@ -290,9 +308,11 @@ class ScriptingForm(FormIndexManager):
         "Dowload current script to a file"
         st = QSettings()
         path = st.value("Scripting/PathScripts", QDir.current().path())
-        directory = QFileDialog.getExistingDirectory(self,
-                                                     _tr('Scripting', "Select the directory"),
-                                                     str(path))
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            _tr('Scripting', "Select the directory"),
+            str(path)
+            )
         if directory == "":
             return
 
@@ -310,14 +330,19 @@ class ScriptingForm(FormIndexManager):
                 zf.writestr('class', self.model.index(row, scr.CLASS).data())
                 zf.writestr('method', self.model.index(row, scr.METHOD).data())
                 zf.writestr('trigger', self.model.index(row, scr.TRIGGER).data())
-                zf.writestr('active', str(self.model.index(row, scr.ACTIVE).data()))
                 zf.writestr('company', str(self.model.index(row, scr.COMPANY).data()))
+                zf.writestr('active', str(self.model.index(row, scr.ACTIVE).data()))
+                zf.writestr('description', str(self.model.index(row, scr.DESCRIPTION).data()))
                 zf.writestr('pyscript', self.model.index(row, scr.SCRIPT).data())
+                zf.writestr('note', str(self.model.index(row, scr.NOTE).data()))
+                zf.writestr('system', str(self.model.index(row, scr.SYSTEM).data()))
         
             msg = _tr('Scripting', "Current script saved to file:")
-            QMessageBox.information(self,
-                                    _tr('Scripting', "Download current script"),
-                                    f"<p>{msg}</p><p><b>{fileName}</b></p>")
+            QMessageBox.information(
+                self,
+                _tr('Scripting', "Download current script"),
+                f"<p>{msg}</p><p><b>{fileName}</b></p>"
+            )
             # update settings
             st.setValue("Scripting/PathScripts", directory)
 
@@ -325,13 +350,15 @@ class ScriptingForm(FormIndexManager):
         "Save all scripts to a directory, one file per script"
         st = QSettings()
         path = st.value("Scripting/PathScripts", QDir.current().path())
-        directory = QFileDialog.getExistingDirectory(self,
-                                                     _tr('Scripting', "Select the directory"),
-                                                     str(path))
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            _tr('Scripting', "Select the directory"),
+            str(path)
+            )
         if directory == "":
             return
         with gui_exception_context(self, _tr('Scripting', "Saving all scripts to files")):
-            for cls, mth, trg, act, cmp, pys in get_all_scripts():
+            for cls, mth, trg, cmp, act, des, pys, nte, sys in get_all_scripts():
                 # looks like zipfile accept qt file path with / so no need to use os.path.join
                 fileName = (f"{directory}/"
                             f"{cmp}"
@@ -343,14 +370,19 @@ class ScriptingForm(FormIndexManager):
                     zf.writestr('class', cls)
                     zf.writestr('method', mth)
                     zf.writestr('trigger', trg)
-                    zf.writestr('active', str(act))
                     zf.writestr('company', str(cmp))
+                    zf.writestr('active', str(act))
+                    zf.writestr('description', des)
                     zf.writestr('pyscript', pys)
-        
+                    zf.writestr('note', nte or '')
+                    zf.writestr('system', str(sys))
+                    
             msg = _tr('Scripting', "All scripts saved to directory:")
-            QMessageBox.information(self,
-                                    _tr('Scripting', "Download all script"),
-                                    f"<p>{msg}</p><p><b>{directory}</b></p>")
+            QMessageBox.information(
+                self,
+                _tr('Scripting', "Download all script"),
+                f"<p>{msg}</p><p><b>{directory}</b></p>"
+            )
             # update settings
             st.setValue("Scripting/PathScripts", directory)
 
@@ -358,39 +390,58 @@ class ScriptingForm(FormIndexManager):
         "Upload one script file from directory"
         st = QSettings()
         path = st.value("Scripting/PathScripts", QDir.current().path())
-        fileName, _ = QFileDialog.getOpenFileName(self,
-                                                  _tr('Scripts', "Select the file to import"),
-                                                  str(path),
-                                                  "*.scp.zip")
+        fileName, _ = QFileDialog.getOpenFileName(
+            self,
+            _tr('Scripts', "Select the file to import"),
+            str(path),
+            "*.scp.zip"
+            )
         if fileName == "":
             return
+        
         with gui_exception_context(self, _tr('Scripting', "Uploading script file")):
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                 cls = zf.read('class').decode('utf-8')
                 mth = zf.read('method').decode('utf-8')
                 trg = zf.read('trigger').decode('utf-8')
-                act = zf.read('active').decode('utf-8')
                 cmp = zf.read('company').decode('utf-8')
+                act = zf.read('active').decode('utf-8')
+                des = zf.read('description').decode('utf-8')
                 pys = zf.read('pyscript').decode('utf-8')
-        
+                nte = zf.read('note').decode('utf-8')
+                sys = zf.read('system').decode('utf-8')
             with gui_exception_context(self, _tr('Scripting', "Saving script file to database")):
-                load_script(cls, mth, trg, True if act == 'True' else False, int(cmp), pys)
+                load_script(cls, 
+                            mth,
+                            trg,
+                            int(cmp),
+                            True if act == 'True' else False,
+                            des,
+                            pys,
+                            nte or None,
+                            True if sys == 'True' else False)
                 self.reload()
-                QMessageBox.information(self,
-                                        _tr('MessageDialog', "information"),
-                                        _tr('Scripting', "Script file imported to database"))
+                QMessageBox.information(
+                    self,
+                    _tr('MessageDialog', "information"),
+                    _tr('Scripting', "Script file imported to database")
+                )
 
     def uploadAll(self) -> None:
         "Upload all scripts from directory"
         st = QSettings()
         path = st.value("Scripting/PathScripts", QDir.current().path())
-        directory = QFileDialog.getExistingDirectory(self,
-                                                     _tr('Scripting', "Select the directory"),
-                                                     str(path))
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            _tr('Scripting', "Select the directory"),
+            str(path)
+            )
         if directory == "":
             return
         
         it = QDirIterator(QDir(directory), QDirIterator.IteratorFlag.NoIteratorFlags)
+        imported_count = 0  # Contatore invece di un semplice boolean
+
         while it.hasNext():
             it.next()
             if it.fileInfo().isFile() and it.fileInfo().completeSuffix() == 'scp.zip':
@@ -400,14 +451,38 @@ class ScriptingForm(FormIndexManager):
                         cls = zf.read('class').decode('utf-8')
                         mth = zf.read('method').decode('utf-8')
                         trg = zf.read('trigger').decode('utf-8')
-                        act = zf.read('active').decode('utf-8')
                         cmp = zf.read('company').decode('utf-8')
+                        act = zf.read('active').decode('utf-8')
+                        des = zf.read('description').decode('utf-8')
                         pys = zf.read('pyscript').decode('utf-8')
+                        nte = zf.read('note').decode('utf-8')
+                        sys = zf.read('system').decode('utf-8')
+                        
                     with gui_exception_context(self, _tr('Scripting', f"Saving script file {fileName} to database")):
-                        load_script(cls, mth, trg, True if act == 'True' else False, int(cmp), pys)
+                        load_script(cls, 
+                                    mth,
+                                    trg,
+                                    int(cmp),
+                                    True if act == 'True' else False,
+                                    des,
+                                    pys,
+                                    nte or None,
+                                    True if sys == 'True' else False)
+                    imported_count += 1 # Incrementa per ogni file salvato
+
+        # Il controllo va FUORI dal ciclo while
+        if imported_count > 0:        
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "information"),
+                _tr('Scripting', "All files imported successfully")
+            )
+        else:
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "warning"),
+                _tr('Scripting', "No valid .scp.zip files found")
+            )
          
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "information"),
-                                    _tr('Scripting', "All files imported successfully"))               
         self.reload()
         

@@ -88,9 +88,11 @@ def customization(action: QAction, checked: bool = False) -> None:
     auth = action.data()
     auth = action.data()
     if not auth[2]: # no execute permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this function'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this function')
+        )
         return
     dialog = CustomizationsDialog(mw, title, icon, auth)
     dialog.show()
@@ -116,10 +118,12 @@ class CustomizationsDialog(QDialog):
         "Export customizations to a zipped CSV files - *.zip"
         st = QSettings()
         path = st.value("ExportAdaptationsFile", QDir.current().path(), type=str)
-        fileName, _ = QFileDialog.getSaveFileName(self,
-                                                  caption=_tr('Customizations', "Select the file name to create"),
-                                                  dir=str(path),
-                                                  filter= 'pySagra Zipped Adaptation File (*.zip *.*)')
+        fileName, _ = QFileDialog.getSaveFileName(
+            self,
+            caption=_tr('Customizations', "Select the file name to create"),
+            dir=str(path),
+            filter= 'pySagra Zipped Adaptation File (*.zip *.*)'
+            )
         if fileName == "":
             # ---  WORKAROUND FOR MACOS ---
             self.raise_()
@@ -151,18 +155,21 @@ class CustomizationsDialog(QDialog):
             self.raise_() 
             self.activateWindow() 
             QMessageBox.information(
-                                  self,
-                                    _tr('MessageDialog', 'Information'),
-                                    _tr('Customizations', 'Export completed successfully'))
+                self,
+                _tr('MessageDialog', 'Information'),
+                _tr('Customizations', 'Export completed successfully')
+            )
 
     def importCustomization(self) -> None:
         "Import customizations from a zipped CSV files - *.zip"
         st = QSettings()
         path = st.value("ExportAdaptationsFile", QDir.current().path(), type=str)
-        fileName, _ = QFileDialog.getOpenFileName(self,
-                                                  caption=_tr('Customizations', "Select the file name to load"),
-                                                  dir=str(path),
-                                                  filter= 'pySagra Zipped Adaptation File (*.zip *.*)')
+        fileName, _ = QFileDialog.getOpenFileName(
+            self,
+            caption=_tr('Customizations', "Select the file name to load"),
+            dir=str(path),
+            filter= 'pySagra Zipped Adaptation File (*.zip *.*)'
+        )
         if fileName == "":
             return
         with gui_exception_context(self, _tr('Customizations', 'Import customizations')):
@@ -174,9 +181,11 @@ class CustomizationsDialog(QDialog):
                 reader = csv.reader(string_buffer)
                 for row in reader:
                     if [row[0], row[1]] != ADAPTVERSION:
-                        QMessageBox.information(self,
-                                                _tr('MessageDialog', 'Information'),
-                                                _tr('Customizations', 'Wrong file format or version'))
+                        QMessageBox.information(
+                            self,
+                            _tr('MessageDialog', 'Information'),
+                            _tr('Customizations', 'Wrong file format or version')
+                        )
                         return
                 # adaptation
                 clear_adaptation()
@@ -215,23 +224,28 @@ class CustomizationsDialog(QDialog):
                 import_adaptation(adaptations, adaptsettings)
        
             st.setValue("ExportAdaptationsFile", fileName)
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', 'Information'),
-                                    _tr('Customizations', 'Import completed successfully'))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', 'Information'),
+                _tr('Customizations', 'Import completed successfully')
+            )
 
     def clearCustomization(self) -> None:
         "Clear current customizations"
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', 'Question'),
-                                _tr('Customizations', 'Customizations will be cleared, continue ?'),
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', 'Question'),
+            _tr('Customizations', 'Customizations will be cleared, continue ?'),
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         with gui_exception_context(self, _tr('Customizations', "Clear customizations")):
             clear_adaptation()
         
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', 'Information'),
-                                    _tr('Customizations', 'Customizations deleted'))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', 'Information'),
+                _tr('Customizations', 'Customizations deleted')
+            )
 

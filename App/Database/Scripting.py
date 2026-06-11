@@ -64,29 +64,40 @@ WHERE
 def load_script(cls: str,
                 mth: str, 
                 trg: str, 
-                act: bool,
                 cmp: int,
-                script: str) -> None:
+                act: bool,
+                des: str,
+                script: str,
+                nte: str | None,
+                sys: bool) -> None:
     "Load a python script to database overwriting if necessary"
     sql = t"""
 INSERT INTO system.python_scripting (
     class_name,
     method_name,
     trigger,
-    is_active,
     company_id,
-    script)
+    is_active,
+    description,
+    script,
+    note,
+    is_system_object)
 VALUES (
     {cls},
     {mth},
     {trg},
-    {act},
     {cmp},
-    {script})
+    {act},
+    {des},
+    {script},
+    {nte},
+    {sys})
 ON CONFLICT ON CONSTRAINT python_scripting_unique DO
 UPDATE 
 SET script = {script},
-    is_active = {act};
+    is_active = {act},
+    description = {des},
+    note = {nte};
 """
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
@@ -100,9 +111,12 @@ SELECT
     class_name,
     method_name,
     trigger,
-    is_active,
     company_id,
-    script
+    is_active,
+    description,
+    script,
+    note,
+    is_system_object
 FROM system.python_scripting;
 """
     # Unified context managers in the recommended evaluation order

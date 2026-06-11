@@ -85,9 +85,11 @@ def systemInfo(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[2]: # no execute permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this function'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this function')
+        )
         return
     h = SystemInfoDialog(session['mainwin'], action.icon())
     h.show()

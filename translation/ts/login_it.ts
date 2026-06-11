@@ -4,32 +4,32 @@
 <context>
     <name>ChangeCompany</name>
     <message>
-        <location filename="../../App/System/Login.py" line="244"/>
+        <location filename="../../App/System/Login.py" line="246"/>
         <source>Change company</source>
         <translation>Cambia azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="248"/>
+        <location filename="../../App/System/Login.py" line="250"/>
         <source>Getting companies list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="251"/>
+        <location filename="../../App/System/Login.py" line="253"/>
         <source>There are no other companies you can login</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="254"/>
+        <location filename="../../App/System/Login.py" line="256"/>
         <source>Choose a company to login</source>
         <translation type="unfinished">Selezionare un&apos;azienda a cui collegarsi</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="271"/>
+        <location filename="../../App/System/Login.py" line="273"/>
         <source>Setting working company</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="282"/>
+        <location filename="../../App/System/Login.py" line="284"/>
         <source>Getting current event</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,7 +62,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="228"/>
+        <location filename="../../App/System/Login.py" line="229"/>
         <source>Password change is required</source>
         <translation>E&apos; necessario modificare la password</translation>
     </message>
@@ -194,7 +194,7 @@
         <translation>Critico</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="227"/>
+        <location filename="../../App/System/Login.py" line="228"/>
         <source>Information</source>
         <translation>Informazioni</translation>
     </message>

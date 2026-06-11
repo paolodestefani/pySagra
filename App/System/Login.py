@@ -223,9 +223,11 @@ class LoginDialog(QDialog):
             logger.info("Current event setted to %s %s", session['event_id'], session['event_description'])
         # change password required
         if session['new_password_required']:
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Login', "Password change is required"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Login', "Password change is required")
+            )
             pd = ChangePasswordDialog(self, session['user'])
             if pd.exec_() == QDialog.DialogCode.Rejected:
                 sys.exit(0)

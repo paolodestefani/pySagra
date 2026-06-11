@@ -86,6 +86,7 @@ class Ui_OrderDialog0(object):
         self.verticalLayout_9.setContentsMargins(2, 2, 2, 2)
         self.spinBoxCovers = QSpinBox(self.groupBoxCovers)
         self.spinBoxCovers.setObjectName(u"spinBoxCovers")
+        self.spinBoxCovers.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.spinBoxCovers.setMinimum(0)
         self.spinBoxCovers.setMaximum(999)
 
@@ -451,6 +452,7 @@ class Ui_OrderDialog0(object):
         self.doubleSpinBoxDiscount = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxDiscount.setObjectName(u"doubleSpinBoxDiscount")
         self.doubleSpinBoxDiscount.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.doubleSpinBoxDiscount.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.doubleSpinBoxDiscount.setProperty(u"showGroupSeparator", True)
         self.doubleSpinBoxDiscount.setMaximum(9999.989999999999782)
 
@@ -512,6 +514,7 @@ class Ui_OrderDialog0(object):
         self.doubleSpinBoxCash = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxCash.setObjectName(u"doubleSpinBoxCash")
         self.doubleSpinBoxCash.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.doubleSpinBoxCash.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.doubleSpinBoxCash.setProperty(u"showGroupSeparator", True)
         self.doubleSpinBoxCash.setMaximum(9999.989999999999782)
 
@@ -527,6 +530,7 @@ class Ui_OrderDialog0(object):
         self.doubleSpinBoxChange = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxChange.setObjectName(u"doubleSpinBoxChange")
         self.doubleSpinBoxChange.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.doubleSpinBoxChange.setReadOnly(True)
         self.doubleSpinBoxChange.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.doubleSpinBoxChange.setProperty(u"showGroupSeparator", True)
         self.doubleSpinBoxChange.setMaximum(9999.989999999999782)

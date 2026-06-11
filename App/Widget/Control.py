@@ -773,58 +773,79 @@ class ButtonSeat(QPushButton):
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
         painter.end()
 
+from PySide6.QtWidgets import QPushButton, QWidget, QStyle, QStyleOptionButton
+from PySide6.QtGui import QFont, QColor, QPixmap, QPainter, QPen, QLinearGradient
+from PySide6.QtCore import Qt, QRect
 
 class ButtonItem(QPushButton):
-    """A QPushButton for items with a custom paint event to create a 3D effect and custom colors 
-    based on stock levels, also shows a variant indicator icon if the item has variants"""
+    """
+    A custom QPushButton representing a menu item.
+    Features a dynamic 3D gradient effect, automated color-coding based on 
+    stock thresholds, and visual indicator overlays for item variants.
+    All monetary values and quantity balances are kept strictly as integers 
+    to guarantee flawless arithmetic operations without rounding anomalies.
+    """
     
-    def __init__(self, parent: QWidget, text: str, textColor: str, backgroundColor: str) -> None:
+    def __init__(self, parent: QWidget, text: str, textColor: str, backgroundColor: str, setting: dict) -> None:
         super().__init__(parent)
         
-        # Safe link to parent configuration settings
-        self.setting = getattr(parent, 'setting', {})
-        
+        self.setting = setting
         self.description = text or ''
         self.caption = self.description.replace(' ', '\n')
         
-        # Property initialization (prevents conflicts during instantiation)
-        self._price_cents: int | None = None
-        self._stockLevel: int = 0
+        # Property initialization
+        self._price: int = 0    
+        self._stockLevel: int = 0 
         self.id: int | None = None
         self.hasInventory: bool = False 
         self.hasVariants: bool = False
         self._showLevel: bool = False
         
-        # Font settings and constraints
+        # OPTIMIZATION: Cache decimal configurations and compute factors once 
+        # to eliminate redundant exponentiation (**) operations at runtime
+        self._quantityDecs = self.setting.get('quantity_decimal_places', 0)
+        self._priceDecs = self.setting.get('price_decimal_places', 0)
+        self._qty_factor = 10 ** self._quantityDecs
+        self._price_factor = 10 ** self._priceDecs
+        
+        # Font settings and structural constraints
         font_family = self.setting.get('order_list_font_family', 'Arial')
         font_size = int(self.setting.get('order_list_font_size', 11))
         self.setFont(QFont(font_family, font_size, QFont.Weight.Bold))
         self.setMinimumWidth(65)
         
-        # Variant indicator icon fallback handling
+        # Variant indicator icon fallback logic
         self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25) if 'order_flag' in currentIcon else QPixmap()
         
-        # Default fallback styling colors
+        # Standard palette initialization
         self.default_bg = QColor(backgroundColor)
         self.default_text = QColor(textColor)
         self.current_bg = self.default_bg
         self.current_text = self.default_text
+        
+        # OPTIMIZATION: Pre-cache HEX string colors into QColor objects.
+        # This prevents costly hex-string parsing inside real-time updates.
+        self._color_cache = {
+            'warning_bg': QColor(self.setting.get('warning_background_color', '#ffaa00')),
+            'warning_tx': QColor(self.setting.get('warning_text_color', '#000000')),
+            'critical_bg': QColor(self.setting.get('critical_background_color', '#ff2200')),
+            'critical_tx': QColor(self.setting.get('critical_text_color', '#ffffff')),
+            'disabled_bg': QColor(self.setting.get('disabled_background_color', '#dcdcdc')),
+            'disabled_tx': QColor(self.setting.get('disabled_text_color', '#888888'))
+        }
 
-        # Initialize button display text
+        # Initialize the button text display
         self.update_button_text()
 
     # --- PROPERTIES ---
 
     @property
-    def price(self) -> float | None:
-        return (self._price_cents / 100.0) if self._price_cents is not None else None
+    def price(self) -> int:
+        return self._price
 
     @price.setter
-    def price(self, value: float | None):
-        if value is not None:
-            self._price_cents = int(round(value * 100))
-        else:
-            self._price_cents = None
+    def price(self, value: int):
+        self._price = value
 
     @property
     def stockLevel(self) -> int:
@@ -832,7 +853,7 @@ class ButtonItem(QPushButton):
 
     @stockLevel.setter
     def stockLevel(self, value: int):
-        self._stockLevel = int(value) if value is not None else 0
+        self._stockLevel = value 
         self.recalculate_state_and_colors()
         self.update_button_text()
 
@@ -842,13 +863,15 @@ class ButtonItem(QPushButton):
 
     @showLevel.setter
     def showLevel(self, value: bool):
-        """Intercepts when showLevel changes to instantly refresh the text layout"""
+        """Intercepts view changes to trigger immediate UI redraws"""
         self._showLevel = bool(value)
-        self.update_button_text()  # Calculates the new text dynamically (\n or normal)
-        self.update()              # Forces Qt to repaint the button immediately
+        self.update_button_text()  
+        self.update()              
+
+    # --- CORE METHODS ---
 
     def recalculate_state_and_colors(self):
-        """Evaluates stock level thresholds and updates active styling variables"""
+        """Evaluates integer stock level thresholds and shifts active styling parameters"""
         if not self.hasInventory:
             self.current_bg = self.default_bg
             self.current_text = self.default_text
@@ -857,86 +880,93 @@ class ButtonItem(QPushButton):
 
         current_level = self._stockLevel
         
-        # Safe extraction with explicit defaults to prevent configuration crashes
-        warning_limit = int(round(float(self.setting.get('warning_stock_level', 10))))
-        critical_limit = int(round(float(self.setting.get('critical_stock_level', 5))))
+        # OPTIMIZATION: Fast integer calculations using pre-cached math factors
+        warning_limit = self.setting.get('warning_stock_level', 10) * self._qty_factor
+        critical_limit = self.setting.get('critical_stock_level', 5) * self._qty_factor
         
+        # State assignment drawing straight from the optimized color cache
         if current_level >= warning_limit:
             bc, tc = self.default_bg, self.default_text
             self.setEnabled(True)
         elif critical_limit < current_level < warning_limit:
-            bc = QColor(self.setting.get('warning_background_color', '#ffaa00'))
-            tc = QColor(self.setting.get('warning_text_color', '#000000'))
+            bc, tc = self._color_cache['warning_bg'], self._color_cache['warning_tx']
             self.setEnabled(True)
         elif 0 < current_level <= critical_limit:
-            bc = QColor(self.setting.get('critical_background_color', '#ff2200'))
-            tc = QColor(self.setting.get('critical_text_color', '#ffffff'))
+            bc, tc = self._color_cache['critical_bg'], self._color_cache['critical_tx']
             self.setEnabled(True)
         else:
-            bc = QColor(self.setting.get('disabled_background_color', '#dcdcdc'))
-            tc = QColor(self.setting.get('disabled_text_color', '#888888'))
+            bc, tc = self._color_cache['disabled_bg'], self._color_cache['disabled_tx']
             self.setEnabled(False)
             
         self.current_bg = bc
         self.current_text = tc
-        self.update() # Requests a safe canvas repaint operation
+        self.update() # Safe scheduling for an asymmetrical canvas refresh
 
     def update_button_text(self):
-        """Calculates button string data outside paintEvent to prevent recursive loops"""
+        """Formats the label string completely outside the paint loop to prevent recursion"""
         if self.hasInventory and self.showLevel:
-            actual_level = self._stockLevel
-            level_str = f"{actual_level:.2f}".rstrip('0').rstrip('.') if actual_level % 1 != 0 else str(int(actual_level))
+            # OPTIMIZATION: Extract integer and fractional strings directly.
+            # Avoids floating-point precision loss and messy string stripping (.rstrip).
+            int_part = self._stockLevel // self._qty_factor
+            dec_part = self._stockLevel % self._qty_factor
+            
+            if dec_part == 0:
+                level_str = str(int_part)
+            else:
+                # Handle zero padding safely based on dynamic configurations (e.g., 5 with 2 decs -> "05")
+                level_str = f"{int_part},{str(dec_part).zfill(self._quantityDecs)}".rstrip('0')
+                
             self.setText(f"{self.caption}\n({level_str})")
         else:
             self.setText(self.caption)
 
+    # --- PAINT EVENT ---
+
     def paintEvent(self, event):
-        """Custom paint event to draw the button with a 3D effect, custom colors and icons"""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        
-        option = QStyleOptionButton()
-        self.initStyleOption(option)
-        
-        margin = 5
-        rect = option.rect.adjusted(margin, margin, -margin, -margin)
-        
-        # Dynamic base color assignment matching state
-        base_color = QColor(self.current_bg)
-        if not self.isEnabled():
-            base_color = QColor(self.setting.get('disabled_background_color', "#dcdcdc"))
+        """Renders the component using custom styling, 3D gradients, and conditional icon layers"""
+        # OPTIMIZATION: Modern Context Manager setup.
+        # This handles the lifecycle of QPainter implicitly, avoiding any 'painter.end()' commands.
+        with QPainter(self) as painter:
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             
-        # 3D Depth Linear Gradient Construction
-        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        if option.state & QStyle.StateFlag.State_Sunken:
-            gradient.setColorAt(0, base_color.darker(120))
-            gradient.setColorAt(1, base_color.darker(110))
-        else:
-            gradient.setColorAt(0, base_color.lighter(115))
-            gradient.setColorAt(0.5, base_color)
-            gradient.setColorAt(1, base_color.darker(110))
+            option = QStyleOptionButton()
+            self.initStyleOption(option)
             
-        # Draw Rounded Rect Background Container
-        painter.setBrush(gradient)
-        border_color = base_color.darker(150)
-        painter.setPen(QPen(border_color, 1))
-        painter.drawRoundedRect(rect, 6, 6)
-        
-        # Top Rim Lighting Reflection Detail
-        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
-            painter.setPen(QPen(base_color.lighter(130), 1))
-            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+            margin = 5
+            rect = option.rect.adjusted(margin, margin, -margin, -margin)
             
-        # Paint Core Text Layers
-        painter.setPen(QColor(self.current_text))
-        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
-        
-        # Paint Variant Icon Overlays
-        if self.hasVariants and not self.variantIndicatorIcon.isNull():
-            icon_rect = QRect(rect.right() - 18, rect.top() - 2, 24, 24)
-            painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
+            # Switch background context based on active state parameters
+            base_color = self.current_bg if self.isEnabled() else self._color_cache['disabled_bg']
+                
+            # Build the 3D tactile linear depth gradient
+            gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+            if option.state & QStyle.StateFlag.State_Sunken:
+                gradient.setColorAt(0, base_color.darker(120))
+                gradient.setColorAt(1, base_color.darker(110))
+            else:
+                gradient.setColorAt(0, base_color.lighter(115))
+                gradient.setColorAt(0.5, base_color)
+                gradient.setColorAt(1, base_color.darker(110))
+                
+            # Draw the main rounded boundary container
+            painter.setBrush(gradient)
+            painter.setPen(QPen(base_color.darker(150), 1))
+            painter.drawRoundedRect(rect, 6, 6)
             
-        painter.end()
+            # Subtle top rim lighting (internal glossy accentuation)
+            if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
+                painter.setPen(QPen(base_color.lighter(130), 1))
+                painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+                
+            # Text rendering
+            painter.setPen(QColor(self.current_text))
+            painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
+            
+            # Conditional indicator icon rendering for complex variations
+            if self.hasVariants and not self.variantIndicatorIcon.isNull():
+                icon_rect = QRect(rect.right() - 18, rect.top() - 2, 24, 24)
+                painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
+
 
 
 class ButtonItemExample(QPushButton):

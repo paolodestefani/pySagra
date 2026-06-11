@@ -86,9 +86,9 @@ class Setting(Record):
     def __init__(self) -> None:
         super().__init__('company.setting', ('company_id',))
         self['company_id'] = session['current_company']
-        self.load()
+        self.reload()
 
-    def load(self) -> None:
+    def reload(self) -> None:
         self.select_record()
 
     def save(self) -> None:

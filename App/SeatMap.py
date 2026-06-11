@@ -319,6 +319,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     self.model.setData(self.model.index(modelRow, sm.COLUMN), c)
                     self.model.setData(self.model.index(modelRow, sm.TXT_COLOR), textColor)
                     self.model.setData(self.model.index(modelRow, sm.BKG_COLOR), backgroundColor)
+                    self.model.setData(self.model.index(modelRow, sm.UNAVAILABLE), False)
                     self.model.setData(self.model.index(modelRow, sm.OBSOLETE), False)
 
         else:
@@ -337,4 +338,5 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     self.model.setData(self.model.index(modelRow, sm.COLUMN), c)
                     self.model.setData(self.model.index(modelRow, sm.TXT_COLOR), textColor)
                     self.model.setData(self.model.index(modelRow, sm.BKG_COLOR), backgroundColor)
+                    self.model.setData(self.model.index(modelRow, sm.UNAVAILABLE), False)
                     self.model.setData(self.model.index(modelRow, sm.OBSOLETE), False)

@@ -678,6 +678,7 @@ class ScriptingModel(TableModel):
             ("note", _tr('Models', 'Note'), False, 'str'),
             ("company_id", _tr('Models', 'Company'), False, 'int'),
             ("is_active", _tr('Models', 'Active'), False, 'bool'),
+            ("is_system_object", _tr('Models', 'System'), False, 'bool'),
             ("script", _tr('Models', 'Python script'), False, 'str'),
             ("created_by", _tr('Models', 'User Ins'), True, 'str'),
             ("created_at", _tr('Models', 'Date Ins'), True, 'date'),

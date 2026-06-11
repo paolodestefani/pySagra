@@ -29,7 +29,7 @@ This module contains general custom dialogs
 """
 
 # standard library
-import os
+from enum import IntEnum
 import sys
 from typing import cast, Any
 
@@ -127,14 +127,33 @@ from App.Widget.Control import RelationalComboBox
 from App.Widget.Control import CheckableComboBox
 
 
+# filter rows
 FILTER_ROWS = 30
 
-FILTER, SORT, CUSTOMIZE = range(3)
+# sort tab index
+class sti(IntEnum):
+    FILTER      = 0
+    SORT        = 1
+    CUSTOMIZE   = 2
 
-FIELD, NEGATE, OPERATOR, OPERAND = range(4)
-SORTFIELD, SORTORDER = range(2)
+# filter fields
+class ff(IntEnum):
+    FIELD       = 0
+    NEGATE      = 1
+    OPERATOR    = 2 
+    OPERAND     = 3
 
-TABPARAMS, TABFILTERS, TABOPTIONS, TABCUSTIMIZE = range(4)
+# sort fields
+class sf(IntEnum):
+    SORTFIELD   = 0
+    SORTORDER   = 1
+
+# print tab index
+class pti(IntEnum):
+    PARAMS      = 0
+    FILTER      = 1
+    OPTION      = 2
+    CUSTIMIZE   = 3
 
 
 referenceList = {'eventList': event_lookup,
@@ -194,10 +213,12 @@ class SelectImageDialog(QDialog):
     def upload(self) -> None:
         "Upload an image file"
         path = QDir.currentPath()
-        f, fi = QFileDialog.getOpenFileName(self,
-                                            _tr('Dialog', "Select the image file to upload"),
-                                            path,
-                                            _tr('Dialog', "Portable Network Graphics (*.png);;All files (*.*)"))
+        f, fi = QFileDialog.getOpenFileName(
+            self,
+            _tr('Dialog', "Select the image file to upload"),
+            path,
+            _tr('Dialog', "Portable Network Graphics (*.png);;All files (*.*)")
+        )
         if f == "":
             return
         pix = QPixmap()
@@ -214,11 +235,15 @@ class SelectImageDialog(QDialog):
 
     def download(self) -> None:
         "Save an image to a file"
+        if not self.image:
+            return
         path = QDir.currentPath()
-        f, fi = QFileDialog.getSaveFileName(self,
-                                            "Seleziona il nome file dell'Immagine",
-                                            path,
-                                            "Portable Network Graphics (*.png);;Tutti i files (*.*)")
+        f, fi = QFileDialog.getSaveFileName(
+            self,
+            _tr("SelectImageDialod", "Select the image file name"),
+            path,
+            _tr("SelectImageDialod","Portable Network Graphics (*.png);;Tutti i files (*.*)")
+        )
         if self.image:
             self.image.save(f)
 
@@ -413,21 +438,21 @@ class SortFilterDialog(QDialog):
             oper = RowComboBox(self)
             oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
-            self.ui.layoutFilters.addWidget(field, row, FIELD)
-            self.ui.layoutFilters.addWidget(neg, row, NEGATE)
-            self.ui.layoutFilters.addWidget(oper, row, OPERATOR)
+            self.ui.layoutFilters.addWidget(field, row,ff.FIELD)
+            self.ui.layoutFilters.addWidget(neg, row, ff.NEGATE)
+            self.ui.layoutFilters.addWidget(oper, row,ff.OPERATOR)
             sw = SpacerWidget(self)
-            self.ui.layoutFilters.addWidget(sw, row, OPERAND) # position widget only
+            self.ui.layoutFilters.addWidget(sw, row,ff.OPERAND) # position widget only
         if self.model.limitCondition:
             self.ui.checkBoxMaxRows.setChecked(True)
             self.ui.spinBoxMaxRows.setValue(self.model.limitCondition)
         else:
             self.ui.checkBoxMaxRows.setChecked(False)
         # set layout stretch
-        self.ui.layoutFilters.setColumnStretch(FIELD, 2)
-        self.ui.layoutFilters.setColumnStretch(NEGATE, 0)
-        self.ui.layoutFilters.setColumnStretch(OPERATOR, 1)
-        self.ui.layoutFilters.setColumnStretch(OPERAND, 1)
+        self.ui.layoutFilters.setColumnStretch(ff.FIELD, 2)
+        self.ui.layoutFilters.setColumnStretch(ff.NEGATE, 0)
+        self.ui.layoutFilters.setColumnStretch(ff.OPERATOR, 1)
+        self.ui.layoutFilters.setColumnStretch(ff.OPERAND, 1)
         self.ui.layoutFilters.setRowStretch(row + 1, 1)
         # sorting comboboxes
         for row in range(len(self.model.columns)):
@@ -438,16 +463,16 @@ class SortFilterDialog(QDialog):
             field.row = row
             field.currentIndexChanged.connect(self.sortIndexChanged)
             order = QComboBox(self)
-            self.ui.layoutSorting.addWidget(field, row, SORTFIELD)
-            self.ui.layoutSorting.addWidget(order, row, SORTORDER)
+            self.ui.layoutSorting.addWidget(field, row, sf.SORTFIELD)
+            self.ui.layoutSorting.addWidget(order, row, sf.SORTORDER)
         # set layout stretch
-        self.ui.layoutSorting.setColumnStretch(SORTFIELD, 2)
-        self.ui.layoutSorting.setColumnStretch(SORTORDER, 1)
+        self.ui.layoutSorting.setColumnStretch(sf.SORTFIELD, 2)
+        self.ui.layoutSorting.setColumnStretch(sf.SORTORDER, 1)
         self.ui.layoutSorting.setRowStretch(row + 1, 1)
         # get available customizations
         self.availableCustomizations()
         # set authorization
-        self.ui.tabWidget.widget(CUSTOMIZE).setEnabled(session['can_edit_sortfilters'])
+        self.ui.tabWidget.widget(sti.CUSTOMIZE).setEnabled(session['can_edit_sortfilters'])
 
     def availableCustomizations(self) -> None:
         "Get available customization from DB and fill combobox"
@@ -493,13 +518,13 @@ class SortFilterDialog(QDialog):
         # initial reset
         # filters
         for row in range(FILTER_ROWS):
-            self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().setCurrentIndex(0)
-            self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)
-            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
+            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
         # sortings
         for row in range(len(self.model.columns)):
-            self.ui.layoutSorting.itemAtPosition(row, SORTFIELD).widget().setCurrentIndex(0)
-            self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().setCurrentIndex(0)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(0)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(0)
         # get sort and filter params
         try:
             _, filters, sortings = get_adapt_setting(sortFilterId)
@@ -510,10 +535,10 @@ class SortFilterDialog(QDialog):
             return
         # set filters settings
         for t, row, cmb1, neg, cmb2, wv in filters:
-            self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().setCurrentIndex(cmb1)
-            self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(neg)
-            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(cmb2)
-            widget = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+            self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().setCurrentIndex(cmb1)
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(neg)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(cmb2)
+            widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
             match widget:
                 case QComboBox():
                     widget.setCurrentIndex(int(wv))
@@ -550,8 +575,8 @@ class SortFilterDialog(QDialog):
             self.ui.checkBoxMaxRows.setChecked(False)
         # set sorting settings
         for t, row, cmb1, neg, cmb2, wv in sortings:
-            self.ui.layoutSorting.itemAtPosition(row, SORTFIELD).widget().setCurrentIndex(cmb1)
-            self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().setCurrentIndex(cmb2)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(cmb1)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(cmb2)
         # sort filter class sorting
         self.ui.spinBoxClassSorting.setValue(get_adapt_sorting(sortFilterId))
 
@@ -563,11 +588,11 @@ class SortFilterDialog(QDialog):
         columns = []
         # filters
         for row in range(FILTER_ROWS):
-            if self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex() != 0:
-                cmb1 = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex()
-                neg = self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().isChecked()
-                cmb2 = self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().currentIndex()
-                widget = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+            if self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex() != 0:
+                cmb1 = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex()
+                neg = self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().isChecked()
+                cmb2 = self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().currentIndex()
+                widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
                 wv: str|float|bool|None = None
                 match widget:
                     case QComboBox():
@@ -592,9 +617,9 @@ class SortFilterDialog(QDialog):
                 columns.append((cid, None, None, None, None, 'F',row, cmb1, neg, cmb2, str(wv)))
         # sorting
         for row in range(len(self.model.columns)):
-            if self.ui.layoutSorting.itemAtPosition(row, FIELD).widget().currentIndex() != 0:
-                cmb1 = self.ui.layoutSorting.itemAtPosition(row, SORTFIELD).widget().currentIndex()
-                cmb2 = self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().currentIndex()
+            if self.ui.layoutSorting.itemAtPosition(row, ff.FIELD).widget().currentIndex() != 0:
+                cmb1 = self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().currentIndex()
+                cmb2 = self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().currentIndex()
                 wv = None
                 columns.append((cid, None, None, None, None, 'S', row, cmb1, None, cmb2, str(wv)))
         # update sort filter
@@ -629,24 +654,24 @@ class SortFilterDialog(QDialog):
             return
         row = s.row
         # reset negate
-        self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)
+        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
         # if index is zero reset everythinga of the row
         if index == 0:
             # reset operator
-            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(0)
             return
         # get field type
-        field = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentData()
+        field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
         ftype = self.fieldType.get(field)
         if not ftype:
             return
         # set operator alternatives
-        self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
+        self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().clear()
         for o, d, r, w in self.FILTERING[ftype]:
             if hasattr(self.model, 'reference') and w == 'LIST':
                 if field not in self.model.reference: # skip list if not required
                     continue
-            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().addItem(d, o)
 
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
@@ -660,18 +685,18 @@ class SortFilterDialog(QDialog):
         # clear if index is zero
         if index == 0:
             # delete previous widget (MANDATORY)
-            w = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+            w = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
             self.ui.layoutFilters.removeWidget(w)
             w.deleteLater()
             # add spacer
             sw = SpacerWidget(self) # spacer widget
-            self.ui.layoutFilters.addWidget(sw, row, OPERAND)
+            self.ui.layoutFilters.addWidget(sw, row,ff.OPERAND)
             return
         # get field type
-        field = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentData()
-        fi = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex() -1
+        field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
+        fi = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex() -1
         ftype = self.fieldType[field]
-        w = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+        w = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
         nwt = self.FILTERING[ftype][index][3]
         # insert new operand widget
         widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
@@ -728,7 +753,7 @@ class SortFilterDialog(QDialog):
         self.ui.layoutFilters.removeWidget(w)
         w.deleteLater()
         # new widget
-        self.ui.layoutFilters.addWidget(widget, row, OPERAND)
+        self.ui.layoutFilters.addWidget(widget, row,ff.OPERAND)
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter qwidget"
@@ -740,10 +765,10 @@ class SortFilterDialog(QDialog):
             return
         row = s.row
         # clear first
-        self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().clear()
+        self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().clear()
         if index != 0:
             for i, j in self.ORDERING:
-                self.ui.layoutSorting.itemAtPosition(row, SORTORDER).widget().addItem(j, i)
+                self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().addItem(j, i)
 
     def newCustomization(self) -> None:
         "Create a new customization"
@@ -843,15 +868,15 @@ class SortFilterDialog(QDialog):
         "Intercept Reset button action"
         if button == self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Reset):
             for r in range(self.ui.layoutFilters.rowCount()):
-                if self.ui.layoutFilters.itemAtPosition(r, FIELD):
-                    self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().setCurrentIndex(0)
-                if self.ui.layoutFilters.itemAtPosition(r, NEGATE):
-                    self.ui.layoutFilters.itemAtPosition(r, NEGATE).widget().setChecked(False)
-                if self.ui.layoutFilters.itemAtPosition(r, OPERATOR):
-                    self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().setCurrentIndex(0)
+                if self.ui.layoutFilters.itemAtPosition(r,ff.FIELD):
+                    self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().setCurrentIndex(0)
+                if self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE):
+                    self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().setChecked(False)
+                if self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR):
+                    self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().setCurrentIndex(0)
             for r in range(self.ui.layoutSorting.rowCount()):
-                if self.ui.layoutSorting.itemAtPosition(r, FIELD):
-                    self.ui.layoutSorting.itemAtPosition(r, FIELD).widget().setCurrentIndex(0)
+                if self.ui.layoutSorting.itemAtPosition(r,ff.FIELD):
+                    self.ui.layoutSorting.itemAtPosition(r,ff.FIELD).widget().setCurrentIndex(0)
 
     def applySortFilter(self) ->None:
         "Generate the where conditions and update model"
@@ -861,14 +886,14 @@ class SortFilterDialog(QDialog):
         self.model.whereCondition.clear()
         v: list|str|int|float|QDate|QDateTime|QTime|bool|None
         for r in range(FILTER_ROWS):
-            if (self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() != 0 and # field
-                self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex() != 0): # operator
-                ty = self.model.columns[self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() -1][3]
-                fl = self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentData()
-                ng = self.ui.layoutFilters.itemAtPosition(r, NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentData()
-                oi = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex()
-                wd = self.ui.layoutFilters.itemAtPosition(r, OPERAND).widget()
+            if (self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentIndex() != 0 and # field
+                self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex() != 0): # operator
+                ty = self.model.columns[self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentIndex() -1][3]
+                fl = self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentData()
+                ng = self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().isChecked()
+                op = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentData()
+                oi = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex()
+                wd = self.ui.layoutFilters.itemAtPosition(r,ff.OPERAND).widget()
                 match wd:
                     case CheckableComboBox():
                         v = wd.currentData() # list
@@ -920,9 +945,9 @@ class SortFilterDialog(QDialog):
         # get orderby clause
         sorting = []
         for r in range(len(self.model.columns)):
-            if self.ui.layoutSorting.itemAtPosition(r, SORTFIELD).widget().currentIndex() != 0:
-                f = self.ui.layoutSorting.itemAtPosition(r, SORTFIELD).widget().currentData()
-                s = self.ui.layoutSorting.itemAtPosition(r, SORTORDER).widget().currentData()
+            if self.ui.layoutSorting.itemAtPosition(r, sf.SORTFIELD).widget().currentIndex() != 0:
+                f = self.ui.layoutSorting.itemAtPosition(r, sf.SORTFIELD).widget().currentData()
+                s = self.ui.layoutSorting.itemAtPosition(r, sf.SORTORDER).widget().currentData()
                 sorting.append(f'{f} {s}')
         self.model.orderByExpression.clear()
         for i in sorting:
@@ -1136,7 +1161,7 @@ class PrintDialog(QDialog):
         self.ui.pushButtonUserDefault.clicked.connect(self.setUserDefault)
         self.ui.pushButtonClassDefault.clicked.connect(self.setClassDefault)
         # check authorization
-        self.ui.tabWidget.widget(TABOPTIONS).setEnabled(session['can_edit_reports'] or
+        self.ui.tabWidget.widget(pti.OPTION).setEnabled(session['can_edit_reports'] or
                                             session['is_admin'])
         # create filter comboboxes
         for row in range(FILTER_ROWS):
@@ -1149,16 +1174,16 @@ class PrintDialog(QDialog):
             oper = RowComboBox(self)
             oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
-            self.ui.layoutFilters.addWidget(field, row, FIELD)
-            self.ui.layoutFilters.addWidget(neg, row, NEGATE)
-            self.ui.layoutFilters.addWidget(oper, row, OPERATOR)
+            self.ui.layoutFilters.addWidget(field, row,ff.FIELD)
+            self.ui.layoutFilters.addWidget(neg, row, ff.NEGATE)
+            self.ui.layoutFilters.addWidget(oper, row,ff.OPERATOR)
             sw = SpacerWidget(self)
-            self.ui.layoutFilters.addWidget(sw, row, OPERAND) # position widget only
+            self.ui.layoutFilters.addWidget(sw, row,ff.OPERAND) # position widget only
         # set layout stretch
-        self.ui.layoutFilters.setColumnStretch(FIELD, 2)
-        self.ui.layoutFilters.setColumnStretch(NEGATE, 0)
-        self.ui.layoutFilters.setColumnStretch(OPERATOR, 1)
-        self.ui.layoutFilters.setColumnStretch(OPERAND, 1)
+        self.ui.layoutFilters.setColumnStretch(ff.FIELD, 2)
+        self.ui.layoutFilters.setColumnStretch(ff.NEGATE, 0)
+        self.ui.layoutFilters.setColumnStretch(ff.OPERATOR, 1)
+        self.ui.layoutFilters.setColumnStretch(ff.OPERAND, 1)
         self.ui.layoutFilters.setRowStretch(row + 1, 1)
         # report customization list
         self.reportCustomizationList()
@@ -1230,11 +1255,11 @@ class PrintDialog(QDialog):
             columns.append((cid, None, None, None, None, 'P', row, None, None, None, str(wv)))
         # filters
         for row in range(FILTER_ROWS):
-            if self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex() != 0:
-                cmb1 = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentIndex()
-                neg = self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().isChecked()
-                cmb2 = self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().currentIndex()
-                widget = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+            if self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex() != 0:
+                cmb1 = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex()
+                neg = self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().isChecked()
+                cmb2 = self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().currentIndex()
+                widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
                 match widget:
                     case QComboBox():
                         wv = str(widget.currentIndex())
@@ -1351,10 +1376,10 @@ class PrintDialog(QDialog):
                         widget.setChecked(False)
         # set filters settings
         for t, row, cmb1, neg, cmb2, wv in filters:
-            self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().setCurrentIndex(cmb1)
-            self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(neg)
-            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(cmb2)
-            widget = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+            self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().setCurrentIndex(cmb1)
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(neg)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(cmb2)
+            widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
             match widget:
                 case QComboBox():
                     widget.setCurrentIndex(int(wv))
@@ -1403,10 +1428,10 @@ class PrintDialog(QDialog):
                     wg = None
         # create parameters
         if not self.report.parameter:
-            self.ui.tabWidget.setTabEnabled(TABPARAMS, False)
+            self.ui.tabWidget.setTabEnabled(pti.PARAMS, False)
         else:
-            self.ui.tabWidget.setTabEnabled(TABPARAMS, True)
-            self.ui.tabWidget.setCurrentIndex(TABPARAMS)
+            self.ui.tabWidget.setTabEnabled(pti.PARAMS, True)
+            self.ui.tabWidget.setCurrentIndex(pti.PARAMS)
         for row, par in enumerate(self.report.parameter):
             label = QLabel(self.report.parameter[par].description, self)
             widget: QWidget
@@ -1445,7 +1470,7 @@ class PrintDialog(QDialog):
             self.ui.layoutParameters.setRowStretch(row + 1, 1)
         # filters already created in init only fill the field comboboxes values
         for row in range(FILTER_ROWS):
-            field = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget()
+            field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget()
             field.currentIndexChanged.disconnect(self.condIndexChanged)
             field.clear()
             field.addItem('', None) # item 0 for clear/reset
@@ -1524,23 +1549,23 @@ class PrintDialog(QDialog):
             return
         row = s.row
         # reset negate
-        self.ui.layoutFilters.itemAtPosition(row, NEGATE).widget().setChecked(False)
+        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
         # clear if index is zero
         if index == 0:
             # reset operator
-            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(0)
             return
         # get field type
         ftype = self.report.conditions[self.sender().currentData()].ftype # type: ignore[attr-defined]
         if not ftype:
             return
         # set operator alternatives
-        self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().clear()
+        self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().clear()
         for o, d, r, w in self.FILTERING[ftype]:
             data = cast(Any, self.sender()).currentData()
             if hasattr(self.report.conditions[data], 'reference') and w == 'LIST':
                 continue
-            self.ui.layoutFilters.itemAtPosition(row, OPERATOR).widget().addItem(d, o)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().addItem(d, o)
         
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
@@ -1554,17 +1579,17 @@ class PrintDialog(QDialog):
         # clear if index is zero
         if index == 0:
             # delete previous widget (MANDATORY)
-            w = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+            w = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
             self.ui.layoutFilters.removeWidget(w)
             w.deleteLater()
             # add spacer
             sw = SpacerWidget(self) # spacer widget
-            self.ui.layoutFilters.addWidget(sw, row, OPERAND)
+            self.ui.layoutFilters.addWidget(sw, row,ff.OPERAND)
             return
         # get field type
-        field = self.ui.layoutFilters.itemAtPosition(row, FIELD).widget().currentData()
+        field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
         ftype = self.report.conditions[field].ftype # type: ignore[attr-defined]
-        w = self.ui.layoutFilters.itemAtPosition(row, OPERAND).widget()
+        w = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
         nwt = self.FILTERING[ftype][index][3]
         # insert new operand widget
         widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
@@ -1622,7 +1647,7 @@ class PrintDialog(QDialog):
         self.ui.layoutFilters.removeWidget(w)
         w.deleteLater()
         # new widget
-        self.ui.layoutFilters.addWidget(widget, row, OPERAND)
+        self.ui.layoutFilters.addWidget(widget, row,ff.OPERAND)
         
     def generateReport(self) -> bool:
         "Generate sql query, where condition, order by expression and report"
@@ -1654,15 +1679,15 @@ class PrintDialog(QDialog):
         argument = []
         v: list|str|int|float|QDate|QDateTime|QTime|bool|None
         for r in range(FILTER_ROWS):
-            if (hasattr(self.ui.layoutFilters.itemAtPosition(r, FIELD), 'widget') and  # can happended if no filters
-                (self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentIndex() != 0 and  # field
-                 self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex() != 0)):  # operator
-                fl = self.ui.layoutFilters.itemAtPosition(r, FIELD).widget().currentData()
+            if (hasattr(self.ui.layoutFilters.itemAtPosition(r,ff.FIELD), 'widget') and  # can happended if no filters
+                (self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentIndex() != 0 and  # field
+                 self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex() != 0)):  # operator
+                fl = self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentData()
                 ty = self.report.conditions[fl].ftype
-                ng = self.ui.layoutFilters.itemAtPosition(r, NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentData()
-                oi = self.ui.layoutFilters.itemAtPosition(r, OPERATOR).widget().currentIndex()
-                wd = self.ui.layoutFilters.itemAtPosition(r, OPERAND).widget()
+                ng = self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().isChecked()
+                op = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentData()
+                oi = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex()
+                wd = self.ui.layoutFilters.itemAtPosition(r,ff.OPERAND).widget()
                 match wd:
                     case CheckableComboBox():
                         v = wd.currentData() # list
@@ -1831,11 +1856,14 @@ class PrintDialog(QDialog):
 
     def selectDirectoryClicked(self) -> None:
         "Select export directory"
-        dirname = QFileDialog.getExistingDirectory(self,
-                                                   _tr('Dialog', "Select export directory"),
-                                                   self.ui.lineEditDirectory.text(),
-                                                   QFileDialog.Option.ShowDirsOnly)
-        self.ui.lineEditDirectory.setText(dirname)
+        dirname = QFileDialog.getExistingDirectory(
+            self,
+            _tr('Dialog', "Select export directory"),
+            self.ui.lineEditDirectory.text(),
+            QFileDialog.Option.ShowDirsOnly
+        )
+        if dirname:
+            self.ui.lineEditDirectory.setText(dirname)
 
     def done(self, r: int) -> None:
         "Save local settings on exit, even in accetp/reject/finishe"
@@ -1847,61 +1875,6 @@ class PrintDialog(QDialog):
         st.setValue("ExportPDFVersion", self.ui.comboBoxPDFVersion.currentIndex())
         st.setValue("ExportPDFResolution", self.ui.spinBoxResolution.value())
         super().done(r)
-
-# class PrintPreviewDialog(QPrintPreviewDialog):
-#     "Modified QPrintPreviewDialog for exporting to PDF"
-
-#     def __init__(self, parent: QWidget|None = None):
-#         "Initialize"
-#         super().__init__(parent)
-#         # restore geometry
-#         st = QSettings()
-#         if st.value("PrintDialogGeometry"):
-#             self.restoreGeometry(st.value("PrintDialogGeometry"))
-#         else:
-#             self.setGeometry(QStyle.alignedRect(Qt.LayoutDirection.LeftToRight, Qt.AlignmentFlag.AlignCenter, QSize(800, 600), QGuiApplication.primaryScreen().geometry()))
-#         # add toolbutton for export pdf and email
-#         tb = self.findChild(QToolBar)
-#         action = QAction(_tr('Dialogs', 'Export PDF'), tb)
-#         action.triggered.connect(self.printPDF)
-#         action.setIcon(currentIcon['print_pdf'])
-
-#     def printPDF(self) -> None:
-#         "Export to PDF file"
-#         printer = self.printer()
-#         #pw = self.findChild(QPrintPreviewWidget)
-#         #if pw:
-#         #    op = PrintPDFDialog(self, printer.docName(), pw.currentPage(), pw.pageCount())
-#         #if op.exec() == QDialog.DialogCode.Rejected:
-#         #    return
-#         file_name, from_page, to_page, open_file, pdf_version, resolution = op.getParameters()
-#         if QFile(file_name).exists():
-#             if QMessageBox.question(self,
-#                                     _tr('MessageDialog', 'Question'),
-#                                     _tr('Dialog', "File {} exists, overwrite ?").format(file_name),
-#                                     QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
-#                 return
-#         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-#         printer.setPdfVersion(pdf_version)
-#         printer.setResolution(resolution)
-#         printer.setOutputFileName(file_name)
-#         printer.setFromTo(from_page, to_page)
-#         self.paintRequested.emit(printer)
-#         # restore printer to normal operation
-#         printer.setOutputFormat(QPrinter.OutputFormat.NativeFormat)
-#         printer.setOutputFileName('')
-#         #if pw:
-#         #    printer.setFromTo(1, pw.pageCount())
-#         # open file if requested
-#         if open_file:
-#             QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))
-
-
-#     def closeEvent(self, event: QCloseEvent) -> None:
-#         "Save geometry on exit"
-#         st = QSettings()
-#         st.setValue("PrintDialogGeometry", self.saveGeometry())
-#         event.accept()
 
 
 class _DateTimeInputDialog(QDialog):

@@ -35,7 +35,6 @@ import re
 from typing import cast
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QDir
@@ -96,9 +95,11 @@ def report(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     # cursor wait
     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
@@ -188,27 +189,32 @@ class ReportForm(FormIndexManager):
         "Save report edited"
         # check if a '.' is present in code
         if '.' in self.ui.lineEditCode.text():
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Report', "Can't use '.' (dot) in report code"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Report', "Can't use '.' (dot) in report code")
+            )
             return
         super().save()
 
     def delete(self) -> None:
         "Delete current report"
         if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Report', "It is not possible to "
-                                        "delete a system report"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Report', "It is not possible to "
+                    "delete a system report")
+            )
             return
         msg = _tr('Report', 'Delete current report ?')
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', 'Question'),
-                                f"{msg}\n{self.ui.lineEditCode.text()}",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', 'Question'),
+            f"{msg}\n{self.ui.lineEditCode.text()}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 
@@ -232,10 +238,12 @@ class ReportForm(FormIndexManager):
         "Load an image file as base64 string data to clipboard"
         st = QSettings()
         path = st.value("Report/PathImages", QDir.current().path(), type = str)
-        f, t = QFileDialog.getOpenFileName(self,
-                                           _tr('Report', "Select the image to insert into clipboard"),
-                                           str(path),
-                                           _tr('Report', "Portable Network Graphics (*.png);;All files (*.*)"))
+        f, t = QFileDialog.getOpenFileName(
+            self,
+            _tr('Report', "Select the image to insert into clipboard"),
+            str(path),
+            _tr('Report', "Portable Network Graphics (*.png);;All files (*.*)")
+            )
 
         if f == "":
             return
@@ -252,12 +260,13 @@ class ReportForm(FormIndexManager):
     def deleteAll(self) -> None:
         "Delete all reports"
         msg = _tr('Report', 'Delete ALL reports ?')
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', 'Question'),
-                                msg,
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', 'Question'),
+            msg,
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.No:
             return
         with gui_exception_context(self, _tr('Report', "Delete all reports")):
             delete_all_reports()
@@ -267,9 +276,11 @@ class ReportForm(FormIndexManager):
         "Dowload current report to a file"
         st = QSettings()
         path = st.value("Report/PathReports", QDir.current().path())
-        directory = QFileDialog.getExistingDirectory(self,
-                                                     _tr('Report', "Select the directory"),
-                                                     str(path))
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            _tr('Report', "Select the directory"),
+            str(path)
+            )
         if directory == "":
             return
         row = self.mapper.currentIndex()
@@ -288,9 +299,11 @@ class ReportForm(FormIndexManager):
                 zf.writestr('xml', self.model.data(self.model.index(row, rpt.XML)))
         
             msg = _tr('Report', "Current report saved to file:")
-            QMessageBox.information(self,
-                                    _tr('Report', "Download current report"),
-                                    f"<p>{msg}</p><p><b>{fileName}</b></p>")
+            QMessageBox.information(
+                self,
+                _tr('Report', "Download current report"),
+                f"<p>{msg}</p><p><b>{fileName}</b></p>"
+            )
             # update settings
             st.setValue("Report/PathReports", directory)
 
@@ -298,9 +311,11 @@ class ReportForm(FormIndexManager):
         "Save all report definition to a directory, one file per report"
         st = QSettings()
         path = str(st.value("Report/PathReports", QDir.current().path()))
-        directory = QFileDialog.getExistingDirectory(self,
-                                                     _tr('Report', "Select the directory"),
-                                                     path)
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            _tr('Report', "Select the directory"),
+            path
+            )
         if directory == "":
             return
         with gui_exception_context(self, _tr('Report', "Download all reports")):
@@ -319,9 +334,11 @@ class ReportForm(FormIndexManager):
                     zf.writestr('xml', xml)
         
             msg = _tr('Report', "All reports saved to directory")
-            QMessageBox.information(self,
-                                    _tr('Report', "Download all reports"),
-                                    f"<p>{msg}</p><p><b>{directory}</b></p>")
+            QMessageBox.information(
+                self,
+                _tr('Report', "Download all reports"),
+                f"<p>{msg}</p><p><b>{directory}</b></p>"
+            )
             # update settings
             st.setValue("Report/PathReports", directory)
 
@@ -329,10 +346,12 @@ class ReportForm(FormIndexManager):
         "Upload one report file from directory"
         st = QSettings()
         path = str(st.value("Report/PathReports", QDir.currentPath()))
-        fileName, t = QFileDialog.getOpenFileName(self,
-                                                  _tr('Report', "Select the file to import"),
-                                                  path,
-                                                  "*.rpt.zip")
+        fileName, t = QFileDialog.getOpenFileName(
+            self,
+            _tr('Report', "Select the file to import"),
+            path,
+            "*.rpt.zip"
+            )
         if fileName == "":
             return
         with gui_exception_context(self, _tr('Report', "Upload current report")):
@@ -349,17 +368,21 @@ class ReportForm(FormIndexManager):
                 load_report(cod, lcn, cls, sysb, dsc, xml)
             
             self.reload()
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "information"),
-                                    _tr('Report', "Report file imported to database"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "information"),
+                _tr('Report', "Report file imported to database")
+            )
 
     def uploadAll(self) -> None:
         "Upload all reports from directory"
         st = QSettings()
         path = str(st.value("Report/PathReports", QDir.currentPath()))
-        directory = QFileDialog.getExistingDirectory(self,
-                                                     _tr('Report', "Select the directory"),
-                                                     path)
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            _tr('Report', "Select the directory"),
+            path
+            )
         if directory == "":
             return
 
@@ -380,9 +403,11 @@ class ReportForm(FormIndexManager):
                         load_report(cod, lcn, cls, sysb, dsc, xml)
         
         self.reload()
-        QMessageBox.information(self,
-                                _tr("MessageDialog", "information"),
-                                _tr('Report', "All reports imported to database"))
+        QMessageBox.information(
+            self,
+            _tr("MessageDialog", "information"),
+            _tr('Report', "All reports imported to database")
+        )
 
     def print(self) -> None:
         "Print current report"

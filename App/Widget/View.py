@@ -30,7 +30,6 @@ such as the enhanced table view with layout customizations
 
 # standard library
 import os
-import sys
 import csv
 from typing import Any
 
@@ -81,12 +80,6 @@ from App.Widget.TableWidget import TableWidgetItem
 from App.Ui.ViewSettingsDialog import Ui_ViewSettingsDialog
 
 
-from typing import Any
-from PySide6.QtWidgets import QDialog, QTableWidgetItem
-from PySide6.QtCore import Qt
-
-# Note: Assumes _tr, Ui_ViewSettingsDialog, TableWidgetItem, BooleanDelegate, 
-# IntegerDelegate, GenericReadOnlyDelegate, and EnhancedTableView are available.
 
 class TableViewSettingsDialog(QDialog):
     """Dialog to manage advanced table view layouts such as column sorting orders, visibility, and size rules."""
@@ -97,7 +90,7 @@ class TableViewSettingsDialog(QDialog):
         self.ui = Ui_ViewSettingsDialog()
         self.ui.setupUi(self)
         
-        # Configure target layout structure constraints
+        # configure target layout structure constraints
         table_widget = self.ui.tableWidget
         table_widget.setColumnCount(5)
         table_widget.setItemDelegateForColumn(1, GenericReadOnlyDelegate(self))
@@ -122,16 +115,16 @@ class TableViewSettingsDialog(QDialog):
         
         header = parent.horizontalHeader()
         
-        # Build layout customization dataset rows
+        # build layout customization dataset rows
         for i in range(column_count):
-            # Extract real core configuration elements from current parent state
+            # extract real core configuration elements from current parent state
             item_idx = TableWidgetItem(i)
             item_name = TableWidgetItem(model.headerData(i, Qt.Orientation.Horizontal))
             item_sort = TableWidgetItem(header.visualIndex(i))
             item_visible = TableWidgetItem(not parent.isColumnHidden(i))
             item_width = TableWidgetItem(parent.columnWidth(i))
             
-            # FIX: Apply interaction flags immediately upon instantiation to prevent sorting race-conditions
+            # apply interaction flags immediately upon instantiation to prevent sorting race-conditions
             readonly_flags = (
                 Qt.ItemFlag.ItemIsEnabled | 
                 Qt.ItemFlag.ItemIsSelectable | 
@@ -142,24 +135,24 @@ class TableViewSettingsDialog(QDialog):
             item_name.setFlags(readonly_flags)
             item_sort.setFlags(readonly_flags)
             
-            # Load populated entity cards into destination spaces
+            # load populated entity cards into destination spaces
             table_widget.setItem(i, 0, item_idx)
             table_widget.setItem(i, 1, item_name)
             table_widget.setItem(i, 2, item_sort)
             table_widget.setItem(i, 3, item_visible)
             table_widget.setItem(i, 4, item_width)
             
-        # Re-index visual layout positions based on historical sorting sequences
+        # re-index visual layout positions based on historical sorting sequences
         table_widget.sortItems(2, Qt.SortOrder.AscendingOrder)
         
-        # Hide raw structural configuration metadata fields from the user view
+        # hide raw structural configuration metadata fields from the user view
         table_widget.horizontalHeader().hideSection(0)
         table_widget.horizontalHeader().hideSection(2)
         table_widget.resizeColumnToContents(1)
 
     def accept(self) -> None:
         """Applies user layout parameters downstream to the parent table view grid canvas."""
-        # Cache primary initial clean interface layout geometry mapping
+        # cache primary initial clean interface layout geometry mapping
         if self._parent.horizontal_header_state:
             self._parent.horizontalHeader().restoreState(self._parent.horizontal_header_state)
         else:
@@ -167,7 +160,7 @@ class TableViewSettingsDialog(QDialog):
 
         header = self._parent.horizontalHeader()
         
-        # Deactivate signal pipelines temporarily to block visual layout stuttering
+        # deactivate signal pipelines temporarily to block visual layout stuttering
         header.blockSignals(True)
         
         def get_val(row_idx: int, col_idx: int) -> Any:
@@ -187,17 +180,17 @@ class TableViewSettingsDialog(QDialog):
                 visible = bool(get_val(r, 3))
                 width = int(get_val(r, 4))
                 
-                # Fetch visual orientation context records
+                # fetch visual orientation context records
                 current_visual = header.visualIndex(logical_idx)
                 
-                # Shift columns onto designated spatial array points
+                # shift columns onto designated spatial array points
                 header.moveSection(current_visual, r)
                 self._parent.setColumnHidden(logical_idx, not visible)
                 
                 if visible:
                     self._parent.setColumnWidth(logical_idx, width)
         finally:
-            # Safely release blocking flags and trigger a master canvas reprint
+            # safely release blocking flags and trigger a master canvas reprint
             header.blockSignals(False)
             header.viewport().update()
             self._parent.update()
@@ -214,7 +207,7 @@ class EnhancedTableView(QTableView):
         self.layout_name: str | None = None
         self.horizontal_header_state: QByteArray | None = None
         
-        # Apply secure, production-ready UX view defaults
+        # apply secure, production-ready UX view defaults
         self.setEditTriggers(
             QAbstractItemView.EditTrigger.DoubleClicked | 
             QAbstractItemView.EditTrigger.SelectedClicked
@@ -224,7 +217,6 @@ class EnhancedTableView(QTableView):
         self.setAlternatingRowColors(True)
         self.setWordWrap(False)
         
-        # Optimize header configurations
         vertical_hdr = self.verticalHeader()
         horizontal_hdr = self.horizontalHeader()
         
@@ -235,20 +227,19 @@ class EnhancedTableView(QTableView):
         horizontal_hdr.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
         horizontal_hdr.setSectionsMovable(False)
         
-        # Assign localized dynamic read-only default item delegates
-        # NOTE: Ensure GenericReadOnlyDelegate is imported in your module
+        # assign localized dynamic read-only default item delegates
         self.setItemDelegate(GenericReadOnlyDelegate(self))
         
-        # Initialize context menu engine
+        # initialize context menu engine
         self._create_context_menu()
         
-        # Configure standard modern context menu signals
+        # configure standard modern context menu signals
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.showContextMenu)
 
     def _create_context_menu(self) -> None:
         """Helper function to isolate setup logic for clean action mapping pipelines."""
-        # Visual tuning toggles
+        # visual tuning toggles
         self.cm_sorting = QAction(_tr("View", "Column sorting"), self)
         self.cm_sorting.setCheckable(True)
         self.cm_sorting.setChecked(False)
@@ -263,18 +254,18 @@ class EnhancedTableView(QTableView):
         self.cm_vheader.setChecked(False)
         self.cm_vheader.triggered.connect(self.showVerticalHeader)
         
-        # Content resize triggers
+        # content resize triggers
         self.cm_resize_cols = QAction(_tr("View", "Resize columns to contents"), self)
         self.cm_resize_cols.triggered.connect(self.resizeColumnsToContents)
         
         self.cm_resize_rows = QAction(_tr("View", "Resize rows to contents"), self)
         self.cm_resize_rows.triggered.connect(self.resizeRowsToContents)
         
-        # Reporting / Output actions
+        # reporting / output actions
         self.cm_export = QAction(_tr("View", "Export to CSV file"), self)
         self.cm_export.triggered.connect(self.exportView)
         
-        # Layout management containers
+        # layout management containers
         self.cm_user_default = QAction(_tr("View", "Set current layout as user default"), self)
         self.cm_user_default.triggered.connect(self.setUserDefaultLayout)
         
@@ -282,7 +273,7 @@ class EnhancedTableView(QTableView):
         self.action_group = QActionGroup(self)
         self.action_group.triggered.connect(self.setStoredLayout)
         
-        # Instantiate contextual admin-level commands conditionally using global session
+        # instantiate contextual admin-level commands conditionally using global session
         if session['can_edit_views']:
             self.cm_update_layout = QAction(_tr("View", "Update current layout"), self)
             self.cm_update_layout.triggered.connect(self.updateViewLayout)
@@ -308,7 +299,7 @@ class EnhancedTableView(QTableView):
             self.cm_manage = QAction(_tr("View", "Manage settings"), self)
             self.cm_manage.triggered.connect(self.manageSettings)
             
-        # Build the final physical menu tree structure
+        # build the final physical menu tree structure
         self.context_menu = QMenu(self)
         self.context_menu.addActions([self.cm_sorting, self.cm_movable, self.cm_vheader])
         self.context_menu.addSeparator()
@@ -331,7 +322,7 @@ class EnhancedTableView(QTableView):
             ])
 
     def syncContextMenuStates(self) -> None:
-        """Sincronizza lo stato delle voci del menu con lo stato reale del widget"""
+        """Synchronize the state of menu items with the actual state of the widget"""
         self.cm_sorting.setChecked(self.isSortingEnabled())
         self.cm_movable.setChecked(self.horizontalHeader().sectionsMovable())
         self.cm_vheader.setChecked(self.verticalHeader().isVisible())
@@ -342,20 +333,20 @@ class EnhancedTableView(QTableView):
         if not self.layout_name:
             return
             
-        # FIX: Explicitly delete old actions to prevent memory leaks in PySide6
+        # explicitly delete old actions to prevent memory leaks in PySide6
         old_actions = list(self.action_group.actions())
         for action in old_actions:
             self.action_group.removeAction(action)
-            action.deleteLater() # Safely destroys the C++ object
+            action.deleteLater() # safely destroys the C++ object
             
         self.cm_customizations.clear()
         
         title: str = _tr("Menu", "Error loading menu customizations")
         with gui_exception_context(self, title):
-            # 1. Fetch available adaptations from the database
+            # fetch available adaptations from the database
             result = list_adaptation('I', self.layout_name)
             
-            # Populate the menu with the retrieved database records
+            # populate the menu with the retrieved database records
             for adapt_id, description, is_class_default in result:
                 action = QAction(description, self)
                 action.setCheckable(True)
@@ -365,7 +356,7 @@ class EnhancedTableView(QTableView):
                 self.action_group.addAction(action)
                 self.cm_customizations.addAction(action)
                 
-            # 2. Fetch and apply the initial default layout for the current user
+            # fetch and apply the initial default layout for the current user
             default_layout_id = get_adapt_default('I', self.layout_name, session['user'])
             for action in self.action_group.actions():
                 if action.data() == str(default_layout_id):
@@ -374,8 +365,8 @@ class EnhancedTableView(QTableView):
     def setModel(self, model: QAbstractItemModel | None) -> None:
         """Override setModel to reset core configuration flags cleanly."""
         super().setModel(model)
-        self.setSortingEnabled(False)  # Better not to sort when editing/resetting
-        self.horizontalHeader().setSectionsMovable(False)  # Better not to move when editing
+        self.setSortingEnabled(False)  # better not to sort when editing/resetting
+        self.horizontalHeader().setSectionsMovable(False)  # better not to move when editing
 
     def setLayoutName(self, name: str) -> None:
         """Set the layout identifier name after instantiation to trigger database sync."""
@@ -385,18 +376,18 @@ class EnhancedTableView(QTableView):
             self.cm_movable.setChecked(True)
             self.cm_movable.trigger()      
         
-        # FIX: Safer async trigger loop that resolves the action at execution time
+        # safer async trigger loop that resolves the action at execution time
         QTimer.singleShot(0, lambda: self.setStoredLayout(self.action_group.checkedAction()))
 
     def setStoredLayout(self, action: QAction | None) -> None:
         """Apply a layout definition stored in the database to the table view."""
-        if action is None:  # Safe boundary protection against PySide6 checkedAction() race-conditions
+        if action is None:  # safe boundary protection against PySide6 checkedAction() race-conditions
             return
             
         view_id = int(action.data())
         header = self.horizontalHeader()
         
-        # Reset layout first (or store the initial state on the first run)
+        # reset layout first (or store the initial state on the first run)
         if self.horizontal_header_state:
             header.restoreState(self.horizontal_header_state)
         else:
@@ -404,39 +395,36 @@ class EnhancedTableView(QTableView):
             
         title: str = _tr("Menu", "Error applying stored layout")
         with gui_exception_context(self, title):
-            # Fetch columns implementation: column_number, sorting, is_visible, size
+            # fetch columns implementation: column_number, sorting, is_visible, size
             result = get_view_columns(view_id)
             
-            # Disable sorting temporarily to prevent heavy UI updates during layout shifts
+            # disable sorting temporarily to prevent heavy UI updates during layout shifts
             self.setSortingEnabled(False)
             
             for col_num, sorting_idx, is_visible, size in result:
-                # Boundary check: ensure the stored column index exists in the current view
+                # boundary check: ensure the stored column index exists in the current view
                 if col_num >= header.count():
                     continue   
                     
-                # Toggle column visibility
+                # toggle column visibility
                 self.setColumnHidden(col_num, not is_visible)
                 
-                # Apply column width if visible and has a valid size
+                # apply column width if visible and has a valid size
                 if is_visible and size > 0:
                     self.setColumnWidth(col_num, size)  
                     
-                # Reorder columns dynamically by moving sections if index mismatches
+                # reorder columns dynamically by moving sections if index mismatches
                 visual_idx = header.visualIndex(col_num)
                 if visual_idx != sorting_idx:
                     header.moveSection(visual_idx, sorting_idx)
-        
-    # Note: Assumes _tr is available in your module context.
 
     def showContextMenu(self, pos: QPoint) -> None:
         """Executes the custom layout options context menu at the requested position."""
-        # FIX: Explicit type hinting with QPoint ensures modern PySide6 binding safety
         self.context_menu.exec(self.mapToGlobal(pos))
 
     def activateSorting(self) -> None:
         """Activate/deactivate sorting by column and sync action check state."""
-        # Sync the core widget property based on the action's current check state
+        # sync the core widget property based on the action's current check state
         is_enabled = self.cm_sorting.isChecked()
         self.setSortingEnabled(is_enabled)
 
@@ -498,7 +486,6 @@ class EnhancedTableView(QTableView):
         if not index.isValid():
             return
             
-        # FIX: Replaced parent=QModelIndex() keyword syntax with standard empty index signature
         if not model.removeRows(index.row(), 1, QModelIndex()):
             QMessageBox.critical(
                 self,
@@ -518,17 +505,16 @@ class EnhancedTableView(QTableView):
         rows = model.rowCount()
         columns = model.columnCount()
         
-        # Select destination file path
+        # select destination file path
         file_name, _ = QFileDialog.getSaveFileName(
             self,
             _tr("View", "Select file name and path"),
             path,
             _tr("View", "Comma separated values (*.csv);;All files (*.*)")
         )
-        if not file_name:  # User cancelled the dialog
+        if not file_name:  # user cancelled the dialog
             return
             
-        # Optimization: Pre-cache column visibility and column delegates outside the row loop
         visible_columns = []
         column_delegates = {}
         
@@ -537,23 +523,23 @@ class EnhancedTableView(QTableView):
                 visible_columns.append(col_idx)
                 column_delegates[col_idx] = self.itemDelegateForColumn(col_idx)
                 
-        # Open and write directly to the CSV file safely
+        # open and write directly to the CSV file safely
         try:
             with open(file_name, 'w', encoding="utf-8", newline='') as f:
                 writer = csv.writer(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 
-                # 1. Write Header Row
+                # write Header Row
                 header_row = [model.headerData(col_idx, Qt.Orientation.Horizontal) for col_idx in visible_columns]
                 writer.writerow(header_row)
                 
-                # 2. Write Data Rows
+                # write Data Rows
                 for row_idx in range(rows):
                     csv_row = []
                     for col_idx in visible_columns:
                         index = model.index(row_idx, col_idx)
                         delegate = column_delegates[col_idx]
                         
-                        # Extract data checking custom delegate logic blocks
+                        # extract data checking custom delegate logic blocks
                         if isinstance(delegate, RelationDelegate):
                             data = delegate.getRelationData(index)
                         elif isinstance(delegate, HideTextDelegate):
@@ -561,19 +547,20 @@ class EnhancedTableView(QTableView):
                         else:
                             data = model.data(index, Qt.ItemDataRole.DisplayRole)
                             
-                        # Format and normalize data types cleanly for Excel compatibility
-                        if isinstance(data, QByteArray):
-                            data = _tr('View', 'BINARY DATA')
-                        elif isinstance(data, QDate):
-                            data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
-                        elif isinstance(data, QDateTime):
-                            data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
-                        elif isinstance(data, bool):
-                            data = "I" if data else "O"  # Best localization pattern for raw spreadsheet inputs
-                        elif isinstance(data, float):
-                            data = f"{data}".replace(".", ",")
-                        elif data is None:
-                            data = ""
+                        # format and normalize data types cleanly for Excel compatibility
+                        match data:
+                            case QByteArray():
+                                data = _tr('View', 'BINARY DATA')
+                            case QDate():
+                                data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
+                            case QDateTime():
+                                data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
+                            case bool():
+                                data = "I" if data else "O"  # Best localization pattern for raw spreadsheet inputs
+                            case float():
+                                data = f"{data}".replace(".", ",")
+                            case None:
+                                data = ""
                             
                         csv_row.append(data)
                     writer.writerow(csv_row)
@@ -586,17 +573,16 @@ class EnhancedTableView(QTableView):
             )
             return
 
-        # Save the successfully validated export path location
+        # save the successfully validated export path location
         settings.setValue("ExportPath", os.path.dirname(file_name))
         
-        # Ask user to open the generated document
+        # ask user to open the generated document
         if QMessageBox.question(
             self,
             _tr('MessageDialog', "Question"),
             _tr('View', "Export data completed.\nOpen the generated file?"),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         ) == QMessageBox.StandardButton.Yes:
-            # FIX: QUrl.fromLocalFile builds safe cross-platform file paths automatically
             QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))
 
     def hideCurrentColumn(self) -> None:
@@ -618,7 +604,7 @@ class EnhancedTableView(QTableView):
         if self.horizontal_header_state:
             self.horizontalHeader().restoreState(self.horizontal_header_state)
             
-            # Uncheck any active layout configuration in the menu group context
+            # uncheck any active layout configuration in the menu group context
             active_action = self.action_group.checkedAction()
             if active_action:
                 active_action.setChecked(False)
@@ -630,7 +616,7 @@ class EnhancedTableView(QTableView):
         title = _tr('view', 'View settings')
         title = f'{title} (layout: {self.layout_name})'
         dialog.ui.groupBoxViewSettings.setTitle(title)
-        dialog.exec_()
+        dialog.exec()
 
     def updateViewLayout(self) -> None:
         """Save the exact active column widths, visibility, and sorting indexes to the database."""
@@ -638,7 +624,7 @@ class EnhancedTableView(QTableView):
             return
             
         checked_action = self.action_group.checkedAction()
-        if not checked_action:  # Out of boundary safety check
+        if not checked_action:  # out of boundary safety check
             return
             
         view_id = int(checked_action.data())
@@ -647,7 +633,7 @@ class EnhancedTableView(QTableView):
             
         header = self.horizontalHeader()
         
-        # Build layout positioning schema structure natively
+        # build layout positioning schema structure natively
         columns = [
             (
                 view_id,
@@ -655,7 +641,7 @@ class EnhancedTableView(QTableView):
                 header.visualIndex(col_idx),
                 not self.isColumnHidden(col_idx),
                 self.columnWidth(col_idx),
-                None, None, None, None, None, None  # Database structural padding definitions
+                None, None, None, None, None, None  # database structural padding definitions
             )
             for col_idx in range(header.count())
         ]
@@ -681,25 +667,25 @@ class EnhancedTableView(QTableView):
             _tr("View", "Insert new customization description")
         )
         
-        # Sanitize and validate target context input strings securely
+        # sanitize and validate target context input strings securely
         if not ok or not view_desc.strip():
             return
             
         title: str = _tr("Menu", "Error creating new layout")
         with gui_exception_context(self, title):
-            # Write entity and extract generated master view table ID reference
+            # write entity and extract generated master view table ID reference
             view_id = create_adaptation('I', self.layout_name, view_desc.strip())
             
-            # Rebuild structural elements on context menus safely
+            # rebuild structural elements on context menus safely
             self.fillCustomizationMenu()
             
-            # Map state adjustments dynamically across newly instantiated actions
+            # map state adjustments dynamically across newly instantiated actions
             for action in self.action_group.actions():
                 if action.data() == str(view_id):
                     action.setChecked(True)
                     break      
                     
-            # Perform instant schema sync to serialize configurations downstream
+            # perform instant schema sync to serialize configurations downstream
             self.updateViewLayout()
 
     def deleteViewLayout(self, action: QAction | None = None) -> None:
@@ -712,7 +698,7 @@ class EnhancedTableView(QTableView):
         title: str = _tr("Menu", "Error deleting layout")
         
         with gui_exception_context(self, title):
-            # Restrict core system-level objects against destructive user operations
+            # restrict core system-level objects against destructive user operations
             if is_system_object(view_id):
                 QMessageBox.warning(
                     self,
@@ -730,10 +716,10 @@ class EnhancedTableView(QTableView):
             if confirm == QMessageBox.StandardButton.No:
                 return
                 
-            # Fire structural drop commands at database layers
+            # fire structural drop commands at database layers
             delete_adaptation(view_id)
             
-            # Re-render system structures to clear lingering pointers cleanly
+            # re-render system structures to clear lingering pointers cleanly
             self.fillCustomizationMenu()
             
             QMessageBox.information(
@@ -749,7 +735,7 @@ class EnhancedTableView(QTableView):
             return
             
         checked_action = self.action_group.checkedAction()
-        if not checked_action:  # Safe fallback warning check
+        if not checked_action:  # safe fallback warning check
             QMessageBox.warning(
                 self,
                 _tr("MessageDialog", "Warning"),
@@ -760,11 +746,11 @@ class EnhancedTableView(QTableView):
         view_id = int(checked_action.data())
         title: str = _tr("Menu", "Error setting user default layout")
         
-        # Safe transaction pipeline wrapped in the exception handler boundary
+        # safe transaction pipeline wrapped in the exception handler boundary
         with gui_exception_context(self, title):
             set_adapt_user_default('I', self.layout_name, session['user'], view_id)
             
-            # Rebuild structural elements on context menus safely
+            # rebuild structural elements on context menus safely
             self.fillCustomizationMenu()
             
             QMessageBox.information(
@@ -779,7 +765,7 @@ class EnhancedTableView(QTableView):
             return
             
         checked_action = self.action_group.checkedAction()
-        if not checked_action:  # Safe fallback warning check
+        if not checked_action:  # safe fallback warning check
             QMessageBox.warning(
                 self,
                 _tr("MessageDialog", "Warning"),
@@ -793,7 +779,7 @@ class EnhancedTableView(QTableView):
         with gui_exception_context(self, title):
             set_adapt_class_default(view_id)
             
-            # Rebuild structural elements on context menus safely
+            # rebuild structural elements on context menus safely
             self.fillCustomizationMenu()
             
             QMessageBox.information(

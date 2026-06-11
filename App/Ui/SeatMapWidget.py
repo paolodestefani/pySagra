@@ -28,7 +28,7 @@ class Ui_SeatMapWidget(object):
     def setupUi(self, SeatMapWidget):
         if not SeatMapWidget.objectName():
             SeatMapWidget.setObjectName(u"SeatMapWidget")
-        SeatMapWidget.resize(734, 607)
+        SeatMapWidget.resize(709, 583)
         font = QFont()
         font.setKerning(True)
         SeatMapWidget.setFont(font)
@@ -296,20 +296,6 @@ class Ui_SeatMapWidget(object):
 
         self.verticalLayout.addLayout(self.gridLayout_2)
 
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.pushButtonGenerateTables = QPushButton(self.groupBoxButtonColor)
-        self.pushButtonGenerateTables.setObjectName(u"pushButtonGenerateTables")
-
-        self.horizontalLayout_10.addWidget(self.pushButtonGenerateTables)
-
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_10.addItem(self.horizontalSpacer_4)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_10)
-
 
         self.verticalLayout_10.addWidget(self.groupBoxButtonColor)
 
@@ -318,6 +304,11 @@ class Ui_SeatMapWidget(object):
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
+
+        self.pushButtonGenerateTables = QPushButton(self.pageList)
+        self.pushButtonGenerateTables.setObjectName(u"pushButtonGenerateTables")
+
+        self.horizontalLayout_8.addWidget(self.pushButtonGenerateTables)
 
         self.pushButtonDeleteAll = QPushButton(self.pageList)
         self.pushButtonDeleteAll.setObjectName(u"pushButtonDeleteAll")
@@ -369,7 +360,7 @@ class Ui_SeatMapWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 684, 492))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 659, 468))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.framePreview = QFrame(self.scrollAreaWidgetContents)

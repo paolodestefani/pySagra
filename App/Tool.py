@@ -33,19 +33,14 @@ archives
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
-from PySide6.QtCore import Qt
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QAction
-from PySide6.QtGui import QCursor
-from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-from App import currentAction
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Lookup import event_lookup
 from App.Database.Tool import delete_event_order
@@ -54,7 +49,6 @@ from App.Database.Tool import ordered_delivered_rebuild
 from App.Database.Tool import numbering_rebuild
 from App.Database.Tool import set_order_as_processed
 from App.Database.Tool import delete_all_orders
-#from App.Database.Tool import delete_all_web_orders
 from App.Database.Tool import delete_all_inventory
 from App.Database.Tool import delete_all_events
 from App.Database.Tool import delete_all_price_lists
@@ -220,7 +214,6 @@ class EventToolDialog(QDialog):
                                 ) == QMessageBox.No:
             return
         QCoreApplication.processEvents() # update dialog
-        #self.ui.progressBar.setText(_tr('Utility', 'Processing...'))
         self.ui.progressBar.show()
         self.ui.progressBar.setRange(0, 0)  # infinite progress
         try:

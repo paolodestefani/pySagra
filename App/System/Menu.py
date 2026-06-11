@@ -80,9 +80,11 @@ def menu(action: QAction, checked: bool = False) -> None:
     auth = action.data()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     mf = MenusForm(mw, title, auth)
     mf.reload()
@@ -109,9 +111,11 @@ class DuplicateMenuDialog(QDialog):
                            self.ui.lineEditDescription.text())
         
             logger.info("On duplicate profile: operation completed successfully")
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Profile', "Profile duplicated"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Profile', "Profile duplicated")
+            )
         super().accept()
 
 
@@ -198,18 +202,21 @@ class MenusForm(FormIndexManager):
     def delete(self) -> None:
         "Delete current menu"
         if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Menu', "Is not possible to delete a system menu"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Menu', "Is not possible to delete a system menu")
+            )
             return
         scheme = self.ui.lineEditCode.text()
         description = self.ui.lineEditDescription.text()
         msg = _tr('Menu', "Are you sure you want to delete this menu ?")
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                f"{msg}\n{scheme} - {description}",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            f"{msg}\n{scheme} - {description}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
+            ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 

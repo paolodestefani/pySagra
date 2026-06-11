@@ -118,7 +118,7 @@ class FormManager[T](QWidget):
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
         self.ui: T # The type will be decided by the subclass
         self.linkedMappers: list = [] # linked mapper list
-        self._read, self._write, self._execute = auth
+        self.read_perm, self.write_perm, self.execute_perm = auth
         # mapper cursor changed update detail
         self.mapper.currentIndexChanged.connect(self.mapperIndexChanged)
         
@@ -213,7 +213,7 @@ class FormManager[T](QWidget):
             else:
                 status[es.DELETE] = True
         # disable unavailable actions for Read only auth
-        if not self._write:
+        if not self.write_perm:
             for i in (es.NEW, es.SAVE, es.DELETE):
                 status[i] = False
         session['mainwin'].updateEditStatus(status, current, total)
@@ -252,7 +252,7 @@ class FormManager[T](QWidget):
 
     def new(self) -> None:
         "Create a new record on model"
-        if not self._write:
+        if not self.write_perm:
             return
         # enable widget, in case it's disabled)
         if hasattr(self.ui, 'stackedWidget'):
@@ -269,7 +269,7 @@ class FormManager[T](QWidget):
             
     def save(self) -> None:
         "Save data to db and commit"
-        if not self._write:
+        if not self.write_perm:
             return
         active_widget = QApplication.focusWidget()
         if active_widget:
@@ -277,7 +277,9 @@ class FormManager[T](QWidget):
             
         row = self.mapper.currentIndex()
         if not self.mapper.submit():
-            QMessageBox.critical(self, _tr("MessageDialog", "Critical"), _tr("Form", "Error on mapper submit"))
+            QMessageBox.critical(self,
+                                 _tr("MessageDialog", "Critical"), 
+                                 _tr("Form", "Error on mapper submit"))
             self.mapper.setCurrentIndex(row)
             return
             
@@ -303,7 +305,7 @@ class FormManager[T](QWidget):
         
     def delete(self) -> None:
         "Delete current record and commit"
-        if not self._write:
+        if not self.write_perm:
             return
         
         row = self.mapper.currentIndex()
@@ -394,18 +396,20 @@ class FormManager[T](QWidget):
     def closeEvent(self, event: QCloseEvent) -> None:
         "Close the form, ask confirmation if dirty"
         if self.state == ev.EDIT:
-            result = QMessageBox.question(self,
-                                          _tr("MessageDialog", "Question"),
-                                          _tr("Form", "The data has been modified, save ?"),
-                                          QMessageBox.StandardButton.Yes|
-                                          QMessageBox.StandardButton.No|
-                                          QMessageBox.StandardButton.Cancel)
+            result = QMessageBox.question(
+                self,
+                _tr("MessageDialog", "Question"),
+                _tr("Form", "The data has been modified, save ?"),
+                QMessageBox.StandardButton.Yes|
+                QMessageBox.StandardButton.No|
+                QMessageBox.StandardButton.Cancel
+            )
             match result:
                 case QMessageBox.StandardButton.Cancel:
                     event.ignore()
                     return
                 case QMessageBox.StandardButton.Yes:
-                    if self._write:
+                    if self.write_perm:
                         self.save()
                 case QMessageBox.StandardButton.No:
                     self.model.revert()
@@ -433,7 +437,7 @@ class FormViewManager[T](QWidget):
         self.reloadConfirmation = True  # ask confirmation on reload
         self.repr = 'Generic form view manager'
         # model is mapped direct to tableview
-        self._read, self._write, self._execute = auth
+        self.read_perm, self.write_perm, self.execute_perm = auth
         self.view: QTableView|None = None # subclass must set this
         self.sortFilterDialog: SortFilterDialog | EventFilterDialog | None # subclass must set this
         
@@ -485,14 +489,14 @@ class FormViewManager[T](QWidget):
             else:
                 status[es.DELETE] = True
         # disable unavailable actions for RO auth
-        if not self._write:
+        if not self.write_perm:
             for i in (es.NEW, es.SAVE, es.DELETE):
                 status[i] = False
         session['mainwin'].updateEditStatus(status, current, total)
 
     def new(self) -> None:
         "Create a new record on model"
-        if not self._write:
+        if not self.write_perm:
             return
         if not self.view:
             return None
@@ -502,7 +506,7 @@ class FormViewManager[T](QWidget):
 
     def save(self) -> None:
         "Save data to db and commit"
-        if not self._write:
+        if not self.write_perm:
             return
         if not self.model:
             return None
@@ -515,7 +519,7 @@ class FormViewManager[T](QWidget):
 
     def delete(self) -> None:
         "Delete current record and commit"
-        if not self._write:
+        if not self.write_perm:
             return
         if not self.model:
             return
@@ -592,18 +596,20 @@ class FormViewManager[T](QWidget):
     def closeEvent(self, event: QCloseEvent) -> None:
         "Close the form, ask confirmation if dirty"
         if self.state == ev.EDIT:
-            result = QMessageBox.question(self,
-                                          _tr("MessageDialog", "Question"),
-                                          _tr("Form", "The data has been modified, save ?"),
-                                          QMessageBox.StandardButton.Yes|
-                                          QMessageBox.StandardButton.No|
-                                          QMessageBox.StandardButton.Cancel)
+            result = QMessageBox.question(
+                self,
+                _tr("MessageDialog", "Question"),
+                _tr("Form", "The data has been modified, save ?"),
+                QMessageBox.StandardButton.Yes|
+                QMessageBox.StandardButton.No|
+                QMessageBox.StandardButton.Cancel
+            )
             match result:
                 case QMessageBox.StandardButton.Cancel:
                     event.ignore()
                     return
                 case QMessageBox.StandardButton.Yes:
-                    if self._write:
+                    if self.write_perm:
                         self.save()
                 case QMessageBox.StandardButton.No:
                     self.model.revert()
@@ -637,7 +643,7 @@ class FormIndexManager[T](QWidget):
         self.reloadConfirmation = True  # ask confirmation on reload
         # track form's state
         self.state = ev.VIEW # initial state
-        self._read, self._write, self._execute = auth
+        self.read_perm, self.write_perm, self.execute_perm = auth
         self.detailRelations: list = []  # detail relation list
         self.model: QAbstractItemModel = TableModel()
         self.indexModel = QueryModel()
@@ -782,9 +788,9 @@ class FormIndexManager[T](QWidget):
                 status[es.DELETE] = True
                 if hasattr(self.ui, 'stackedWidget'):
                     self.ui.stackedWidget.setEnabled(True)
-        # disable unavailable actions for R auth
-        if not self._write:
-            for i in (es.NEW, es.SAVE, es.DELETE):
+        # disable unavailable actions for RO auth
+        if not self.write_perm:
+            for i in (es.SAVE, es.DELETE):
                 status[i] = False
         session['mainwin'].updateEditStatus(status, current, total, self.indexModel.limitCondition)
 
@@ -806,8 +812,6 @@ class FormIndexManager[T](QWidget):
 
     def new(self) -> None:
         "Create a new record on model deleting the current one"
-        if not self._write:
-            return
         if isinstance(self.model, QueryModel):
             return
 
@@ -850,7 +854,7 @@ class FormIndexManager[T](QWidget):
 
     def save(self) -> None:
         "Save data to db and commit"
-        if not self._write:
+        if not self.write_perm:
             return
         active_widget = QApplication.focusWidget()
         if active_widget:
@@ -861,9 +865,11 @@ class FormIndexManager[T](QWidget):
             
         # Sottomissione dei dati della form principale
         if not self.mapper.submit():
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 _tr("Form", "Error on mapper submit"))
+            QMessageBox.critical(
+                self,
+                _tr("MessageDialog", "Critical"),
+                _tr("Form", "Error on mapper submit")
+            )
             return
         
         with gui_exception_context(self, _tr("Form", "Master and detail model submit all")):
@@ -881,31 +887,9 @@ class FormIndexManager[T](QWidget):
             self._new = False
             self.state = ev.VIEW
             
-
-    # def delete(self) -> None:
-    #     "Delete current record and commit. Resets the index mapper to the previous value -1"
-    #     if isinstance(self.model, QueryModel):
-    #         return
-    #     # confirm deletion request BETTER DO THIS IN SUBCLASS
-    #     current_index = self.indexMapper.currentIndex()
-        
-    #     with gui_exception_context(self, _tr("Form", "Master and detail model delete")):
-    #         # details data
-    #         for relation, masterColumn, detailColumn in self.detailRelations:
-    #             relation.removeRows(0, relation.rowCount())
-    #             relation.submitAll()
-    #         # master data
-    #         self.model.removeRow(0)
-    #         if hasattr(self.model, 'submitAll'):
-    #             self.model.submitAll()
-                
-    #     self.reload()
-    #     self.indexMapper.setCurrentIndex(current_index - 1)
-    #     self.state = VIEW
-
     def delete(self) -> None:
         "Delete current record and commit. Resets the index mapper to the previous value -1"
-        if not self._write:
+        if not self.write_perm:
             return
         if isinstance(self.model, QueryModel):
             return
@@ -947,45 +931,6 @@ class FormIndexManager[T](QWidget):
             # Se la tabella dell'indice è completamente vuota, svuotiamo il mapper in sicurezza
             self.indexMapper.toFirst()
             self.updateEditStatus()
-
-
-    # def reload(self) -> None:
-    #     "Undo pending changes and Reload data from db. Index mapper is set to the previous value"
-    #     if not self.indexModel: # no index model currently setted
-    #         return
-    #     # cursor wait
-    #     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-    #     currentIndex = self.indexMapper.currentIndex() # before first select = -1
-    #     brc = self.indexModel.rowCount() # before first select = 0
-    #     #
-    #     with gui_exception_context(self, _tr("Form", "Form reload")):
-    #         self.indexModel.revertAll()  # also do a select()
-    #     #
-    #     # reposition mapper
-    #     crc = self.indexModel.rowCount()
-    #     if currentIndex == -1:
-    #         self.indexMapper.toFirst()
-    #     elif crc == 0: # no rows
-    #         self.mapperIndexChanged(-1)
-    #         self.mapper.revert()
-    #     #elif indexRowCount == rc: # same rows of before -> update
-    #     #    self.indexMapper.setCurrentIndex(currentIndex)
-    #     #elif indexRowCount < rc: # less rows then before -> delete
-    #     #    self.indexMapper.setCurrentIndex(currentIndex -1)
-    #     elif brc < crc: # more rows then before -> insert
-    #         self.indexMapper.toLast()
-    #     #    key = self.model.index(0, 0).data() # None on first select and after delete-
-    #     #    # look for index number of the current id
-    #     #    for i in range(self.indexModel.rowCount(), -1, -1):
-    #     #        if self.indexModel.index(i, 0).data() == key:
-    #     #            break
-    #     #    self.indexMapper.setCurrentIndex(i)
-    #     else:
-    #         self.indexMapper.setCurrentIndex(currentIndex)    
-    #     # cursor restore
-    #     QGuiApplication.restoreOverrideCursor()
-    #     self.state = ev.VIEW
-    #     self.updateEditStatus()
     
     def reload(self) -> None:
         "Undo pending changes and Reload data from db. Automatically stays on the same or new record"
@@ -1071,19 +1016,21 @@ class FormIndexManager[T](QWidget):
             
     def closeEvent(self, event: QCloseEvent) -> None:
         "Close the form, ask confirmation if dirty"
-        if self.state == ev.EDIT:
-            result = QMessageBox.question(self,
-                                          _tr("MessageDialog", "Question"),
-                                          _tr("Form", "The data has been modified, save ?"),
-                                          QMessageBox.StandardButton.Yes|
-                                          QMessageBox.StandardButton.No|
-                                          QMessageBox.StandardButton.Cancel)
+        if self.state == ev.EDIT and self.write_perm:
+            result = QMessageBox.question(
+                self,
+                _tr("MessageDialog", "Question"),
+                _tr("Form", "The data has been modified, save ?"),
+                QMessageBox.StandardButton.Yes|
+                QMessageBox.StandardButton.No|
+                QMessageBox.StandardButton.Cancel
+            )
             match result:
                 case QMessageBox.StandardButton.Cancel:
                     event.ignore()
                     return
                 case QMessageBox.StandardButton.Yes:
-                    if self._write:
+                    if self.write_perm:
                         self.save()
                 case QMessageBox.StandardButton.No:
                     self.model.revert()

@@ -492,12 +492,13 @@ class MainWindow(QMainWindow):
         if w and hasattr(w, 'reload'):
             if hasattr(w, 'reloadConfirmation') and w.reloadConfirmation:
                 # confirmation request
-                if QMessageBox.question(self,
-                                        _tr("MessageDialog", "Question"),
-                                        _tr("Form", "Undo changes and reload data ?"),
-                                        QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
-                                        QMessageBox.StandardButton.No
-                                        ) == QMessageBox.StandardButton.No:
+                if QMessageBox.question(
+                    self,
+                    _tr("MessageDialog", "Question"),
+                    _tr("Form", "Undo changes and reload data ?"),
+                    QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No
+                    ) == QMessageBox.StandardButton.No:
                     return
                 w.reload()
 
@@ -553,10 +554,12 @@ class MainWindow(QMainWindow):
         "Disconnected from db server, call by check notification"
         msg1 = _tr('MainWindow', "The connection is not active with the following error message:")
         msg2 = _tr('MainWindow', "Quitting the application...")
-        QMessageBox.critical(self,
-                             _tr('MessageDialog', "Critical"),
-                             f"<p><b>{msg1}</b></p><pre><tt>{error}</tt></pre><b>{msg2}</b>",
-                             QMessageBox.StandardButton.Ok)
+        QMessageBox.critical(
+            self,
+            _tr('MessageDialog', "Critical"),
+            f"<p><b>{msg1}</b></p><pre><tt>{error}</tt></pre><b>{msg2}</b>",
+            QMessageBox.StandardButton.Ok
+        )
         sys.exit(0)
 
     def changeCompany(self, *args, **kwargs) -> None: # avoid signature change for action slot
@@ -564,13 +567,14 @@ class MainWindow(QMainWindow):
         # As is necessary to close tab on company change it'is better to put
         # this in main window
         if self.tabWidget.count() != 0:
-            if QMessageBox.question(self,
-                                    _tr('MessageDialog', "Question"),
-                                    _tr('MainWindow', "Warning: open tabs will "
-                                        "be closed, continue anyway ?"),
-                                    QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                    QMessageBox.StandardButton.No  # default botton
-                                    ) == QMessageBox.StandardButton.No:
+            if QMessageBox.question(
+                self,
+                _tr('MessageDialog', "Question"),
+                _tr('MainWindow', "Warning: open tabs will "
+                    "be closed, continue anyway ?"),
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+                QMessageBox.StandardButton.No  # default botton
+                ) == QMessageBox.StandardButton.No:
                 return
         # close all open tabs
         self.closeAllTabs()
@@ -587,12 +591,13 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:
         "Confirm exiting request on closing"
         msg = _tr('MainWindow', 'Are you sure you want to quit')
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                f"{msg} <b>{APPNAME}</b> ?",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                                QMessageBox.StandardButton.No  # default botton
-                                ) == QMessageBox.StandardButton.Yes:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            f"{msg} <b>{APPNAME}</b> ?",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.Yes:
             # close all open tabs
             self.closeAllTabs()
             # save window state

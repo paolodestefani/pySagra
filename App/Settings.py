@@ -172,6 +172,7 @@ class SettingsDialog(QDialog):
         self.ui.checkBoxAutoVariants.setChecked(self.setting['automatic_show_variants'])
         self.ui.checkBoxShowInventory.setChecked(self.setting['always_show_stock_inventory'])
         self.ui.checkBoxMandatoryTableNumber.setChecked(self.setting['mandatory_table_number'])
+        self.ui.checkBoxMandatoryName.setChecked(self.setting['mandatory_name_for_takeaway'])
         self.ui.checkBoxInactivity.setChecked(self.setting['check_inactivity'])
         self.ui.spinBoxInactivityTime.setValue(self.setting['inactivity_time'])
         self.ui.checkBoxMenuItemDescription.setChecked(self.setting['menu_description_on_menu_items'])
@@ -187,6 +188,7 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxInventoryCriticalLevel.setDecimals(self.setting['quantity_decimal_places'])
         self.ui.spinBoxInventoryCriticalLevel.setValue(self.setting['inventory_critical_stock_level'])
         self.ui.spinBoxQuantityDecimals.setValue(self.setting['quantity_decimal_places'])
+        self.ui.spinBoxPriceDecimals.setValue(self.setting['price_decimal_places'])
         self.ui.lineEditCurrencySymbol.setText(self.setting['currency_symbol'])
         
         self.ui.colorComboBoxBackground.setColorList(COLORS)
@@ -329,6 +331,7 @@ class SettingsDialog(QDialog):
         self.setting['manage_order_progress'] = self.ui.checkBoxOrderProgress.isChecked()
         self.setting['always_show_stock_inventory'] = self.ui.checkBoxShowInventory.isChecked()
         self.setting['mandatory_table_number'] = self.ui.checkBoxMandatoryTableNumber.isChecked()
+        self.setting['mandatory_name_for_takeaway'] = self.ui.checkBoxMandatoryName.isChecked()
         self.setting['check_inactivity'] = self.ui.checkBoxInactivity.isChecked()
         self.setting['inactivity_time'] = self.ui.spinBoxInactivityTime.value()
         self.setting['menu_description_on_menu_items'] = self.ui.checkBoxMenuItemDescription.isChecked()
@@ -341,6 +344,7 @@ class SettingsDialog(QDialog):
         self.setting['inventory_warning_stock_level'] = self.ui.spinBoxInventoryWarningLevel.value()
         self.setting['inventory_critical_stock_level'] = self.ui.spinBoxInventoryCriticalLevel.value()
         self.setting['quantity_decimal_places'] = self.ui.spinBoxQuantityDecimals.value()
+        self.setting['price_decimal_places'] = self.ui.spinBoxPriceDecimals.value()
         self.setting['currency_symbol'] = self.ui.lineEditCurrencySymbol.text()
         # sanity checks
         if self.setting['print_customer_copy']:

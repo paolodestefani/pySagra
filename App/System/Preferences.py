@@ -72,9 +72,11 @@ def preferences(action: QAction, checked: bool = False) -> None:
     icon = action.icon()
     auth = action.data()
     if not auth[2]: # no execute permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this function'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this function')
+        )
         return
     dialog = PreferencesDialog(mw, title, icon)
     dialog.show()

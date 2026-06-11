@@ -58,7 +58,7 @@ CREATE TABLE setting (
     company_id                          integer NOT NULL,
     --
     -- for new items
-    normal_background_color             char(7) DEFAULT '#4141C5',
+    normal_background_color             char(7) DEFAULT '#4169E1',
     normal_text_color                   char(7) DEFAULT '#FFFFFF',
     -- order behavior 
     lunch_start_time                    integer NOT NULL DEFAULT 11,
@@ -70,10 +70,10 @@ CREATE TABLE setting (
     warning_background_color            char(7) DEFAULT '#FFFF00',
     warning_text_color                  char(7) DEFAULT '#000000',
     warning_stock_level                 numeric(12, 2) NOT NULL DEFAULT 10,
-    critical_background_color           char(7) DEFAULT '#950606',
+    critical_background_color           char(7) DEFAULT '#ff0000',
     critical_text_color                 char(7) DEFAULT '#FFFFFF',
     critical_stock_level                numeric(12, 2) NOT NULL DEFAULT 5,
-    disabled_background_color           char(7) DEFAULT '#C0C0C0',
+    disabled_background_color           char(7) DEFAULT '#D3D3D3',
     disabled_text_color                 char(7) DEFAULT '#000000',
     default_delivery_type               char(1) DEFAULT 'T', -- (T)able, take-(A)way
     default_payment_type                char(1) DEFAULT 'C', -- (C)ache or (E)lectronic
@@ -87,6 +87,7 @@ CREATE TABLE setting (
     automatic_show_variants             boolean NOT NULL DEFAULT False,
     always_show_stock_inventory         boolean NOT NULL DEFAULT False,
     mandatory_table_number              boolean NOT NULL DEFAULT True,
+    mandatory_name_for_takeaway         boolean NOT NULL DEFAULT True,
     use_table_list                      boolean NOT NULL DEFAULT True,
     table_list_rows                     integer NOT NULL DEFAULT 8,
     table_list_columns                  integer NOT NULL DEFAULT 8,
@@ -121,6 +122,7 @@ CREATE TABLE setting (
     inventory_critical_stock_level      numeric(12, 2) NOT NULL DEFAULT 4,
     -- other
 	quantity_decimal_places             integer NOT NULL DEFAULT 0,
+    price_decimal_places                integer NOT NULL DEFAULT 0,
 	currency_symbol                     varchar(3) NOT NULL DEFAULT '€',
     --
     CONSTRAINT setting_pk 

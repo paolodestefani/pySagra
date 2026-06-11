@@ -39,7 +39,7 @@ from App.Core.Database import db_exception_context
 logger = logging.getLogger(__name__)
 
 
-def get_variants(item_id: int) -> list[tuple]:
+def get_variants(item_id: int | None) -> list[tuple]:
     "Get a list of variants from item_id"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = t"""

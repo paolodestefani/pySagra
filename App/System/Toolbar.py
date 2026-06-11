@@ -76,9 +76,11 @@ def toolbar(action: QAction, checked: bool = False) -> None:
     title = action.text()
     auth = action.data()
     if not auth[0]: # no read permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('CashDesk', 'No access right to this archive'))
+        QMessageBox.warning(
+            mw,
+            _tr('MessageDialog', "Warning"),
+            _tr('CashDesk', 'No access right to this archive')
+        )
         return
     tf = ToolbarForm(mw, title, auth)
     tf.applySortFilter()
@@ -178,18 +180,21 @@ class ToolbarForm(FormIndexManager):
     def delete(self) -> None:
         "Delete current toolbar"
         if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', "Information"),
-                                    _tr('Toolbar', "Is not possible to delete a system shortcut scheme"))
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('Toolbar', "Is not possible to delete a system shortcut scheme")
+            )
             return
         scheme = self.ui.lineEditCode.text()
         description = self.ui.lineEditDescription.text()
         msg = _tr('Toolbar', "Are you sure you want to delete this scheme ?")
-        if QMessageBox.question(self,
-                                _tr('MessageDialog', "Question"),
-                                f"{msg}\n{scheme} - {description}",
-                                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
-                                ) == QMessageBox.StandardButton.No:
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', "Question"),
+            f"{msg}\n{scheme} - {description}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
+            ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 
