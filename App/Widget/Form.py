@@ -901,7 +901,8 @@ class FormIndexManager[T](QWidget):
             for relation, masterColumn, detailColumn in self.detailRelations:
                 if relation.rowCount() > 0:
                     relation.removeRows(0, relation.rowCount())
-                    relation.submitAll()
+                    if hasattr(relation, 'submitAll'): # sometimes relation i read only
+                        relation.submitAll()
                     
             # Cancellazione record principale (riga singola 0)
             self.model.removeRow(0)

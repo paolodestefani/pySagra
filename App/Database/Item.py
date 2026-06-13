@@ -61,6 +61,8 @@ def item_list(event_id: int, department_id: int) -> list[tuple]:
     # actually we don't need to filter company_id as event_id and department_id are unique across companies
     script = t"""
 SELECT 
+    is_salable,
+    item_type,
     item_id,
     item_description,
     price,
@@ -75,7 +77,6 @@ SELECT
 FROM vw_item_availability
 WHERE 
         company_id      = system.pa_current_company() 
-    AND is_salable      IS true 
     AND event_id        = {event_id} 
     AND department_id   = {department_id};"""
     # Unified context managers ensuring proper evaluation order
@@ -138,6 +139,21 @@ WHERE
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         return cur.fetchone() is not None
+    
+def is_composite(item_id: int) -> bool:
+    "Return True if item is a kit or a menu"
+    # actually we don't need to filter company_id as item_id is unique across companies
+    script = t"""
+SELECT item_id 
+FROM item 
+WHERE
+        company_id  = system.pa_current_company()
+    AND item_id     = {item_id} 
+    AND item_type   IN ('K', 'M');"""
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchone() is not None
 
 
 def is_for_takeaway(item_id: int) -> bool:
@@ -174,8 +190,8 @@ WHERE
         return cur.fetchone() is not None
 
 
-def get_menu_items(item_id: int) -> list[tuple]:
-    "Return menu components"
+def get_item_parts(item_id: int) -> list[tuple]:
+    "Return menu or kit components"
     # actually we don't need to filter company_id as item_id is unique across companies
     script = t"""
 SELECT 

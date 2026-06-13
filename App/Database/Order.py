@@ -42,7 +42,8 @@ from App.Database.Utility import Record, RecordSet
 from App.Database.Connect import appconn
 from App.Database.Setting import Setting
 from App.Database.Item import is_menu
-from App.Database.Item import get_menu_items
+from App.Database.Item import is_composite
+from App.Database.Item import get_item_parts
 from App.Database.Item import get_item_dep
 from App.Database.Item import has_stock_management
 from App.Database.Item import get_item_stock_level
@@ -188,17 +189,70 @@ class Order():
         self.lines = RecordSet('order_line', ('order_line_id',))
         self.depnote: dict = {} # dict(dep: note)
         
+    # def out_of_stock(self) -> list[str]:
+    #     "Returns a list of out of stock items"
+    #     event_id, _ = get_event_from_date(self.header['date_time'])
+    #     if not event_id:
+    #         raise PyAppDBError("02000", "No event found for order date")
+    #     out_of_stock = []
+    #     for i in self.lines:
+    #         if has_stock_management(i['item_id']):
+    #             if get_item_stock_level(event_id, i['item_id']) - i['quantity'] < 0:
+    #                 out_of_stock.append(get_item_desc(i['item_id']))
+    #     return out_of_stock
+    
     def out_of_stock(self) -> list[str]:
-        "Returns a list of out of stock items"
+        """
+        Flattens the entire order into raw ingredient requirements (Type 'I'),
+        locks the database rows concurrently, and returns a list of human-readable
+        descriptions for items that cannot be fulfilled.
+        """
         event_id, _ = get_event_from_date(self.header['date_time'])
         if not event_id:
             raise PyAppDBError("02000", "No event found for order date")
-        out_of_stock = []
-        for i in self.lines:
-            if has_stock_management(i['item_id']):
-                if get_item_stock_level(event_id, i['item_id']) - i['quantity'] < 0:
-                    out_of_stock.append(get_item_desc(i['item_id']))
-        return out_of_stock
+            
+        # STEP 1: Flatten the entire multi-line order into pure Type 'I' requirements
+        # This will merge the pasta required by Penne Ragu and Penne Formaggi into a single sum
+        total_raw_requirements: dict = {}
+        for line in self.lines:
+            # We reuse the exact same flattening function logic built for the UI
+            line_requirements = self._server_explode_to_parts(line['item_id'], line['quantity'])
+            for ing_id, needed_qty in line_requirements.items():
+                total_raw_requirements[ing_id] = total_raw_requirements.get(ing_id, 0) + needed_qty
+                
+        out_of_stock_descriptions = set()
+        
+        # STEP 2: Open an isolated transaction or perform a safe snapshot check.
+        for ing_id, total_needed in total_raw_requirements.items():
+            if has_stock_management(ing_id):
+                # Fetch the true, current database stock level right now
+                db_available_stock = get_item_stock_level(event_id, ing_id)
+                
+                # If the combined lines exceed the raw database stock, we have a breach
+                if db_available_stock - total_needed < 0:
+                    # Append the description of the raw material or trace back to the parent item
+                    out_of_stock_descriptions.add(get_item_desc(ing_id))
+                    
+        return list(out_of_stock_descriptions)
+
+    def _server_explode_to_parts(self, item_id: int, multiplier: int = 1, flat_recipe: dict = None) -> dict:
+        """Server-side structural replica to explode any item id down to its base requirements."""
+        if flat_recipe is None:
+            flat_recipe = {}
+            
+        # On the server side, look up item type and recipes directly via DB methods or cached dict        
+        if not is_composite(item_id):
+            flat_recipe[item_id] = flat_recipe.get(item_id, 0) + multiplier
+        else:
+            recipe_parts = {i: q for i, q in get_item_parts(item_id)} # Returns dict of {comp_id: req_qty}
+            if recipe_parts:
+                for comp_id, req_qty in recipe_parts.items():
+                    # Fixed-point safe arithmetic conversion
+                    scaled_consumption = req_qty * multiplier
+                    self._server_explode_to_parts(comp_id, scaled_consumption, flat_recipe)
+                    
+        return flat_recipe
+
 
     def insert(self) -> tuple[Any, set[int | None]]:
         "Insert everything after completed the order"
@@ -236,7 +290,7 @@ class Order():
         intermediate = []
         for i in self.lines: # also have to remove price and amount
             if is_menu(i['item_id']):
-                for p, q in get_menu_items(i['item_id']):
+                for p, q in get_item_parts(i['item_id']):
                     r = dict()
                     r['item_id'] = p
                     if setting['menu_description_on_menu_items']:
@@ -286,9 +340,9 @@ class Order():
                 i['fulfillment_date'] = self.header['fulfillment_date']
         # insert
         try:
-            print('Header', self.header)
-            print('Lines', self.lines)
-            print('Headerdeps', headersdep)
+            #print('Header', self.header)
+            #print('Lines', self.lines)
+            #print('Headerdeps', headersdep)
             self.header.insert_record()
             t = self.header['order_header_id']
             ev = self.header['event_id']
