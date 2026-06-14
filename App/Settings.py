@@ -189,6 +189,7 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxInventoryCriticalLevel.setValue(self.setting['inventory_critical_stock_level'])
         self.ui.spinBoxQuantityDecimals.setValue(self.setting['quantity_decimal_places'])
         self.ui.spinBoxPriceDecimals.setValue(self.setting['price_decimal_places'])
+        self.ui.spinBoxAmountDecimals.setValue(self.setting['amount_decimal_places'])
         self.ui.lineEditCurrencySymbol.setText(self.setting['currency_symbol'])
         
         self.ui.colorComboBoxBackground.setColorList(COLORS)
@@ -345,6 +346,7 @@ class SettingsDialog(QDialog):
         self.setting['inventory_critical_stock_level'] = self.ui.spinBoxInventoryCriticalLevel.value()
         self.setting['quantity_decimal_places'] = self.ui.spinBoxQuantityDecimals.value()
         self.setting['price_decimal_places'] = self.ui.spinBoxPriceDecimals.value()
+        self.setting['amount_decimal_places'] = self.ui.spinBoxAmountDecimals.value()
         self.setting['currency_symbol'] = self.ui.lineEditCurrencySymbol.text()
         # sanity checks
         if self.setting['print_customer_copy']:

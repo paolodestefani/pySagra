@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>219</width>
-    <height>108</height>
+    <width>350</width>
+    <height>200</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,15 +36,42 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEditFreeVariant"/>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0">
+       <item>
+        <widget class="QLineEdit" name="lineEditFreeVariant"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>+</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="doubleSpinBoxPriceDelta">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+         </property>
+         <property name="maximum">
+          <double>999.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
+       </property>
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="standardButtons">
         <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+       </property>
+       <property name="centerButtons">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -52,6 +79,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lineEditFreeVariant</tabstop>
+  <tabstop>doubleSpinBoxPriceDelta</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

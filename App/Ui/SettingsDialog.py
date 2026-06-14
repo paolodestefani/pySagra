@@ -59,11 +59,277 @@ class Ui_SettingsDialog(object):
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tab1 = QWidget()
         self.tab1.setObjectName(u"tab1")
-        self.verticalLayout_5 = QVBoxLayout(self.tab1)
+        self.verticalLayout_27 = QVBoxLayout(self.tab1)
+        self.verticalLayout_27.setObjectName(u"verticalLayout_27")
+        self.groupBox_14 = QGroupBox(self.tab1)
+        self.groupBox_14.setObjectName(u"groupBox_14")
+        self.verticalLayout_28 = QVBoxLayout(self.groupBox_14)
+        self.verticalLayout_28.setObjectName(u"verticalLayout_28")
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.gridLayout_7 = QGridLayout()
+        self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.label_24 = QLabel(self.groupBox_14)
+        self.label_24.setObjectName(u"label_24")
+
+        self.gridLayout_7.addWidget(self.label_24, 0, 0, 1, 1)
+
+        self.spinBoxQuantityDecimals = QSpinBox(self.groupBox_14)
+        self.spinBoxQuantityDecimals.setObjectName(u"spinBoxQuantityDecimals")
+        self.spinBoxQuantityDecimals.setMaximum(4)
+
+        self.gridLayout_7.addWidget(self.spinBoxQuantityDecimals, 0, 1, 1, 1)
+
+        self.label_9 = QLabel(self.groupBox_14)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout_7.addWidget(self.label_9, 1, 0, 1, 1)
+
+        self.spinBoxPriceDecimals = QSpinBox(self.groupBox_14)
+        self.spinBoxPriceDecimals.setObjectName(u"spinBoxPriceDecimals")
+        self.spinBoxPriceDecimals.setMaximum(6)
+
+        self.gridLayout_7.addWidget(self.spinBoxPriceDecimals, 1, 1, 1, 1)
+
+        self.label_30 = QLabel(self.groupBox_14)
+        self.label_30.setObjectName(u"label_30")
+
+        self.gridLayout_7.addWidget(self.label_30, 2, 0, 1, 1)
+
+        self.spinBoxAmountDecimals = QSpinBox(self.groupBox_14)
+        self.spinBoxAmountDecimals.setObjectName(u"spinBoxAmountDecimals")
+        self.spinBoxAmountDecimals.setMaximum(4)
+
+        self.gridLayout_7.addWidget(self.spinBoxAmountDecimals, 2, 1, 1, 1)
+
+
+        self.horizontalLayout_17.addLayout(self.gridLayout_7)
+
+        self.verticalLayout_21 = QVBoxLayout()
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.spacer = QSpacerItem(13, 13, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_16.addItem(self.spacer)
+
+        self.label_25 = QLabel(self.groupBox_14)
+        self.label_25.setObjectName(u"label_25")
+
+        self.horizontalLayout_16.addWidget(self.label_25)
+
+        self.lineEditCurrencySymbol = QLineEdit(self.groupBox_14)
+        self.lineEditCurrencySymbol.setObjectName(u"lineEditCurrencySymbol")
+        self.lineEditCurrencySymbol.setMaximumSize(QSize(80, 16777215))
+        self.lineEditCurrencySymbol.setMaxLength(3)
+
+        self.horizontalLayout_16.addWidget(self.lineEditCurrencySymbol)
+
+
+        self.verticalLayout_21.addLayout(self.horizontalLayout_16)
+
+        self.verticalSpacer_8 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_21.addItem(self.verticalSpacer_8)
+
+
+        self.horizontalLayout_17.addLayout(self.verticalLayout_21)
+
+
+        self.verticalLayout_28.addLayout(self.horizontalLayout_17)
+
+
+        self.verticalLayout_27.addWidget(self.groupBox_14)
+
+        self.groupBox_10 = QGroupBox(self.tab1)
+        self.groupBox_10.setObjectName(u"groupBox_10")
+        self.verticalLayout_20 = QVBoxLayout(self.groupBox_10)
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.gridLayout_8 = QGridLayout()
+        self.gridLayout_8.setObjectName(u"gridLayout_8")
+        self.labelYellow_12 = QLabel(self.groupBox_10)
+        self.labelYellow_12.setObjectName(u"labelYellow_12")
+        font = QFont()
+        font.setBold(False)
+        self.labelYellow_12.setFont(font)
+        self.labelYellow_12.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_8.addWidget(self.labelYellow_12, 0, 0, 1, 1)
+
+        self.labelRed_9 = QLabel(self.groupBox_10)
+        self.labelRed_9.setObjectName(u"labelRed_9")
+        self.labelRed_9.setFont(font)
+        self.labelRed_9.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_8.addWidget(self.labelRed_9, 0, 1, 1, 1)
+
+        self.labelRed_8 = QLabel(self.groupBox_10)
+        self.labelRed_8.setObjectName(u"labelRed_8")
+        self.labelRed_8.setFont(font)
+        self.labelRed_8.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_8.addWidget(self.labelRed_8, 0, 2, 1, 1)
+
+        self.colorComboBoxBackground = ColorComboBox(self.groupBox_10)
+        self.colorComboBoxBackground.setObjectName(u"colorComboBoxBackground")
+
+        self.gridLayout_8.addWidget(self.colorComboBoxBackground, 1, 0, 1, 1)
+
+        self.colorComboBoxText = ColorComboBox(self.groupBox_10)
+        self.colorComboBoxText.setObjectName(u"colorComboBoxText")
+
+        self.gridLayout_8.addWidget(self.colorComboBoxText, 1, 1, 1, 1)
+
+        self.pushButtonExampleNL = ButtonItemExample(self.groupBox_10)
+        self.pushButtonExampleNL.setObjectName(u"pushButtonExampleNL")
+
+        self.gridLayout_8.addWidget(self.pushButtonExampleNL, 1, 2, 1, 1)
+
+
+        self.verticalLayout_20.addLayout(self.gridLayout_8)
+
+
+        self.verticalLayout_27.addWidget(self.groupBox_10)
+
+        self.groupBox_3 = QGroupBox(self.tab1)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.verticalLayout_24 = QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_24.setObjectName(u"verticalLayout_24")
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.labelOutOfStock = QLabel(self.groupBox_3)
+        self.labelOutOfStock.setObjectName(u"labelOutOfStock")
+        self.labelOutOfStock.setEnabled(False)
+        font1 = QFont()
+        font1.setBold(True)
+        self.labelOutOfStock.setFont(font1)
+
+        self.horizontalLayout_13.addWidget(self.labelOutOfStock)
+
+        self.label_11 = QLabel(self.groupBox_3)
+        self.label_11.setObjectName(u"label_11")
+
+        self.horizontalLayout_13.addWidget(self.label_11)
+
+        self.label_29 = QLabel(self.groupBox_3)
+        self.label_29.setObjectName(u"label_29")
+        self.label_29.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_13.addWidget(self.label_29)
+
+        self.label_12 = QLabel(self.groupBox_3)
+        self.label_12.setObjectName(u"label_12")
+
+        self.horizontalLayout_13.addWidget(self.label_12)
+
+        self.labelCritical = QLabel(self.groupBox_3)
+        self.labelCritical.setObjectName(u"labelCritical")
+        palette = QPalette()
+        brush = QBrush(QColor(255, 38, 0, 255))
+        brush.setStyle(Qt.BrushStyle.SolidPattern)
+        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush)
+        palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush)
+        self.labelCritical.setPalette(palette)
+        self.labelCritical.setFont(font1)
+
+        self.horizontalLayout_13.addWidget(self.labelCritical)
+
+        self.label_33 = QLabel(self.groupBox_3)
+        self.label_33.setObjectName(u"label_33")
+
+        self.horizontalLayout_13.addWidget(self.label_33)
+
+        self.spinBoxInventoryCriticalLevel = QDoubleSpinBox(self.groupBox_3)
+        self.spinBoxInventoryCriticalLevel.setObjectName(u"spinBoxInventoryCriticalLevel")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.spinBoxInventoryCriticalLevel.sizePolicy().hasHeightForWidth())
+        self.spinBoxInventoryCriticalLevel.setSizePolicy(sizePolicy1)
+        self.spinBoxInventoryCriticalLevel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_13.addWidget(self.spinBoxInventoryCriticalLevel)
+
+        self.label_27 = QLabel(self.groupBox_3)
+        self.label_27.setObjectName(u"label_27")
+
+        self.horizontalLayout_13.addWidget(self.label_27)
+
+        self.labelWarning = QLabel(self.groupBox_3)
+        self.labelWarning.setObjectName(u"labelWarning")
+        palette1 = QPalette()
+        brush1 = QBrush(QColor(255, 147, 0, 255))
+        brush1.setStyle(Qt.BrushStyle.SolidPattern)
+        palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush1)
+        palette1.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush1)
+        self.labelWarning.setPalette(palette1)
+        self.labelWarning.setFont(font1)
+
+        self.horizontalLayout_13.addWidget(self.labelWarning)
+
+        self.label_35 = QLabel(self.groupBox_3)
+        self.label_35.setObjectName(u"label_35")
+
+        self.horizontalLayout_13.addWidget(self.label_35)
+
+        self.spinBoxInventoryWarningLevel = QDoubleSpinBox(self.groupBox_3)
+        self.spinBoxInventoryWarningLevel.setObjectName(u"spinBoxInventoryWarningLevel")
+        sizePolicy1.setHeightForWidth(self.spinBoxInventoryWarningLevel.sizePolicy().hasHeightForWidth())
+        self.spinBoxInventoryWarningLevel.setSizePolicy(sizePolicy1)
+        self.spinBoxInventoryWarningLevel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_13.addWidget(self.spinBoxInventoryWarningLevel)
+
+        self.label_28 = QLabel(self.groupBox_3)
+        self.label_28.setObjectName(u"label_28")
+
+        self.horizontalLayout_13.addWidget(self.label_28)
+
+        self.labelAvailable = QLabel(self.groupBox_3)
+        self.labelAvailable.setObjectName(u"labelAvailable")
+        palette2 = QPalette()
+        brush2 = QBrush(QColor(0, 153, 51, 255))
+        brush2.setStyle(Qt.BrushStyle.SolidPattern)
+        palette2.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush2)
+        palette2.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush2)
+        self.labelAvailable.setPalette(palette2)
+
+        self.horizontalLayout_13.addWidget(self.labelAvailable)
+
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_13.addItem(self.horizontalSpacer_5)
+
+
+        self.verticalLayout_24.addLayout(self.horizontalLayout_13)
+
+
+        self.verticalLayout_27.addWidget(self.groupBox_3)
+
+        self.groupBox_15 = QGroupBox(self.tab1)
+        self.groupBox_15.setObjectName(u"groupBox_15")
+        self.verticalLayout_26 = QVBoxLayout(self.groupBox_15)
+        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
+        self.checkBoxOrderProgress = QCheckBox(self.groupBox_15)
+        self.checkBoxOrderProgress.setObjectName(u"checkBoxOrderProgress")
+
+        self.verticalLayout_26.addWidget(self.checkBoxOrderProgress)
+
+
+        self.verticalLayout_27.addWidget(self.groupBox_15)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_27.addItem(self.verticalSpacer_2)
+
+        self.tabWidget.addTab(self.tab1, "")
+        self.tab2 = QWidget()
+        self.tab2.setObjectName(u"tab2")
+        self.verticalLayout_5 = QVBoxLayout(self.tab2)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.groupBox_7 = QGroupBox(self.tab1)
+        self.groupBox_7 = QGroupBox(self.tab2)
         self.groupBox_7.setObjectName(u"groupBox_7")
         self.verticalLayout_3 = QVBoxLayout(self.groupBox_7)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -76,7 +342,7 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_8.addWidget(self.groupBox_7)
 
-        self.groupBox_8 = QGroupBox(self.tab1)
+        self.groupBox_8 = QGroupBox(self.tab2)
         self.groupBox_8.setObjectName(u"groupBox_8")
         self.verticalLayout_4 = QVBoxLayout(self.groupBox_8)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -94,11 +360,8 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.groupBoxOrderGeometry = QGroupBox(self.tab1)
+        self.groupBoxOrderGeometry = QGroupBox(self.tab2)
         self.groupBoxOrderGeometry.setObjectName(u"groupBoxOrderGeometry")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.groupBoxOrderGeometry.sizePolicy().hasHeightForWidth())
         self.groupBoxOrderGeometry.setSizePolicy(sizePolicy1)
         self.verticalLayout_10 = QVBoxLayout(self.groupBoxOrderGeometry)
@@ -170,7 +433,7 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_3.addWidget(self.groupBoxOrderGeometry)
 
-        self.groupBoxTableGeometry = QGroupBox(self.tab1)
+        self.groupBoxTableGeometry = QGroupBox(self.tab2)
         self.groupBoxTableGeometry.setObjectName(u"groupBoxTableGeometry")
         sizePolicy1.setHeightForWidth(self.groupBoxTableGeometry.sizePolicy().hasHeightForWidth())
         self.groupBoxTableGeometry.setSizePolicy(sizePolicy1)
@@ -246,7 +509,7 @@ class Ui_SettingsDialog(object):
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_3)
 
-        self.groupBox_2 = QGroupBox(self.tab1)
+        self.groupBox_2 = QGroupBox(self.tab2)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.verticalLayout_2 = QVBoxLayout(self.groupBox_2)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -254,8 +517,6 @@ class Ui_SettingsDialog(object):
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.labelRed_2 = QLabel(self.groupBox_2)
         self.labelRed_2.setObjectName(u"labelRed_2")
-        font = QFont()
-        font.setBold(False)
         self.labelRed_2.setFont(font)
         self.labelRed_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -406,14 +667,14 @@ class Ui_SettingsDialog(object):
 
         self.verticalLayout_5.addItem(self.verticalSpacer_4)
 
-        self.tabWidget.addTab(self.tab1, "")
-        self.tab2 = QWidget()
-        self.tab2.setObjectName(u"tab2")
-        self.verticalLayout_25 = QVBoxLayout(self.tab2)
+        self.tabWidget.addTab(self.tab2, "")
+        self.tab3 = QWidget()
+        self.tab3.setObjectName(u"tab3")
+        self.verticalLayout_25 = QVBoxLayout(self.tab3)
         self.verticalLayout_25.setObjectName(u"verticalLayout_25")
         self.gridLayout_9 = QGridLayout()
         self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.groupBox_6 = QGroupBox(self.tab2)
+        self.groupBox_6 = QGroupBox(self.tab3)
         self.groupBox_6.setObjectName(u"groupBox_6")
         self.verticalLayout_6 = QVBoxLayout(self.groupBox_6)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
@@ -475,7 +736,7 @@ class Ui_SettingsDialog(object):
 
         self.gridLayout_9.addWidget(self.groupBox_6, 0, 0, 2, 1)
 
-        self.groupBox_11 = QGroupBox(self.tab2)
+        self.groupBox_11 = QGroupBox(self.tab3)
         self.groupBox_11.setObjectName(u"groupBox_11")
         self.verticalLayout_7 = QVBoxLayout(self.groupBox_11)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
@@ -499,7 +760,7 @@ class Ui_SettingsDialog(object):
 
         self.gridLayout_9.addWidget(self.groupBox_11, 0, 1, 1, 1)
 
-        self.groupBox_9 = QGroupBox(self.tab2)
+        self.groupBox_9 = QGroupBox(self.tab3)
         self.groupBox_9.setObjectName(u"groupBox_9")
         self.verticalLayout_18 = QVBoxLayout(self.groupBox_9)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
@@ -528,7 +789,7 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.groupBox_5 = QGroupBox(self.tab2)
+        self.groupBox_5 = QGroupBox(self.tab3)
         self.groupBox_5.setObjectName(u"groupBox_5")
         self.verticalLayout_8 = QVBoxLayout(self.groupBox_5)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
@@ -583,7 +844,7 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_9.addWidget(self.groupBox_5)
 
-        self.groupBox = QGroupBox(self.tab2)
+        self.groupBox = QGroupBox(self.tab3)
         self.groupBox.setObjectName(u"groupBox")
         self.verticalLayout_9 = QVBoxLayout(self.groupBox)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
@@ -626,7 +887,7 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_14 = QHBoxLayout()
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
-        self.groupBox_13 = QGroupBox(self.tab2)
+        self.groupBox_13 = QGroupBox(self.tab3)
         self.groupBox_13.setObjectName(u"groupBox_13")
         self.verticalLayout_23 = QVBoxLayout(self.groupBox_13)
         self.verticalLayout_23.setObjectName(u"verticalLayout_23")
@@ -638,7 +899,7 @@ class Ui_SettingsDialog(object):
 
         self.horizontalLayout_14.addWidget(self.groupBox_13)
 
-        self.groupBox_12 = QGroupBox(self.tab2)
+        self.groupBox_12 = QGroupBox(self.tab3)
         self.groupBox_12.setObjectName(u"groupBox_12")
         self.verticalLayout_22 = QVBoxLayout(self.groupBox_12)
         self.verticalLayout_22.setObjectName(u"verticalLayout_22")
@@ -676,12 +937,12 @@ class Ui_SettingsDialog(object):
 
         self.verticalLayout_25.addItem(self.verticalSpacer_5)
 
-        self.tabWidget.addTab(self.tab2, "")
-        self.tab3 = QWidget()
-        self.tab3.setObjectName(u"tab3")
-        self.verticalLayout_19 = QVBoxLayout(self.tab3)
+        self.tabWidget.addTab(self.tab3, "")
+        self.tab4 = QWidget()
+        self.tab4.setObjectName(u"tab4")
+        self.verticalLayout_19 = QVBoxLayout(self.tab4)
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
-        self.groupBox_4 = QGroupBox(self.tab3)
+        self.groupBox_4 = QGroupBox(self.tab4)
         self.groupBox_4.setObjectName(u"groupBox_4")
         self.verticalLayout = QVBoxLayout(self.groupBox_4)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -799,12 +1060,12 @@ class Ui_SettingsDialog(object):
 
         self.verticalLayout_19.addItem(self.verticalSpacer)
 
-        self.tabWidget.addTab(self.tab3, "")
-        self.tab4 = QWidget()
-        self.tab4.setObjectName(u"tab4")
-        self.verticalLayout_16 = QVBoxLayout(self.tab4)
+        self.tabWidget.addTab(self.tab4, "")
+        self.tab5 = QWidget()
+        self.tab5.setObjectName(u"tab5")
+        self.verticalLayout_16 = QVBoxLayout(self.tab5)
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.groupBoxAutomaticUpdate = QGroupBox(self.tab4)
+        self.groupBoxAutomaticUpdate = QGroupBox(self.tab5)
         self.groupBoxAutomaticUpdate.setObjectName(u"groupBoxAutomaticUpdate")
         self.groupBoxAutomaticUpdate.setCheckable(True)
         self.groupBoxAutomaticUpdate.setChecked(False)
@@ -842,7 +1103,7 @@ class Ui_SettingsDialog(object):
 
         self.verticalLayout_16.addWidget(self.groupBoxAutomaticUpdate)
 
-        self.groupBoxOrderedDeliveredReport = QGroupBox(self.tab4)
+        self.groupBoxOrderedDeliveredReport = QGroupBox(self.tab5)
         self.groupBoxOrderedDeliveredReport.setObjectName(u"groupBoxOrderedDeliveredReport")
         sizePolicy1.setHeightForWidth(self.groupBoxOrderedDeliveredReport.sizePolicy().hasHeightForWidth())
         self.groupBoxOrderedDeliveredReport.setSizePolicy(sizePolicy1)
@@ -911,242 +1172,6 @@ class Ui_SettingsDialog(object):
 
         self.verticalLayout_16.addItem(self.verticalSpacer_3)
 
-        self.tabWidget.addTab(self.tab4, "")
-        self.tab5 = QWidget()
-        self.tab5.setObjectName(u"tab5")
-        self.verticalLayout_27 = QVBoxLayout(self.tab5)
-        self.verticalLayout_27.setObjectName(u"verticalLayout_27")
-        self.groupBox_14 = QGroupBox(self.tab5)
-        self.groupBox_14.setObjectName(u"groupBox_14")
-        self.verticalLayout_21 = QVBoxLayout(self.groupBox_14)
-        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
-        self.gridLayout_7 = QGridLayout()
-        self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.label_24 = QLabel(self.groupBox_14)
-        self.label_24.setObjectName(u"label_24")
-
-        self.gridLayout_7.addWidget(self.label_24, 0, 0, 1, 1)
-
-        self.label_9 = QLabel(self.groupBox_14)
-        self.label_9.setObjectName(u"label_9")
-
-        self.gridLayout_7.addWidget(self.label_9, 0, 2, 1, 1)
-
-        self.lineEditCurrencySymbol = QLineEdit(self.groupBox_14)
-        self.lineEditCurrencySymbol.setObjectName(u"lineEditCurrencySymbol")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.lineEditCurrencySymbol.sizePolicy().hasHeightForWidth())
-        self.lineEditCurrencySymbol.setSizePolicy(sizePolicy3)
-        self.lineEditCurrencySymbol.setMaximumSize(QSize(100, 16777215))
-        self.lineEditCurrencySymbol.setMaxLength(3)
-
-        self.gridLayout_7.addWidget(self.lineEditCurrencySymbol, 0, 6, 1, 1)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_7.addItem(self.horizontalSpacer, 0, 4, 1, 1)
-
-        self.label_25 = QLabel(self.groupBox_14)
-        self.label_25.setObjectName(u"label_25")
-
-        self.gridLayout_7.addWidget(self.label_25, 0, 5, 1, 1)
-
-        self.spinBoxQuantityDecimals = QSpinBox(self.groupBox_14)
-        self.spinBoxQuantityDecimals.setObjectName(u"spinBoxQuantityDecimals")
-        self.spinBoxQuantityDecimals.setMaximum(4)
-
-        self.gridLayout_7.addWidget(self.spinBoxQuantityDecimals, 0, 1, 1, 1)
-
-        self.spinBoxPriceDecimals = QSpinBox(self.groupBox_14)
-        self.spinBoxPriceDecimals.setObjectName(u"spinBoxPriceDecimals")
-        self.spinBoxPriceDecimals.setMaximum(10)
-
-        self.gridLayout_7.addWidget(self.spinBoxPriceDecimals, 0, 3, 1, 1)
-
-
-        self.verticalLayout_21.addLayout(self.gridLayout_7)
-
-
-        self.verticalLayout_27.addWidget(self.groupBox_14)
-
-        self.groupBox_10 = QGroupBox(self.tab5)
-        self.groupBox_10.setObjectName(u"groupBox_10")
-        self.verticalLayout_20 = QVBoxLayout(self.groupBox_10)
-        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
-        self.gridLayout_8 = QGridLayout()
-        self.gridLayout_8.setObjectName(u"gridLayout_8")
-        self.labelYellow_12 = QLabel(self.groupBox_10)
-        self.labelYellow_12.setObjectName(u"labelYellow_12")
-        self.labelYellow_12.setFont(font)
-        self.labelYellow_12.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_8.addWidget(self.labelYellow_12, 0, 0, 1, 1)
-
-        self.labelRed_9 = QLabel(self.groupBox_10)
-        self.labelRed_9.setObjectName(u"labelRed_9")
-        self.labelRed_9.setFont(font)
-        self.labelRed_9.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_8.addWidget(self.labelRed_9, 0, 1, 1, 1)
-
-        self.labelRed_8 = QLabel(self.groupBox_10)
-        self.labelRed_8.setObjectName(u"labelRed_8")
-        self.labelRed_8.setFont(font)
-        self.labelRed_8.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout_8.addWidget(self.labelRed_8, 0, 2, 1, 1)
-
-        self.colorComboBoxBackground = ColorComboBox(self.groupBox_10)
-        self.colorComboBoxBackground.setObjectName(u"colorComboBoxBackground")
-
-        self.gridLayout_8.addWidget(self.colorComboBoxBackground, 1, 0, 1, 1)
-
-        self.colorComboBoxText = ColorComboBox(self.groupBox_10)
-        self.colorComboBoxText.setObjectName(u"colorComboBoxText")
-
-        self.gridLayout_8.addWidget(self.colorComboBoxText, 1, 1, 1, 1)
-
-        self.pushButtonExampleNL = ButtonItemExample(self.groupBox_10)
-        self.pushButtonExampleNL.setObjectName(u"pushButtonExampleNL")
-
-        self.gridLayout_8.addWidget(self.pushButtonExampleNL, 1, 2, 1, 1)
-
-
-        self.verticalLayout_20.addLayout(self.gridLayout_8)
-
-
-        self.verticalLayout_27.addWidget(self.groupBox_10)
-
-        self.groupBox_3 = QGroupBox(self.tab5)
-        self.groupBox_3.setObjectName(u"groupBox_3")
-        self.verticalLayout_24 = QVBoxLayout(self.groupBox_3)
-        self.verticalLayout_24.setObjectName(u"verticalLayout_24")
-        self.horizontalLayout_13 = QHBoxLayout()
-        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
-        self.labelOutOfStock = QLabel(self.groupBox_3)
-        self.labelOutOfStock.setObjectName(u"labelOutOfStock")
-        self.labelOutOfStock.setEnabled(False)
-        font1 = QFont()
-        font1.setBold(True)
-        self.labelOutOfStock.setFont(font1)
-
-        self.horizontalLayout_13.addWidget(self.labelOutOfStock)
-
-        self.label_11 = QLabel(self.groupBox_3)
-        self.label_11.setObjectName(u"label_11")
-
-        self.horizontalLayout_13.addWidget(self.label_11)
-
-        self.label_29 = QLabel(self.groupBox_3)
-        self.label_29.setObjectName(u"label_29")
-        self.label_29.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.horizontalLayout_13.addWidget(self.label_29)
-
-        self.label_12 = QLabel(self.groupBox_3)
-        self.label_12.setObjectName(u"label_12")
-
-        self.horizontalLayout_13.addWidget(self.label_12)
-
-        self.labelCritical = QLabel(self.groupBox_3)
-        self.labelCritical.setObjectName(u"labelCritical")
-        palette = QPalette()
-        brush = QBrush(QColor(255, 38, 0, 255))
-        brush.setStyle(Qt.BrushStyle.SolidPattern)
-        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush)
-        palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush)
-        self.labelCritical.setPalette(palette)
-        self.labelCritical.setFont(font1)
-
-        self.horizontalLayout_13.addWidget(self.labelCritical)
-
-        self.label_33 = QLabel(self.groupBox_3)
-        self.label_33.setObjectName(u"label_33")
-
-        self.horizontalLayout_13.addWidget(self.label_33)
-
-        self.spinBoxInventoryCriticalLevel = QDoubleSpinBox(self.groupBox_3)
-        self.spinBoxInventoryCriticalLevel.setObjectName(u"spinBoxInventoryCriticalLevel")
-        sizePolicy1.setHeightForWidth(self.spinBoxInventoryCriticalLevel.sizePolicy().hasHeightForWidth())
-        self.spinBoxInventoryCriticalLevel.setSizePolicy(sizePolicy1)
-        self.spinBoxInventoryCriticalLevel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.horizontalLayout_13.addWidget(self.spinBoxInventoryCriticalLevel)
-
-        self.label_27 = QLabel(self.groupBox_3)
-        self.label_27.setObjectName(u"label_27")
-
-        self.horizontalLayout_13.addWidget(self.label_27)
-
-        self.labelWarning = QLabel(self.groupBox_3)
-        self.labelWarning.setObjectName(u"labelWarning")
-        palette1 = QPalette()
-        brush1 = QBrush(QColor(255, 147, 0, 255))
-        brush1.setStyle(Qt.BrushStyle.SolidPattern)
-        palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush1)
-        palette1.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush1)
-        self.labelWarning.setPalette(palette1)
-        self.labelWarning.setFont(font1)
-
-        self.horizontalLayout_13.addWidget(self.labelWarning)
-
-        self.label_35 = QLabel(self.groupBox_3)
-        self.label_35.setObjectName(u"label_35")
-
-        self.horizontalLayout_13.addWidget(self.label_35)
-
-        self.spinBoxInventoryWarningLevel = QDoubleSpinBox(self.groupBox_3)
-        self.spinBoxInventoryWarningLevel.setObjectName(u"spinBoxInventoryWarningLevel")
-        sizePolicy1.setHeightForWidth(self.spinBoxInventoryWarningLevel.sizePolicy().hasHeightForWidth())
-        self.spinBoxInventoryWarningLevel.setSizePolicy(sizePolicy1)
-        self.spinBoxInventoryWarningLevel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.horizontalLayout_13.addWidget(self.spinBoxInventoryWarningLevel)
-
-        self.label_28 = QLabel(self.groupBox_3)
-        self.label_28.setObjectName(u"label_28")
-
-        self.horizontalLayout_13.addWidget(self.label_28)
-
-        self.labelAvailable = QLabel(self.groupBox_3)
-        self.labelAvailable.setObjectName(u"labelAvailable")
-        palette2 = QPalette()
-        brush2 = QBrush(QColor(0, 153, 51, 255))
-        brush2.setStyle(Qt.BrushStyle.SolidPattern)
-        palette2.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush2)
-        palette2.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush2)
-        self.labelAvailable.setPalette(palette2)
-
-        self.horizontalLayout_13.addWidget(self.labelAvailable)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_13.addItem(self.horizontalSpacer_5)
-
-
-        self.verticalLayout_24.addLayout(self.horizontalLayout_13)
-
-
-        self.verticalLayout_27.addWidget(self.groupBox_3)
-
-        self.groupBox_15 = QGroupBox(self.tab5)
-        self.groupBox_15.setObjectName(u"groupBox_15")
-        self.verticalLayout_26 = QVBoxLayout(self.groupBox_15)
-        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
-        self.checkBoxOrderProgress = QCheckBox(self.groupBox_15)
-        self.checkBoxOrderProgress.setObjectName(u"checkBoxOrderProgress")
-
-        self.verticalLayout_26.addWidget(self.checkBoxOrderProgress)
-
-
-        self.verticalLayout_27.addWidget(self.groupBox_15)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_27.addItem(self.verticalSpacer_2)
-
         self.tabWidget.addTab(self.tab5, "")
 
         self.horizontalLayout_2.addWidget(self.tabWidget)
@@ -1164,13 +1189,13 @@ class Ui_SettingsDialog(object):
         self.verticalLayout_17.addWidget(self.buttonBox)
 
 #if QT_CONFIG(shortcut)
+        self.label_24.setBuddy(self.spinBoxQuantityDecimals)
+        self.label_25.setBuddy(self.lineEditCurrencySymbol)
         self.labelCopy_4.setBuddy(self.spinBoxCustomerCopies)
         self.labelCopy.setBuddy(self.spinBoxCustomerCopies)
         self.labelCopy_3.setBuddy(self.spinBoxCustomerCopies)
         self.labelCopy_2.setBuddy(self.spinBoxCustomerCopies)
         self.labelCopy_5.setBuddy(self.spinBoxCustomerCopies)
-        self.label_24.setBuddy(self.spinBoxQuantityDecimals)
-        self.label_25.setBuddy(self.lineEditCurrencySymbol)
 #endif // QT_CONFIG(shortcut)
 
         self.retranslateUi(SettingsDialog)
@@ -1198,6 +1223,31 @@ class Ui_SettingsDialog(object):
     def retranslateUi(self, SettingsDialog):
         SettingsDialog.setWindowTitle(QCoreApplication.translate("SettingsDialog", u"Settings", None))
         self.labelIcon.setText(QCoreApplication.translate("SettingsDialog", u"Icon", None))
+        self.groupBox_14.setTitle(QCoreApplication.translate("SettingsDialog", u"Formats", None))
+        self.label_24.setText(QCoreApplication.translate("SettingsDialog", u"Number of decimal places for the quantity", None))
+        self.label_9.setText(QCoreApplication.translate("SettingsDialog", u"Number of decimal places for the price", None))
+        self.label_30.setText(QCoreApplication.translate("SettingsDialog", u"Number of decimal places for the amount", None))
+        self.label_25.setText(QCoreApplication.translate("SettingsDialog", u"Currency symbol", None))
+        self.groupBox_10.setTitle(QCoreApplication.translate("SettingsDialog", u"New item normal stock level colors", None))
+        self.labelYellow_12.setText(QCoreApplication.translate("SettingsDialog", u"Background color", None))
+        self.labelRed_9.setText(QCoreApplication.translate("SettingsDialog", u"Text color", None))
+        self.labelRed_8.setText(QCoreApplication.translate("SettingsDialog", u"Example", None))
+        self.pushButtonExampleNL.setText(QCoreApplication.translate("SettingsDialog", u"Normal", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("SettingsDialog", u"Items inventory stock threshold levels", None))
+        self.labelOutOfStock.setText(QCoreApplication.translate("SettingsDialog", u"Out of stock", None))
+        self.label_11.setText(QCoreApplication.translate("SettingsDialog", u"=", None))
+        self.label_29.setText(QCoreApplication.translate("SettingsDialog", u"0", None))
+        self.label_12.setText(QCoreApplication.translate("SettingsDialog", u"<", None))
+        self.labelCritical.setText(QCoreApplication.translate("SettingsDialog", u"Critical", None))
+        self.label_33.setText(QCoreApplication.translate("SettingsDialog", u"<=", None))
+        self.label_27.setText(QCoreApplication.translate("SettingsDialog", u"<", None))
+        self.labelWarning.setText(QCoreApplication.translate("SettingsDialog", u"Warning", None))
+        self.label_35.setText(QCoreApplication.translate("SettingsDialog", u"<=", None))
+        self.label_28.setText(QCoreApplication.translate("SettingsDialog", u"<", None))
+        self.labelAvailable.setText(QCoreApplication.translate("SettingsDialog", u"Available", None))
+        self.groupBox_15.setTitle(QCoreApplication.translate("SettingsDialog", u"Order progress", None))
+        self.checkBoxOrderProgress.setText(QCoreApplication.translate("SettingsDialog", u"Order progress management (ordered delivered)", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), QCoreApplication.translate("SettingsDialog", u"Main", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("SettingsDialog", u"Order entry user interface", None))
         self.groupBox_8.setTitle(QCoreApplication.translate("SettingsDialog", u"Department tab position", None))
         self.groupBoxOrderGeometry.setTitle(QCoreApplication.translate("SettingsDialog", u"Order list base geometry", None))
@@ -1227,7 +1277,7 @@ class Ui_SettingsDialog(object):
         self.label_22.setText(QCoreApplication.translate("SettingsDialog", u"=", None))
         self.label_23.setText(QCoreApplication.translate("SettingsDialog", u"0", None))
         self.pushButtonExampleDL.setText(QCoreApplication.translate("SettingsDialog", u"Disabled", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), QCoreApplication.translate("SettingsDialog", u"Order entry UI", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab2), QCoreApplication.translate("SettingsDialog", u"Order entry UI", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("SettingsDialog", u"Lunch / Dinner start time", None))
         self.label_3.setText(QCoreApplication.translate("SettingsDialog", u"Lunch", None))
         self.label_6.setText(QCoreApplication.translate("SettingsDialog", u"Dinner", None))
@@ -1254,7 +1304,7 @@ class Ui_SettingsDialog(object):
         self.groupBox_12.setTitle(QCoreApplication.translate("SettingsDialog", u"Window inactivity", None))
         self.checkBoxInactivity.setText(QCoreApplication.translate("SettingsDialog", u"Check inactivity after", None))
         self.labelInactivity.setText(QCoreApplication.translate("SettingsDialog", u"Seconds", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab2), QCoreApplication.translate("SettingsDialog", u"Order entry control", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), QCoreApplication.translate("SettingsDialog", u"Order entry control", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("SettingsDialog", u"Order printing settings", None))
         self.labelCopy_4.setText(QCoreApplication.translate("SettingsDialog", u"Report", None))
         self.labelCopy.setText(QCoreApplication.translate("SettingsDialog", u"# Copies", None))
@@ -1263,7 +1313,7 @@ class Ui_SettingsDialog(object):
         self.checkBoxCustomerCopy.setText(QCoreApplication.translate("SettingsDialog", u"Customer", None))
         self.checkBoxDepartmentCopy.setText(QCoreApplication.translate("SettingsDialog", u"Department", None))
         self.checkBoxCoverCopy.setText(QCoreApplication.translate("SettingsDialog", u"Cover", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), QCoreApplication.translate("SettingsDialog", u"Order print", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab4), QCoreApplication.translate("SettingsDialog", u"Order print", None))
         self.groupBoxAutomaticUpdate.setTitle(QCoreApplication.translate("SettingsDialog", u"Ordered delivered automatic update", None))
         self.label_7.setText(QCoreApplication.translate("SettingsDialog", u"Update view after", None))
         self.label_19.setText(QCoreApplication.translate("SettingsDialog", u"seconds", None))
@@ -1271,30 +1321,6 @@ class Ui_SettingsDialog(object):
         self.label_10.setText(QCoreApplication.translate("SettingsDialog", u"Report", None))
         self.labelCopy_5.setText(QCoreApplication.translate("SettingsDialog", u"# Copies", None))
         self.label_8.setText(QCoreApplication.translate("SettingsDialog", u"Printer class", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab4), QCoreApplication.translate("SettingsDialog", u"Control report and view", None))
-        self.groupBox_14.setTitle(QCoreApplication.translate("SettingsDialog", u"Formats", None))
-        self.label_24.setText(QCoreApplication.translate("SettingsDialog", u"Decimal places for quantity", None))
-        self.label_9.setText(QCoreApplication.translate("SettingsDialog", u"Decimal places for price", None))
-        self.label_25.setText(QCoreApplication.translate("SettingsDialog", u"Currency symbol", None))
-        self.groupBox_10.setTitle(QCoreApplication.translate("SettingsDialog", u"New item normal stock level colors", None))
-        self.labelYellow_12.setText(QCoreApplication.translate("SettingsDialog", u"Background color", None))
-        self.labelRed_9.setText(QCoreApplication.translate("SettingsDialog", u"Text color", None))
-        self.labelRed_8.setText(QCoreApplication.translate("SettingsDialog", u"Example", None))
-        self.pushButtonExampleNL.setText(QCoreApplication.translate("SettingsDialog", u"Normal", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("SettingsDialog", u"Items inventory stock threshold levels", None))
-        self.labelOutOfStock.setText(QCoreApplication.translate("SettingsDialog", u"Out of stock", None))
-        self.label_11.setText(QCoreApplication.translate("SettingsDialog", u"=", None))
-        self.label_29.setText(QCoreApplication.translate("SettingsDialog", u"0", None))
-        self.label_12.setText(QCoreApplication.translate("SettingsDialog", u"<", None))
-        self.labelCritical.setText(QCoreApplication.translate("SettingsDialog", u"Critical", None))
-        self.label_33.setText(QCoreApplication.translate("SettingsDialog", u"<=", None))
-        self.label_27.setText(QCoreApplication.translate("SettingsDialog", u"<", None))
-        self.labelWarning.setText(QCoreApplication.translate("SettingsDialog", u"Warning", None))
-        self.label_35.setText(QCoreApplication.translate("SettingsDialog", u"<=", None))
-        self.label_28.setText(QCoreApplication.translate("SettingsDialog", u"<", None))
-        self.labelAvailable.setText(QCoreApplication.translate("SettingsDialog", u"Available", None))
-        self.groupBox_15.setTitle(QCoreApplication.translate("SettingsDialog", u"Order progress", None))
-        self.checkBoxOrderProgress.setText(QCoreApplication.translate("SettingsDialog", u"Order progress management (ordered delivered)", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab5), QCoreApplication.translate("SettingsDialog", u"Other", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab5), QCoreApplication.translate("SettingsDialog", u"Control report and view", None))
     # retranslateUi
 

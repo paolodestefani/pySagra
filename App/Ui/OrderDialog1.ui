@@ -119,7 +119,7 @@
         <item>
          <widget class="QSpinBox" name="spinBoxCovers">
           <property name="buttonSymbols">
-           <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+           <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
           </property>
           <property name="minimum">
            <number>0</number>

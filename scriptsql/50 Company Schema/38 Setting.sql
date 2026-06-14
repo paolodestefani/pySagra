@@ -122,7 +122,8 @@ CREATE TABLE setting (
     inventory_critical_stock_level      numeric(12, 2) NOT NULL DEFAULT 4,
     -- other
 	quantity_decimal_places             integer NOT NULL DEFAULT 0,
-    price_decimal_places                integer NOT NULL DEFAULT 0,
+    price_decimal_places                integer NOT NULL DEFAULT 2,
+    amount_decimal_places               integer NOT NULL DEFAULT 2,
 	currency_symbol                     varchar(3) NOT NULL DEFAULT '€',
     --
     CONSTRAINT setting_pk 

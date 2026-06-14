@@ -773,9 +773,9 @@ class ButtonSeat(QPushButton):
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
         painter.end()
 
-from PySide6.QtWidgets import QPushButton, QWidget, QStyle, QStyleOptionButton
-from PySide6.QtGui import QFont, QColor, QPixmap, QPainter, QPen, QLinearGradient
-from PySide6.QtCore import Qt, QRect
+# from PySide6.QtWidgets import QPushButton, QWidget, QStyle, QStyleOptionButton
+# from PySide6.QtGui import QFont, QColor, QPixmap, QPainter, QPen, QLinearGradient
+# from PySide6.QtCore import Qt, QRect
 
 class ButtonItem(QPushButton):
     """

@@ -81,7 +81,7 @@ class Ui_OrderDialog2(object):
         self.verticalLayout_9.setContentsMargins(2, 2, 2, 2)
         self.spinBoxCovers = QSpinBox(self.groupBoxCovers)
         self.spinBoxCovers.setObjectName(u"spinBoxCovers")
-        self.spinBoxCovers.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
+        self.spinBoxCovers.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.UpDownArrows)
         self.spinBoxCovers.setMinimum(0)
         self.spinBoxCovers.setMaximum(999)
 

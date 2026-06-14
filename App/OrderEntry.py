@@ -60,8 +60,6 @@ from PySide6.QtWidgets import QSizePolicy
 from App import session
 from App import currentIcon
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.L10n import toCurrency
-from App.Core.L10n import toString
 from App.Core.Gui import TP
 from App.Database.Setting import Setting
 from App.Database.Event import get_event_from_date
@@ -143,41 +141,48 @@ def orderEntry(action: QAction, checked: bool = False) -> None:
 # item variant selection
 
 class VariantCheckBox(QCheckBox):
-    """Custom QCheckBox that carries an associated price adjustment stored in integer cents."""
+    """
+    Custom QCheckBox that carries an associated price adjustment stored in integer
+    """
     
-    def __init__(self, parent: Optional[QWidget], desc: str, priced: int) -> None:
+    def __init__(self, parent: Optional[QWidget], desc: str, price_delta: int, decimals: int) -> None:
         super().__init__(parent)
         # Store the clean raw properties directly in memory as integer cents
-        self.variantDesc = desc
-        self.priceDelta = priced
-        # Pass the integer cents directly to the updated toCurrency function for display
-        if priced > 0:
-            self.setText(f"{desc} (+{toCurrency(priced)})")
+        self.variant_desc = desc
+        self.price_delta = price_delta
+
+        if price_delta > 0:
+            displayed_price = session['qlocale'].toString(float(price_delta), 'f', decimals)
+            self.setText(f"{desc} (+{displayed_price})")
         else:
             self.setText(desc)
 
 
 class ChooseVariantDialog(QDialog):
-    """Dialog for item variants selection utilizing integer calculations."""
+    """
+    Dialog for item variants selection utilizing integer calculations
+    """
     
-    def __init__(self, parent: QWidget, item: str, variants: list) -> None:
+    def __init__(self, parent: QWidget, item: str, variants: list, decimals) -> None:
         super().__init__(parent)
+        self._decimals = decimals
         self.ui = Ui_ChooseVariantsDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(item)
+        self.ui.doubleSpinBoxPriceDelta.setDecimals(decimals)
         
         # Initialize button group to track variant checkboxes
         self.bg = QButtonGroup(self)
         self.bg.setExclusive(False)
         
-        # 'delta_cents' is already an integer from your database setup
+        # price_delta is already an integer
         for variant_name, price_delta in variants:
-            v = VariantCheckBox(None, variant_name, price_delta)   
+            v = VariantCheckBox(None, variant_name, price_delta, decimals)   
             self.bg.addButton(v)
             self.ui.layout.addWidget(v)
 
     def getVariants(self) -> tuple[str, int]:
-        """Return a string of selected variant names and the accumulated price delta in cents."""
+        """Return a string of selected variant names and the accumulated price delta in Decimal"""
         selected_descriptions: list[str] = []
         total_price_delta = 0
         
@@ -185,11 +190,12 @@ class ChooseVariantDialog(QDialog):
         for btn in self.bg.buttons():
             checkbox = cast(VariantCheckBox, btn)
             if checkbox.isChecked():
-                selected_descriptions.append(checkbox.variantDesc)
-                total_price_delta += checkbox.priceDelta
+                selected_descriptions.append(checkbox.variant_desc)
+                total_price_delta += checkbox.price_delta
                 
-        # append free-text custom variants if provided by the user
+        # append free-text custom variants and price delta if provided by the user
         free_text = self.ui.lineEditFreeVariant.text().strip()
+        total_price_delta += int(round(self.ui.doubleSpinBoxPriceDelta.value() * 10 ** self._decimals))
         if free_text:
             selected_descriptions.append(free_text)
             
@@ -200,7 +206,10 @@ class ChooseVariantDialog(QDialog):
 #-- main dialog box --#
 #---------------------#
 class BaseOrderDialog(QDialog):
-    "Order dialog"
+    """
+    Order dialog. Manages tables, items, and item availability. 
+    Quantities and prices are in integer numbers with virtual decimal points.
+    """
         
     def __init__(self, parent: QWidget, uidialog: Callable) -> None:
         super().__init__(parent)
@@ -332,8 +341,9 @@ class BaseOrderDialog(QDialog):
         self.current_cash_int: int      = 0
         self.current_change_int: int    = 0
         # decimals factor
-        self._qty_factor: int   = 0 # updated in resetDialog
-        self._price_factor: int = 0 # updated in resetDialog
+        self._qty_factor: int       = 0 # updated in resetDialog
+        self._price_factor: int     = 0 # updated in resetDialog
+        self._amount_factor: int    = 0 # updated in resetDialog
         # local inventory
         self._original_inventory: dict[int, Any] = {} 
         self._inventory: dict[int, Any] = {} # current inventory
@@ -477,8 +487,14 @@ class BaseOrderDialog(QDialog):
         self.current_cash_int       = 0
         self.current_change_int     = 0
         # decimal factors
-        self._qty_factor = 10 ** self.setting['quantity_decimal_places']
-        self._price_factor = 10 ** self.setting['price_decimal_places']
+        self._qty_factor    = 10 ** self.setting['quantity_decimal_places']
+        self._price_factor  = 10 ** self.setting['price_decimal_places']
+        self._amount_factor = 10 ** self.setting['amount_decimal_places']
+        self.ui.doubleSpinBoxSubTotal.setDecimals(self.setting['amount_decimal_places'])
+        self.ui.doubleSpinBoxDiscount.setDecimals(self.setting['amount_decimal_places'])
+        self.ui.doubleSpinBoxTotal.setDecimals(self.setting['amount_decimal_places'])
+        self.ui.doubleSpinBoxCash.setDecimals(self.setting['amount_decimal_places'])
+        self.ui.doubleSpinBoxChange.setDecimals(self.setting['amount_decimal_places'])
         # detail order items mapping container -> key structure: (item_id, variant_string or None)
         self.order_lines.clear()
 
@@ -687,7 +703,7 @@ class BaseOrderDialog(QDialog):
             self.idleTimer.start()
         # establish window focus context on the primary table entry field
         self.ui.lineEditTable.setFocus()
-        print(self._inventory)
+        #print(self._inventory)
         
     def _explode_to_parts(self, item_id: int, multiplier: int = 1, flat_recipe: dict | None = None) -> dict:
         """
@@ -798,6 +814,10 @@ class BaseOrderDialog(QDialog):
                 # else:
                 #     # Fallback for unmanaged items if they somehow have the flag active
                 #     btn.stockLevel = 99999 
+                
+        # initialize or extend the application idle timer system
+        if self.setting['check_inactivity']:
+            self.idleTimer.start()
 
     
     def buttonClicked(self, button: Any, ivars: str | None = "", priced_cents: int = 0, web: bool = False) -> None:
@@ -813,12 +833,13 @@ class BaseOrderDialog(QDialog):
             if not ivars:
                 if (not self.ui.pushButtonVariants.isEnabled()) or self.ui.pushButtonVariants.isChecked():
                     item_description = getattr(btn, 'description', '')
-                    # ChooseVariantDialog now safely returns integer directly
-                    dlg = ChooseVariantDialog(self, item_description, get_variants(btn.id))
+                    variants = [(vd,
+                                 int(round(float(pd) * self._price_factor))
+                                 ) for vd, pd in get_variants(btn.id)]
+                    dlg = ChooseVariantDialog(self, item_description, variants, self.setting['price_decimal_places'])
                     rv = dlg.exec()
                     if rv:
-                        ivars, variant_price_cents = dlg.getVariants()
-                        variant_price = variant_price_cents or 0
+                        ivars, variant_price = dlg.getVariants()
                     dlg.deleteLater()  
                     if not rv:
                         return
@@ -835,7 +856,6 @@ class BaseOrderDialog(QDialog):
         self.ui.radioButton1.setChecked(True)
         
         # VERIFY STOCK LEVEL ON THE BUTTON IN INTEGER SPACE
-        #if btn.hasInventory and (btn.stockLevel - qty_int < 0):
         if btn.hasInventory and (self._inventory[btn.id]['qty'] - qty_int < 0):
             QMessageBox.warning(self, _tr('OrderEntry', 'Warning'), _tr('OrderEntry', 'Not enough stock available.'))
             return 
@@ -889,13 +909,13 @@ class BaseOrderDialog(QDialog):
                 actual_qty = item["qty_int"] / self._qty_factor
                 
                 # atomic multiplication using dynamic quantity factor to secure perfect math precision
-                line_amount = (item["qty_int"] * item["price_int"]) // self._qty_factor // self._price_factor
+                line_amount = (item["qty_int"] * item["price_int"]) / self._qty_factor / self._price_factor
                 
                 # format quantity string: handles dynamic decimals configurations nicely (e.g., 1.5 shows "1,5")
                 qty_str = session['qlocale'].toString(float(actual_qty), 'f', self.setting['quantity_decimal_places'])
                 actual_price = item["price_int"] / self._price_factor
                 price_str = session['qlocale'].toString(float(actual_price), 'f', self.setting['price_decimal_places'])
-                amount_str = session['qlocale'].toString(float(line_amount), 'f', 2)
+                amount_str = session['qlocale'].toString(float(line_amount), 'f', self.setting['amount_decimal_places'])
                 
                 # prepare description formatting string (name + variant if present)
                 full_description = item["description"]
@@ -1160,7 +1180,7 @@ class BaseOrderDialog(QDialog):
         for item in self.order_lines.values():
             line_amount_int = int((item["qty_int"] / self._qty_factor) * 
                                (item["price_int"] / self._price_factor) *
-                               100)
+                               self._amount_factor)
             subtotal_int += line_amount_int
         
         # freeze chart signals to avoid refresh loops
@@ -1170,8 +1190,8 @@ class BaseOrderDialog(QDialog):
         
         try:
             # extracts the discount and cash entered by the operator
-            discount_int = int(round(self.ui.doubleSpinBoxDiscount.value() * 100))
-            cash_int = int(round(self.ui.doubleSpinBoxCash.value() * 100))
+            discount_int = int(round(self.ui.doubleSpinBoxDiscount.value() * self._amount_factor))
+            cash_int = int(round(self.ui.doubleSpinBoxCash.value() * self._amount_factor))
             net_total_int = max(0, subtotal_int - discount_int)
             change_int = max(0, cash_int - net_total_int)
             
@@ -1182,9 +1202,9 @@ class BaseOrderDialog(QDialog):
             self.current_change_int     = change_int
             
             # update graphic widgets
-            self.ui.doubleSpinBoxSubTotal.setValue(subtotal_int / 100) 
-            self.ui.doubleSpinBoxTotal.setValue(net_total_int / 100) 
-            self.ui.doubleSpinBoxChange.setValue(change_int / 100) 
+            self.ui.doubleSpinBoxSubTotal.setValue(subtotal_int / self._amount_factor) 
+            self.ui.doubleSpinBoxTotal.setValue(net_total_int / self._amount_factor) 
+            self.ui.doubleSpinBoxChange.setValue(change_int / self._amount_factor) 
             
         finally:
             self.ui.doubleSpinBoxSubTotal.blockSignals(False)
@@ -1293,10 +1313,10 @@ class BaseOrderDialog(QDialog):
         order.header['customer_contact'] = self.ui.lineEditCustomerContact.text().strip() or None
         order.header['covers'] = int(self.ui.spinBoxCovers.value()) or None
         
-        order.header['total_amount'] = Decimal(self.current_subtotal_int) / Decimal(100)
-        order.header['discount'] = Decimal(self.current_discount_int) / Decimal(100)
-        order.header['cash'] = Decimal(self.current_cash_int) / Decimal(100)
-        order.header['change'] = Decimal(self.current_change_int) / Decimal(100)
+        order.header['total_amount'] = Decimal(self.current_subtotal_int) / Decimal(self._amount_factor)
+        order.header['discount'] = Decimal(self.current_discount_int) / Decimal(self._amount_factor)
+        order.header['cash'] = Decimal(self.current_cash_int) / Decimal(self._amount_factor)
+        order.header['change'] = Decimal(self.current_change_int) / Decimal(self._amount_factor)
 
         # We safely map integers back to Decimals dynamically based on settings factors
         for item in self.order_lines.values():
