@@ -110,8 +110,8 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         self.ui.setupUi(self)
         self.setView(self.ui.tableViewItem)  # required for formviewmanager
         st = QSettings()
-        if st.value("Inventory/SplitterSizes", None):
-            self.ui.splitter.setSizes(st.value("Inventory/SplitterSizes"))
+        if s := st.value("Inventory/SplitterState", None):
+            self.ui.splitter.restoreState(s)
         self.ui.tableViewItem.setLayoutName('Inventory')
         self.ui.tableViewItem.setItemDelegateForColumn(inv.EVENT, RelationDelegate(self, event_lookup))
         self.ui.tableViewItem.setItemDelegateForColumn(inv.ITEM, RelationDelegate(self, item_with_stock_control_lookup))
@@ -203,5 +203,5 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
     def closeEvent(self, event: QCloseEvent) -> None:
         "Save splitter status on close event"
         st = QSettings()
-        st.setValue("Inventory/SplitterSizes", self.ui.splitter.sizes())
+        st.setValue("Inventory/SplitterState", self.ui.splitter.saveState())
         super().closeEvent(event)
