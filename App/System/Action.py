@@ -491,7 +491,7 @@ def createActionDictionary(mw) -> None:
         QAction.MenuRole.TextHeuristicRole)
     
     actionDefinition['app_file_update_wo_server'] = (
-        _tr("Action", 'Update W.O.S.'),
+        _tr("Action", 'Update WOS'),
         updateWOS,
         False,
         'file_update_web_order',

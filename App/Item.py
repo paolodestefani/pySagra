@@ -46,10 +46,11 @@ from App import currentIcon
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-from App.Core.Gui import COLORS
+from App.Core.Gui import get_colors
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ColorComboDelegate
 from App.Widget.Delegate import QuantityDelegate
+from App.Widget.Delegate import PriceDelegate
 from App.Widget.Delegate import AmountDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormIndexManager
@@ -244,10 +245,10 @@ class ItemForm(FormIndexManager):
         self.ui.tableView.setItemDelegateForColumn(iti.DEPARTMENT, RelationDelegate(self, department_lookup))
         self.ui.tableView.setItemDelegateForColumn(iti.BCK_COLOR, ColorComboDelegate(self, 
                                                                                         cast(list[Any], [(self.setting['normal_background_color'] or '', _tr('Item', 'default'))] 
-                                                                                        + COLORS)))
+                                                                                        + get_colors())))
         self.ui.tableView.setItemDelegateForColumn(iti.TXT_COLOR, ColorComboDelegate(self, 
                                                                                         cast(list[Any], [(self.setting['normal_text_color'] or '', _tr('Item', 'default'))] 
-                                                                                        + COLORS)))
+                                                                                        + get_colors())))
         # mapper mappings
         self.ui.comboBoxType.setFunction(itemType)
         self.mapper.addMapping(self.ui.comboBoxType, itm.TYPE)
@@ -272,7 +273,7 @@ class ItemForm(FormIndexManager):
         # tabwidget tabs and tableview
         self.ui.tableViewVariants.setModel(modelv)
         self.ui.tableViewVariants.setLayoutName('ItemVariant')
-        self.ui.tableViewVariants.setItemDelegateForColumn(vnt.PRICE, AmountDelegate(self))
+        self.ui.tableViewVariants.setItemDelegateForColumn(vnt.PRICE, PriceDelegate(self))
         self.ui.tableViewVariants.setItemDelegateForColumn(vnt.DESC, GenericDelegate(self))
         self.ui.tableViewVariants.setItemDelegateForColumn(vnt.SORT, GenericDelegate(self))
         self.ui.tableViewComponents.setModel(modelk)
@@ -286,7 +287,7 @@ class ItemForm(FormIndexManager):
         self.ui.tableViewPrices.setModel(modelp)
         self.ui.tableViewPrices.setLayoutName('ItemPrice')
         self.ui.tableViewPrices.setItemDelegateForColumn(prc.LIST, RelationDelegate(self, price_list_lookup))
-        self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, AmountDelegate(self))
+        self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, PriceDelegate(self))
         # self.toFirst() not here because we need to set models first
         self.ui.checkBoxVariants.checkStateChanged.connect(self.hasVariantsStateChanged)
         self.ui.pushButtonCopyVariants.clicked.connect(self.copyVariants)
@@ -294,9 +295,9 @@ class ItemForm(FormIndexManager):
         self.ui.checkBoxSalable.toggled.connect(self.salableToggled)
         self.ui.checkBoxWebAvailable.toggled.connect(self.ui.spinBoxWebSorting.setEnabled)
         # set colors
-        self.ui.comboBoxNormalTextColor.setColorList(COLORS)
+        self.ui.comboBoxNormalTextColor.setColorList(get_colors())
         self.ui.comboBoxNormalTextColor.setCurrentColor(self.setting['normal_text_color'])
-        self.ui.comboBoxNormalBackgroundColor.setColorList(COLORS)
+        self.ui.comboBoxNormalBackgroundColor.setColorList(get_colors())
         self.ui.comboBoxNormalBackgroundColor.setCurrentColor(self.setting['normal_background_color'])
         # signal/slot connections for add/remove buttons
         self.ui.pushButtonAddVar.clicked.connect(self.ui.tableViewVariants.add)

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
+    <width>643</width>
     <height>384</height>
    </rect>
   </property>
@@ -147,7 +147,7 @@
        <item row="2" column="2">
         <widget class="QGroupBox" name="groupBoxIcon">
          <property name="title">
-          <string>Icons</string>
+          <string>Icon set</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_8">
           <item>

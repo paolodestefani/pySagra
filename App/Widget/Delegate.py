@@ -855,7 +855,7 @@ class DecimalDelegate(QStyledItemDelegate):
         else:
             num_val = float(val)
             if self.currency:
-                option.text = session['qlocale'].toCurrencyString(num_val, ' ')
+                option.text = session['qlocale'].toCurrencyString(num_val, ' ', self.prec)
             else:
                 option.text = session['qlocale'].toString(num_val, 'f', self.prec)
         # apply alignment and visual styles
@@ -898,13 +898,25 @@ class QuantityDelegate(DecimalDelegate):
                          currency=False,
                          bold=bold)
            
+class PriceDelegate(DecimalDelegate):
+    "Delegate for price values"
 
+    def __init__(self, parent: QWidget):
+        setting = Setting()
+        prec: int = setting['price_decimal_places']
+        super().__init__(parent,
+                         prec,
+                         maximum=99999.9,
+                         currency=True)
+        
 class AmountDelegate(DecimalDelegate):
     "Delegate for currency values"
 
     def __init__(self, parent: QWidget):
+        setting = Setting()
+        prec: int = setting['amount_decimal_places']
         super().__init__(parent,
-                         prec=2,
+                         prec,
                          maximum=99999.9,
                          currency=True)
 

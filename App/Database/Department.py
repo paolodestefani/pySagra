@@ -73,6 +73,31 @@ ORDER BY sorting;"""
         return cur.fetchall()
 
 
+def department_web_list() -> list[tuple]:
+    "Get a list of active departments with has items web available"
+    script = ("""
+SELECT
+	d.department_id,
+	d.description
+FROM company.department d
+JOIN (
+	-- department that have items web available and not obsolete
+	SELECT DISTINCT
+		d.department_id
+	FROM company.department d
+	JOIN company.item i ON d.department_id = i.department_id
+	WHERE i.is_obsolete is false AND i.is_web_available is true
+	) da ON d.department_id = da.department_id
+WHERE
+        company_id = system.pa_current_company()
+    AND d.is_obsolete IS false
+ORDER BY d.sorting;""")
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
+
+
 def get_department(desc: str) -> int | None:
     "Returns department id of given department description"
     script = t"""

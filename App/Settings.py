@@ -54,7 +54,7 @@ from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-from App.Core.Gui import COLORS
+from App.Core.Gui import get_colors
 
 
 # logger
@@ -138,17 +138,17 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxTableListFontSize.setValue(self.setting['table_list_font_size'])
         self.ui.checkBoxUseTableList.setChecked(self.setting['use_table_list'])
         # colors
-        self.ui.colorComboBoxWB.setColorList(COLORS)
+        self.ui.colorComboBoxWB.setColorList(get_colors())
         self.ui.colorComboBoxWB.setCurrentColor(self.setting['warning_background_color'])
-        self.ui.colorComboBoxWT.setColorList(COLORS)
+        self.ui.colorComboBoxWT.setColorList(get_colors())
         self.ui.colorComboBoxWT.setCurrentColor(self.setting['warning_text_color'])
-        self.ui.colorComboBoxCB.setColorList(COLORS)
+        self.ui.colorComboBoxCB.setColorList(get_colors())
         self.ui.colorComboBoxCB.setCurrentColor(self.setting['critical_background_color'])
-        self.ui.colorComboBoxCT.setColorList(COLORS)
+        self.ui.colorComboBoxCT.setColorList(get_colors())
         self.ui.colorComboBoxCT.setCurrentColor(self.setting['critical_text_color'])
-        self.ui.colorComboBoxDB.setColorList(COLORS)
+        self.ui.colorComboBoxDB.setColorList(get_colors())
         self.ui.colorComboBoxDB.setCurrentColor(self.setting['disabled_background_color'])
-        self.ui.colorComboBoxDT.setColorList(COLORS)
+        self.ui.colorComboBoxDT.setColorList(get_colors())
         self.ui.colorComboBoxDT.setCurrentColor(self.setting['disabled_text_color'])
         # print
         self.ui.checkBoxCustomerCopy.setChecked(self.setting['print_customer_copy'])
@@ -192,9 +192,9 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxAmountDecimals.setValue(self.setting['amount_decimal_places'])
         self.ui.lineEditCurrencySymbol.setText(self.setting['currency_symbol'])
         
-        self.ui.colorComboBoxBackground.setColorList(COLORS)
+        self.ui.colorComboBoxBackground.setColorList(get_colors())
         self.ui.colorComboBoxBackground.setCurrentColor(self.setting['normal_background_color'])
-        self.ui.colorComboBoxText.setColorList(COLORS)
+        self.ui.colorComboBoxText.setColorList(get_colors())
         self.ui.colorComboBoxText.setCurrentColor(self.setting['normal_text_color'])
         
         # set initial default for linked params

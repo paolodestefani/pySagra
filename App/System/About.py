@@ -88,7 +88,7 @@ def systemInfo(action: QAction, checked: bool = False) -> None:
         QMessageBox.warning(
             mw,
             _tr('MessageDialog', "Warning"),
-            _tr('CashDesk', 'No access right to this function')
+            _tr('MessageDialog', 'No access right to this function')
         )
         return
     h = SystemInfoDialog(session['mainwin'], action.icon())
@@ -116,14 +116,14 @@ class AboutDialog(QDialog):
         self.setWindowFlags(Qt.WindowType.Dialog | 
                             Qt.WindowType.WindowMinMaxButtonsHint |
                             Qt.WindowType.WindowCloseButtonHint)
-        appDescription = _tr("About", "A small program to manage a food stand")
+        appDescription = _tr("About", "A simple program to manage a food stand")
         versionLabel = _tr("About", "Version")
         devDescription = _tr("About", "Developed with:")
         pythonRef = _tr('About', 'programming language')
         psycopgRef = _tr('About', 'PostgreSQL adapter for Python')
         qtRef = _tr('About', 'cross-platform application and UI framework')
         pySideRef = _tr('About', 'a set of python bindings for Qt')
-        oxygenRef = _tr('About', 'icon set and others from')
+        oxygenRef = _tr('About', 'icon set and other sets from')
         iconRef = _tr('About', "pySagra's icon is from DelliOS System Icons by")
         gifRef = _tr('About', "pySagra's login/version animation was created by")
         licence1 = _tr('About', """This program is <b>FREE SOFTWARE</b>: you can redistribute it and/or modify

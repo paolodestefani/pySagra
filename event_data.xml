@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8'?>
+<event>
+    <title>SAGRA 2026</title>
+    <start_date>2026-01-01T10:17:15+01:00</start_date>
+    <end_date>2026-12-31T23:59:59+01:00</end_date>
+    <items>
+        <department description="CUCINA">
+            <item>
+                <id>6</id>
+                <description>SALSICCE</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>7</id>
+                <description>COSTICINE</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>8</id>
+                <description>BRACIOLA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>9</id>
+                <description>BIS (Salsiccia + Costicine)</description>
+                <price>8.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>10</id>
+                <description>TRIS (Salsiccia + Costicina + Braciola)</description>
+                <price>10.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+        </department>
+    </items>
+    <itemvariants />
+</event>

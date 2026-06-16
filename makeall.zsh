@@ -19,10 +19,6 @@ done
 
 echo "Completed"
 
-
-# resources
-pyside6-rcc resources.qrc -o resources_rc.py 
-
 # transaltion for login dialog
 pyside6-lupdate \
 	App/System/Login.py \
@@ -34,6 +30,9 @@ pyside6-lrelease translation/ts/login_it.ts -qm translation/login_it.qm
 # translations without pro file, sources and forms
 pyside6-lupdate	\
 	pySagra.py \
+	App/Core/Gui.py \
+	App/Core/ExceptionHandler.py \
+	App/Database/Models.py \
 	App/System/About.py \
     App/System/Action.py \
     App/System/Company.py \
@@ -52,12 +51,63 @@ pyside6-lupdate	\
 	App/Widget/Dialog.py \
 	App/Widget/Form.py \
     App/Ui/AboutDialog.ui \
+    App/Ui/CashDeskWidget.ui \
+    App/Ui/ChangeCompanyDialog.ui \
+    App/Ui/ChangePasswordDialog.ui \
+    App/Ui/ChooseItemDialog.ui \
+    App/Ui/ChooseVariantsDialog.ui \
     App/Ui/CompanyWidget.ui \
-    App/OrderEntry.py \
+    App/Ui/ConnectionHistoryWidget.ui \
+    App/Ui/ConnectionWidget.ui \
+    App/Ui/CopyToolDialog.ui \
+    App/Ui/CustomizationsDialog.ui \
+    App/Ui/DateTimeInputDialog.ui \
+    App/Ui/DeleteToolDialog.ui \
+    App/Ui/DepartmentPrinterWidget.ui \
+    App/Ui/DepartmentWidget.ui \
+    App/Ui/DuplicateDialog.ui \
+    App/Ui/EventFilterDialog.ui \
+    App/Ui/EventToolDialog.ui \
+    App/Ui/EventWidget.ui \
+    App/Ui/GenericFormViewWidget.ui \
+    App/Ui/HelpDialog.ui \
+    App/Ui/InventoryWidget.ui \
+    App/Ui/ItemWidget.ui \
+    App/Ui/MenuWidget.ui \
+    App/Ui/MessageDialog.ui \
+    App/Ui/NewCompanyDialog.ui \
     App/Ui/OrderDialog0.ui \
+    App/Ui/OrderDialog1.ui \
+    App/Ui/OrderDialog2.ui \
+    App/Ui/OrderedDeliveredWidget.ui \
+    App/Ui/OrderProgressWidget.ui \
+    App/Ui/OrderWidget.ui \
+    App/Ui/PreferencesDialog.ui \
+    App/Ui/PriceListWidget.ui \
+    App/Ui/PrintDialog.ui \
+    App/Ui/ProfileWidget.ui \
+    App/Ui/ReportWidget.ui \
+    App/Ui/SalesSummaryWidget.ui \
+    App/Ui/ScriptingWidget.ui \
+    App/Ui/SeatMapWidget.ui \
+    App/Ui/SelectImageDialog.ui \
+    App/Ui/SettingsDialog.ui \
+    App/Ui/SortFilterDialog.ui \
+    App/Ui/StatisticsExportDialog.ui \
+    App/Ui/SystemInfoDialog.ui \
+    App/Ui/ToolbarWidget.ui \
+    App/Ui/UpdateWebOrderServerDialog.ui \
+    App/Ui/UserWidget.ui \
+    App/Ui/ViewSettingsDialog.ui \
+    App/Settings.py \
+    App/OrderEntry.py \
+    App/OrderArchive.py \
 	-tr-function-alias translate+=_tr -noobsolete -ts translation/ts/pySagra_it.ts 
 
 pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm
+
+# resources
+pyside6-rcc resources.qrc -o resources_rc.py 
 
 # exit from venv
 deactivate

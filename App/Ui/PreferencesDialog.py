@@ -27,7 +27,7 @@ class Ui_PreferencesDialog(object):
         if not PreferencesDialog.objectName():
             PreferencesDialog.setObjectName(u"PreferencesDialog")
         PreferencesDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        PreferencesDialog.resize(640, 384)
+        PreferencesDialog.resize(643, 384)
         self.verticalLayout_2 = QVBoxLayout(PreferencesDialog)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout_2 = QHBoxLayout()
@@ -181,6 +181,6 @@ class Ui_PreferencesDialog(object):
         self.groupBoxFont.setTitle(QCoreApplication.translate("PreferencesDialog", u"Font family", None))
         self.checkBoxDefaultFont.setText(QCoreApplication.translate("PreferencesDialog", u"Default", None))
         self.groupBoxFontSize.setTitle(QCoreApplication.translate("PreferencesDialog", u"Font size", None))
-        self.groupBoxIcon.setTitle(QCoreApplication.translate("PreferencesDialog", u"Icons", None))
+        self.groupBoxIcon.setTitle(QCoreApplication.translate("PreferencesDialog", u"Icon set", None))
     # retranslateUi
 

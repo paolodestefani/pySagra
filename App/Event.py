@@ -126,6 +126,7 @@ class EventForm(FormIndexManager):
         self.mapper.addMapping(self.ui.dateTimeEditStart, evn.DATE_START)
         self.mapper.addMapping(self.ui.dateTimeEditEnd, evn.DATE_END)
         self.ui.comboBoxPriceList.setFunction(price_list_lookup)
+        self.ui.comboBoxPriceList.setNullable(True)
         self.mapper.addMapping(self.ui.comboBoxPriceList, evn.PRICELIST)
         self.mapper.addMapping(self.ui.labelEventImage, evn.IMAGE)
         # scripting init

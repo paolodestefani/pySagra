@@ -52,53 +52,75 @@ from App import actionDefinition
 from App.Core.L10n import _tr
 
 
+# functions are required for the correct work of _tr() wich need
+# the translations made after the module import
 
 # colors for color combo box
-COLORS = [(QColorConstants.Svg.darkred,  _tr('Item', 'Dark red')),
-          (QColorConstants.Svg.red, _tr('Item', 'Red')),
-          (QColorConstants.Svg.coral, _tr('Item', 'Coral')),
-          (QColorConstants.Svg.orange, _tr('Item', 'Orange')),
-          (QColorConstants.Svg.gold, _tr('Item', 'Gold')),
-          (QColorConstants.Svg.yellow, _tr('Item', 'Yellow')),
-          (QColorConstants.Svg.darkgreen, _tr('Item', 'Dark green')),
-          (QColorConstants.Svg.green, _tr('Item', 'Green')),
-          (QColorConstants.Svg.greenyellow, _tr('Item', 'Green yellow')),
-          (QColorConstants.Svg.lightgreen, _tr('Item', 'Light green')),
-          (QColorConstants.Svg.darkblue, _tr('Item', 'Dark blue')),
-          (QColorConstants.Svg.blue, _tr('Item', 'Blue')),
-          (QColorConstants.Svg.royalblue, _tr('Item', 'Royal blue')),
-          (QColorConstants.Svg.skyblue, _tr('Item', 'Sky blue')),
-          (QColorConstants.Svg.cyan, _tr('Item', 'Cyan/Aqua')),
-          (QColorConstants.Svg.magenta, _tr('Item', 'Magenta / Fuchsia')),
-          (QColorConstants.Svg.purple, _tr('Item', 'Purple')),
-          (QColorConstants.Svg.black, _tr('Item', 'Black')),
-          (QColorConstants.Svg.gray, _tr('Item', 'Gray')),
-          (QColorConstants.Svg.lightgray, _tr('Item', 'Light gray')),
-          (QColorConstants.Svg.white, _tr('Item', 'White'))]
+def get_colors()-> list[tuple]:
+    """Returns the list of colors for combo boxes, translated at runtime"""
+    return [
+        (QColorConstants.Svg.darkred,  _tr('Color', 'Dark red')),
+        (QColorConstants.Svg.red, _tr('Color', 'Red')),
+        (QColorConstants.Svg.coral, _tr('Color', 'Coral')),
+        (QColorConstants.Svg.orange, _tr('Color', 'Orange')),
+        (QColorConstants.Svg.gold, _tr('Color', 'Gold')),
+        (QColorConstants.Svg.yellow, _tr('Color', 'Yellow')),
+        (QColorConstants.Svg.darkgreen, _tr('Color', 'Dark green')),
+        (QColorConstants.Svg.green, _tr('Color', 'Green')),
+        (QColorConstants.Svg.greenyellow, _tr('Color', 'Green yellow')),
+        (QColorConstants.Svg.lightgreen, _tr('Color', 'Light green')),
+        (QColorConstants.Svg.darkblue, _tr('Color', 'Dark blue')),
+        (QColorConstants.Svg.blue, _tr('Color', 'Blue')),
+        (QColorConstants.Svg.royalblue, _tr('Color', 'Royal blue')),
+        (QColorConstants.Svg.skyblue, _tr('Color', 'Sky blue')),
+        (QColorConstants.Svg.cyan, _tr('Color', 'Cyan / Aqua')),
+        (QColorConstants.Svg.magenta, _tr('Color', 'Magenta / Fuchsia')),
+        (QColorConstants.Svg.purple, _tr('Color', 'Purple')),
+        (QColorConstants.Svg.black, _tr('Color', 'Black')),
+        (QColorConstants.Svg.gray, _tr('Color', 'Gray')),
+        (QColorConstants.Svg.lightgray, _tr('Color', 'Light gray')),
+        (QColorConstants.Svg.white, _tr('Color', 'White'))
+    ]
 
 # color scheme
-CS = {'L': (_tr('Preferences', "Light"), Qt.ColorScheme.Light),
-      'D': (_tr('Preferences', "Dark"), Qt.ColorScheme.Dark),
-      'S': (_tr('Preferences', "System default"), Qt.ColorScheme.Unknown)}
+def get_color_scheme() -> dict[str, tuple]:
+    """Returns the color scheme dictionary, translated at runtime"""
+    return {
+        'L': (_tr('ColorScheme', "Light"), Qt.ColorScheme.Light),
+        'D': (_tr('ColorScheme', "Dark"), Qt.ColorScheme.Dark),
+        'S': (_tr('ColorScheme', "System default"), Qt.ColorScheme.Unknown)
+    }
 
 # icon theme
-IT = [('oxygen', _tr('Preferences', 'Oxygen')),
-      ('crystal_clear', _tr('Preferences', 'Crystal Clear')),
-      ('fluentui', _tr('Preferences', 'Fluent UI')),
-      ('flatwoken', _tr('Preferences', 'Flatwoken'))]
+def get_icon_themes() -> list[tuple[str, str]]:
+    """Returns the available icon themes, translated at runtime"""
+    return [
+        ('oxygen', _tr('IconSet', 'Oxygen')),
+        ('crystal_clear', _tr('IconSet', 'Crystal Clear')),
+        ('fluentui', _tr('IconSet', 'Fluent UI')),
+        ('flatwoken', _tr('IconSet', 'Flatwoken'))
+    ]
 
 # toolbutton style dictionary
-TBS = {'I': (_tr('Preferences', 'Icon only'), Qt.ToolButtonStyle.ToolButtonIconOnly), 
-       'T': (_tr('Preferences', 'Text only'), Qt.ToolButtonStyle.ToolButtonTextOnly),
-       'B': (_tr('Preferences', 'Text beside icon'), Qt.ToolButtonStyle.ToolButtonTextBesideIcon),
-       'U': (_tr('Preferences', 'Text under icon'), Qt.ToolButtonStyle.ToolButtonTextUnderIcon),
-       'S': (_tr('Preferences', 'Follow style'), Qt.ToolButtonStyle.ToolButtonFollowStyle)}
+def get_toolbutton_styles() -> dict[str, tuple]:
+    """Returns the toolbutton styles, translated at runtime"""
+    return {
+        'I': (_tr('ToolButtonStyle', 'Icon only'), Qt.ToolButtonStyle.ToolButtonIconOnly), 
+        'T': (_tr('ToolButtonStyle', 'Text only'), Qt.ToolButtonStyle.ToolButtonTextOnly),
+        'B': (_tr('ToolButtonStyle', 'Text beside icon'), Qt.ToolButtonStyle.ToolButtonTextBesideIcon),
+        'U': (_tr('ToolButtonStyle', 'Text under icon'), Qt.ToolButtonStyle.ToolButtonTextUnderIcon),
+        'S': (_tr('ToolButtonStyle', 'Follow style'), Qt.ToolButtonStyle.ToolButtonFollowStyle)
+    }
 
 # tab position dictionary
-TP = {'N': (_tr('Preferences', "Tabs above the pages"), QTabWidget.TabPosition.North), 
-      'S': (_tr('Preferences', "Tabs below the pages"), QTabWidget.TabPosition.South),
-      'W': (_tr('Preferences', "Tabs to the left of the pages"), QTabWidget.TabPosition.West),
-      'E': (_tr('Preferences', "Tabs to the right of the pages"), QTabWidget.TabPosition.East)} 
+def get_tab_positions() -> dict[str, tuple]:
+    """Returns the positions of the QTabWidget tabs, translated at runtime"""
+    return {
+        'N': (_tr('TabPosition', "Tabs above the pages"), QTabWidget.TabPosition.North), 
+        'S': (_tr('TabPosition', "Tabs below the pages"), QTabWidget.TabPosition.South),
+        'W': (_tr('TabPosition', "Tabs to the left of the pages"), QTabWidget.TabPosition.West),
+        'E': (_tr('TabPosition', "Tabs to the right of the pages"), QTabWidget.TabPosition.East)
+    }
 
 
 class CenteredProxyStyle(QProxyStyle):
@@ -127,7 +149,7 @@ def setColorScheme(color: str|None) -> None:
     "Set the application color scheme"
     if not color:
         color = 'S'
-    QApplication.styleHints().setColorScheme(CS[color][1])
+    QApplication.styleHints().setColorScheme(get_color_scheme()[color][1])
     
     
 def setIconTheme(theme: str|None) -> None: # used in login, currentIcon created before currentAction

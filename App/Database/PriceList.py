@@ -42,28 +42,32 @@ logger = logging.getLogger(__name__)
 
 def duplicate_price_list(from_id: int, new_description: str) -> None:
     "Create a new price list copying prices from another"
-    # create a new price list
-    new_id = None
-    script1 = t"""
-INSERT INTO price_list (description) 
-VALUES ({new_description}) 
+    # t-string parameter are evaluated just when the scriptt-string is created
+    # we nee to move the definition of script2 after the execution of script1 
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        # create a new price list
+        new_id = None
+        script1 = t"""
+INSERT INTO price_list (company_id, description) 
+VALUES (system.pa_current_company(), {new_description}) 
 RETURNING price_list_id;"""
-    # copy prices from another price list
-    script2 = t"""
+        cur.execute(script1)
+        new_id = next(cur, (None,))[0]
+        if new_id is None:
+            raise PyAppDBError("02000", "No id returned from database when creating new price list")
+        # copy prices from another price list
+        script2 = t"""
 INSERT INTO price_list_item (
+    company_id,
     price_list_id,
     item_id,
     price)
-SELECT 
+SELECT
+    system.pa_current_company(),
     {new_id},
     item_id,
     price
 FROM price_list_item
 WHERE price_list_id = {from_id};"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script1)
-        new_id = next(cur, (None,))[0]
-        if new_id is None:
-            raise PyAppDBError("02000", "No id returned from database when creating new price list")
         cur.execute(script2)

@@ -25,7 +25,7 @@ class Ui_PriceListWidget(object):
     def setupUi(self, PriceListWidget):
         if not PriceListWidget.objectName():
             PriceListWidget.setObjectName(u"PriceListWidget")
-        PriceListWidget.resize(980, 699)
+        PriceListWidget.resize(562, 388)
         self.verticalLayout_5 = QVBoxLayout(PriceListWidget)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.verticalLayout_5.setContentsMargins(5, 5, 5, 5)

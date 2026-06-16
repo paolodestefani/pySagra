@@ -60,7 +60,7 @@ from PySide6.QtWidgets import QSizePolicy
 from App import session
 from App import currentIcon
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import TP
+from App.Core.Gui import get_tab_positions
 from App.Database.Setting import Setting
 from App.Database.Event import get_event_from_date
 from App.Database.CashDesk import get_cash_desk_description
@@ -251,7 +251,7 @@ class BaseOrderDialog(QDialog):
             self.ui.buttonGroupQuantity.addButton(i)
             
         # define department layout tabs orientation
-        self.ui.tabWidgetList.setTabPosition(TP[self.setting['order_list_tab_position'] or 'N'][1])
+        self.ui.tabWidgetList.setTabPosition(get_tab_positions()[self.setting['order_list_tab_position'] or 'N'][1])
         
         # grid parameters and properties initialization
         self.ui.list_rows = self.setting['order_list_rows']

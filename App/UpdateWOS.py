@@ -47,7 +47,7 @@ from PySide6.QtWidgets import QDialogButtonBox
 from App import session
 from App.Database.Event import get_event_data
 from App.Database.Lookup import event_lookup
-from App.Database.Department import department_list
+from App.Database.Department import department_web_list
 from App.Database.Item import item_web_list
 from App.Database.Item import get_variants
 from App.Database.WebOrderServer import get_web_order_server_params
@@ -115,7 +115,7 @@ class UpdateWebOrderServerDialog(QDialog):
 
         items = ET.SubElement(root, "items")        
         with gui_exception_context(self, _tr("UpdateWOS", "Generate items")):
-            for did, d in department_list():
+            for did, d in department_web_list():
                     dep = ET.SubElement(items, "department")
                     dep.set('description', d)
                     for i, d, p, a, v in item_web_list(event, did):
@@ -127,7 +127,7 @@ class UpdateWebOrderServerDialog(QDialog):
                         ET.SubElement(item, "variants").text = str(v)
         vars = ET.SubElement(root, "itemvariants")   
         with gui_exception_context(self, _tr("UpdateWOS", "Generate item variants")):
-            for did, d in department_list():     
+            for did, d in department_web_list():     
                 for i, d, p, a, v in item_web_list(event, did):
                     if v:
                         item = ET.SubElement(vars, "item")

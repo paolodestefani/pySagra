@@ -41,7 +41,7 @@ from App import session
 
 # translate function
 
-def _tr(context: str, text: str, disambig:str|None = None) -> str:
+def _tr(context: str, text: str, disambig: str | None = None) -> str:
     return QCoreApplication.translate(context, text, disambig)
 
 

@@ -57,6 +57,7 @@ from App.Widget.Dialog import PrintDialog
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import QuantityDelegate
 from App.Widget.Delegate import AmountDelegate
+from App.Widget.Delegate import PriceDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import TimeDelegate
 from App.Widget.Form import FormIndexManager
@@ -236,7 +237,7 @@ class OrderForm(FormIndexManager):
         self.ui.tableViewDetails.setLayoutName('OrderArchiveDetail')
         self.ui.tableViewDetails.setItemDelegateForColumn(ordd.ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewDetails.setItemDelegateForColumn(ordd.QUANTITY, QuantityDelegate(self))
-        self.ui.tableViewDetails.setItemDelegateForColumn(ordd.PRICE, AmountDelegate(self))
+        self.ui.tableViewDetails.setItemDelegateForColumn(ordd.PRICE, PriceDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(ordd.AMOUNT, AmountDelegate(self))
         # details department treeView
         self.ui.treeViewDepartmentDetails.setModel(modelTreeDep)
@@ -253,6 +254,12 @@ class OrderForm(FormIndexManager):
         self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(orddd.DEPARTMENT, RelationDelegate(self, department_lookup))
         # store setting on form creation
         self.setting = Setting()
+        # decimals on amount
+        decs = self.setting['amount_decimal_places']
+        self.ui.doubleSpinBoxTotalAmount.setDecimals(decs)
+        self.ui.doubleSpinBoxDiscount.setDecimals(decs)
+        self.ui.doubleSpinBoxCash.setDecimals(decs)
+        self.ui.doubleSpinBoxChange.setDecimals(decs)
         # enable/disable widget satus
         self.ui.checkBoxPrintCustomerCopy.setDisabled(True)
         self.ui.checkBoxPrintCoverCopy.setDisabled(True)

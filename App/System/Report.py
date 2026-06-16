@@ -135,7 +135,7 @@ class ReportForm(FormIndexManager):
         self.ui.comboBoxL10n.setItemList(langCountryFlags())
         self.mapper.addMapping(self.ui.comboBoxL10n, rpt.L10N) # don't need b"modelDataStr" because is the default
         self.mapper.addMapping(self.ui.lineEditDescription, rpt.DESCRIPTION)
-        self.ui.comboBoxClass.addItems([None] + REPORT_CLASSES)
+        self.ui.comboBoxClass.addItems(REPORT_CLASSES)
         self.mapper.addMapping(self.ui.comboBoxClass, rpt.CLASS)
         self.mapper.addMapping(self.ui.checkBoxSystem, rpt.SYSTEM)
         self.mapper.addMapping(self.ui.textEditXML, rpt.XML)

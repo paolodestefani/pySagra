@@ -40,14 +40,13 @@ from PySide6.QtWidgets import QInputDialog
 # application modules
 from App import session
 from App import currentIcon
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Lookup import item_all_lookup
 from App.Database.Models import PriceListIndexModel
 from App.Database.Models import PriceListModel
 from App.Database.Models import PriceListItemModel
 from App.Database.PriceList import duplicate_price_list
 from App.Widget.Delegate import RelationDelegate
-from App.Widget.Delegate import AmountDelegate
+from App.Widget.Delegate import PriceDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.PriceListWidget import Ui_PriceListWidget
@@ -141,7 +140,7 @@ class PriceListForm(FormIndexManager):
         self.ui.tableViewPrices.setModel(priModel)
         self.ui.tableViewPrices.setLayoutName('PriceListDetail')
         self.ui.tableViewPrices.setItemDelegateForColumn(prc.ITEM, RelationDelegate(self, item_all_lookup))
-        self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, AmountDelegate(self))
+        self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, PriceDelegate(self))
         # signal slot
         self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)
         self.ui.pushButtonAdd.clicked.connect(self.add)

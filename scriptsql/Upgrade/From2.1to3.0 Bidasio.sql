@@ -754,7 +754,7 @@ SELECT
 	b.change,				-- change
 	--is_electronic_payment, -- is_electronic_payment
 	b.status,				-- status
-	b.fulfillment_date,	-- fulfillment_date
+	b.fullfillment_date,	-- fulfillment_date
 	b.user_ins,				-- created_by
 	b.date_ins,				-- created_at
 	b.user_upd,				-- updated_by
@@ -792,7 +792,7 @@ SELECT
 	d.department_id, 		-- department_id
 	b.note,					-- note
 	b.other_departments, 	-- other_departments
-	b.fulfillment_date, 	-- fulfillment_date
+	b.fullfillment_date, 	-- fulfillment_date
 	b.user_ins,				-- created_by
 	b.date_ins,				-- created_at
 	b.user_upd,				-- updated_by

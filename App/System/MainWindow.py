@@ -68,7 +68,8 @@ from App import currentIcon
 from App import APPNAME
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import TBS, TP
+from App.Core.Gui import get_toolbutton_styles
+from App.Core.Gui import get_tab_positions
 from App.System.Login import ChangeCompanyDialog
 from App.System.Action import createActionDictionary
 from App.Database.Connect import appconn
@@ -170,7 +171,7 @@ def createToolBar(mainWindow: QMainWindow) -> None:
         for child, itemType, description, action in get_toolbar(session['toolbar']):
             toolBar = QToolBar(description)
             toolBar.setObjectName(description)
-            toolBar.setToolButtonStyle(TBS[session['tool_button_style'] or 'I'][1])
+            toolBar.setToolButtonStyle(get_toolbutton_styles()[session['tool_button_style'] or 'I'][1])
             for child2, itemType2, description2, action2 in get_toolbar(child):
                 if itemType2 == 'S':
                     toolBar.addSeparator()
@@ -326,7 +327,7 @@ class MainWindow(QMainWindow):
         # create main window central widget
         # tab widget = central widget
         self.tabWidget = TabWidget(self)
-        self.tabWidget.setTabPosition(TP[session['tab_position'] or 'N'][1])
+        self.tabWidget.setTabPosition(get_tab_positions()[session['tab_position'] or 'N'][1])
         self.tabWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setMovable(True)

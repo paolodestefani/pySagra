@@ -48,10 +48,10 @@ from PySide6.QtWidgets import QPushButton
 from App import session
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import CS
-from App.Core.Gui import IT
-from App.Core.Gui import TBS
-from App.Core.Gui import TP
+from App.Core.Gui import get_color_scheme
+from App.Core.Gui import get_icon_themes
+from App.Core.Gui import get_toolbutton_styles
+from App.Core.Gui import get_tab_positions
 from App.Core.Gui import setTheme
 from App.Core.Gui import setColorScheme
 from App.Core.Gui import setIcon
@@ -75,7 +75,7 @@ def preferences(action: QAction, checked: bool = False) -> None:
         QMessageBox.warning(
             mw,
             _tr('MessageDialog', "Warning"),
-            _tr('CashDesk', 'No access right to this function')
+            _tr('MessageDialog', 'No access right to this function')
         )
         return
     dialog = PreferencesDialog(mw, title, icon)
@@ -97,13 +97,13 @@ class PreferencesDialog(QDialog):
         # themes - from platform available qt styles
         self.ui.comboBoxTheme.addItems(QStyleFactory.keys())
         # color scheme for dark mode
-        self.ui.comboBoxColorScheme.setItemList([(i[0], i[1][0]) for i in CS.items()])
+        self.ui.comboBoxColorScheme.setItemList([(i[0], i[1][0]) for i in get_color_scheme().items()])
         # icons - here for translation requirement (a QApplication is require for _tr() to work)
-        self.ui.comboBoxIcons.setItemList(IT)
+        self.ui.comboBoxIcons.setItemList(get_icon_themes())
         # tool button style - here for translation requirement (a QApplication is require for _tr() to work)
-        self.ui.comboBoxToolButtonStyle.setItemList([(i[0], i[1][0]) for i in TBS.items()])
+        self.ui.comboBoxToolButtonStyle.setItemList([(i[0], i[1][0]) for i in get_toolbutton_styles().items()])
         # tab position - here for translation requirement (a QApplication is require for _tr() to work)
-        self.ui.comboBoxTabPosition.setItemList([(i[0], i[1][0]) for i in TP.items()])
+        self.ui.comboBoxTabPosition.setItemList([(i[0], i[1][0]) for i in get_tab_positions().items()])
         self.ui.comboBoxFontFamily.setCurrentFont(QFont('Arial'))
         self.ui.spinBoxFontSize.setValue(10)
         # load user preferences
@@ -161,8 +161,8 @@ class PreferencesDialog(QDialog):
         setIcon(icon)
         app.setFont(font)
         for i in session['mainwin'].findChildren(QToolBar):
-            i.setToolButtonStyle(TBS[tbstyle][1])
-        session['mainwin'].tabWidget.setTabPosition(TP[tabposition][1])
+            i.setToolButtonStyle(get_toolbutton_styles()[tbstyle][1])
+        session['mainwin'].tabWidget.setTabPosition(get_tab_positions()[tabposition][1])
         # save new preferences
         with gui_exception_context(self, _tr('Preferences', 'Save user preferences')):
             save_preferences(session['app_user_code'], 
