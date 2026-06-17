@@ -156,13 +156,17 @@ class LoginDialog(QDialog):
         logger.info("Setting user style to %s", session['style_theme'])
         setTheme(session['style_theme'])
         # user style colore scheme
-        logger.info("Setting user color palette to %s", session['color_scheme'] or "Unknown")
-        setColorScheme(session['color_scheme'])
+        if session['color_scheme'] and session['color_scheme'] in ('D', 'L', 'S'):
+            cs_desc = {'D': 'Dark', 'L': 'Light', 'S': 'System default'}[session['color_scheme']]
+            logger.info("Setting user color palette to %s", cs_desc)
+            setColorScheme(session['color_scheme'])
+        else:
+            logger.info("Unable to set user color palette")
         # user icon theme
         logger.info("Setting user icon theme to %s", session['icon_theme'])
         setIconTheme(session['icon_theme'])
         # set default font and font size
-        logger.info("Setting user font to %s size %s", session['font_family'], session['font_size'])
+        logger.info("Setting user font to %s size %s", session['font_family'] or 'System default', session['font_size'])
         setFont(session['font_family'], session['font_size'])
         # user l10n
         # set locale
@@ -171,27 +175,36 @@ class LoginDialog(QDialog):
             session['qlocale'] = QLocale(session['l10n'])
             QLocale.setDefault(session['qlocale'])
         else:
+            session['qlocale'] = QLocale.system()
             logger.info("Localization set to system default %s", QLocale.system().name())
         # remove login translator if any
         logger.info("Removing login translations")
-        for i in ('qt', APPNAME):
-            QCoreApplication.removeTranslator(session.get(i + '_translator')) # type: ignore
+        for i in ('qtbase', APPNAME):
+            current_tr = session.get(i + '_translator')
+            if current_tr is not None:
+                QCoreApplication.removeTranslator(current_tr)
+            session[i + '_translator'] = None
         # install user's translators if lang != 'en'
         if session['l10n']:
             lang = session['l10n'][:2]
             if lang != 'en':
                 logger.info("Setting user translations to %s", lang)
                 for i in ('qtbase', APPNAME):
-                    t = QTranslator()
-                    if t.load(f"{i}_{lang}", ":/"):
-                        if QCoreApplication.installTranslator(t):
-                            session[i + '_translator'] = t
+                    tr_key = i + '_translator'
+                    session[tr_key] = QTranslator()
+                    if session[tr_key].load(f"{i}_{lang}", ":/"):
+                        if QCoreApplication.installTranslator(session[tr_key]):
+                            logger.info("Successfully installed translator for %s", i)
                         else:
                             logger.error("Error installing application translator for %s", i)
+                            session[tr_key] = None
                     else:
                         logger.error("Error loading application translator for %s", i)
+                        session[tr_key] = None
+            else:
+                logger.info("User language is English, native strings will be used")
         else:
-            logger.info("No translation required for user %s", session['app_user_code'])
+            logger.info("No translation required for user %s", session['app_user'])
         
         # set working company
         if session['current_company'] and can_use_company(session['app_user_code'], session['current_company']):
@@ -253,7 +266,7 @@ class ChangeCompanyDialog(QDialog):
             self.ui.labelMessage.setText(_tr('ChangeCompany', "There are no other companies you can login"))
             self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setDisabled(True)
         else:
-            self.ui.labelMessage.setText(_tr('ChangeCompany', "Choose a company to login"))
+            self.ui.labelMessage.setText(_tr('ChangeCompany', "Select a company from the list below"))
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.lineEditUser.setText(session['user'])
         self.ui.lineEditCompany.setText(session.get('company_description') or '')

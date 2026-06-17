@@ -15,11 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDateEdit, QGridLayout,
-    QGroupBox, QHBoxLayout, QHeaderView, QLineEdit,
-    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
-    QStackedWidget, QTabWidget, QTimeEdit, QTreeView,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDateEdit, QGroupBox,
+    QHBoxLayout, QHeaderView, QLineEdit, QPushButton,
+    QSizePolicy, QSpacerItem, QSpinBox, QStackedWidget,
+    QTabWidget, QTimeEdit, QTreeView, QVBoxLayout,
+    QWidget)
 
 from App.Widget.Control import (DateTimeEdit, RelationalComboBox, SpinBoxDecimal)
 from App.Widget.View import EnhancedTableView
@@ -28,7 +28,7 @@ class Ui_OrderWidget(object):
     def setupUi(self, OrderWidget):
         if not OrderWidget.objectName():
             OrderWidget.setObjectName(u"OrderWidget")
-        OrderWidget.resize(1422, 571)
+        OrderWidget.resize(1184, 552)
         self.verticalLayout_19 = QVBoxLayout(OrderWidget)
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
         self.stackedWidget = QStackedWidget(OrderWidget)
@@ -36,24 +36,14 @@ class Ui_OrderWidget(object):
         self.stackedWidget.setEnabled(True)
         self.page1 = QWidget()
         self.page1.setObjectName(u"page1")
-        self.verticalLayout_17 = QVBoxLayout(self.page1)
+        self.verticalLayout_24 = QVBoxLayout(self.page1)
+        self.verticalLayout_24.setObjectName(u"verticalLayout_24")
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.verticalLayout_17 = QVBoxLayout()
         self.verticalLayout_17.setObjectName(u"verticalLayout_17")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.gridLayout = QGridLayout()
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.groupBox_14 = QGroupBox(self.page1)
-        self.groupBox_14.setObjectName(u"groupBox_14")
-        self.verticalLayout_15 = QVBoxLayout(self.groupBox_14)
-        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
-        self.lineEditCashDesk = QLineEdit(self.groupBox_14)
-        self.lineEditCashDesk.setObjectName(u"lineEditCashDesk")
-
-        self.verticalLayout_15.addWidget(self.lineEditCashDesk)
-
-
-        self.gridLayout.addWidget(self.groupBox_14, 0, 0, 1, 1)
-
         self.groupBox = QGroupBox(self.page1)
         self.groupBox.setObjectName(u"groupBox")
         font = QFont()
@@ -71,7 +61,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_5.addWidget(self.spinBoxNumber)
 
 
-        self.gridLayout.addWidget(self.groupBox, 0, 1, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox)
 
         self.groupBox_2 = QGroupBox(self.page1)
         self.groupBox_2.setObjectName(u"groupBox_2")
@@ -84,7 +74,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_6.addWidget(self.dateEditDate)
 
 
-        self.gridLayout.addWidget(self.groupBox_2, 0, 2, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_2)
 
         self.groupBox_3 = QGroupBox(self.page1)
         self.groupBox_3.setObjectName(u"groupBox_3")
@@ -97,7 +87,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_8.addWidget(self.timeEditTime)
 
 
-        self.gridLayout.addWidget(self.groupBox_3, 0, 3, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_3)
 
         self.groupBox_4 = QGroupBox(self.page1)
         self.groupBox_4.setObjectName(u"groupBox_4")
@@ -109,7 +99,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_9.addWidget(self.comboBoxDelivery)
 
 
-        self.gridLayout.addWidget(self.groupBox_4, 0, 4, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_4)
 
         self.groupBox_15 = QGroupBox(self.page1)
         self.groupBox_15.setObjectName(u"groupBox_15")
@@ -122,7 +112,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_22.addWidget(self.checkBoxElectronicPayment, 0, Qt.AlignmentFlag.AlignHCenter)
 
 
-        self.gridLayout.addWidget(self.groupBox_15, 0, 5, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_15)
 
         self.groupBox_16 = QGroupBox(self.page1)
         self.groupBox_16.setObjectName(u"groupBox_16")
@@ -135,7 +125,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_23.addWidget(self.checkBoxWebOrder)
 
 
-        self.gridLayout.addWidget(self.groupBox_16, 0, 6, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_16)
 
         self.groupBox_7 = QGroupBox(self.page1)
         self.groupBox_7.setObjectName(u"groupBox_7")
@@ -150,7 +140,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_12.addWidget(self.doubleSpinBoxTotalAmount)
 
 
-        self.gridLayout.addWidget(self.groupBox_7, 0, 7, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_7)
 
         self.groupBox_8 = QGroupBox(self.page1)
         self.groupBox_8.setObjectName(u"groupBox_8")
@@ -165,7 +155,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_13.addWidget(self.doubleSpinBoxDiscount)
 
 
-        self.gridLayout.addWidget(self.groupBox_8, 0, 8, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_8)
 
         self.groupBox_9 = QGroupBox(self.page1)
         self.groupBox_9.setObjectName(u"groupBox_9")
@@ -180,7 +170,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_14.addWidget(self.doubleSpinBoxCash)
 
 
-        self.gridLayout.addWidget(self.groupBox_9, 0, 9, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_9)
 
         self.groupBox_10 = QGroupBox(self.page1)
         self.groupBox_10.setObjectName(u"groupBox_10")
@@ -195,7 +185,24 @@ class Ui_OrderWidget(object):
         self.verticalLayout.addWidget(self.doubleSpinBoxChange)
 
 
-        self.gridLayout.addWidget(self.groupBox_10, 0, 10, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox_10)
+
+
+        self.verticalLayout_17.addLayout(self.horizontalLayout)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.groupBox_14 = QGroupBox(self.page1)
+        self.groupBox_14.setObjectName(u"groupBox_14")
+        self.verticalLayout_15 = QVBoxLayout(self.groupBox_14)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.lineEditCashDesk = QLineEdit(self.groupBox_14)
+        self.lineEditCashDesk.setObjectName(u"lineEditCashDesk")
+
+        self.verticalLayout_15.addWidget(self.lineEditCashDesk)
+
+
+        self.horizontalLayout_4.addWidget(self.groupBox_14)
 
         self.groupBox_5 = QGroupBox(self.page1)
         self.groupBox_5.setObjectName(u"groupBox_5")
@@ -207,7 +214,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_10.addWidget(self.lineEditTableNumber)
 
 
-        self.gridLayout.addWidget(self.groupBox_5, 1, 0, 1, 1)
+        self.horizontalLayout_4.addWidget(self.groupBox_5)
 
         self.groupBox_6 = QGroupBox(self.page1)
         self.groupBox_6.setObjectName(u"groupBox_6")
@@ -220,7 +227,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_11.addWidget(self.spinBoxCovers)
 
 
-        self.gridLayout.addWidget(self.groupBox_6, 1, 1, 1, 1)
+        self.horizontalLayout_4.addWidget(self.groupBox_6)
 
         self.groupBox_11 = QGroupBox(self.page1)
         self.groupBox_11.setObjectName(u"groupBox_11")
@@ -232,7 +239,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_16.addWidget(self.lineEditCustomerName)
 
 
-        self.gridLayout.addWidget(self.groupBox_11, 1, 2, 1, 3)
+        self.horizontalLayout_4.addWidget(self.groupBox_11)
 
         self.groupBox_17 = QGroupBox(self.page1)
         self.groupBox_17.setObjectName(u"groupBox_17")
@@ -244,7 +251,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_21.addWidget(self.lineEditCustomerContact)
 
 
-        self.gridLayout.addWidget(self.groupBox_17, 1, 5, 1, 3)
+        self.horizontalLayout_4.addWidget(self.groupBox_17)
 
         self.groupBox_12 = QGroupBox(self.page1)
         self.groupBox_12.setObjectName(u"groupBox_12")
@@ -256,7 +263,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_18.addWidget(self.comboBoxStatus)
 
 
-        self.gridLayout.addWidget(self.groupBox_12, 1, 8, 1, 1)
+        self.horizontalLayout_4.addWidget(self.groupBox_12)
 
         self.groupBox_13 = QGroupBox(self.page1)
         self.groupBox_13.setObjectName(u"groupBox_13")
@@ -269,17 +276,20 @@ class Ui_OrderWidget(object):
         self.verticalLayout_20.addWidget(self.dateTimeEditFullfillment)
 
 
-        self.gridLayout.addWidget(self.groupBox_13, 1, 9, 1, 2)
+        self.horizontalLayout_4.addWidget(self.groupBox_13)
 
 
-        self.horizontalLayout.addLayout(self.gridLayout)
+        self.verticalLayout_17.addLayout(self.horizontalLayout_4)
+
+
+        self.horizontalLayout_5.addLayout(self.verticalLayout_17)
 
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout.addItem(self.horizontalSpacer_2)
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_2)
 
 
-        self.verticalLayout_17.addLayout(self.horizontalLayout)
+        self.verticalLayout_24.addLayout(self.horizontalLayout_5)
 
         self.tabWidget = QTabWidget(self.page1)
         self.tabWidget.setObjectName(u"tabWidget")
@@ -324,7 +334,7 @@ class Ui_OrderWidget(object):
 
         self.tabWidget.addTab(self.tab_3, "")
 
-        self.verticalLayout_17.addWidget(self.tabWidget)
+        self.verticalLayout_24.addWidget(self.tabWidget)
 
         self.stackedWidget.addWidget(self.page1)
         self.page2 = QWidget()
@@ -383,7 +393,6 @@ class Ui_OrderWidget(object):
 
     def retranslateUi(self, OrderWidget):
         OrderWidget.setWindowTitle(QCoreApplication.translate("OrderWidget", u"Order widget", None))
-        self.groupBox_14.setTitle(QCoreApplication.translate("OrderWidget", u"Cash desk", None))
         self.groupBox.setTitle(QCoreApplication.translate("OrderWidget", u"Number", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("OrderWidget", u"Date", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("OrderWidget", u"Time", None))
@@ -396,12 +405,13 @@ class Ui_OrderWidget(object):
         self.groupBox_8.setTitle(QCoreApplication.translate("OrderWidget", u"Discount", None))
         self.groupBox_9.setTitle(QCoreApplication.translate("OrderWidget", u"Cash", None))
         self.groupBox_10.setTitle(QCoreApplication.translate("OrderWidget", u"Change", None))
+        self.groupBox_14.setTitle(QCoreApplication.translate("OrderWidget", u"Cash desk", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("OrderWidget", u"Table", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("OrderWidget", u"Covers", None))
         self.groupBox_11.setTitle(QCoreApplication.translate("OrderWidget", u"Customer name", None))
         self.groupBox_17.setTitle(QCoreApplication.translate("OrderWidget", u"Customer contact", None))
         self.groupBox_12.setTitle(QCoreApplication.translate("OrderWidget", u"Order status", None))
-        self.groupBox_13.setTitle(QCoreApplication.translate("OrderWidget", u"Fullfillment date", None))
+        self.groupBox_13.setTitle(QCoreApplication.translate("OrderWidget", u"Fulfillment date", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("OrderWidget", u"Order details", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("OrderWidget", u"Departments details", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("OrderWidget", u"Department notes and status", None))

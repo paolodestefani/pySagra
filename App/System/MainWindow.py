@@ -30,6 +30,7 @@ show status bar, interact with the user and the other modules.
 
 # standard library
 import sys
+from enum import IntEnum
 from functools import partial
 import logging
 
@@ -86,15 +87,16 @@ logger = logging.getLogger(__name__)
 NSEMPTY = (False,) * 15
 
 # action definition fields
-DESC = 0 # description
-SLOT = 1 # slot
-CHCK = 2 # checkable
-ICON = 3 # icon name
-SHCT = 4 # shortcut
-TOOL = 5 # tooltip
-STAT = 6 # status tip
-WHAT = 7 # what's this
-MERO = 8 # menu role
+class adf(IntEnum):
+    DESC = 0 # description
+    SLOT = 1 # slot
+    CHCK = 2 # checkable
+    ICON = 3 # icon name
+    SHCT = 4 # shortcut
+    TOOL = 5 # tooltip
+    STAT = 6 # status tip
+    WHAT = 7 # what's this
+    MERO = 8 # menu role
 
 
 # create actions (main window)
@@ -114,26 +116,26 @@ def createActions(mainWindow: MainWindow) -> None:
                 action.setDefaultWidget(mainWindow.counter)
             else:
                 # regular action for anything else
-                action = QAction(actionDefinition[act][DESC], mainWindow)  # description
+                action = QAction(actionDefinition[act][adf.DESC], mainWindow)  # description
             
-            action.setMenuRole(actionDefinition[act][MERO])
+            action.setMenuRole(actionDefinition[act][adf.MERO])
             
             action.setData((read, write, execute)) # authorization
 
-            if actionDefinition[act][SLOT]:  # slot, passing qaction
-                action.triggered.connect(partial(actionDefinition[act][SLOT], action))
-            if actionDefinition[act][CHCK]:  # chackable
+            if actionDefinition[act][adf.SLOT]:  # slot, passing qaction
+                action.triggered.connect(partial(actionDefinition[act][adf.SLOT], action))
+            if actionDefinition[act][adf.CHCK]:  # chackable
                 action.setCheckable(True)
-            if actionDefinition[act][ICON]:  # icon
-                action.setIcon(currentIcon[actionDefinition[act][ICON]])
-            if actionDefinition[act][SHCT]:  # standard key shortcut
-                action.setShortcut(actionDefinition[act][SHCT])
-            if actionDefinition[act][TOOL]:  # tooltip
-                action.setToolTip(actionDefinition[act][TOOL])
-            if actionDefinition[act][STAT]:  # statustip
-                action.setStatusTip(actionDefinition[act][STAT])
-            if actionDefinition[act][WHAT]:  # whatsthis
-                action.setWhatsThis(actionDefinition[act][WHAT])
+            if actionDefinition[act][adf.ICON]:  # icon
+                action.setIcon(currentIcon[actionDefinition[act][adf.ICON]])
+            if actionDefinition[act][adf.SHCT]:  # standard key shortcut
+                action.setShortcut(actionDefinition[act][adf.SHCT])
+            if actionDefinition[act][adf.TOOL]:  # tooltip
+                action.setToolTip(actionDefinition[act][adf.TOOL])
+            if actionDefinition[act][adf.STAT]:  # statustip
+                action.setStatusTip(actionDefinition[act][adf.STAT])
+            if actionDefinition[act][adf.WHAT]:  # whatsthis
+                action.setWhatsThis(actionDefinition[act][adf.WHAT])
             
             mainWindow.addAction(action)
             currentAction[act] = action
@@ -359,8 +361,8 @@ class MainWindow(QMainWindow):
         self.updateStatusBar()
         # finally restore window sate
         st = QSettings()
-        if st.value("MainWindowGeometry"):
-            self.restoreGeometry(st.value("MainWindowGeometry"))
+        if st.value("MainWindow/Geometry"):
+            self.restoreGeometry(st.value("MainWindow/Geometry"))
         else:  # useful default
             self.setGeometry(50, 50, 800, 600)
         # center windows
@@ -368,10 +370,11 @@ class MainWindow(QMainWindow):
                                             Qt.AlignmentFlag.AlignCenter,
                                             self.size(),
                                             QGuiApplication.primaryScreen().availableGeometry()))
-        if st.value("MainWindowState"):
-            self.restoreState(st.value("MainWindowState"), 1)
+        if st.value("MainWindow/State"):
+            self.restoreState(st.value("MainWindow/State"), 1)
         # and set initial edit status
         self.updateEditStatus(NSEMPTY, -1, -1, None)
+        print("Settings:", st.fileName())
 
     def updateActionMenuToolbar(self) -> None:
         "Delete/recreate actions/menus/toolbars on access/change company"
@@ -603,8 +606,8 @@ class MainWindow(QMainWindow):
             self.closeAllTabs()
             # save window state
             st = QSettings()
-            st.setValue("MainWindowGeometry", self.saveGeometry())
-            st.setValue("MainWindowState", self.saveState(1))
+            st.setValue("MainWindow/Geometry", self.saveGeometry())
+            st.setValue("MainWindow/State", self.saveState(1))
             # disconnect
             logger.info("DB disconnection")
             appconn.close()

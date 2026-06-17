@@ -152,7 +152,7 @@ class EventForm(FormIndexManager):
         "Upload event image file"
         # get path
         st = QSettings()
-        path = st.value("PathImagesEvents", QDir.current().path())
+        path = st.value("Event/PathImages", QDir.current().path())
         f, t = QFileDialog.getOpenFileName(self,
                                            _tr("Event", "Select the image file to upload"),
                                            str(path),
@@ -168,7 +168,7 @@ class EventForm(FormIndexManager):
                                     "automatically resized to the max allowed size of 640x480 pixels"))
         self.ui.labelEventImage.setPixmap(pix)
         # save path
-        st.setValue("PathImagesEvents", QFileInfo(f).path())
+        st.setValue("Event/PathImages", QFileInfo(f).path())
         if hasattr(self.model, 'isDirty'):
             self.model.isDirty = True
         if hasattr(self.model, 'userDataChanged'):
@@ -180,7 +180,7 @@ class EventForm(FormIndexManager):
         if not self.ui.labelEventImage.pixmap():
             return
         st = QSettings()
-        path = st.value("PathImagesEvents", QDir.current().path())
+        path = st.value("Event/PathImages", QDir.current().path())
         f, t = QFileDialog.getSaveFileName(self,
                                            _tr("Event", "Select the destination file name"),
                                            str(path),

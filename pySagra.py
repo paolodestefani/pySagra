@@ -190,17 +190,23 @@ if __name__ == "__main__":
         ui_langs = QLocale().uiLanguages(QLocale.TagSeparator.Underscore)
         if ui_langs:
             lang = ui_langs[0][:2]
+    # set default locale even if it is not stricly necessary
+    session['qlocale'] = QLocale(lang)
+    QLocale.setDefault(session['qlocale'])
     # install translators for qt and main application
     logger.info('Installing translators')
-    for i in ('login', APPNAME):
-        t = QTranslator()
-        if t.load(i + '_' + lang, ":/"):
-            if app.installTranslator(t):
-                session[i + '_translator'] = t
+    for i in ('qtbase', APPNAME):
+        tr_key = i + '_translator'
+        session[tr_key] = QTranslator()
+        if session[tr_key].load(f"{i}_{lang}", ":/"):
+            if app.installTranslator(session[tr_key]):
+                logger.info("Successfully installed translator for %s", i)
             else:
-                logger.warning('Unable to install translator for %s', i)
+                logger.error("Error installing application translator for %s", i)
+                session[tr_key] = None
         else:
-            logger.warning('Unable to load translator for %s', i)
+            logger.error("Error loading application translator for %s", i)
+            session[tr_key] = None
     # set basic parameters
     logger.info('Setting QApplication name, version, domain and icon')
     app.setApplicationName(APPNAME)

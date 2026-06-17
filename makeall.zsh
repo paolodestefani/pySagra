@@ -6,10 +6,6 @@ cd /Users/paolo/Development/pySagra
 # activate virtual env
 source /Users/paolo/Development/.venv/pyside-psycopg/bin/activate
 
-# create lib ui modules
-#for filename in App/Ui/*.ui; do
-#    pyside6-uic -o "${filename%.*}".py "$filename"
-#done
 
 for filename in App/Ui/*.ui; do
     output_file="${filename%.*}.py"
@@ -17,15 +13,9 @@ for filename in App/Ui/*.ui; do
     pyside6-uic "$filename" -o "$output_file"
 done
 
-echo "Completed"
+echo "Compile ui files Completed"
 
-# transaltion for login dialog
-pyside6-lupdate \
-	App/System/Login.py \
-	App/Ui/LoginDialog.ui \
-	-tr-function-alias translate+=_tr -noobsolete -ts translation/ts/login_it.ts 
-	
-pyside6-lrelease translation/ts/login_it.ts -qm translation/login_it.qm
+echo "Updating translation file"
 
 # translations without pro file, sources and forms
 pyside6-lupdate	\
@@ -39,6 +29,7 @@ pyside6-lupdate	\
     App/System/Connection.py \
 	App/System/Customization.py \
 	App/System/Help.py \
+	App/System/Login.py \
 	App/System/Mainwindow.py \
 	App/System/Menu.py \
 	App/System/Preferences.py \
@@ -73,6 +64,7 @@ pyside6-lupdate	\
     App/Ui/HelpDialog.ui \
     App/Ui/InventoryWidget.ui \
     App/Ui/ItemWidget.ui \
+    App/Ui/LoginDialog.ui \
     App/Ui/MenuWidget.ui \
     App/Ui/MessageDialog.ui \
     App/Ui/NewCompanyDialog.ui \
@@ -106,8 +98,14 @@ pyside6-lupdate	\
 
 pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm
 
+echo "Translation file updated"
+
+echo "Creating resource file"
+
 # resources
 pyside6-rcc resources.qrc -o resources_rc.py 
+
+echo "Resource file created"
 
 # exit from venv
 deactivate

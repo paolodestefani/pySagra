@@ -496,7 +496,7 @@ class EnhancedTableView(QTableView):
     def exportView(self) -> None:
         """Export visible table data to a CSV file with localized formatting."""
         settings = QSettings()
-        path = str(settings.value("ExportPath", os.getcwd()))
+        path = str(settings.value("EnhancedTableView/ExportPath", os.getcwd()))
         
         model = self.model()
         if model is None:

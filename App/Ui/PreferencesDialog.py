@@ -27,9 +27,9 @@ class Ui_PreferencesDialog(object):
         if not PreferencesDialog.objectName():
             PreferencesDialog.setObjectName(u"PreferencesDialog")
         PreferencesDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        PreferencesDialog.resize(643, 384)
-        self.verticalLayout_2 = QVBoxLayout(PreferencesDialog)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        PreferencesDialog.resize(645, 341)
+        self.verticalLayout_9 = QVBoxLayout(PreferencesDialog)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.verticalLayout_6 = QVBoxLayout()
@@ -46,6 +46,8 @@ class Ui_PreferencesDialog(object):
 
         self.horizontalLayout_2.addLayout(self.verticalLayout_6)
 
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.groupBoxTheme = QGroupBox(PreferencesDialog)
@@ -144,15 +146,23 @@ class Ui_PreferencesDialog(object):
         self.gridLayout.addWidget(self.groupBoxIcon, 2, 2, 1, 1)
 
 
-        self.horizontalLayout_2.addLayout(self.gridLayout)
+        self.verticalLayout_2.addLayout(self.gridLayout)
 
-        self.horizontalLayout_2.setStretch(1, 1)
+        self.label = QLabel(PreferencesDialog)
+        self.label.setObjectName(u"label")
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_2.addWidget(self.label)
+
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout_2)
+
+
+        self.verticalLayout_9.addLayout(self.horizontalLayout_2)
 
         self.verticalSpacer = QSpacerItem(17, 80, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout_2.addItem(self.verticalSpacer)
+        self.verticalLayout_9.addItem(self.verticalSpacer)
 
         self.buttonBox = QDialogButtonBox(PreferencesDialog)
         self.buttonBox.setObjectName(u"buttonBox")
@@ -160,7 +170,7 @@ class Ui_PreferencesDialog(object):
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Apply|QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok|QDialogButtonBox.StandardButton.RestoreDefaults)
         self.buttonBox.setCenterButtons(True)
 
-        self.verticalLayout_2.addWidget(self.buttonBox)
+        self.verticalLayout_9.addWidget(self.buttonBox)
 
 
         self.retranslateUi(PreferencesDialog)
@@ -182,5 +192,6 @@ class Ui_PreferencesDialog(object):
         self.checkBoxDefaultFont.setText(QCoreApplication.translate("PreferencesDialog", u"Default", None))
         self.groupBoxFontSize.setTitle(QCoreApplication.translate("PreferencesDialog", u"Font size", None))
         self.groupBoxIcon.setTitle(QCoreApplication.translate("PreferencesDialog", u"Icon set", None))
+        self.label.setText(QCoreApplication.translate("PreferencesDialog", u"You may need to restart the application for the changes to take effect.", None))
     # retranslateUi
 

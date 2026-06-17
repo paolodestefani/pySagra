@@ -214,8 +214,8 @@ class SettingsDialog(QDialog):
             self.ui.spinBoxInactivityTime.setEnabled(True)
         # restore settings
         st = QSettings()
-        if st.value("SettingsDialog/Geometry"):
-            self.restoreGeometry(st.value("SettingsDialog/Geometry"))
+        if st.value("Settings/Geometry"):
+            self.restoreGeometry(st.value("Settings/Geometry"))
         # signal/slot
         # slider/spinbox sincro
         self.ui.horizontalSliderLunch.valueChanged.connect(self.lunchSliderChanged)
@@ -374,7 +374,7 @@ class SettingsDialog(QDialog):
         if success:    
             # save geometry
             st = QSettings()
-            st.setValue("SettingsDialog/Geometry", self.saveGeometry())
+            st.setValue("Settings/Geometry", self.saveGeometry())
             QDialog.accept(self)
         else:
             QDialog.reject(self)

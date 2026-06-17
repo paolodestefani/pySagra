@@ -57,19 +57,6 @@ class Ui_ScriptingWidget(object):
 
         self.horizontalLayout_3.addWidget(self.groupBox)
 
-        self.groupBox_3 = QGroupBox(self.form)
-        self.groupBox_3.setObjectName(u"groupBox_3")
-        self.horizontalLayout_5 = QHBoxLayout(self.groupBox_3)
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.comboBoxMethod = QComboBox(self.groupBox_3)
-        self.comboBoxMethod.setObjectName(u"comboBoxMethod")
-        self.comboBoxMethod.setEnabled(True)
-
-        self.horizontalLayout_5.addWidget(self.comboBoxMethod)
-
-
-        self.horizontalLayout_3.addWidget(self.groupBox_3)
-
         self.groupBox_2 = QGroupBox(self.form)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.verticalLayout_8 = QVBoxLayout(self.groupBox_2)
@@ -82,6 +69,19 @@ class Ui_ScriptingWidget(object):
 
 
         self.horizontalLayout_3.addWidget(self.groupBox_2)
+
+        self.groupBox_3 = QGroupBox(self.form)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.horizontalLayout_5 = QHBoxLayout(self.groupBox_3)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.comboBoxMethod = QComboBox(self.groupBox_3)
+        self.comboBoxMethod.setObjectName(u"comboBoxMethod")
+        self.comboBoxMethod.setEnabled(True)
+
+        self.horizontalLayout_5.addWidget(self.comboBoxMethod)
+
+
+        self.horizontalLayout_3.addWidget(self.groupBox_3)
 
         self.groupBox_4 = QGroupBox(self.form)
         self.groupBox_4.setObjectName(u"groupBox_4")
@@ -245,8 +245,8 @@ class Ui_ScriptingWidget(object):
     def retranslateUi(self, ScriptingWidget):
         ScriptingWidget.setWindowTitle(QCoreApplication.translate("ScriptingWidget", u"Python scripting", None))
         self.groupBox.setTitle(QCoreApplication.translate("ScriptingWidget", u"Class", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("ScriptingWidget", u"Method", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ScriptingWidget", u"Trigger", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("ScriptingWidget", u"Method", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("ScriptingWidget", u"Company", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("ScriptingWidget", u"Description", None))
         self.checkBoxActive.setText(QCoreApplication.translate("ScriptingWidget", u"Active", None))

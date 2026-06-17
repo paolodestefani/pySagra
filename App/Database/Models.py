@@ -1124,7 +1124,7 @@ SELECT
 FROM company.price_list;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         self.columns = (("price_list_id", _tr('Models', 'ID'), False, 'int'),
-                        ("description", _tr('Models', 'Item description'), False, 'str'),
+                        ("description", _tr('Models', 'Price list description'), False, 'str'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),

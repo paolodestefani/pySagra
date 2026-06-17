@@ -88,11 +88,11 @@ class HelpDialog(QDialog):
         self.ui.toolButtonPrint.setIcon(currentIcon['edit_print'])
         # restore geometry and slider
         st = QSettings()
-        if st.value("HelpDialogGeometry"):
-            self.restoreGeometry(st.value("HelpDialogGeometry"))
+        if st.value("Help/Geometry"):
+            self.restoreGeometry(st.value("Help/Geometry"))
         else:
             self.setGeometry(50, 50, 800, 600)
-        self.sliderValue = st.value("HelpDialogSliderTextZoom", 1, type=int) 
+        self.sliderValue = st.value("Help/SliderTextZoom", 1, type=int) 
         self.ui.horizontalSliderZoom.setValue(self.sliderValue)
         # restore text zoom
         for i in range(self.sliderValue): # type: ignore
@@ -151,7 +151,7 @@ class HelpDialog(QDialog):
     def closeEvent(self, event: QEvent) -> None:
         "Save geometry and slider setting on exit"
         st = QSettings()
-        st.setValue("HelpDialogGeometry", self.saveGeometry())
-        st.setValue("HelpDialogSliderTextZoom", self.sliderValue)
+        st.setValue("Help/Geometry", self.saveGeometry())
+        st.setValue("Help/SliderTextZoom", self.sliderValue)
         event.accept()
 

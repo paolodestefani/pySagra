@@ -56,13 +56,13 @@
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_3">
+              <widget class="QGroupBox" name="groupBox_2">
                <property name="title">
-                <string>Method</string>
+                <string>Trigger</string>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <layout class="QVBoxLayout" name="verticalLayout_8">
                 <item>
-                 <widget class="QComboBox" name="comboBoxMethod">
+                 <widget class="RelationalComboBox" name="comboBoxTrigger">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
@@ -72,13 +72,13 @@
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_2">
+              <widget class="QGroupBox" name="groupBox_3">
                <property name="title">
-                <string>Trigger</string>
+                <string>Method</string>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_8">
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
-                 <widget class="RelationalComboBox" name="comboBoxTrigger">
+                 <widget class="QComboBox" name="comboBoxMethod">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
@@ -259,14 +259,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>EnhancedTableView</class>
-   <extends>QTableView</extends>
-   <header>App.Widget.View</header>
-  </customwidget>
-  <customwidget>
    <class>RelationalComboBox</class>
    <extends>QComboBox</extends>
    <header>App.Widget.Control</header>
+  </customwidget>
+  <customwidget>
+   <class>EnhancedTableView</class>
+   <extends>QTableView</extends>
+   <header>App.Widget.View</header>
   </customwidget>
  </customwidgets>
  <tabstops>

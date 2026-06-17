@@ -135,7 +135,7 @@ class StatisticsExportDialog(QDialog):
             self.ui.comboBoxFromEvent.addItem(d, i)
             self.ui.comboBoxToEvent.addItem(d, i)
         # restore settings
-        st = QSettings(self)
+        st = QSettings()
         if st.value("StatisticsExport/Geometry"):
             self.restoreGeometry(st.value("StatisticsExport/Geometry"))
         self.ui.lineEditHeadersFileName.setText(st.value("StatisticsExport/HeadersFileName", ""))

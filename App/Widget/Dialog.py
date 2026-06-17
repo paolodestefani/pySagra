@@ -411,8 +411,8 @@ class SortFilterDialog(QDialog):
         self.model: QueryModel|TableModel = model # set also on sortfiltercustomization selection
         # restore settings
         st = QSettings(self)
-        if st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"):
-            self.restoreGeometry(st.value(f"SortFilterDialogGeometry/{self.sortfilterClass}"))
+        if st.value(f"SortFilterDialog/Geometry/{self.sortfilterClass}"):
+            self.restoreGeometry(st.value(f"SortFilterDialog/Geometry/{self.sortfilterClass}"))
         # signal/slot connections
         self.ui.pushButtonUserDefault.clicked.connect(self.setUserDefault)
         self.ui.pushButtonClassDefault.clicked.connect(self.setClassDefault)
@@ -967,7 +967,7 @@ class SortFilterDialog(QDialog):
         "Save local settings on exit, even in accetp/reject/finished"
         # save settings
         st = QSettings(self)
-        st.setValue(f"SortFilterDialogGeometry/{self.sortfilterClass}", self.saveGeometry())
+        st.setValue(f"SortFilterDialog/Geometry/{self.sortfilterClass}", self.saveGeometry())
         super().done(r)
 
 
@@ -1129,12 +1129,12 @@ class PrintDialog(QDialog):
         self.ui.comboBoxPDFVersion.setItemList(self.PDFVERSION)
         # restore settings
         st = QSettings(self)
-        if st.value(f"PrintDialogGeometry/{self.reportClass}"):
-            self.restoreGeometry(st.value(f"PrintDialogGeometry/{self.reportClass}"))
-        self.ui.lineEditDirectory.setText(st.value("ExportPDFDirectory", QDir().currentPath()))
-        self.ui.checkBoxOpenPDF.setChecked(st.value("ExportPDFOpenFileAfter", 'false') == 'true')
-        self.ui.comboBoxPDFVersion.setCurrentIndex(st.value("ExportPDFVersion", 1, type=int))
-        self.ui.spinBoxResolution.setValue(st.value("ExportPDFResolution", 100, type=int))
+        if st.value(f"PrintDialog/Geometry/{self.reportClass}"):
+            self.restoreGeometry(st.value(f"PrintDialog/Geometry/{self.reportClass}"))
+        self.ui.lineEditDirectory.setText(st.value("PrintDialog/PDFDirectory", QDir().currentPath()))
+        self.ui.checkBoxOpenPDF.setChecked(st.value("PrintDialog/PDFOpenFileAfterCreate", 'false') == 'true')
+        self.ui.comboBoxPDFVersion.setCurrentIndex(st.value("PrintDialog/PDFVersion", 1, type=int))
+        self.ui.spinBoxResolution.setValue(st.value("PrintDialog/PDFResolution", 100, type=int))
         # report list for customizations or given report code
         if reportId:
             self.ui.comboBoxReportList.addItem(report_description(reportId), reportId)
@@ -1869,11 +1869,11 @@ class PrintDialog(QDialog):
         "Save local settings on exit, even in accetp/reject/finishe"
         # save settings
         st = QSettings(self)
-        st.setValue(f"PrintDialogGeometry/{self.reportClass}", self.saveGeometry())
-        st.setValue("ExportPDFDirectory", self.ui.lineEditDirectory.text())
-        st.setValue("ExportPDFOpenFileAfter", self.ui.checkBoxOpenPDF.isChecked())
-        st.setValue("ExportPDFVersion", self.ui.comboBoxPDFVersion.currentIndex())
-        st.setValue("ExportPDFResolution", self.ui.spinBoxResolution.value())
+        st.setValue(f"PrintDialog/Geometry/{self.reportClass}", self.saveGeometry())
+        st.setValue("PrintDialog/PDFDirectory", self.ui.lineEditDirectory.text())
+        st.setValue("PrintDialog/PDFOpenFileAfterCreate", self.ui.checkBoxOpenPDF.isChecked())
+        st.setValue("PrintDialog/PDFVersion", self.ui.comboBoxPDFVersion.currentIndex())
+        st.setValue("PrintDialog/PDFResolution", self.ui.spinBoxResolution.value())
         super().done(r)
 
 

@@ -182,7 +182,7 @@ class CompanyForm(FormIndexManager):
     def upload(self, checked: bool) -> None:
         "Upload company image file"
         st = QSettings()
-        path = st.value("PathImagesCompanies", QDir.current().path())
+        path = st.value("Company/PathImages", QDir.current().path())
         f, t = QFileDialog.getOpenFileName(
             self,
             _tr('Company', "Select the image to upload"),
@@ -204,7 +204,7 @@ class CompanyForm(FormIndexManager):
             )
         else:
             self.ui.labelCompanyImage.setPixmap(pix)
-        st.setValue("PathImagesCompanies", QFileInfo(f).path())
+        st.setValue("Company/PathImages", QFileInfo(f).path())
         if hasattr(self.model, 'isDirty'):
             self.model.isDirty = True
         if hasattr(self.model, 'userDataChanged'):
@@ -215,7 +215,7 @@ class CompanyForm(FormIndexManager):
         if not self.ui.labelCompanyImage.pixmap():
             return
         st = QSettings()
-        path = st.value("PathImagesCompanies", QDir.current().path())
+        path = st.value("Company/PathImages", QDir.current().path())
         f, t = QFileDialog.getSaveFileName(
             self,
             _tr('Company', "Select the destination file name"),
@@ -326,7 +326,7 @@ class NewCompanyDialog(QDialog):
     def upload(self) -> None:
         "Upload company image file"
         st = QSettings()
-        path = st.value("PathImages", QDir.current().path())
+        path = st.value("Company/PathImages", QDir.current().path())
         f, t = QFileDialog.getOpenFileName(
             self,
             _tr('Company', "Select the image file to upload"),
@@ -349,7 +349,7 @@ class NewCompanyDialog(QDialog):
             )
         else:
             self.ui.labelImage.setPixmap(pix)
-        st.setValue("PathImages", QFileInfo(f).path())
+        st.setValue("Company/PathImages", QFileInfo(f).path())
 
     def removeImage(self) -> None:
         "Remove company image file"

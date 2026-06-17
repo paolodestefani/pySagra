@@ -219,8 +219,8 @@ class BaseOrderDialog(QDialog):
         
         # restore window geometry
         st = QSettings()
-        if st.value("OrderDialogGeometry"):
-            self.restoreGeometry(st.value("OrderDialogGeometry"))
+        if st.value("OrderEntry/Geometry"):
+            self.restoreGeometry(st.value("OrderEntry/Geometry"))
             
         # window flags configuration
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
@@ -465,7 +465,7 @@ class BaseOrderDialog(QDialog):
                                 _tr('OrderEntry', 'No event available. For order entry '
                                     'it is necessary to setup an event for the current date.'))
             st = QSettings()
-            st.setValue("OrderDialog/Geometry", self.saveGeometry())
+            st.setValue("OrderEntry/Geometry", self.saveGeometry())
             QDialog.reject(self)
             return  # stop execution if validation fails
             
@@ -1419,7 +1419,7 @@ class BaseOrderDialog(QDialog):
                                 ) == QMessageBox.StandardButton.Yes:
             # save geometry
             st = QSettings()
-            st.setValue("OrderDialogGeometry", self.saveGeometry())
+            st.setValue("OrderEntry/Geometry", self.saveGeometry())
             super().reject()
 
 # EOF

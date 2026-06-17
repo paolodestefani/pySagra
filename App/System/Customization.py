@@ -117,7 +117,7 @@ class CustomizationsDialog(QDialog):
     def exportCustomization(self) -> None:
         "Export customizations to a zipped CSV files - *.zip"
         st = QSettings()
-        path = st.value("ExportAdaptationsFile", QDir.current().path(), type=str)
+        path = st.value("Adatpations/FileName", QDir.current().path(), type=str)
         fileName, _ = QFileDialog.getSaveFileName(
             self,
             caption=_tr('Customizations', "Select the file name to create"),
@@ -150,7 +150,7 @@ class CustomizationsDialog(QDialog):
                 writer.writerows(export_adaptation_setting())
                 zf.writestr('adaptation_setting', string_buffer.getvalue())
     
-            st.setValue("ExportAdaptationsFile", fileName)
+            st.setValue("Adatptations/FileName", fileName)
             # ---  WORKAROUND FOR MACOS ---
             self.raise_() 
             self.activateWindow() 
@@ -163,7 +163,7 @@ class CustomizationsDialog(QDialog):
     def importCustomization(self) -> None:
         "Import customizations from a zipped CSV files - *.zip"
         st = QSettings()
-        path = st.value("ExportAdaptationsFile", QDir.current().path(), type=str)
+        path = st.value("Adaptations/FileName", QDir.current().path(), type=str)
         fileName, _ = QFileDialog.getOpenFileName(
             self,
             caption=_tr('Customizations', "Select the file name to load"),
@@ -223,7 +223,7 @@ class CustomizationsDialog(QDialog):
                                     ))
                 import_adaptation(adaptations, adaptsettings)
        
-            st.setValue("ExportAdaptationsFile", fileName)
+            st.setValue("Adaptations/FileName", fileName)
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),
