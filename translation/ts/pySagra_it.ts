@@ -723,6 +723,7 @@ insieme a questo programma. In caso contrario, consulta
         <location filename="../../App/System/Report.py" line="101"/>
         <location filename="../../App/System/Scripting.py" line="174"/>
         <location filename="../../App/System/User.py" line="142"/>
+        <location filename="../../App/CashDesk.py" line="75"/>
         <source>No access right to this archive</source>
         <translation>Nessun diritto di accesso a questo archivio</translation>
     </message>
@@ -1588,6 +1589,14 @@ Proseguire ugualmente ?</translation>
     </message>
 </context>
 <context>
+    <name>Department</name>
+    <message>
+        <location filename="../../App/Department.py" line="80"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+</context>
+<context>
     <name>DepartmentPrinterWidget</name>
     <message>
         <location filename="../../App/Ui/DepartmentPrinterWidget.ui" line="14"/>
@@ -1786,6 +1795,50 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Core/ExceptionHandler.py" line="124"/>
         <source>Unexpected error</source>
         <translation>Errore imprevisto</translation>
+    </message>
+</context>
+<context>
+    <name>Event</name>
+    <message>
+        <location filename="../../App/Event.py" line="91"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+    <message>
+        <location filename="../../App/Event.py" line="157"/>
+        <source>Select the image file to upload</source>
+        <translation>Selezionare il file da caricare</translation>
+    </message>
+    <message>
+        <location filename="../../App/Event.py" line="159"/>
+        <location filename="../../App/Event.py" line="187"/>
+        <source>Portable Network Graphics (*.png);;All files (*.*)</source>
+        <translation>Portable Network Graphics (*.png);;Tutti i file (*.*)</translation>
+    </message>
+    <message>
+        <location filename="../../App/Event.py" line="167"/>
+        <source>The selected image is too big, it wasautomatically resized to the max allowed size of 640x480 pixels</source>
+        <translation>L&apos;immagine selezionata è troppo grande, è stata ridimensionata automaticamente alla massima dimensione consentita di 640x480 pixel</translation>
+    </message>
+    <message>
+        <location filename="../../App/Event.py" line="185"/>
+        <source>Select the destination file name</source>
+        <translation>Selezionare il nome del file di destinazione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Event.py" line="194"/>
+        <source>Image file saved</source>
+        <translation>Immagine salvata</translation>
+    </message>
+    <message>
+        <location filename="../../App/Event.py" line="198"/>
+        <source>Error on saving image file</source>
+        <translation>Errore in salvataggio dell&apos;immagine</translation>
+    </message>
+    <message>
+        <location filename="../../App/Event.py" line="233"/>
+        <source>Are you sure you want to delete this event ?</source>
+        <translation>Sei sicuro di voler cancellare questo evento ?</translation>
     </message>
 </context>
 <context>
@@ -2079,6 +2132,15 @@ Proseguire ugualmente ?</translation>
     </message>
 </context>
 <context>
+    <name>Inventory</name>
+    <message>
+        <location filename="../../App/Inventory.py" line="88"/>
+        <location filename="../../App/Item.py" line="183"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+</context>
+<context>
     <name>InventoryWidget</name>
     <message>
         <location filename="../../App/Ui/InventoryWidget.ui" line="14"/>
@@ -2099,6 +2161,35 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Ui/InventoryWidget.ui" line="78"/>
         <source>Menu availability</source>
         <translation>Disponibilità dei menu</translation>
+    </message>
+</context>
+<context>
+    <name>Item</name>
+    <message>
+        <location filename="../../App/Item.py" line="169"/>
+        <source>Item</source>
+        <translation>Articolo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Item.py" line="170"/>
+        <source>Kit</source>
+        <translation>Kit</translation>
+    </message>
+    <message>
+        <location filename="../../App/Item.py" line="171"/>
+        <source>Menu</source>
+        <translation>Menu</translation>
+    </message>
+    <message>
+        <location filename="../../App/Item.py" line="247"/>
+        <location filename="../../App/Item.py" line="250"/>
+        <source>default</source>
+        <translation>Predefinito</translation>
+    </message>
+    <message>
+        <location filename="../../App/Item.py" line="407"/>
+        <source>Delete this item ?</source>
+        <translation>Cancello questo articolo ?</translation>
     </message>
 </context>
 <context>
@@ -2224,7 +2315,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/System/Login.py" line="94"/>
         <source>{APPNAME} - Login</source>
-        <translation type="unfinished"></translation>
+        <translation>{APPNAME} - Login</translation>
     </message>
     <message>
         <location filename="../../App/System/Login.py" line="139"/>
@@ -2463,6 +2554,41 @@ Proseguire ugualmente ?</translation>
         <source>Are you sure you want to delete this menu ?</source>
         <translation>Sei sicuro di voler cancellare questo menu ?</translation>
     </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="344"/>
+        <source>Error loading menu customizations</source>
+        <translation>Errore nel caricamento delle personalizzazioni del menu</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="396"/>
+        <source>Error applying stored layout</source>
+        <translation>Errore applicando il layout memorizzato</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="649"/>
+        <source>Error saving view layout</source>
+        <translation>Errore nel salvataggio del layout</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="674"/>
+        <source>Error creating new layout</source>
+        <translation>Errore nella creazione del nuovo layout</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="698"/>
+        <source>Error deleting layout</source>
+        <translation>Errore nella cancellazione del layout</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="747"/>
+        <source>Error setting user default layout</source>
+        <translation>Errore nell&apos;impostare il layout predefinito per utente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="777"/>
+        <source>Error setting class default layout</source>
+        <translation>Errore nell&apos;impostare il layout predefinito per la classe</translation>
+    </message>
 </context>
 <context>
     <name>MenuWidget</name>
@@ -2536,15 +2662,23 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Form.py" line="360"/>
         <location filename="../../App/Widget/Form.py" line="835"/>
         <location filename="../../App/Widget/Form.py" line="870"/>
-        <location filename="../../App/Settings.py" line="354"/>
-        <location filename="../../App/Settings.py" line="360"/>
-        <location filename="../../App/Settings.py" line="366"/>
+        <location filename="../../App/Widget/View.py" line="460"/>
+        <location filename="../../App/Widget/View.py" line="492"/>
+        <location filename="../../App/Widget/View.py" line="571"/>
+        <location filename="../../App/Event.py" line="197"/>
+        <location filename="../../App/OrderArchive.py" line="392"/>
         <location filename="../../App/OrderEntry.py" line="1068"/>
         <location filename="../../App/OrderEntry.py" line="1081"/>
         <location filename="../../App/OrderEntry.py" line="1105"/>
         <location filename="../../App/OrderEntry.py" line="1109"/>
         <location filename="../../App/OrderEntry.py" line="1121"/>
-        <location filename="../../App/OrderArchive.py" line="392"/>
+        <location filename="../../App/Settings.py" line="354"/>
+        <location filename="../../App/Settings.py" line="360"/>
+        <location filename="../../App/Settings.py" line="366"/>
+        <location filename="../../App/Statistics.py" line="232"/>
+        <location filename="../../App/Tool.py" line="223"/>
+        <location filename="../../App/Tool.py" line="284"/>
+        <location filename="../../App/Tool.py" line="342"/>
         <source>Critical</source>
         <translation>Errore critico</translation>
     </message>
@@ -2573,7 +2707,22 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/User.py" line="325"/>
         <location filename="../../App/Widget/Dialog.py" line="794"/>
         <location filename="../../App/Widget/Dialog.py" line="1300"/>
-        <location filename="../../App/Settings.py" line="73"/>
+        <location filename="../../App/Widget/View.py" line="705"/>
+        <location filename="../../App/Widget/View.py" line="741"/>
+        <location filename="../../App/Widget/View.py" line="771"/>
+        <location filename="../../App/CashDesk.py" line="74"/>
+        <location filename="../../App/Department.py" line="79"/>
+        <location filename="../../App/Event.py" line="90"/>
+        <location filename="../../App/Event.py" line="166"/>
+        <location filename="../../App/Inventory.py" line="87"/>
+        <location filename="../../App/Item.py" line="182"/>
+        <location filename="../../App/OrderArchive.py" line="172"/>
+        <location filename="../../App/OrderArchive.py" line="337"/>
+        <location filename="../../App/OrderArchive.py" line="353"/>
+        <location filename="../../App/OrderArchive.py" line="372"/>
+        <location filename="../../App/OrderArchive.py" line="382"/>
+        <location filename="../../App/OrderedDelivered.py" line="84"/>
+        <location filename="../../App/OrderedDelivered.py" line="153"/>
         <location filename="../../App/OrderEntry.py" line="116"/>
         <location filename="../../App/OrderEntry.py" line="122"/>
         <location filename="../../App/OrderEntry.py" line="436"/>
@@ -2582,11 +2731,23 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderEntry.py" line="1223"/>
         <location filename="../../App/OrderEntry.py" line="1231"/>
         <location filename="../../App/OrderEntry.py" line="1299"/>
-        <location filename="../../App/OrderArchive.py" line="172"/>
-        <location filename="../../App/OrderArchive.py" line="337"/>
-        <location filename="../../App/OrderArchive.py" line="353"/>
-        <location filename="../../App/OrderArchive.py" line="372"/>
-        <location filename="../../App/OrderArchive.py" line="382"/>
+        <location filename="../../App/OrderNumbering.py" line="78"/>
+        <location filename="../../App/OrderProgress.py" line="85"/>
+        <location filename="../../App/OrderProgress.py" line="91"/>
+        <location filename="../../App/OrderProgress.py" line="210"/>
+        <location filename="../../App/PriceList.py" line="98"/>
+        <location filename="../../App/Printer.py" line="92"/>
+        <location filename="../../App/SalesSummary.py" line="99"/>
+        <location filename="../../App/SalesSummary.py" line="190"/>
+        <location filename="../../App/SeatMap.py" line="94"/>
+        <location filename="../../App/Settings.py" line="73"/>
+        <location filename="../../App/Statistics.py" line="83"/>
+        <location filename="../../App/Statistics.py" line="99"/>
+        <location filename="../../App/Statistics.py" line="116"/>
+        <location filename="../../App/Tool.py" line="86"/>
+        <location filename="../../App/Tool.py" line="109"/>
+        <location filename="../../App/Tool.py" line="127"/>
+        <location filename="../../App/UpdateWOS.py" line="72"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
@@ -2631,9 +2792,22 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1538"/>
         <location filename="../../App/Widget/Dialog.py" line="1755"/>
         <location filename="../../App/Widget/Dialog.py" line="1854"/>
+        <location filename="../../App/Widget/View.py" line="655"/>
+        <location filename="../../App/Widget/View.py" line="727"/>
+        <location filename="../../App/Widget/View.py" line="758"/>
+        <location filename="../../App/Widget/View.py" line="787"/>
+        <location filename="../../App/Event.py" line="193"/>
         <location filename="../../App/OrderArchive.py" line="344"/>
         <location filename="../../App/OrderArchive.py" line="360"/>
         <location filename="../../App/OrderArchive.py" line="388"/>
+        <location filename="../../App/Printer.py" line="180"/>
+        <location filename="../../App/Printer.py" line="195"/>
+        <location filename="../../App/Statistics.py" line="236"/>
+        <location filename="../../App/Tool.py" line="91"/>
+        <location filename="../../App/Tool.py" line="227"/>
+        <location filename="../../App/Tool.py" line="288"/>
+        <location filename="../../App/Tool.py" line="346"/>
+        <location filename="../../App/UpdateWOS.py" line="183"/>
         <source>Information</source>
         <translation>Informazione</translation>
     </message>
@@ -2659,6 +2833,12 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Form.py" line="401"/>
         <location filename="../../App/Widget/Form.py" line="601"/>
         <location filename="../../App/Widget/Form.py" line="1023"/>
+        <location filename="../../App/Widget/View.py" line="478"/>
+        <location filename="../../App/Widget/View.py" line="582"/>
+        <location filename="../../App/Widget/View.py" line="712"/>
+        <location filename="../../App/Event.py" line="235"/>
+        <location filename="../../App/Item.py" line="409"/>
+        <location filename="../../App/OrderArchive.py" line="304"/>
         <location filename="../../App/OrderEntry.py" line="475"/>
         <location filename="../../App/OrderEntry.py" line="1241"/>
         <location filename="../../App/OrderEntry.py" line="1254"/>
@@ -2666,7 +2846,14 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderEntry.py" line="1287"/>
         <location filename="../../App/OrderEntry.py" line="1348"/>
         <location filename="../../App/OrderEntry.py" line="1415"/>
-        <location filename="../../App/OrderArchive.py" line="304"/>
+        <location filename="../../App/OrderProgress.py" line="221"/>
+        <location filename="../../App/OrderProgress.py" line="283"/>
+        <location filename="../../App/PriceList.py" line="165"/>
+        <location filename="../../App/Printer.py" line="158"/>
+        <location filename="../../App/SeatMap.py" line="182"/>
+        <location filename="../../App/SeatMap.py" line="194"/>
+        <location filename="../../App/Tool.py" line="255"/>
+        <location filename="../../App/Tool.py" line="316"/>
         <source>Question</source>
         <translation>Richiesta</translation>
     </message>
@@ -4970,6 +5157,103 @@ Devo procedere comunque?</translation>
     </message>
 </context>
 <context>
+    <name>OrderNumbering</name>
+    <message>
+        <location filename="../../App/OrderNumbering.py" line="79"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+</context>
+<context>
+    <name>OrderProgress</name>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="86"/>
+        <source>No access right to this feature</source>
+        <translation>Nessun diritto di accesso a questa funzionalità</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="92"/>
+        <source>No event available, for order progress is necessary to setup an event for the current date</source>
+        <translation>Nessun evento disponibile, per l&apos;avanzamento degli ordini è necessario impostare un evento per la data corrente</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="133"/>
+        <source>ID</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="134"/>
+        <source>Barcode</source>
+        <translation>Codice a barre</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="135"/>
+        <source>Num</source>
+        <translation>Num</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="136"/>
+        <source>Date</source>
+        <translation>Data</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="137"/>
+        <source>Time</source>
+        <translation>Ora</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="138"/>
+        <source>Delivery</source>
+        <translation>Consegna</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="139"/>
+        <source>Table</source>
+        <translation>Tavolo</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="140"/>
+        <source>Customer</source>
+        <translation>Cliente</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="141"/>
+        <source>Department</source>
+        <translation>Reparto</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="142"/>
+        <source>Fulfillment date</source>
+        <translation>Data dell&apos;evasione</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="203"/>
+        <source>Errore on getting order details</source>
+        <translation>Errore nel recupero dei dettagli dell&apos;ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="211"/>
+        <source>Order not found</source>
+        <translation>Ordine non trovato</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="222"/>
+        <source>Order already processed, process again ?</source>
+        <translation>Ordine già elaborato, lo elaboro ancora ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="233"/>
+        <location filename="../../App/OrderProgress.py" line="291"/>
+        <source>Update order status</source>
+        <translation>Aggiorna lo stato dell&apos;ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="284"/>
+        <source>Set current selected order as unprocessed ?</source>
+        <translation>Imposta l&apos;ordine selezionato come non elaborato</translation>
+    </message>
+</context>
+<context>
     <name>OrderProgressWidget</name>
     <message>
         <location filename="../../App/Ui/OrderProgressWidget.ui" line="14"/>
@@ -5103,7 +5387,7 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/Ui/OrderWidget.ui" line="318"/>
         <source>Fulfillment date</source>
-        <translation type="unfinished">Data dell&apos;evasione</translation>
+        <translation>Data dell&apos;evasione</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderWidget.ui" line="254"/>
@@ -5164,6 +5448,19 @@ Devo procedere comunque?</translation>
         <location filename="../../App/Ui/OrderWidget.ui" line="481"/>
         <source>Cover</source>
         <translation>Coperti</translation>
+    </message>
+</context>
+<context>
+    <name>OrderedDelivered</name>
+    <message>
+        <location filename="../../App/OrderedDelivered.py" line="85"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderedDelivered.py" line="154"/>
+        <source>A report customization for ordered delivered is required</source>
+        <translation>Una personalizzazione del report per l&apos;ordinato consegnato è richiesta</translation>
     </message>
 </context>
 <context>
@@ -5419,6 +5716,40 @@ Devo procedere comunque?</translation>
     </message>
 </context>
 <context>
+    <name>PriceList</name>
+    <message>
+        <location filename="../../App/PriceList.py" line="99"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+    <message>
+        <location filename="../../App/PriceList.py" line="163"/>
+        <source>Are you sure you want to delete this price list ?</source>
+        <translation>Sei sicuro di voler cancellare questo listino ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/PriceList.py" line="196"/>
+        <location filename="../../App/PriceList.py" line="202"/>
+        <source>Duplicate price list</source>
+        <translation>Duplica listino</translation>
+    </message>
+    <message>
+        <location filename="../../App/PriceList.py" line="197"/>
+        <source>Name of the new price list</source>
+        <translation>Nome del nuovo listino</translation>
+    </message>
+    <message>
+        <location filename="../../App/PriceList.py" line="205"/>
+        <source>Price list duplicated</source>
+        <translation>Il listino è stato duplicato</translation>
+    </message>
+    <message>
+        <location filename="../../App/PriceList.py" line="206"/>
+        <source>The price list has been duplicated successfully</source>
+        <translation>Il listino è stato duplicato correttamente</translation>
+    </message>
+</context>
+<context>
     <name>PriceListWidget</name>
     <message>
         <location filename="../../App/Ui/PriceListWidget.ui" line="14"/>
@@ -5607,6 +5938,32 @@ Devo procedere comunque?</translation>
         <location filename="../../App/Ui/PrintDialog.ui" line="671"/>
         <source>Creating a new customization does not save its parameters, you need to select the new customization, set the parameters/filters/sorting and update it</source>
         <translation>La creazione di una nuova personalizzazione non salva i suoi parametri; è necessario selezionare la nuova personalizzazione, impostare i parametri/filtri/ordinamento e aggiornarla.</translation>
+    </message>
+</context>
+<context>
+    <name>Printer</name>
+    <message>
+        <location filename="../../App/Printer.py" line="93"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+    <message>
+        <location filename="../../App/Printer.py" line="181"/>
+        <source>There is already a record with current computer name</source>
+        <translation>Esiste già un record con il nome di questo computer</translation>
+    </message>
+    <message>
+        <location filename="../../App/Printer.py" line="196"/>
+        <source>You can remove only the record with current computer name</source>
+        <translation>E&apos; possibile rimuovere solo il record di questo computer</translation>
+    </message>
+</context>
+<context>
+    <name>Printers</name>
+    <message>
+        <location filename="../../App/Printer.py" line="156"/>
+        <source>Are you sure you want to delete this printer class ?</source>
+        <translation>Sei sicuro di voler cancellare questa classe di stampanti ?</translation>
     </message>
 </context>
 <context>
@@ -5888,6 +6245,19 @@ Devo procedere comunque?</translation>
     </message>
 </context>
 <context>
+    <name>SalesSummary</name>
+    <message>
+        <location filename="../../App/SalesSummary.py" line="100"/>
+        <source>No access right to this feature</source>
+        <translation>Nessun diritto di accesso a questa funzionalità</translation>
+    </message>
+    <message>
+        <location filename="../../App/SalesSummary.py" line="191"/>
+        <source>A report customization for Sales summary is required</source>
+        <translation>E&apos; richiesta una personalizzazione del report del riepilogo vendite</translation>
+    </message>
+</context>
+<context>
     <name>SalesSummaryWidget</name>
     <message>
         <location filename="../../App/Ui/SalesSummaryWidget.ui" line="14"/>
@@ -5980,6 +6350,11 @@ Devo procedere comunque?</translation>
         <source>All files imported successfully</source>
         <translation>Tutti i file importati correttamente</translation>
     </message>
+    <message>
+        <location filename="../../App/Core/Scripting.py" line="46"/>
+        <source>Error loading script</source>
+        <translation>Errore nel caricamento dello script</translation>
+    </message>
 </context>
 <context>
     <name>ScriptingWidget</name>
@@ -6065,6 +6440,29 @@ Devo procedere comunque?</translation>
         <location filename="../../App/System/Scripting.py" line="395"/>
         <source>Select the file to import</source>
         <translation>Selezionare il file da importare</translation>
+    </message>
+</context>
+<context>
+    <name>SeatMap</name>
+    <message>
+        <location filename="../../App/SeatMap.py" line="95"/>
+        <source>No access right to this archive</source>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
+    </message>
+    <message>
+        <location filename="../../App/SeatMap.py" line="195"/>
+        <source>Are you sure you want to delete ALL tables ?</source>
+        <translation>Sei sicuro di voler cancellare TUTTI i tavoli ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/SeatMap.py" line="199"/>
+        <source>Delete all tables</source>
+        <translation>Cancella tutti i tavoli</translation>
+    </message>
+    <message>
+        <location filename="../../App/SeatMap.py" line="216"/>
+        <source>Save settings</source>
+        <translation>Salva le impostazioni</translation>
     </message>
 </context>
 <context>
@@ -6848,6 +7246,117 @@ Devo procedere comunque?</translation>
     </message>
 </context>
 <context>
+    <name>Statistics</name>
+    <message>
+        <location filename="../../App/Statistics.py" line="84"/>
+        <location filename="../../App/Statistics.py" line="100"/>
+        <location filename="../../App/Statistics.py" line="117"/>
+        <source>No access right to this function</source>
+        <translation>Nessun diritto di accesso a questa funzione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="183"/>
+        <source>Select file name and path</source>
+        <translation>Selezionare il nome del file ed il percorso</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="185"/>
+        <source>Comma separated values (*.csv);;All files (*.*)</source>
+        <translation>Valori separati da virgola (*.csv);;Tutti i file (*.*)</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="237"/>
+        <source>Operation completed successfully</source>
+        <translation>Operazione completata correttamente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="263"/>
+        <source>Order header analysis</source>
+        <translation>Analisi delle testate degli ordini</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="264"/>
+        <source>Order lines analysis</source>
+        <translation>Analisi delle righe degli ordini</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="272"/>
+        <source>Sum</source>
+        <translation>Somma</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="273"/>
+        <source>Count</source>
+        <translation>Conteggio</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="274"/>
+        <source>Average</source>
+        <translation>Media</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="275"/>
+        <source>Median</source>
+        <translation>Mediana</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="276"/>
+        <source>Min</source>
+        <translation>Minimo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="277"/>
+        <source>Max</source>
+        <translation>Massimo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="278"/>
+        <source>Standard Deviation</source>
+        <translation>Deviazione standard</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="279"/>
+        <source>Variance</source>
+        <translation>Varianza</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="283"/>
+        <source>Ascending</source>
+        <translation>Crescente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="284"/>
+        <source>Descending</source>
+        <translation>Decrescente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="333"/>
+        <source>Show options</source>
+        <translation>Mostra le opzioni</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="367"/>
+        <location filename="../../App/Statistics.py" line="383"/>
+        <source>Warning</source>
+        <translation>Avviso</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="368"/>
+        <source>At least one value must be selected</source>
+        <translation>E&apos; necessario selezionare almeno un valore</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="384"/>
+        <source>At least one row must be selected</source>
+        <translation>E&apos; necessario selezionare almeno una riga</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="438"/>
+        <source>Apply/Refresh</source>
+        <translation>Applica/Ricarica</translation>
+    </message>
+</context>
+<context>
     <name>StatisticsExportDialog</name>
     <message>
         <location filename="../../App/Ui/StatisticsExportDialog.ui" line="15"/>
@@ -6889,6 +7398,19 @@ Devo procedere comunque?</translation>
         <location filename="../../App/Ui/StatisticsExportDialog.ui" line="108"/>
         <source>To event</source>
         <translation>All&apos;evento</translation>
+    </message>
+</context>
+<context>
+    <name>StockUnload</name>
+    <message>
+        <location filename="../../App/OrderedDelivered.py" line="72"/>
+        <source>L</source>
+        <translation>P</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderedDelivered.py" line="73"/>
+        <source>D</source>
+        <translation>C</translation>
     </message>
 </context>
 <context>
@@ -6956,6 +7478,49 @@ Devo procedere comunque?</translation>
     </message>
 </context>
 <context>
+    <name>Tool</name>
+    <message>
+        <location filename="../../App/Tool.py" line="87"/>
+        <location filename="../../App/Tool.py" line="110"/>
+        <location filename="../../App/Tool.py" line="128"/>
+        <source>No access right to this function</source>
+        <translation>Nessun diritto di accesso a questa funzione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="92"/>
+        <source>No event available</source>
+        <translation>Nessun evento disponibile</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="243"/>
+        <source>warning</source>
+        <translation>avviso</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="256"/>
+        <source>Are you sure you want to delete all the records of the selected objects from the current company ?</source>
+        <translation>Sei sicuro di voler eliminare tutti i record degli oggetti selezionati dall&apos;azienda corrente?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="289"/>
+        <location filename="../../App/Tool.py" line="347"/>
+        <source>Operation completed successfully</source>
+        <translation>Operazione completata correttamente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="304"/>
+        <source>This utility append ALL the records from the selected objects of the selected company to the current company. It&apos;s not possible to undo this operation. Use with caution!
+You can recover data only from a backup copy of the database.</source>
+        <translation>Questa utility aggiunge TUTTI i record degli oggetti selezionati dell&apos;azienda selezionata all&apos;azienda corrente. Non è possibile annullare questa operazione. Usare con cautela!
+È possibile recuperare i dati solo da una copia di backup del database.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="317"/>
+        <source>Are you sure you want to copy all the records of the selected objects of the selected company to the current company ?</source>
+        <translation>Sei sicuro di voler copiare tutti i record degli oggetti selezionati dell&apos;azienda selezionata nell&apos;azienda corrente?</translation>
+    </message>
+</context>
+<context>
     <name>ToolButtonStyle</name>
     <message>
         <location filename="../../App/Core/Gui.py" line="108"/>
@@ -7004,6 +7569,44 @@ Devo procedere comunque?</translation>
         <location filename="../../App/Ui/ToolbarWidget.ui" line="98"/>
         <source>Description</source>
         <translation>Descrizione</translation>
+    </message>
+</context>
+<context>
+    <name>UpdateWOS</name>
+    <message>
+        <location filename="../../App/UpdateWOS.py" line="67"/>
+        <source>Update Web Order Server</source>
+        <translation>Aggiorna il Web Order Server</translation>
+    </message>
+    <message>
+        <location filename="../../App/UpdateWOS.py" line="73"/>
+        <source>No access right to this function</source>
+        <translation>Nessun diritto di accesso a questa funzione</translation>
+    </message>
+    <message>
+        <location filename="../../App/UpdateWOS.py" line="117"/>
+        <source>Generate items</source>
+        <translation>Genera articoli</translation>
+    </message>
+    <message>
+        <location filename="../../App/UpdateWOS.py" line="129"/>
+        <source>Generate item variants</source>
+        <translation>Genera varianti articoli</translation>
+    </message>
+    <message>
+        <location filename="../../App/UpdateWOS.py" line="142"/>
+        <source>Save XML file</source>
+        <translation>Salva il file XML</translation>
+    </message>
+    <message>
+        <location filename="../../App/UpdateWOS.py" line="161"/>
+        <source>Update ftp server</source>
+        <translation>Aggiorna il server ftp</translation>
+    </message>
+    <message>
+        <location filename="../../App/UpdateWOS.py" line="184"/>
+        <source>Web order server updated successfully.</source>
+        <translation>Server degli ordini web aggiornato correttamente</translation>
     </message>
 </context>
 <context>
@@ -7212,6 +7815,122 @@ Devo procedere comunque?</translation>
     </message>
 </context>
 <context>
+    <name>Utility</name>
+    <message>
+        <location filename="../../App/Tool.py" line="146"/>
+        <location filename="../../App/Tool.py" line="194"/>
+        <source>Delete Orders</source>
+        <translation>Cancellazione ordini</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="147"/>
+        <source>Inventory rebuild</source>
+        <translation>Ricostruzione dell&apos;inventario</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="148"/>
+        <location filename="../../App/Tool.py" line="200"/>
+        <source>Ordered delivered rebuild</source>
+        <translation>Ricostruzione dell&apos;Ordinato Consegnato</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="149"/>
+        <location filename="../../App/Tool.py" line="203"/>
+        <source>Numbering Rebuild</source>
+        <translation>Ricostruzione delle numerazioni</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="150"/>
+        <location filename="../../App/Tool.py" line="206"/>
+        <source>Mark Orders as Processed</source>
+        <translation>Imposta gli ordini come evasi</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="164"/>
+        <source>Warning</source>
+        <translation>Avviso</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="165"/>
+        <source>This utility function delete ALL orders of the selected event. It&apos;s not possible to undo this operation.</source>
+        <translation>Questa funzione elimina TUTTI gli ordini dell&apos;evento selezionato. Non è possibile annullare questa operazione.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="170"/>
+        <location filename="../../App/Tool.py" line="177"/>
+        <location filename="../../App/Tool.py" line="182"/>
+        <source>Information</source>
+        <translation>Informazione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="171"/>
+        <source>This utility function rebuild stock unload from orders of the selected event. Use this when changed item state/flags or when manually altered orders.</source>
+        <translation>Questa funzione di utilità ricostruisce lo scarico delle scorte dagli ordini dell&apos;evento selezionato. Utilizzala quando vengono modificati lo stato/i flag dell&apos;articolo o quando gli ordini vengono modificati manualmente.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="178"/>
+        <source>This utility function rebuild numbering from orders of the selected event.</source>
+        <translation>Questa funzione di utilità ricostruisce la numerazione a partire dagli ordini dell&apos;evento selezionato.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="183"/>
+        <source>This utility function mark all orders as processed at the order date</source>
+        <translation>Questa funzione di utilità contrassegna tutti gli ordini come evasi alla data dell&apos;ordine.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="195"/>
+        <source>Are you sure you want to delete all orders of event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler cancellare tutti gli ordini dell&apos;evento
+&apos;{}&apos; ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="197"/>
+        <source>Inventory Rebuild</source>
+        <translation>Ricostruzione inventario</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="198"/>
+        <source>Are you sure you want to procede with inventory rebuild for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler procedere con la ricostruzione dell&apos;inventario per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="201"/>
+        <source>Are you sure you want to procede with ordered delivered rebuild for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler procedere con la ricostruzione dell&apos;ordinato consegnato per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="204"/>
+        <source>Are you sure you want to procede with rebuild number sequence for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler procedere con la ricostruzione della sequenza numerica per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="207"/>
+        <source>Are you sure you want to mark all orders as processed for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler contrassegnare tutti gli ordini come evasi per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="228"/>
+        <source>Operation completed successfully</source>
+        <translation>Operazione completata correttamente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tool.py" line="244"/>
+        <source>This utility deletes ALL the data from the selected objects of the current company. It&apos;s not possible to undo this operation. Use with caution!
+You can recover data only from a backup copy of the database.</source>
+        <translation>Questa utility elimina TUTTI i dati dagli oggetti selezionati dell&apos;azienda corrente. Non è possibile annullare questa operazione. Usare con cautela!
+È possibile recuperare i dati solo da una copia di backup del database.</translation>
+    </message>
+</context>
+<context>
     <name>View</name>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="795"/>
@@ -7224,6 +7943,208 @@ Devo procedere comunque?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1305"/>
         <source>Are you sure to delete the current customization ?</source>
         <translation>Sei sicuro di voler eliminare la personalizzazione corrente ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="101"/>
+        <source>Field index</source>
+        <translation>Indice del campo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="102"/>
+        <source>Field</source>
+        <translation>Campo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="103"/>
+        <source>Sorting</source>
+        <translation>Ordinamento</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="104"/>
+        <source>Visible</source>
+        <translation>Visibile</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="105"/>
+        <source>Width</source>
+        <translation>Larghezza</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="243"/>
+        <source>Column sorting</source>
+        <translation>Colonna ordinabile</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="248"/>
+        <source>Column movable</source>
+        <translation>Colonna spostabile</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="252"/>
+        <source>Show vertical header</source>
+        <translation>Mostra l&apos;intestazione verticale</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="258"/>
+        <source>Resize columns to contents</source>
+        <translation>Adatta la colonna al contenuto</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="261"/>
+        <source>Resize rows to contents</source>
+        <translation>Adatta la riga al contenuto</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="265"/>
+        <source>Export to CSV file</source>
+        <translation>Esporta su un file CSV</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="269"/>
+        <source>Set current layout as user default</source>
+        <translation>Imposta il layout corrente come predefinito per l&apos;utente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="272"/>
+        <source>Set layout</source>
+        <translation>Imposta il layout</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="278"/>
+        <source>Update current layout</source>
+        <translation>Aggiorna il layoit corrente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="281"/>
+        <source>Delete current layout</source>
+        <translation>Elimina il layout corrente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="284"/>
+        <source>Set current layout as class default</source>
+        <translation>Imposta il layout corrente come predefinito per la classe</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="287"/>
+        <source>Save current layout as ...</source>
+        <translation>Salva il payout come ...</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="290"/>
+        <source>Hide current column</source>
+        <translation>Nascondi la colonna corrente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="293"/>
+        <source>Show all columns</source>
+        <translation>Mostra tutte le colonne</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="296"/>
+        <source>Reset view state</source>
+        <translation>Reimposta lo stato della vista</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="299"/>
+        <source>Manage settings</source>
+        <translation>Gstione delle impostazioni</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="461"/>
+        <source>Error inserting row</source>
+        <translation>Errore nell&apos;inserimento della riga</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="479"/>
+        <source>delete the selected row?</source>
+        <translation>Cancello la riga selezionata ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="493"/>
+        <source>Error deleting row</source>
+        <translation>Errore nel cancellare la riga</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="511"/>
+        <location filename="../../App/Statistics.py" line="167"/>
+        <source>Select file name and path</source>
+        <translation>Seleziona il nome del file ed il percorso</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="513"/>
+        <location filename="../../App/Statistics.py" line="169"/>
+        <source>Comma separated values (*.csv);;All files (*.*)</source>
+        <translation>Valori separati da virgole (*.csv);; Tutti i file (*.*)</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="546"/>
+        <source>HIDDEN TEXT</source>
+        <translation>TESTO NASCOSTO</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="553"/>
+        <source>BINARY DATA</source>
+        <translation>DATI BINARY</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="572"/>
+        <source>Unable to write to filename: {file_name}
+Error: {str(err)}</source>
+        <translation>Impossibile scrivere sul file: {file_name}
+Errore: {str(err)}</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="583"/>
+        <source>Export data completed.
+Open the generated file?</source>
+        <translation>Esportazione dei dati completata.
+Apro il file generato ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="656"/>
+        <source>Layout customization saved</source>
+        <translation>Personalizzazione del layout salvata</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="666"/>
+        <source>New layout customization</source>
+        <translation>Nuova personalizzazione del layout</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="667"/>
+        <source>Insert new customization description</source>
+        <translation>Inserire la descrizione della nuova personalizzazione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="706"/>
+        <source>System layout cannot be deleted</source>
+        <translation>Il layout di sistema non può essere cancellato</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="713"/>
+        <source>Are you sure you want to delete the current layout?</source>
+        <translation>Sei sicuro di voler camcellare il layout corrente ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="728"/>
+        <source>Current layout deleted</source>
+        <translation>Layout corrente cancellato</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="742"/>
+        <location filename="../../App/Widget/View.py" line="772"/>
+        <source>No configuration has been set</source>
+        <translation>Non è stata impostata nessuna configurazione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="759"/>
+        <source>Current layout set as user default</source>
+        <translation>Il layout corrente è stato impostato come predefinito per l&apos;utente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Widget/View.py" line="788"/>
+        <source>Current layout set as class default</source>
+        <translation>Il layout corrente è stato impostato come predefinito per la classe</translation>
     </message>
 </context>
 <context>
@@ -7255,6 +8176,14 @@ Devo procedere comunque?</translation>
         <location filename="../../App/System/Scripting.py" line="160"/>
         <source>Instead</source>
         <translation>Al posto di</translation>
+    </message>
+</context>
+<context>
+    <name>view</name>
+    <message>
+        <location filename="../../App/Widget/View.py" line="616"/>
+        <source>View settings</source>
+        <translation>Impostazioni della vista</translation>
     </message>
 </context>
 </TS>

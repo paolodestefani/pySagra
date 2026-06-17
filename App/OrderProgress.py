@@ -139,7 +139,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
                   _tr('OrderProgress', "Table"),
                   _tr('OrderProgress', "Customer"),
                   _tr('OrderProgress', "Department"),
-                  _tr('OrderProgress', "Fullfillment date")]
+                  _tr('OrderProgress', "Fulfillment date")]
         self.ui.tableWidgetScans.setColumnCount(len(header))
         self.ui.tableWidgetScans.setSortingEnabled(False)
         self.ui.tableWidgetScans.setHorizontalHeaderLabels(header)

@@ -20,8 +20,9 @@ echo "Updating translation file"
 # translations without pro file, sources and forms
 pyside6-lupdate	\
 	pySagra.py \
-	App/Core/Gui.py \
 	App/Core/ExceptionHandler.py \
+	App/Core/Gui.py \
+	App/Core/Scripting.py \
 	App/Database/Models.py \
 	App/System/About.py \
     App/System/Action.py \
@@ -41,6 +42,7 @@ pyside6-lupdate	\
 	App/Widget/Delegate.py \
 	App/Widget/Dialog.py \
 	App/Widget/Form.py \
+	App/Widget/View.py \
     App/Ui/AboutDialog.ui \
     App/Ui/CashDeskWidget.ui \
     App/Ui/ChangeCompanyDialog.ui \
@@ -91,9 +93,24 @@ pyside6-lupdate	\
     App/Ui/UpdateWebOrderServerDialog.ui \
     App/Ui/UserWidget.ui \
     App/Ui/ViewSettingsDialog.ui \
-    App/Settings.py \
-    App/OrderEntry.py \
+    App/CashDesk.py \
+    App/Department.py \
+    App/Event.py \
+    App/Inventory.py \
+    App/Item.py \
     App/OrderArchive.py \
+    App/OrderedDelivered.py \
+    App/OrderEntry.py \
+    App/OrderNumbering.py \
+    App/OrderProgress.py \
+    App/PriceList.py \
+    App/Printer.py \
+    App/SalesSummary.py \
+    App/SeatMap.py \
+    App/Settings.py \
+    App/Statistics.py \
+    App/Tool.py \
+    App/UpdateWOS.py \
 	-tr-function-alias translate+=_tr -noobsolete -ts translation/ts/pySagra_it.ts 
 
 pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm
