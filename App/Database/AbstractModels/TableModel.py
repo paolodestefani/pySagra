@@ -268,7 +268,7 @@ class QueryModel(QAbstractTableModel):
             where += self.filterCondition
         if self.whereCondition:
             where += self.whereCondition
-            self.whereCondition.clear() # clear where condition after use, they are intended for one select only
+            #self.whereCondition.clear() # clear where condition after use, they are intended for one select only
         if where:
             script += "\nWHERE " + f"{' AND '.join([i[0] for i in where])}"
             args += [i[1] for i in where]
@@ -618,7 +618,7 @@ class TableModel(QAbstractTableModel):
         "Update database: insert/delete/update rows, used only for commit on row changed, do nothing on manual submit"
         # used only for commit on row changed, do nothing on manual submit
         # BUT is needed for proper DataWidgetMapper use
-        return True
+        return True        
 
     def submitAll(self, column: int | None = None, value: Any | None = None) -> bool:
         # if a referenceKey is provided fill all the rows with reference value
@@ -644,6 +644,14 @@ class TableModel(QAbstractTableModel):
                 script = f"DELETE FROM {self.table} WHERE {where};"
                 cur.execute(script, record.pkey)
             self.toDelete.clear()
+            if self.automaticPKey:
+                # update identity
+                table = self.table
+                field = self.primaryKey[0]
+                script = f"""
+                SELECT setval(pg_get_serial_sequence('{table}', '{field}'), COALESCE((SELECT max({field}) FROM {table}), 1),
+                (SELECT max({field}) IS NOT NULL FROM {table}));"""
+                cur.execute(script)
             # *** UPDATE and INSERT ***
             # loop through all records, if is_new is True do insert, if is_modified is True do update, 
             # if both are False do nothing

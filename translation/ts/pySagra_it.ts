@@ -2666,7 +2666,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/View.py" line="492"/>
         <location filename="../../App/Widget/View.py" line="571"/>
         <location filename="../../App/Event.py" line="197"/>
-        <location filename="../../App/OrderArchive.py" line="392"/>
+        <location filename="../../App/OrderArchive.py" line="377"/>
         <location filename="../../App/OrderEntry.py" line="1068"/>
         <location filename="../../App/OrderEntry.py" line="1081"/>
         <location filename="../../App/OrderEntry.py" line="1105"/>
@@ -2717,10 +2717,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Inventory.py" line="87"/>
         <location filename="../../App/Item.py" line="182"/>
         <location filename="../../App/OrderArchive.py" line="172"/>
-        <location filename="../../App/OrderArchive.py" line="337"/>
-        <location filename="../../App/OrderArchive.py" line="353"/>
-        <location filename="../../App/OrderArchive.py" line="372"/>
-        <location filename="../../App/OrderArchive.py" line="382"/>
+        <location filename="../../App/OrderArchive.py" line="364"/>
         <location filename="../../App/OrderedDelivered.py" line="84"/>
         <location filename="../../App/OrderedDelivered.py" line="153"/>
         <location filename="../../App/OrderEntry.py" line="116"/>
@@ -2797,9 +2794,10 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/View.py" line="758"/>
         <location filename="../../App/Widget/View.py" line="787"/>
         <location filename="../../App/Event.py" line="193"/>
-        <location filename="../../App/OrderArchive.py" line="344"/>
-        <location filename="../../App/OrderArchive.py" line="360"/>
-        <location filename="../../App/OrderArchive.py" line="388"/>
+        <location filename="../../App/OrderArchive.py" line="340"/>
+        <location filename="../../App/OrderArchive.py" line="351"/>
+        <location filename="../../App/OrderArchive.py" line="373"/>
+        <location filename="../../App/OrderArchive.py" line="386"/>
         <location filename="../../App/Printer.py" line="180"/>
         <location filename="../../App/Printer.py" line="195"/>
         <location filename="../../App/Statistics.py" line="236"/>
@@ -4407,40 +4405,24 @@ Proseguire ugualmente ?</translation>
         <translation>Cancellare l&apos;ordine corrente ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderArchive.py" line="338"/>
-        <source>No customer copy printer set for this computer
-Generating a print preview</source>
-        <translation>Nessuna stampante per la copia cliente impostata per questo computer.
-Generazione di un&apos;anteprima di stampa.</translation>
+        <location filename="../../App/OrderArchive.py" line="387"/>
+        <source>You have not selected anything to print</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/OrderArchive.py" line="345"/>
-        <location filename="../../App/OrderArchive.py" line="361"/>
-        <location filename="../../App/OrderArchive.py" line="389"/>
+        <location filename="../../App/OrderArchive.py" line="341"/>
+        <location filename="../../App/OrderArchive.py" line="352"/>
+        <location filename="../../App/OrderArchive.py" line="374"/>
         <source>No data to render</source>
         <translation>Nessun dato da stampare</translation>
     </message>
     <message>
-        <location filename="../../App/OrderArchive.py" line="354"/>
-        <source>No cover copy printer set for this computer
-Generating a print preview</source>
-        <translation>Nessuna stampante per la copia coperti impostata per questo computer.
-Generazione di un&apos;anteprima di stampa.</translation>
-    </message>
-    <message>
-        <location filename="../../App/OrderArchive.py" line="369"/>
+        <location filename="../../App/OrderArchive.py" line="361"/>
         <source>No printer class set for this department, skipping</source>
         <translation>Nessuna classe di stampante impostata per questo reparto, lo salto</translation>
     </message>
     <message>
         <location filename="../../App/OrderArchive.py" line="378"/>
-        <source>No department copy printer set for this computer and department {}
-Generating a print preview</source>
-        <translation>Nessuna stampante per la copia reparto impostata per questo computer e reparto {}
-Generazione di un&apos;anteprima di stampa.</translation>
-    </message>
-    <message>
-        <location filename="../../App/OrderArchive.py" line="393"/>
         <source>Error printing department copy</source>
         <translation>Errore in stampa della copia reparto</translation>
     </message>

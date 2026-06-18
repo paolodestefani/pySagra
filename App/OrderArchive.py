@@ -325,6 +325,7 @@ class OrderForm(FormIndexManager):
         current_row = self.mapper.currentIndex()
         if current_row < 0:
             return
+        no_print = True
         # PRINT ORDER
         setting = Setting()
         # get order id
@@ -332,11 +333,6 @@ class OrderForm(FormIndexManager):
         # customer copy
         if self.ui.checkBoxPrintCustomerCopy.isChecked():
             printer = get_printer_name(setting['customer_printer_class'], session['hostname'])
-            if not printer:
-                QMessageBox.warning(self,
-                                    _tr('MessageDialog', "Warning"),
-                                    _tr('OrderArchive', "No customer copy printer set for this computer\n"
-                                        "Generating a print preview"))
             try:
                 printOrderReport(ti, printer)
             except ReportNoDataError:
@@ -344,15 +340,10 @@ class OrderForm(FormIndexManager):
                                         _tr('MessageDialog', "Information"),
                                         _tr('OrderArchive', "No data to render"))
             self.ui.checkBoxPrintCustomerCopy.setChecked(False)
-
+            no_print = False
         # covers copy
         if self.ui.checkBoxPrintCoverCopy.isChecked():
             printer = get_printer_name(setting['cover_printer_class'], session['hostname'])
-            if not printer:
-                QMessageBox.warning(self,
-                                    _tr('MessageDialog', "Warning"),
-                                    _tr('OrderArchive', "No cover copy printer set for this computer\n"
-                                        "Generating a print preview"))
             try:
                 printOrderCoverReport(ti, printer)
             except ReportNoDataError:
@@ -360,6 +351,7 @@ class OrderForm(FormIndexManager):
                                         _tr('MessageDialog', "Information"),
                                         _tr('OrderArchive', "No data to render"))
             self.ui.checkBoxPrintCoverCopy.setChecked(False)
+            no_print = False
         # departments copies
         if setting['print_department_copy']:
             for i in self.depCopy:
@@ -374,13 +366,6 @@ class OrderForm(FormIndexManager):
                         self.depCopy[i].setChecked(False)
                         continue
                     printer = get_printer_name(prncls, session['hostname'])
-                    if not printer:
-                        msg = _tr('OrderArchive',
-                                  "No department copy printer set for this computer "
-                                  "and department {}\nGenerating a print preview")
-                        QMessageBox.warning(self,
-                                            _tr('MessageDialog', "Warning"),
-                                            msg.format(get_department_desc(i)))
                     try:
                         printOrderDepartmentReport(ti, i, printer)
                     except ReportNoDataError:
@@ -394,3 +379,10 @@ class OrderForm(FormIndexManager):
                                            str(er),
                                            )
                     self.depCopy[i].setChecked(False)
+                    no_print = False
+        # nothing selected
+        if no_print:
+            QMessageBox.information(self,
+                                    _tr('MessageDialog', "Information"),
+                                    _tr('OrderArchive', "You have not selected anything to print"))
+            
