@@ -138,7 +138,6 @@ class LoginDialog(QDialog):
         success = False
         with gui_exception_context(self, _tr("Login", "Database connection")):
             # on network error is better to have a wait cursor
-            QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             appconn.connect(par)
             logger.info("Database connection established")
             success = True

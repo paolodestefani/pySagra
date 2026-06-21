@@ -62,6 +62,7 @@ import xml.etree.ElementTree as ET
 import operator
 import logging
 from typing import Any
+from contextlib import contextmanager
 
 # PySide6
 from PySide6.QtCore import QOperatingSystemVersion
@@ -108,6 +109,7 @@ if __name__ != "__main__":
     from App import WEBSITE
     from App import session
     from App.Database.Setting import Setting
+    from App.Core.ExceptionHandler import wait_cursor_context
 
 else:
     APPNAME = "Report Engine"
@@ -118,13 +120,26 @@ else:
     AUTHOR = "Paolo De Stefani"
     EMAIL = "info@paolodestefani.it"
     ORGANIZATION = "PDS Software"
-    WEBSITE = "https:\\www.paolodestefani.it"
+    WEBSITE = "https://www.paolodestefani.it"
     session = dict()
     session['qlocale'] = QLocale()
     session['event_description'] = "Sagra Dimostrativa 2026"
     session['event_image'] = QByteArray()
     session['company_description'] = "Comitato Festeggiamenti Dimostrativo"
     session['company_image'] = QByteArray()
+    
+    @contextmanager
+    def wait_cursor_context():
+        """
+        Simple context manager for wait cursor only, usefull for 
+        heavy operation that does not involve the database
+        """
+        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        try:
+            yield
+        finally:
+            QGuiApplication.restoreOverrideCursor()
+
    
 # report engine version
 VERSION = '1.0'
@@ -2303,11 +2318,8 @@ else:
                 ('AAAAAA', 'description 42', 'Production', True, 30, QDate(2018, 2, 2)),
                 ('AAAAAAA', 'description 43', 'Production', True, 31, QDate(2018, 2, 2)),
                 ('AAAAAAAA', 'description 44', 'Accounting', False, 0, QDate(2018, 3, 3))])
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        r.generate()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
+        with wait_cursor_context():
+            r.generate()
         # print preview
         dialog = QPrintPreviewDialog()
         dialog.setWindowFlags(Qt.WindowType.Dialog|Qt.WindowType.WindowMinMaxButtonsHint|Qt.WindowType.WindowCloseButtonHint)

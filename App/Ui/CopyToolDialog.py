@@ -24,7 +24,7 @@ class Ui_CopyToolDialog(object):
     def setupUi(self, CopyToolDialog):
         if not CopyToolDialog.objectName():
             CopyToolDialog.setObjectName(u"CopyToolDialog")
-        CopyToolDialog.resize(439, 352)
+        CopyToolDialog.resize(486, 373)
         self.verticalLayout_6 = QVBoxLayout(CopyToolDialog)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.horizontalLayout = QHBoxLayout()

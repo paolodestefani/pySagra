@@ -980,6 +980,8 @@ FROM company.item;"""
         self.repr = 'Item index query model'
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy(("item_id", "item_type", "description"))
+        # reference fields dictionary
+        self.reference = {'department_id': department_lookup}
 
 
 class ItemModel(TableModel):

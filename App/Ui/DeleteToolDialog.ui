@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>DeleteToolDialog</class>
  <widget class="QDialog" name="DeleteToolDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>432</width>
+    <height>356</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Delete tool</string>
   </property>

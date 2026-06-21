@@ -228,8 +228,8 @@ class OrderForm(FormIndexManager):
         self.mapper.addMapping(self.ui.lineEditCustomerName, ordh.CUSTOMER)
         self.mapper.addMapping(self.ui.lineEditCustomerContact, ordh.CONTACT)
         self.ui.comboBoxStatus.setItemList((('A', _tr('OrderArchive', 'Acquired')),
-                                                ('I', _tr('OrderArchive', 'In progress')),
-                                                ('P', _tr('OrderArchive', 'Processed'))))
+                                            ('I', _tr('OrderArchive', 'In progress')),
+                                            ('P', _tr('OrderArchive', 'Processed'))))
         self.mapper.addMapping(self.ui.comboBoxStatus, ordh.STATUS, b"modelDataStr")
         self.mapper.addMapping(self.ui.dateTimeEditFullfillment, ordh.FULFILLMENT, b"modelDataDateTime")
         # details tableView
@@ -384,5 +384,5 @@ class OrderForm(FormIndexManager):
         if no_print:
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
-                                    _tr('OrderArchive', "You have not selected anything to print"))
+                                    _tr('OrderArchive', "No print has been selected"))
             

@@ -55,6 +55,7 @@ from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
+from App.Core.ExceptionHandler import wait_cursor_context
 from App.Database.Report import delete_all_reports
 from App.Database.Report import load_report
 from App.Database.Report import list_all_reports
@@ -101,13 +102,10 @@ def report(action: QAction, checked: bool = False) -> None:
             _tr('CashDesk', 'No access right to this archive')
         )
         return
-    # cursor wait
-    QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-    rf = ReportForm(mw, title, auth)
-    rf.applySortFilter()
-    mw.addTab(title, rf)
-    # cursor restore
-    QGuiApplication.restoreOverrideCursor()
+    with wait_cursor_context():
+        rf = ReportForm(mw, title, auth)
+        rf.applySortFilter()
+        mw.addTab(title, rf)
     logger.info('Report Form added to main window')
 
 

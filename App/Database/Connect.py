@@ -48,7 +48,7 @@ from App.Database import MRV_PGSQL
 # exceptions
 from App.Database.Exceptions import PyAppDBConnectionError
 from App.Database.Exceptions import PyAppDBError
-#from App.Core.Database import db_exception_context
+#from App.Core.ExceptionHandler import db_exception_context
 
 # REGISTER CUSTOM PSYCOPG TYPES
 import App.Database.Psycopg

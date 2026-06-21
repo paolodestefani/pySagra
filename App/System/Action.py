@@ -670,14 +670,14 @@ def createActionDictionary(mw) -> None:
 
     # tools actions
     actionDefinition['app_tool_event_based'] = (
-        _tr("Action", 'Application event based tool'),
+        _tr("Action", 'Event based tool'),
         eventBasedTool,
         False,
         'tools_tool',
         None,
-        _tr("Action", 'Application event based utilities'),
-        _tr("Action", 'Application event based utilities'),
-        _tr("Action", 'Application event based utilities'),
+        _tr("Action", 'Event based utilities'),
+        _tr("Action", 'Event based utilities'),
+        _tr("Action", 'Event based utilities'),
         QAction.MenuRole.TextHeuristicRole)
 
     actionDefinition['app_tool_delete'] = (

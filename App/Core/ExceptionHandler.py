@@ -28,12 +28,19 @@ This module managesprovides exception handling functionsfor the application
 """
 
 # standard library
+import logging
 from contextlib import contextmanager
 from typing import Generator
 from typing import Any
+from typing import Optional
+
+# psycopg
+import psycopg
 
 # PySide6
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
@@ -41,7 +48,6 @@ from App.Database.Exceptions import PyAppDBConnectionError
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 from App.Core.L10n import _tr
-from App.Widget.Dialog import MessageBoxCritical
 
 
 # main application and postgres error codes and messages mapping
@@ -83,6 +89,38 @@ error_code_messages = {
     '42P09': _tr("PGError", "Ambiguous column name or alias")
 }
 
+# fallback logger for database module (used if no logger is passed to the context manager)
+default_logger = logging.getLogger(__name__)
+
+
+# Context manager to capture psycopg errors and raise custom exceptions
+
+@contextmanager
+def db_exception_context(logger: Optional[logging.Logger] = None) -> Generator[None, None, None]:
+    # Se passi il logger del modulo, usa quello, altrimenti usa il fallback
+    active_logger = logger or default_logger
+    
+    try:
+        yield
+    except psycopg.Error as er:
+        sqlstate: str = er.sqlstate if er.sqlstate is not None else 'UNKNOWN'
+        diag = er.diag
+        
+        primary_msg: str = diag.message_primary if diag and diag.message_primary else str(er).strip()
+        detail_msg: str = diag.message_detail if diag and diag.message_detail else ''
+
+        # The log will use the passed logger module!
+        active_logger.error(
+            "*** DATABASE ERROR ***\nSQL State: %s\nPrimary: %s\nDetail: %s", 
+            sqlstate, 
+            primary_msg, 
+            detail_msg,
+            stacklevel=3
+        )
+        # Raise the custom exception for the GUI layer
+        raise PyAppDBError(code=sqlstate, message=primary_msg, detail=detail_msg) from er
+
+
 # Context manager to capture exceptions in GUI operations and show critical dialogs
 
 @contextmanager
@@ -91,10 +129,26 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
     Catches PyAppDBError exceptions, translates PostgreSQL SQLSTATE codes 
     into user-friendly localized messages, and displays a critical dialog.
     """
+    # local import to avoid circular import and exception
+    from App.Widget.Dialog import MessageBoxCritical
+    QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     try:
-        yield
+        try:
+            yield
+            
+            # If the execution is successful, restore the cursor here
+            if QGuiApplication.overrideCursor() is not None:
+                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                    QGuiApplication.restoreOverrideCursor()
+                    
+        except Exception:
+            # reset the cursor in case of any exception and raise it for subsequent management
+            if QGuiApplication.overrideCursor() is not None:
+                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                    QGuiApplication.restoreOverrideCursor()
+            raise
+        
     except PyAppDBConnectionError as er:
-        QGuiApplication.restoreOverrideCursor()
         msg = error_code_messages.get(er.code, _tr("PGError", "Connection error"))
         MessageBoxCritical(parent_widget,
                            _tr("MessageDialog", "Database connection"),
@@ -103,10 +157,8 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
                            er.detail)
         
     except PyAppDBError as er:
-        QGuiApplication.restoreOverrideCursor()
         # Map standard PostgreSQL SQLSTATE error codes to clear messages
         msg = error_code_messages.get(er.code, _tr("PGError", "Undefined database error"))
-        
         if er.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008', 'CCER'):
             QMessageBox.warning(parent_widget,
                                  _tr('MessageDialog', 'Warning'),
@@ -114,14 +166,24 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
         else:
             # Display the custom PySide6 critical dialog box
             MessageBoxCritical(parent_widget, operation_title, er.code, msg, er.message)
-        
         # Safe fallback: rollback the shared connection to reset the transaction state
         appconn.rollback()
         
     except Exception as ex:
-        QGuiApplication.restoreOverrideCursor()
         # Handle any other unexpected exceptions gracefully
         MessageBoxCritical(parent_widget, operation_title, _tr("Error", "Unexpected error"), str(ex))
-        
+
+
+@contextmanager
+def wait_cursor_context():
+    """
+    Simple context manager for wait cursor only, usefull for 
+    heavy operation that does not involve the database
+    """
+    QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+    try:
+        yield
     finally:
         QGuiApplication.restoreOverrideCursor()
+
+

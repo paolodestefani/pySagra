@@ -48,6 +48,8 @@ from PySide6.QtWidgets import QApplication
 # application modules
 from App import session
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import wait_cursor_context
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Connect import appconn
 from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import TableModel, QueryModel
@@ -55,7 +57,7 @@ from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
 from App.Widget.Dialog import EventFilterDialog
 from App.Widget.Dialog import MessageBoxCritical
-from App.Core.ExceptionHandler import gui_exception_context
+
 
 
 # edit status
@@ -160,17 +162,14 @@ class FormManager[T](QWidget):
         "Reload detail relations on main model index change"
         if row < 0 or not self.model:
             return
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         # connecting form and tableview causes 2 time execution of this method
-        if self.detailRelations:  # query model don't have primary key
-            for relation, masterColumn, detailColumn in self.detailRelations:
-                value = self.model.data(self.model.index(row, masterColumn))
-                relation.filter(detailColumn, value)
-        self.updateEditStatus()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
-
+        with wait_cursor_context():
+            if self.detailRelations:  # query model don't have primary key
+                for relation, masterColumn, detailColumn in self.detailRelations:
+                    value = self.model.data(self.model.index(row, masterColumn))
+                    relation.filter(detailColumn, value)
+            self.updateEditStatus()
+        
     def updateEditStatus(self) -> None:
         "Update main window edit status based on current model and mapper index"
         # get current values
@@ -220,36 +219,24 @@ class FormManager[T](QWidget):
 
     def toFirst(self) -> None:
         "To first"
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        self.mapper.toFirst()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
-
+        with wait_cursor_context():
+            self.mapper.toFirst()
+        
     def toPrevious(self) -> None:
         "To previous"
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        self.mapper.toPrevious()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
-
+        with wait_cursor_context():
+            self.mapper.toPrevious()
+        
     def toNext(self) -> None:
         "To next"
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        self.mapper.toNext()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
-
+        with wait_cursor_context():
+            self.mapper.toNext()
+        
     def toLast(self) -> None:
         "To last"
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        self.mapper.toLast()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
-
+        with wait_cursor_context():
+            self.mapper.toLast()
+        
     def new(self) -> None:
         "Create a new record on model"
         if not self.write_perm:
@@ -349,19 +336,9 @@ class FormManager[T](QWidget):
     def reload(self) -> None:
         "Undo pending changes and Reload data from db"
         row = self.mapper.currentIndex()
-        try:
-            # cursor wait
-            QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        with gui_exception_context(self, _tr('FormManager', 'Reload')):
             if hasattr(self.model, 'revertAll'):
                 self.model.revertAll()  # also do a select()
-        except PyAppDBError as er:
-            msg = "Error: {}\n{}".format(er.code, er.message)
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 msg)
-        finally:
-            # cursor restore
-            QGuiApplication.restoreOverrideCursor()
         self.state = ev.VIEW
         # riposition the mapper, index could be invalid if < 0 or > model.rowCount()
         # invalid indexes don't emit currentIndexChanged so we must do a
@@ -543,12 +520,9 @@ class FormViewManager[T](QWidget):
 
     def reload(self) -> None:
         "Undo pending changes and Reload data from db"
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        if self.model and hasattr(self.model, 'revertAll'):
-            self.model.revertAll() # also do a select()
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
+        with gui_exception_context(self, _tr('FormViewManager', 'Reload')):
+            if self.model and hasattr(self.model, 'revertAll'):
+                self.model.revertAll() # also do a select()
         self.state = ev.VIEW
         self.updateEditStatus()
 
@@ -704,43 +678,34 @@ class FormIndexManager[T](QWidget):
         # sanity checks
         if index < 0 or not self.indexModel or self.indexModel.rowCount() == 0:
             return
-
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         
-        # Attiviamo il blocco per evitare falsi positivi di modifica sui widget
+        # enable blocking to avoid false positives of changes to widgets
         self._is_navigating = True
-        
         try:
-            if not hasattr(self.model, 'filter'):
-                return
-
-            # Recupero sicuro del dato dall'indice
-            model_index = self.indexModel.index(index, 0)
-            if not model_index.isValid():
-                return
-                
-            # Filtra il modello principale di una sola riga
-            self.model.filter(0, model_index.data())    
-            
-            # Sincronizza il secondo mapper sul record unico caricato
-            self.mapper.toFirst()
-            
-            # Carica le relazioni di dettaglio
-            if self.detailRelations:
-                current_row = self.mapper.currentIndex()
-                if current_row >= 0:
-                    for relation, masterColumn, detailColumn in self.detailRelations:
-                        idx_master = self.model.index(current_row, masterColumn)
-                        if idx_master.isValid():
-                            value = idx_master.data()
-                            relation.filter(detailColumn, value)
-            
-            self.updateEditStatus()
-            
+            with gui_exception_context(self, _tr('FormIndexManager', 'Reloading data')):
+                if not hasattr(self.model, 'filter'):
+                    return
+                # safe index recovery
+                model_index = self.indexModel.index(index, 0)
+                if not model_index.isValid():
+                    return
+                # filter the main model that have always only one row
+                self.model.filter(0, model_index.data())    
+                # synchronize the second mapper on the single record uploaded
+                self.mapper.toFirst()
+                # load detail relations
+                if self.detailRelations:
+                    current_row = self.mapper.currentIndex()
+                    if current_row >= 0:
+                        for relation, masterColumn, detailColumn in self.detailRelations:
+                            idx_master = self.model.index(current_row, masterColumn)
+                            if idx_master.isValid():
+                                value = idx_master.data()
+                                relation.filter(detailColumn, value)
+                self.updateEditStatus()
         finally:
-            # Rilasciamo il blocco in ogni caso
+            # release the block in any case
             self._is_navigating = False
-            QGuiApplication.restoreOverrideCursor()
 
 
     def updateEditStatus(self) -> None:
@@ -937,63 +902,61 @@ class FormIndexManager[T](QWidget):
         "Undo pending changes and Reload data from db. Automatically stays on the same or new record"
         if not self.indexModel: 
             return
-            
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         
-        # 1. DYNAMIC IDENTIFICATION OF THE PRIMARY KEY COLUMN
-        # If it is not defined, we assume column 0 as the fallback.
-        pk_col = getattr(self.model, 'pkColumn', 0)
+        with wait_cursor_context():
+            # DYNAMIC IDENTIFICATION OF THE PRIMARY KEY COLUMN
+            # If it is not defined, we assume column 0 as the fallback.
+            pk_col = getattr(self.model, 'pkColumn', 0)
 
-        # 2. RECUPERO DELLA CHIAVE PRIMARIA PRIMA DEL REFRESH
-        last_saved_key = None
-        era_nuovo_record = getattr(self, '_new', False)
-        
-        if era_nuovo_record and self.model and self.model.rowCount() > 0:
-            # Nel nuovo record (riga 0 del main model), cerchiamo nella colonna chiave corretta
-            last_saved_key = self.model.index(0, pk_col).data()
-        elif self.indexMapper.currentIndex() >= 0:
-            # Nell'indice, cerchiamo la chiave nella colonna corretta
-            last_saved_key = self.indexModel.index(self.indexMapper.currentIndex(), pk_col).data()
-
-        currentIndex = self.indexMapper.currentIndex() 
-        self.state = ev.VIEW
-        
-        with gui_exception_context(self, _tr("Form", "Form reload")):
-            self.indexModel.revertAll()  # Riesegue la select SQL con filtri e ordinamenti
+            # PRIMARY KEY RECOVERY BEFORE REFRESH
+            last_saved_key = None
+            was_new_record = getattr(self, '_new', False)
             
-        crc = self.indexModel.rowCount()
-        
-        # 3. RICERCA SEQUENZIALE SULLA COLONNA CHIAVE REALE
-        riga_trovata = -1
-        if last_saved_key is not None and crc > 0:
-            for i in range(crc):
-                # Confrontiamo i dati sulla colonna pk_col corretta
-                valore_indice = self.indexModel.index(i, pk_col).data()
+            if was_new_record and self.model and self.model.rowCount() > 0:
+                # in the new record (row 0 of the main model), we search in the correct key column
+                last_saved_key = self.model.index(0, pk_col).data()
+            elif self.indexMapper.currentIndex() >= 0:
+                # in the index, we look for the key in the correct column
+                last_saved_key = self.indexModel.index(self.indexMapper.currentIndex(), pk_col).data()
+
+            currentIndex = self.indexMapper.currentIndex() 
+            self.state = ev.VIEW
+            
+            with gui_exception_context(self, _tr("Form", "Form reload")):
+                self.indexModel.revertAll()  # reruns the SQL select with filters and sorts
                 
-                # Usiamo str() per il confronto così siamo immuni alle differenze di tipo (es. intero vs stringa)
-                if str(valore_indice) == str(last_saved_key):
-                    riga_trovata = i
-                    break
+            crc = self.indexModel.rowCount()
+            
+            # SEQUENTIAL SEARCH ON THE REAL KEY COLUMN
+            row_found = -1
+            if last_saved_key is not None and crc > 0:
+                for i in range(crc):
+                    # compare the data on the correct pk_col column
+                    valore_indice = self.indexModel.index(i, pk_col).data()
+                    
+                    # we use str() for comparison so we are immune to type differences (e.g. integer vs. string)
+                    if str(valore_indice) == str(last_saved_key):
+                        row_found = i
+                        break
 
-        # 4. RIPOSIZIONAMENTO DEL MAPPER
-        if crc == 0:  
-            if hasattr(self.model, 'clearData'):
-                self.model.clearData()
-            self.mapper.revert()
+            # REPOSITIONING THE MAPPER
+            if crc == 0:  
+                if hasattr(self.model, 'clearData'):
+                    self.model.clearData()
+                self.mapper.revert()
+                self.updateEditStatus()
+                
+            elif row_found >= 0:
+                self.indexMapper.setCurrentIndex(row_found)
+                
+            else:
+                if currentIndex >= crc:
+                    currentIndex = crc - 1
+                if currentIndex < 0:
+                    currentIndex = 0
+                self.indexMapper.setCurrentIndex(currentIndex)    
+                
             self.updateEditStatus()
-            
-        elif riga_trovata >= 0:
-            self.indexMapper.setCurrentIndex(riga_trovata)
-            
-        else:
-            if currentIndex >= crc:
-                currentIndex = crc - 1
-            if currentIndex < 0:
-                currentIndex = 0
-            self.indexMapper.setCurrentIndex(currentIndex)    
-            
-        QGuiApplication.restoreOverrideCursor()
-        self.updateEditStatus()
 
 
     def setIndexModel(self, model: QueryModel) -> None:

@@ -36,7 +36,7 @@ import psycopg
 # application modules
 from App.Database import OVFIELD
 from App.Database.Connect import appconn
-from App.Core.Database import db_exception_context
+from App.Core.ExceptionHandler import db_exception_context
 from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Exceptions import PyAppDBConcurrencyError
 

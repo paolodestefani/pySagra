@@ -35,6 +35,8 @@ from PySide6.QtCore import QUrl
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QEvent
+from PySide6.QtCore import QFile
+from PySide6.QtCore import QTextStream
 from PySide6.QtGui import QTextCursor
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
@@ -101,7 +103,7 @@ class HelpDialog(QDialog):
         self.ui.toolButtonBack.clicked.connect(self.ui.textBrowserContent.backward)
         self.ui.toolButtonHome.clicked.connect(self.ui.textBrowserContent.home)
         self.ui.toolButtonForward.clicked.connect(self.ui.textBrowserContent.forward)
-        self.ui.textBrowserContent.setSource(QUrl(f"qrc:/{source}"))        
+        #self.ui.textBrowserContent.setSource(QUrl(f"qrc:/{source}"))        
         self.setWindowTitle(f"{title}")
         # action for find text
         findDesc = _tr('Help', 'Find')
@@ -113,7 +115,17 @@ class HelpDialog(QDialog):
         self.ui.toolButtonPrint.clicked.connect(self.print)
         self.ui.horizontalSliderZoom.valueChanged.connect(self.sliderChangedValue)
         self.ui.toolButtonFind.clicked.connect(self.findText)
-
+        # start browsing
+        self.loadHelpPage(source)
+        
+    def loadHelpPage(self, page_name: str) -> None:
+        # by setting Search Paths to "qrc:/", Qt will search for images directly in the QRC aliases.
+        self.ui.textBrowserContent.setSearchPaths(["qrc:/"])
+        # build the canonical URL using the correct prefix
+        qrc_url = QUrl.fromUserInput(f"qrc:/{page_name}")
+        # start browsing
+        self.ui.textBrowserContent.setSource(qrc_url)
+        
     def sliderChangedValue(self, value: int) -> None:
         "Update zoom based on slider"
         if value > self.sliderValue: # type: ignore

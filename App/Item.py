@@ -214,7 +214,7 @@ class ItemForm(FormIndexManager):
         self.addDetailRelation(modelm, itm.ID, men.MENU)
         self.addDetailRelation(modelp, itm.ID, prc.ITEM)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = 'help/item.html'
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

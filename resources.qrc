@@ -1,6 +1,6 @@
 <RCC>
   <qresource>
-    <file alias="pySagra">icon/pySagra.png</file>
+    <file alias="pySagra">Icon/pySagra.png</file>
     <file alias="login_gif">icon/login.gif</file>
   </qresource>
   <qresource>
@@ -279,19 +279,23 @@
     <file alias="help_system_info">icon/flatwoken/Computer-B.png</file>
   </qresource>
   <qresource prefix="/help" lang="it">
-    <file alias="main.html">help/IT/main.html</file>
-    <file alias="faq.html">help/IT/faq.html</file>
-    <file alias="login.html">help/IT/login.html</file>
-    <file alias="img/main_window.png">help/IT/img/main_window.png</file>
-	<file alias="img/login1.png">help/IT/img/login1.png</file>
-	<file alias="img/login2.png">help/IT/img/login2.png</file>
+    <file alias="main.html">Documentation/it/main.html</file>
+    <file alias="faq.html">Documentation/it/faq.html</file>
+    <file alias="login.html">Documentation/it/login.html</file>
+    <file alias="item.html">Documentation/it/item.html</file>
+    <file alias="img/main_window.png">Documentation/it/img/main_window.png</file>
+	<file alias="img/pySagra.png">Documentation/it/img/pySagra.png</file>
+	<file alias="img/login1.png">Documentation/it/img/login1.png</file>
+	<file alias="img/login2.png">Documentation/it/img/login2.png</file>
   </qresource>
   <qresource prefix="/help" lang="en">
-	<file alias="main.html">help/EN/main.html</file>
-	<file alias="faq.html">help/EN/faq.html</file>
-    <file alias="login.html">help/EN/login.html</file>
-    <file alias="img/main_window.png">help/EN/img/main_window.png</file>
-	<file alias="img/login1.png">help/EN/img/login1.png</file>
-	<file alias="img/login2.png">help/EN/img/login2.png</file>
+	<file alias="main.html">Documentation/en/main.html</file>
+	<file alias="faq.html">Documentation/en/faq.html</file>
+    <file alias="login.html">Documentation/en/login.html</file>
+    <file alias="item.html">Documentation/en/item.html</file>
+    <file alias="img/main_window.png">Documentation/en/img/main_window.png</file>
+	<file alias="img/pySagra.png">Documentation/en/img/pySagra.png</file>
+	<file alias="img/login1.png">Documentation/en/img/login1.png</file>
+	<file alias="img/login2.png">Documentation/en/img/login2.png</file>
   </qresource>
 </RCC>

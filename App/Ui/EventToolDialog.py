@@ -17,14 +17,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QComboBox, QDialog,
     QDialogButtonBox, QGroupBox, QHBoxLayout, QLabel,
-    QProgressBar, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_EventToolDialog(object):
     def setupUi(self, EventToolDialog):
         if not EventToolDialog.objectName():
             EventToolDialog.setObjectName(u"EventToolDialog")
-        EventToolDialog.resize(512, 384)
+        EventToolDialog.resize(512, 342)
         self.verticalLayout_6 = QVBoxLayout(EventToolDialog)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.horizontalLayout = QHBoxLayout()
@@ -94,14 +93,6 @@ class Ui_EventToolDialog(object):
         self.horizontalLayout.setStretch(1, 1)
 
         self.verticalLayout_6.addLayout(self.horizontalLayout)
-
-        self.progressBar = QProgressBar(EventToolDialog)
-        self.progressBar.setObjectName(u"progressBar")
-        self.progressBar.setMaximum(100)
-        self.progressBar.setValue(0)
-        self.progressBar.setTextVisible(True)
-
-        self.verticalLayout_6.addWidget(self.progressBar)
 
         self.verticalSpacer = QSpacerItem(20, 32, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 

@@ -37,7 +37,7 @@ from PySide6.QtCore import QDate
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
-from App.Core.Database import db_exception_context
+from App.Core.ExceptionHandler import db_exception_context
 from App.Database.Utility import Record, RecordSet
 from App.Database.Connect import appconn
 from App.Database.Setting import Setting
@@ -235,7 +235,7 @@ class Order():
                     
         return list(out_of_stock_descriptions)
 
-    def _server_explode_to_parts(self, item_id: int, multiplier: int = 1, flat_recipe: dict = None) -> dict:
+    def _server_explode_to_parts(self, item_id: int, multiplier: int = 1, flat_recipe: dict | None = None) -> dict:
         """Server-side structural replica to explode any item id down to its base requirements."""
         if flat_recipe is None:
             flat_recipe = {}

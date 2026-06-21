@@ -34,7 +34,7 @@ from typing import List, Tuple, Any
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
-from App.Core.Database import db_exception_context
+from App.Core.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
 

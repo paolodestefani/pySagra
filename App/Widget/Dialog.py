@@ -104,6 +104,7 @@ from App.Database.Adaptation import is_system_object
 from App.Database.Report import report_description
 from App.Database.Lookup import event_lookup
 from App.Database.Lookup import item_lookup
+from App.Database.Lookup import department_lookup
 from App.Database.Lookup import get_list
 from App.Database.Adaptation import create_adaptation
 from App.Database.Adaptation import delete_adaptation
@@ -157,7 +158,8 @@ class pti(IntEnum):
 
 
 referenceList = {'eventList': event_lookup,
-                 'itemList': item_lookup}
+                 'itemList': item_lookup,
+                 'departmentList':department_lookup}
 
 
 class MessageBox(QDialog):

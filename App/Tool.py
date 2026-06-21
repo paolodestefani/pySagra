@@ -41,6 +41,7 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Lookup import event_lookup
 from App.Database.Tool import delete_event_order
@@ -155,7 +156,6 @@ class EventToolDialog(QDialog):
         self.ui.comboBoxUtility.currentIndexChanged.connect(self.updateWarning)
         self.updateWarning(0)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
-        self.ui.progressBar.hide()
        
     def updateWarning(self, index):
         "Update warning text according to selected utility"
@@ -213,23 +213,11 @@ class EventToolDialog(QDialog):
                                 QMessageBox.No  # default botton
                                 ) == QMessageBox.No:
             return
-        QCoreApplication.processEvents() # update dialog
-        self.ui.progressBar.show()
-        self.ui.progressBar.setRange(0, 0)  # infinite progress
-        try:
-            utilities[utility_id][FUNC](event_id), 
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}")
-        else:
+        with gui_exception_context(self, _tr('Utility', 'Execute event tool')):
+            utilities[utility_id][FUNC](event_id)
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Utility', 'Operation completed successfully'))
-        finally:
-            self.ui.progressBar.setRange(0, 100)
-            self.ui.progressBar.hide()
-            #super().accept()
 
 
 class DeleteToolDialog(QDialog):

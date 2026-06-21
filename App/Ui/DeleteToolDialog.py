@@ -24,6 +24,7 @@ class Ui_DeleteToolDialog(object):
     def setupUi(self, DeleteToolDialog):
         if not DeleteToolDialog.objectName():
             DeleteToolDialog.setObjectName(u"DeleteToolDialog")
+        DeleteToolDialog.resize(432, 356)
         self.verticalLayout_5 = QVBoxLayout(DeleteToolDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout = QHBoxLayout()

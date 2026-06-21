@@ -32,7 +32,7 @@ import logging
 from typing import Any, List
 
 # application modules
-from App.Core.Database import db_exception_context
+from App.Core.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
 

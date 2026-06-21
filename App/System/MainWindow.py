@@ -44,6 +44,9 @@ from PySide6.QtGui import QAction
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QPainter
+from PySide6.QtGui import QColor
+from PySide6.QtGui import QPen
+from PySide6.QtGui import QLinearGradient
 from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QPaintEvent
 from PySide6.QtGui import QCloseEvent
@@ -209,65 +212,64 @@ class TabWidget(QTabWidget):
         ast.setChecked(True)
         ast.triggered.connect(mainWin.hideTabBar)
         self.addAction(ast)
-
+    
     def paintEvent(self, event: QPaintEvent) -> None:
         "Paint event, show an image and company or event description if no tab is open"
-        super().paintEvent(event)
+        # if there are any tabs open, delegate them entirely to the base widget and exit immediately
         if self.count() != 0:
+            super().paintEvent(event)
             return
+
+        # If there are no tabs, draw the custom background without calling super()
         if session['event_image'] or session['company_image']:
             img = QPixmap()
             img.loadFromData(session['event_image'] or session['company_image'])
         else:
             img = self.appimage
-        painter = QPainter(self)
-        # colors
-        if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Light:
-            color1 = QColorConstants.LightGray
-            color2 = QColorConstants.DarkBlue
-        else:
-            color1 = QColorConstants.DarkYellow
-            color2 = QColorConstants.Yellow
-        # company
-        x = (self.width() - img.width()) // 2
-        y = (self.height() - img.height()) // 2
-        painter.drawPixmap(x, y, img)
-        painter.setPen(color1)
-        painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(3,                      # x
-                                50,                     # y
-                                self.width(),           # width
-                                60),                    # height
-                         Qt.AlignmentFlag.AlignCenter,
-                         session['company_description'][:40])
-        painter.setPen(color2)
-        painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(0,                      # x
-                                47,                     # y
-                                self.width(),           # width
-                                60),                    # height
-                         Qt.AlignmentFlag.AlignCenter,
-                         session['company_description'][:40])
-        # event
-        msg = _tr('MainWindow', 'No event available')
-        evds = f"{session['event_description'] or msg}"
-        painter.setPen(color1)
-        painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(3,                      # x
-                                self.height() - 150,    # y
-                                self.width(),           # width
-                                60),                    # height
-                         Qt.AlignmentFlag.AlignCenter,
-                         evds)
-        painter.setPen(color2)
-        painter.setFont(QFont("Arial", 28, QFont.Weight.Bold, True))
-        painter.drawText(QRectF(0,                      # x
-                                self.height() - 153,    # y
-                                self.width(),           # width
-                                60),                    # height
-                         Qt.AlignmentFlag.AlignCenter,
-                         evds)
 
+        with QPainter(self) as painter:
+            # color selection based on system color scheme
+            if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Light:
+                shadow_color = QColorConstants.LightGray
+                text_color = QColorConstants.DarkBlue
+            else:
+                shadow_color = QColorConstants.DarkYellow
+                text_color = QColorConstants.Yellow
+
+            # draw image on center
+            x = (self.width() - img.width()) // 2
+            y = (self.height() - img.height()) // 2
+            painter.drawPixmap(x, y, img)
+            
+            # font configuration
+            font = QFont("Arial", 28, QFont.Weight.Bold, True)
+            painter.setFont(font)
+            company_txt = session['company_description'][:40]
+            
+            # text on top less 50 pixels
+            y_fixed = 50
+            text_rect = QRectF(0, y_fixed, self.width(), 60)
+            # draw the text shadow translated of 3 pixels on both directions
+            painter.setPen(shadow_color)
+            painter.drawText(text_rect.translated(3, 3), Qt.AlignmentFlag.AlignCenter, company_txt)
+            # draw the text on top of the shadow
+            painter.setPen(text_color)
+            painter.drawText(text_rect, Qt.AlignmentFlag.AlignCenter, company_txt)
+
+            # event description if any
+            msg = _tr('MainWindow', 'No event available')
+            evds = f"{session['event_description'] or msg}"
+            # text on bottom plus 100 pixels
+            y_fixed = 100
+            text_rect = QRectF(0, self.height() - y_fixed, self.width(), 60)
+            # draw the text shadow translated o 3 pixels on both directions
+            painter.setPen(shadow_color)
+            painter.drawText(text_rect.translated(3, 3), Qt.AlignmentFlag.AlignCenter, evds)
+            # draw the text on top of the shadow
+            painter.setPen(text_color)
+            painter.drawText(text_rect, Qt.AlignmentFlag.AlignCenter, evds)
+            
+            
 # custom counter widget for record navigation, show current record and total records count, 
 # with a red border when a limit is reached
 
@@ -374,7 +376,6 @@ class MainWindow(QMainWindow):
             self.restoreState(st.value("MainWindow/State"), 1)
         # and set initial edit status
         self.updateEditStatus(NSEMPTY, -1, -1, None)
-        print("Settings:", st.fileName())
 
     def updateActionMenuToolbar(self) -> None:
         "Delete/recreate actions/menus/toolbars on access/change company"

@@ -33,6 +33,7 @@ from typing import Any
 # PySide6
 from PySide6.QtCore import QDate
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrinterInfo
@@ -65,6 +66,11 @@ def printOrderReport(order_id: int, printer: str|None = None) -> None:
         report.print(prnt)
     else:
         # print preview
+        # restore cursor if necessary
+        if QGuiApplication.overrideCursor() is not None:
+            if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                QGuiApplication.restoreOverrideCursor()
+        # create the preview
         dialog = QPrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)
@@ -90,6 +96,10 @@ def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
         report.print(prnt)
     else:
         # print preview
+        # restore cursor if necessary
+        if QGuiApplication.overrideCursor() is not None:
+            if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                QGuiApplication.restoreOverrideCursor()
         dialog = QPrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)
@@ -121,6 +131,10 @@ def printOrderDepartmentReport(order_id: int,
         report.print(prnt)
     else:
         # print preview
+        # restore cursor if necessary
+        if QGuiApplication.overrideCursor() is not None:
+            if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                QGuiApplication.restoreOverrideCursor()
         dialog = QPrintPreviewDialog(session['mainwin'])
         # start
         dialog.paintRequested.connect(report.print)

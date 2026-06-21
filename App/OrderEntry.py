@@ -1233,8 +1233,9 @@ class BaseOrderDialog(QDialog):
             return
             
         # validate that the table number actually exists in the predefined list
-        if (self.setting['mandatory_table_number'] and self.setting['use_table_list']
-                and self.ui.radioButtonTable.isChecked()):
+        if (self.setting['mandatory_table_number'] and 
+            self.setting['use_table_list'] and 
+            self.ui.radioButtonTable.isChecked()):
             if not table_exists(self.ui.lineEditTable.text().strip()):
                 msg = _tr("OrderEntry", "The table number does not exist, use it anyway ?")
                 if QMessageBox.question(self,
@@ -1260,7 +1261,7 @@ class BaseOrderDialog(QDialog):
             
         # double check if covers/seats are missing despite being a table order
         if self.ui.radioButtonTable.isChecked() and not self.ui.spinBoxCovers.value():
-            msg = _tr("OrderEntry", "Warning: there are no seats even "
+            msg = _tr("OrderEntry", "Warning: there are no covers even "
                                     "though delivery to the table has been indicated,\n"
                                     "do you want to correct it?")
             if QMessageBox.question(self,

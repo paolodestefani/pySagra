@@ -51,6 +51,9 @@ SET search_path = company;
 CREATE FUNCTION delete_event_order(in_event int) 
 RETURNS VOID AS
 $$
+DECLARE
+tt text[];
+i integer;
 BEGIN
 	-- delete event orders
 	DELETE FROM company.order_header 
@@ -65,6 +68,21 @@ BEGIN
 	-- delte from numbering
 	DELETE FROM company.numbering 
     WHERE event_id = in_event; -- event include company
+    -- re-index, update identity
+    FOREACH tt SLICE 1 IN ARRAY ARRAY[
+        ['company.inventory', 'inventory_id'],
+		['company.numbering', 'numbering_id'],
+		['company.order_header', 'order_header_id'],
+		['company.order_header_department', 'order_header_department_id'],
+		['company.order_line', 'order_line_id'],
+		['company.order_line_department', 'order_line_department_id'],
+        ['company.ordered_delivered', 'ordered_delivered_id']
+		] LOOP
+        EXECUTE format('REINDEX TABLE %s', tt[1]);
+		EXECUTE format('SELECT coalesce(max(%s), 0) + 1 FROM %s', tt[2], tt[1]) INTO i;
+		EXECUTE format('ALTER TABLE %s ALTER COLUMN %s RESTART WITH %s', tt[1], tt[2], i) ;
+		--RAISE NOTICE '%', t[2];
+	END LOOP;
 END;
 $$ 
 LANGUAGE plpgsql;
@@ -176,6 +194,7 @@ RETURNS VOID AS
 $$
 DECLARE
     odr         RECORD;             -- order detail dep record
+    i           integer;
 BEGIN
     -- clear ordered_delivered
     DELETE FROM company.ordered_delivered 
@@ -218,6 +237,10 @@ BEGIN
 			AND day_part    = odr.day_part 
 			AND item_id     = odr.item_id;
     END LOOP;
+    -- re-index, update identity
+    EXECUTE format('REINDEX TABLE company.ordered_delivered');
+	EXECUTE format('SELECT coalesce(max(ordered_delivered_id), 0) + 1 FROM company.ordered_delivered') INTO i;
+	EXECUTE format('ALTER TABLE company.ordered_delivered ALTER COLUMN ordered_delivered_id RESTART WITH %s', i) ;
 END;
 $$ 
 LANGUAGE plpgsql;
@@ -237,9 +260,10 @@ BEGIN
     -- clear old values
     DELETE FROM company.numbering 
     WHERE event_id = in_event; -- event include company
-    -- update identity
-	i := (SELECT coalesce(max(numbering_id), 0) + 1 FROM company.numbering);
-	EXECUTE format('ALTER TABLE company.numbering ALTER COLUMN numbering_id RESTART WITH %s', i);
+    -- re-index, update identity
+    EXECUTE format('REINDEX TABLE company.numbering');
+	EXECUTE format('SELECT coalesce(max(numbering_id), 0) + 1 FROM company.numbering') INTO i;
+	EXECUTE format('ALTER TABLE company.numbering ALTER COLUMN numbering_id RESTART WITH %s', i) ;
     -- update numbering table
     INSERT INTO company.numbering (
 		company_id,
