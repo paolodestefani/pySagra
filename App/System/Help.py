@@ -119,6 +119,10 @@ class HelpDialog(QDialog):
         self.loadHelpPage(source)
         
     def loadHelpPage(self, page_name: str) -> None:
+        "Load an html source file from resources"
+        # fallback to the main help page if page_name isn't available
+        if not QFile.exists(f":/{page_name}"):
+            page_name = "help/main.html"
         # by setting Search Paths to "qrc:/", Qt will search for images directly in the QRC aliases.
         self.ui.textBrowserContent.setSearchPaths(["qrc:/"])
         # build the canonical URL using the correct prefix

@@ -282,6 +282,7 @@
     <file alias="main.html">Documentation/it/main.html</file>
     <file alias="faq.html">Documentation/it/faq.html</file>
     <file alias="login.html">Documentation/it/login.html</file>
+    <file alias="password.html">Documentation/it/password.html</file>
     <file alias="item.html">Documentation/it/item.html</file>
     <file alias="img/main_window.png">Documentation/it/img/main_window.png</file>
 	<file alias="img/pySagra.png">Documentation/it/img/pySagra.png</file>
@@ -292,6 +293,7 @@
 	<file alias="main.html">Documentation/en/main.html</file>
 	<file alias="faq.html">Documentation/en/faq.html</file>
     <file alias="login.html">Documentation/en/login.html</file>
+    <file alias="password.html">Documentation/en/password.html</file>
     <file alias="item.html">Documentation/en/item.html</file>
     <file alias="img/main_window.png">Documentation/en/img/main_window.png</file>
 	<file alias="img/pySagra.png">Documentation/en/img/pySagra.png</file>

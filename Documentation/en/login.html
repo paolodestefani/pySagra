@@ -5,59 +5,72 @@
     </title>
   </head>
   <body style="font-family: Arial, Sans-Serif;">
-    <h1>Documentation on pySagra</h1>
+    <h1>
+      pySagra Documentation
+    </h1>
     <h2 id="login">
       Login procedure
     </h2>
     <p>
-     When the application started for the first time, the connection parameters are requested
-	 and the window looks like in the following figure:
-     <p><img src="img/login1.png" width="463" height="722" /></p>
+     At the first launch of the application, the connection parameters to the
+	 server are requested and the window appears as shown in the figure:
+	 <p><img src="img/login1.png" width="463" height="722" /></p>
     </p>
     <p>
-      The parameters required to connect to
-	  the database server are:
+      The parameters required to establish the connection to the
+      database server are:
     </p>
     <ul>
       <li>
-        <b>User:</b> type in the application user name
+        <b>User:</b> enter the application username
       </li>
       <li>
-        <b>Password:</b> type in the user password
-        The user password can be optional
-		based on the authentication settings
-        There are 2 built in user account:
-		<ul>
-			<li><i>system</i> with password <b>System@1</b></li>
-			<li><i>utente</i> with password <b>utente</b></li>
-		</ul>
+        <b>Password:</b> enter the password associated with the selected
+        user. It may not be mandatory depending on how the user
+        authentication mechanism is configured.
       </li>
       <li>
-        <b> Server: </b> enter the name of the computer running the
-		role of database server. It is also possible to enter
-		the server's ip address (eg 192.168.1.1). If the
-		program runs on the same computer where
-		the database server is running
-		You can enter the computer name 'localhost' or the ip
-		127.0.0.1
+        <b>Server:</b> enter the name of the computer acting as the
+        database server. It is also possible to enter the server's IP
+        address (e.g., 192.168.1.1). If the program is executed on the
+        same computer where the database server is running, you can
+        enter the computer name 'localhost' or the IP 127.0.0.1
       </li>
       <li>
-        <b> Port: </b> type in the TCP port to use for the
-		connection. Typically in PostgreSQL installations
-		port 5432 is used, ask the administrator
-		network if a different port is used
+        <b>Port:</b> indicate the TCP port to use for the
+        connection. Typically, PostgreSQL installations use port 5432;
+        ask the network administrator if a different port is being used
       </li>
       <li>
-        <b>Database:</b> type in the database name to connect to
+        <b>Database:</b> indicate the name of the database to
+        connect to
       </li>
     </ul>
+    <p>There are 2 predefined and unmodifiable system users:
+		<ul>
+			<li><i>system</i></li>
+			<li><i>sistema</i></li>
+		</ul>
+		<p>These users are administrators and have been assigned 
+		a menu and a profile that allows them full access
+		 to all program features</p>
+		<p>In addition, 3 other users are preloaded:</p>
+		<ul>
+			<li><i>utente</i> with password <b>utente</b></li>
+			<li><i>cassa</i> with password <b>cassa</b></li>
+			<li><i>avanza</i> with password <b>avanza</b></li>
+		</ul>
+		<p>Being normal users, they can be modified and also deleted. 
+		They are users with various limitations, except for <b>utente</b>, but any 
+		administrator can modify their permissions, profiles, and menus</p>
     <p>
-		The first time you access a server <b> ALL of these </b>
-		parameters must be setted. The subsequent times
-		the same parameters already used successfully are re-proposed
-		excluding the username and password:
-		<p><img src="img/login2.png" width="463" height="511" /></p>
-	  Click on <i>Connection details</i> to modify the connection prameters
+      The first time you access a server, <b>ALL</b> these
+      parameters must be filled in. On subsequent occasions,
+      the same parameters previously used with success are proposed again,
+      with the exception of the username and password:
+	  <p><img src="img/login2.png" width="463" height="511" /></p>
+	  To modify the entered parameters, click on the <i>Connection details</i> checkbox
     </p>
   </body>
 </html>
+

@@ -388,34 +388,14 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QPushButton" name="pushButtonLogin">
-         <property name="toolTip">
-          <string>Click to connect to the server and start the application</string>
-         </property>
-         <property name="whatsThis">
-          <string>Click to connect to the server and start the application</string>
-         </property>
-         <property name="text">
-          <string>Login</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButtonCancel">
-         <property name="toolTip">
-          <string>Cancel and close the login dialog</string>
-         </property>
-         <property name="whatsThis">
-          <string>Cancel and close the login dialog</string>
-         </property>
-         <property name="text">
-          <string>Cancel</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Help|QDialogButtonBox::StandardButton::Ok</set>
+       </property>
+       <property name="centerButtons">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxMore">
@@ -602,8 +582,6 @@
  <tabstops>
   <tabstop>lineEditUser</tabstop>
   <tabstop>lineEditPassword</tabstop>
-  <tabstop>pushButtonLogin</tabstop>
-  <tabstop>pushButtonCancel</tabstop>
   <tabstop>checkBoxMore</tabstop>
   <tabstop>lineEditServer</tabstop>
   <tabstop>spinBoxPort</tabstop>
@@ -632,34 +610,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButtonLogin</sender>
-   <signal>clicked()</signal>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
    <receiver>LoginDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>354</y>
+     <x>163</x>
+     <y>290</y>
     </hint>
     <hint type="destinationlabel">
-     <x>149</x>
-     <y>210</y>
+     <x>167</x>
+     <y>275</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>pushButtonCancel</sender>
-   <signal>clicked()</signal>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
    <receiver>LoginDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>308</x>
-     <y>354</y>
+     <x>163</x>
+     <y>290</y>
     </hint>
     <hint type="destinationlabel">
-     <x>149</x>
-     <y>210</y>
+     <x>167</x>
+     <y>275</y>
     </hint>
    </hints>
   </connection>

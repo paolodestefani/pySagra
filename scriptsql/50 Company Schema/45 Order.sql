@@ -234,7 +234,7 @@ CREATE TABLE order_header (
     change                  numeric(12, 2) NOT NULL DEFAULT 0,
     is_electronic_payment   boolean NOT NULL DEFAULT false,
     is_from_web             boolean NOT NULL DEFAULT false,
-    status                  char NOT NULL DEFAULT 'A', -- (A)quired, (I)n progress, (P)rocessed
+    status                  char NOT NULL DEFAULT 'A', -- (A)cquired, (I)n progress, (P)rocessed
 	fulfillment_date       timestamptz(3) NULL,
     external_code           integer,
     --

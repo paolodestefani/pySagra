@@ -33,7 +33,6 @@ import decimal
 
 # PySide6
 from PySide6.QtCore import QCoreApplication
-from PySide6.QtGui import QIcon
 
 # application modules
 from App import session
@@ -65,31 +64,4 @@ def toCurrency(val: decimal.Decimal | float | int) -> str:
 def toString(val: decimal.Decimal | float | int) -> str:
     """Return a localized string representatuin of a quantity value"""
     return session['qlocale'].toString(val)
-
-# language and country list
-
-def langCountryFlags() -> list:
-    "Returns a list of languages/countries with flag icon"
-    # Must use a function because QIcon() can be created only after a QApplication()
-    return [#(QIcon(), None, None),
-            (QIcon(':/flags/flag_italy'), 'it_IT', "Italiano / Italia"),
-            (QIcon(':/flags/flag_usa'), 'en_US', "English / United States"),
-            (QIcon(':/flags/flag_uk'), 'en_UK', "English / United Kingdom"),
-            (QIcon(':/flags/flag_france'), 'fr_FR', "Français / France"),
-            (QIcon(':/flags/flag_germany'), 'de_DE', "Deutsch / Deutschland"),
-            (QIcon(':/flags/flag_russia'), 'ru_RU', "русский / Россия"),
-            (QIcon(':/flags/flag_china'), 'zh_CN', "中國 / 中國"),
-            (QIcon(':/flags/flag_thailand'), 'th_TH', "ไทย / ประเทศไทย")]
-
-def langCountry() -> list:
-    "Returns a list of languages/countries"
-    # neew 2 function for use with relationalDelegate
-    return [('it_IT', "Italiano / Italia"),
-            ('en_US', "English / United States"),
-            ('en_UK', "English / United Kingdom"),
-            ('fr_FR', "Français / France"),
-            ('de_DE', "Deutsch / Deutschland"),
-            ('ru_RU', "русский / Россия"),
-            ('zh_CN', "中國 / 中國"),
-            ('th_TH', "ไทย / ประเทศไทย")]
 

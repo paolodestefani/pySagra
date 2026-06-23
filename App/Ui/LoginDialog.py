@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QFrame,
-    QGridLayout, QHBoxLayout, QLabel, QLayout,
-    QLineEdit, QPushButton, QSizePolicy, QSpinBox,
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
+    QDialogButtonBox, QFrame, QGridLayout, QLabel,
+    QLayout, QLineEdit, QSizePolicy, QSpinBox,
     QVBoxLayout, QWidget)
 import resources_rc
 
@@ -134,20 +134,12 @@ class Ui_LoginDialog(object):
 
         self.verticalLayout_2.addLayout(self.gridLayout)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.pushButtonLogin = QPushButton(LoginDialog)
-        self.pushButtonLogin.setObjectName(u"pushButtonLogin")
+        self.buttonBox = QDialogButtonBox(LoginDialog)
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setCenterButtons(True)
 
-        self.horizontalLayout.addWidget(self.pushButtonLogin)
-
-        self.pushButtonCancel = QPushButton(LoginDialog)
-        self.pushButtonCancel.setObjectName(u"pushButtonCancel")
-
-        self.horizontalLayout.addWidget(self.pushButtonCancel)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.verticalLayout_2.addWidget(self.buttonBox)
 
         self.checkBoxMore = QCheckBox(LoginDialog)
         self.checkBoxMore.setObjectName(u"checkBoxMore")
@@ -250,9 +242,7 @@ class Ui_LoginDialog(object):
         self.label_3.setBuddy(self.spinBoxPort)
 #endif // QT_CONFIG(shortcut)
         QWidget.setTabOrder(self.lineEditUser, self.lineEditPassword)
-        QWidget.setTabOrder(self.lineEditPassword, self.pushButtonLogin)
-        QWidget.setTabOrder(self.pushButtonLogin, self.pushButtonCancel)
-        QWidget.setTabOrder(self.pushButtonCancel, self.checkBoxMore)
+        QWidget.setTabOrder(self.lineEditPassword, self.checkBoxMore)
         QWidget.setTabOrder(self.checkBoxMore, self.lineEditServer)
         QWidget.setTabOrder(self.lineEditServer, self.spinBoxPort)
         QWidget.setTabOrder(self.spinBoxPort, self.lineEditDatabase)
@@ -261,8 +251,8 @@ class Ui_LoginDialog(object):
 
         self.retranslateUi(LoginDialog)
         self.checkBoxMore.clicked["bool"].connect(self.frameMore.setVisible)
-        self.pushButtonLogin.clicked.connect(LoginDialog.accept)
-        self.pushButtonCancel.clicked.connect(LoginDialog.reject)
+        self.buttonBox.accepted.connect(LoginDialog.accept)
+        self.buttonBox.rejected.connect(LoginDialog.reject)
 
         QMetaObject.connectSlotsByName(LoginDialog)
     # setupUi
@@ -289,20 +279,6 @@ class Ui_LoginDialog(object):
         self.lineEditUser.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Insert the application user name", None))
 #endif // QT_CONFIG(whatsthis)
         self.label_6.setText(QCoreApplication.translate("LoginDialog", u"Password", None))
-#if QT_CONFIG(tooltip)
-        self.pushButtonLogin.setToolTip(QCoreApplication.translate("LoginDialog", u"Click to connect to the server and start the application", None))
-#endif // QT_CONFIG(tooltip)
-#if QT_CONFIG(whatsthis)
-        self.pushButtonLogin.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Click to connect to the server and start the application", None))
-#endif // QT_CONFIG(whatsthis)
-        self.pushButtonLogin.setText(QCoreApplication.translate("LoginDialog", u"Login", None))
-#if QT_CONFIG(tooltip)
-        self.pushButtonCancel.setToolTip(QCoreApplication.translate("LoginDialog", u"Cancel and close the login dialog", None))
-#endif // QT_CONFIG(tooltip)
-#if QT_CONFIG(whatsthis)
-        self.pushButtonCancel.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Cancel and close the login dialog", None))
-#endif // QT_CONFIG(whatsthis)
-        self.pushButtonCancel.setText(QCoreApplication.translate("LoginDialog", u"Cancel", None))
 #if QT_CONFIG(tooltip)
         self.checkBoxMore.setToolTip(QCoreApplication.translate("LoginDialog", u"Show/hide the connection parameters", None))
 #endif // QT_CONFIG(tooltip)

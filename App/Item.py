@@ -47,6 +47,7 @@ from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Core.Gui import get_colors
+from App.Core.Constant import itemType
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ColorComboDelegate
 from App.Widget.Delegate import QuantityDelegate
@@ -163,12 +164,6 @@ class prc(IntEnum): # price
     DATE_UPD      = 7
 
 TABVAR, TABCOM, TABMEN, TABPRI = range(4)
-
-
-def itemType() -> list:
-    return [('I', _tr('Item', 'Item')),
-            ('K', _tr('Item', 'Kit')),
-            ('M', _tr('Item', 'Menu'))]
 
 
 def item(action: QAction, checked: bool = False) -> None:

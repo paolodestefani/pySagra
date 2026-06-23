@@ -24,9 +24,9 @@ class Ui_ChangePasswordDialog(object):
     def setupUi(self, ChangePasswordDialog):
         if not ChangePasswordDialog.objectName():
             ChangePasswordDialog.setObjectName(u"ChangePasswordDialog")
-        ChangePasswordDialog.setWindowModality(Qt.ApplicationModal)
-        ChangePasswordDialog.resize(500, 140)
-        ChangePasswordDialog.setLocale(QLocale(QLocale.C, QLocale.AnyCountry))
+        ChangePasswordDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        ChangePasswordDialog.resize(500, 161)
+        ChangePasswordDialog.setLocale(QLocale(QLocale.C, QLocale.AnyTerritory))
         ChangePasswordDialog.setSizeGripEnabled(True)
         self.verticalLayout = QVBoxLayout(ChangePasswordDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -50,7 +50,7 @@ class Ui_ChangePasswordDialog(object):
         font = QFont()
         font.setBold(True)
         self.lineEditUser.setFont(font)
-        self.lineEditUser.setFocusPolicy(Qt.NoFocus)
+        self.lineEditUser.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.lineEditUser.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEditUser, 0, 1, 1, 1)
@@ -62,7 +62,7 @@ class Ui_ChangePasswordDialog(object):
 
         self.lineEditNewPassword = QLineEdit(ChangePasswordDialog)
         self.lineEditNewPassword.setObjectName(u"lineEditNewPassword")
-        self.lineEditNewPassword.setEchoMode(QLineEdit.Password)
+        self.lineEditNewPassword.setEchoMode(QLineEdit.EchoMode.Password)
 
         self.gridLayout.addWidget(self.lineEditNewPassword, 1, 1, 1, 1)
 
@@ -73,7 +73,7 @@ class Ui_ChangePasswordDialog(object):
 
         self.lineEditConfirmPassword = QLineEdit(ChangePasswordDialog)
         self.lineEditConfirmPassword.setObjectName(u"lineEditConfirmPassword")
-        self.lineEditConfirmPassword.setEchoMode(QLineEdit.Password)
+        self.lineEditConfirmPassword.setEchoMode(QLineEdit.EchoMode.Password)
 
         self.gridLayout.addWidget(self.lineEditConfirmPassword, 2, 1, 1, 1)
 
@@ -89,7 +89,7 @@ class Ui_ChangePasswordDialog(object):
 
         self.buttonBox = QDialogButtonBox(ChangePasswordDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout.addWidget(self.buttonBox)

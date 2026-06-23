@@ -65,6 +65,8 @@ from App.Ui.OrderWidget import Ui_OrderWidget
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
+from App.Core.Constant import deliveryType
+from App.Core.Constant import orderStatus
 from App.Report.ReportEngine import ReportException
 from App.Report.ReportEngine import ReportNoDataError
 from App.Report.Order import printOrderReport
@@ -79,28 +81,30 @@ logger = logging.getLogger(__name__)
 class ordi(IntEnum):
     ID              = 0
     EVENT           = 1
-    DATE_TIME       = 2
-    NUMBER          = 3
-    DATE            = 4
-    TIME            = 5
-    STAT_DATE       = 6
-    STAT_DAYPART    = 7
-    CASH_DESK       = 8
-    DELIVERY        = 9
-    EP              = 10
-    TABLE           = 11
-    CUSTOMER        = 12
-    COVERS          = 13
-    AMOUNT          = 14
-    DISCOUNT        = 15
-    CASH            = 16
-    CHANGE          = 17
-    STATUS          = 18
-    FULFILLMENT     = 19
-    USER_INS        = 20
-    DATE_INS        = 21
-    USER_UPD        = 22
-    DATE_UPD        = 23
+    DESCEVENT       = 2
+    DATE_TIME       = 3
+    NUMBER          = 4
+    DATE            = 5
+    TIME            = 6
+    STAT_DATE       = 7
+    STAT_DAYPART    = 8
+    CASH_DESK       = 9
+    DELIVERY        = 10
+    EP              = 11
+    WO              = 12
+    TABLE           = 13
+    CUSTOMER        = 14
+    COVERS          = 15
+    AMOUNT          = 16
+    DISCOUNT        = 17
+    CASH            = 18
+    CHANGE          = 19
+    STATUS          = 20
+    FULFILLMENT     = 21
+    USER_INS        = 22
+    DATE_INS        = 23
+    USER_UPD        = 24
+    DATE_UPD        = 25
 
 # model order header
 class ordh(IntEnum):
@@ -140,6 +144,10 @@ class ordhd(IntEnum):
     OTHER           = 4
     BARCODE         = 5
     FULFILLMENT     = 6
+    USER_INS        = 7
+    DATE_INS        = 8
+    USER_UPD        = 9
+    DATE_UPD        = 10
 
 # model order detail
 class ordd(IntEnum):
@@ -159,6 +167,7 @@ class orddd(IntEnum):
     QUANTITY        = 3
     PARENT          = 4
     CHILD           = 5
+
 
 
 def orderArchive(action: QAction, checked: bool = False) -> None:
@@ -202,20 +211,22 @@ class OrderForm(FormIndexManager):
         self.ui = Ui_OrderWidget()
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
-        #self.ui.tableView.setModel(self.indexModel)
-        self.ui.tableView.setLayoutName('OrderArchiveIndex')
+        self.ui.tableView.setLayoutName('OrderArchiveIndex') 
+        self.ui.tableView.setItemDelegateForColumn(ordi.DELIVERY, RelationDelegate(self, deliveryType))
         self.ui.tableView.setItemDelegateForColumn(ordi.TIME, TimeDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ordi.AMOUNT, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ordi.DISCOUNT, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ordi.CASH, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ordi.CHANGE, AmountDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ordi.STATUS, RelationDelegate(self, orderStatus))
         # mapper mappings
         self.mapper.addMapping(self.ui.lineEditCashDesk, ordh.CASH_DESK)
         self.mapper.addMapping(self.ui.spinBoxNumber, ordh.NUMBER)
         self.mapper.addMapping(self.ui.dateEditDate, ordh.DATE)
         self.mapper.addMapping(self.ui.timeEditTime, ordh.TIME)
-        self.ui.comboBoxDelivery.setItemList((('T', _tr('OrderArchive', 'Table')),
-                                              ('A', _tr('OrderArchive', 'Take-away'))))
+        #self.ui.comboBoxDelivery.setItemList((('T', _tr('OrderArchive', 'Table')),
+        #                                      ('A', _tr('OrderArchive', 'Take-away'))))
+        self.ui.comboBoxDelivery.setItemList(deliveryType())
         self.mapper.addMapping(self.ui.checkBoxElectronicPayment, ordh.EP)
         self.mapper.addMapping(self.ui.checkBoxWebOrder, ordh.WO)
         self.mapper.addMapping(self.ui.comboBoxDelivery, ordh.DELIVERY, b"modelDataStr")
@@ -227,9 +238,7 @@ class OrderForm(FormIndexManager):
         self.mapper.addMapping(self.ui.doubleSpinBoxChange, ordh.CHANGE, b"modelDataDecimal")
         self.mapper.addMapping(self.ui.lineEditCustomerName, ordh.CUSTOMER)
         self.mapper.addMapping(self.ui.lineEditCustomerContact, ordh.CONTACT)
-        self.ui.comboBoxStatus.setItemList((('A', _tr('OrderArchive', 'Acquired')),
-                                            ('I', _tr('OrderArchive', 'In progress')),
-                                            ('P', _tr('OrderArchive', 'Processed'))))
+        self.ui.comboBoxStatus.setItemList(orderStatus())
         self.mapper.addMapping(self.ui.comboBoxStatus, ordh.STATUS, b"modelDataStr")
         self.mapper.addMapping(self.ui.dateTimeEditFullfillment, ordh.FULFILLMENT, b"modelDataDateTime")
         # details tableView
@@ -251,7 +260,7 @@ class OrderForm(FormIndexManager):
         # header department tableView
         self.ui.tableViewDepartmentHeader.setModel(modelHeaDep)
         self.ui.tableViewDepartmentHeader.setLayoutName('OrderArchiveDepartment')
-        self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(orddd.DEPARTMENT, RelationDelegate(self, department_lookup))
+        self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(ordhd.DEPARTMENT, RelationDelegate(self, department_lookup))
         # store setting on form creation
         self.setting = Setting()
         # decimals on amount
@@ -343,6 +352,11 @@ class OrderForm(FormIndexManager):
             no_print = False
         # covers copy
         if self.ui.checkBoxPrintCoverCopy.isChecked():
+            if self.ui.spinBoxCovers.value() == 0:
+                QMessageBox.information(self,
+                                        _tr('MessageDialog', "Information"),
+                                        _tr('OrderArchive', "No covers, not print required"))
+                return
             printer = get_printer_name(setting['cover_printer_class'], session['hostname'])
             try:
                 printOrderCoverReport(ti, printer)

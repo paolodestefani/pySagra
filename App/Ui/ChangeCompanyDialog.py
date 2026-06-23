@@ -121,7 +121,7 @@ class Ui_ChangeCompanyDialog(object):
 
         self.buttonBox = QDialogButtonBox(ChangeCompanyDialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_4.addWidget(self.buttonBox)

@@ -50,6 +50,7 @@ from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
+from App import APPNAME
 from App import session
 from App import currentIcon
 from App.Database.AbstractModels.TableModel import TableModel
@@ -68,12 +69,13 @@ from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import ImageDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import GenericDelegate
+from App.System.Help import HelpDialog
 from App.Ui.UserWidget import Ui_UserWidget
 from App.Ui.ChangePasswordDialog import Ui_ChangePasswordDialog
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.L10n import langCountry
-from App.Core.L10n import langCountryFlags
+from App.Core.Constant import langCountry
+from App.Core.Constant import langCountryFlags
 
 
 # logger
@@ -393,6 +395,13 @@ class ChangePasswordDialog(QDialog):
             self.ui.labelIcon.setPixmap(currentIcon['system_password'].pixmap(100))
         self.ui.lineEditUser.setText(user)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+        # help request
+        self.ui.buttonBox.helpRequested.connect(self.showHelp)
+        
+    def showHelp(self) -> None:
+        "Open help dialog for contextual help"
+        dialog = HelpDialog(APPNAME, "help/password.html" , self)
+        dialog.show()
 
     def accept(self) -> None:
         "Save new password"
