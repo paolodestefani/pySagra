@@ -18,6 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+
+from App.Widget.Control import PasswordLineEdit
 import resources_rc
 
 class Ui_ChangePasswordDialog(object):
@@ -60,7 +62,7 @@ class Ui_ChangePasswordDialog(object):
 
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
 
-        self.lineEditNewPassword = QLineEdit(ChangePasswordDialog)
+        self.lineEditNewPassword = PasswordLineEdit(ChangePasswordDialog)
         self.lineEditNewPassword.setObjectName(u"lineEditNewPassword")
         self.lineEditNewPassword.setEchoMode(QLineEdit.EchoMode.Password)
 
@@ -71,7 +73,7 @@ class Ui_ChangePasswordDialog(object):
 
         self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
 
-        self.lineEditConfirmPassword = QLineEdit(ChangePasswordDialog)
+        self.lineEditConfirmPassword = PasswordLineEdit(ChangePasswordDialog)
         self.lineEditConfirmPassword.setObjectName(u"lineEditConfirmPassword")
         self.lineEditConfirmPassword.setEchoMode(QLineEdit.EchoMode.Password)
 

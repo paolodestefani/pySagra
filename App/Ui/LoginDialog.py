@@ -19,6 +19,8 @@ from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog
     QDialogButtonBox, QFrame, QGridLayout, QLabel,
     QLayout, QLineEdit, QSizePolicy, QSpinBox,
     QVBoxLayout, QWidget)
+
+from App.Widget.Control import PasswordLineEdit
 import resources_rc
 
 class Ui_LoginDialog(object):
@@ -103,13 +105,8 @@ class Ui_LoginDialog(object):
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.lineEditPassword = QLineEdit(LoginDialog)
+        self.lineEditPassword = PasswordLineEdit(LoginDialog)
         self.lineEditPassword.setObjectName(u"lineEditPassword")
-        self.lineEditPassword.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
-        self.lineEditPassword.setAcceptDrops(False)
-        self.lineEditPassword.setMaxLength(256)
-        self.lineEditPassword.setEchoMode(QLineEdit.EchoMode.Password)
-        self.lineEditPassword.setClearButtonEnabled(False)
 
         self.gridLayout.addWidget(self.lineEditPassword, 1, 1, 1, 1)
 

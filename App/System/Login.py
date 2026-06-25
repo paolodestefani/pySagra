@@ -41,13 +41,15 @@ from PySide6.QtCore import QLocale
 from PySide6.QtCore import QTranslator
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QMovie
-from PySide6.QtGui import QCursor
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QAction
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtNetwork import QHostInfo
+from PySide6.QtWidgets import QLineEdit
 
 # application definitions
 from App import APPNAME
@@ -126,7 +128,7 @@ class LoginDialog(QDialog):
         "Open help dialog for contextual help"
         dialog = HelpDialog(APPNAME, "help/login.html" , self)
         dialog.show()
-        
+            
     def expand(self, state: bool) -> None:
         self.ui.frameMore.setVisible(state)
 

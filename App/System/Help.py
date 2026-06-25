@@ -36,7 +36,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QEvent
 from PySide6.QtCore import QFile
-from PySide6.QtCore import QTextStream
+from PySide6.QtGui import QIcon
 from PySide6.QtGui import QTextCursor
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
@@ -83,11 +83,11 @@ class HelpDialog(QDialog):
                             Qt.WindowType.WindowMinMaxButtonsHint |
                             Qt.WindowType.WindowCloseButtonHint)
         # set buttons' icons
-        self.ui.toolButtonBack.setIcon(currentIcon['edit_previous'])
-        self.ui.toolButtonHome.setIcon(currentIcon['edit_home'])
-        self.ui.toolButtonForward.setIcon(currentIcon['edit_next'])
-        self.ui.toolButtonFind.setIcon(currentIcon['edit_find'])
-        self.ui.toolButtonPrint.setIcon(currentIcon['edit_print'])
+        self.ui.toolButtonBack.setIcon(currentIcon['edit_previous'] if not currentIcon['edit_previous'].isNull() else QIcon(":/icon/oxygen/edit_previous"))
+        self.ui.toolButtonHome.setIcon(currentIcon['edit_home'] if not currentIcon['edit_home'].isNull() else QIcon(":/icon/oxygen/edit_home"))
+        self.ui.toolButtonForward.setIcon(currentIcon['edit_next'] if not currentIcon['edit_next'].isNull() else QIcon(":/icon/oxygen/edit_next"))
+        self.ui.toolButtonFind.setIcon(currentIcon['edit_find'] if not currentIcon['edit_find'].isNull() else QIcon(":/icon/oxygen/edit_find"))
+        self.ui.toolButtonPrint.setIcon(currentIcon['edit_print'] if not currentIcon['edit_print'].isNull() else QIcon(":/icon/oxygen/edit_print"))
         # restore geometry and slider
         st = QSettings()
         if st.value("Help/Geometry"):

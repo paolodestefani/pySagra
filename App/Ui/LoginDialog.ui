@@ -316,13 +316,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEditPassword">
-         <property name="contextMenuPolicy">
-          <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
-         </property>
-         <property name="acceptDrops">
-          <bool>false</bool>
-         </property>
+        <widget class="PasswordLineEdit" name="lineEditPassword">
          <property name="toolTip">
           <string>Insert the password for application user</string>
          </property>
@@ -331,15 +325,6 @@
          </property>
          <property name="whatsThis">
           <string>Insert the password for application user</string>
-         </property>
-         <property name="maxLength">
-          <number>256</number>
-         </property>
-         <property name="echoMode">
-          <enum>QLineEdit::EchoMode::Password</enum>
-         </property>
-         <property name="clearButtonEnabled">
-          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -579,6 +564,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PasswordLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>App.Widget.Control</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>lineEditUser</tabstop>
   <tabstop>lineEditPassword</tabstop>

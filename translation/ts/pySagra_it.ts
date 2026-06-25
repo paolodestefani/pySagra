@@ -739,32 +739,32 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>ChangeCompany</name>
     <message>
-        <location filename="../../App/System/Login.py" line="266"/>
+        <location filename="../../App/System/Login.py" line="268"/>
         <source>Change company</source>
         <translation>Cambia azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="270"/>
+        <location filename="../../App/System/Login.py" line="272"/>
         <source>Getting companies list</source>
         <translation>Recupero la lista delle aziende</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="273"/>
+        <location filename="../../App/System/Login.py" line="275"/>
         <source>There are no other companies you can login</source>
         <translation>Non ci sono altre aziende disponibili</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="276"/>
+        <location filename="../../App/System/Login.py" line="278"/>
         <source>Select a company from the list below</source>
         <translation>Selezionare un&apos;azienda dalla lista seguente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="300"/>
+        <location filename="../../App/System/Login.py" line="302"/>
         <source>Setting working company</source>
         <translation>Imposta l&apos;azienda attiva</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="311"/>
+        <location filename="../../App/System/Login.py" line="313"/>
         <source>Getting current event</source>
         <translation>Recupero l&apos;evento corrente</translation>
     </message>
@@ -927,107 +927,107 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>Color</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="62"/>
+        <location filename="../../App/Core/Gui.py" line="63"/>
         <source>Dark red</source>
         <translation>Rosso scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="63"/>
+        <location filename="../../App/Core/Gui.py" line="64"/>
         <source>Red</source>
         <translation>Rosso</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="64"/>
+        <location filename="../../App/Core/Gui.py" line="65"/>
         <source>Coral</source>
         <translation>Corallo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="65"/>
+        <location filename="../../App/Core/Gui.py" line="66"/>
         <source>Orange</source>
         <translation>Arancione</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="66"/>
+        <location filename="../../App/Core/Gui.py" line="67"/>
         <source>Gold</source>
         <translation>Oro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="67"/>
+        <location filename="../../App/Core/Gui.py" line="68"/>
         <source>Yellow</source>
         <translation>Giallo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="68"/>
+        <location filename="../../App/Core/Gui.py" line="69"/>
         <source>Dark green</source>
         <translation>Verde scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="69"/>
+        <location filename="../../App/Core/Gui.py" line="70"/>
         <source>Green</source>
         <translation>Verde</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="70"/>
+        <location filename="../../App/Core/Gui.py" line="71"/>
         <source>Green yellow</source>
         <translation>Giallo verde</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="71"/>
+        <location filename="../../App/Core/Gui.py" line="72"/>
         <source>Light green</source>
         <translation>Verde chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="72"/>
+        <location filename="../../App/Core/Gui.py" line="73"/>
         <source>Dark blue</source>
         <translation>Blu scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="73"/>
+        <location filename="../../App/Core/Gui.py" line="74"/>
         <source>Blue</source>
         <translation>Blu</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="74"/>
+        <location filename="../../App/Core/Gui.py" line="75"/>
         <source>Royal blue</source>
         <translation>Blu reale</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="75"/>
+        <location filename="../../App/Core/Gui.py" line="76"/>
         <source>Sky blue</source>
         <translation>Azzurro cielo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="76"/>
+        <location filename="../../App/Core/Gui.py" line="77"/>
         <source>Cyan / Aqua</source>
         <translation>Ciano / Acquamarina</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="77"/>
+        <location filename="../../App/Core/Gui.py" line="78"/>
         <source>Magenta / Fuchsia</source>
         <translation>Magenta / Fucsia</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="78"/>
+        <location filename="../../App/Core/Gui.py" line="79"/>
         <source>Purple</source>
         <translation>Viola</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="79"/>
+        <location filename="../../App/Core/Gui.py" line="80"/>
         <source>Black</source>
         <translation>Nero</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="80"/>
+        <location filename="../../App/Core/Gui.py" line="81"/>
         <source>Gray</source>
         <translation>Grigio</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="81"/>
+        <location filename="../../App/Core/Gui.py" line="82"/>
         <source>Light gray</source>
         <translation>Grigio chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="82"/>
+        <location filename="../../App/Core/Gui.py" line="83"/>
         <source>White</source>
         <translation>Bianco</translation>
     </message>
@@ -1035,17 +1035,17 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>ColorScheme</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="89"/>
+        <location filename="../../App/Core/Gui.py" line="90"/>
         <source>Light</source>
         <translation>Chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="90"/>
+        <location filename="../../App/Core/Gui.py" line="91"/>
         <source>Dark</source>
         <translation>Scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="91"/>
+        <location filename="../../App/Core/Gui.py" line="92"/>
         <source>System default</source>
         <translation>Predefinito di sistema</translation>
     </message>
@@ -1329,13 +1329,13 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Controls</name>
     <message>
-        <location filename="../../App/Widget/Control.py" line="114"/>
+        <location filename="../../App/Widget/Control.py" line="116"/>
         <source>INVALID IMAGE</source>
         <translation>IMMAGINE NON VALIDA</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Control.py" line="117"/>
-        <location filename="../../App/Widget/Control.py" line="129"/>
+        <location filename="../../App/Widget/Control.py" line="119"/>
+        <location filename="../../App/Widget/Control.py" line="131"/>
         <source>NO IMAGE</source>
         <translation>NESSUNA IMMAGINE</translation>
     </message>
@@ -1510,7 +1510,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Delegate</name>
     <message>
-        <location filename="../../App/Widget/Delegate.py" line="365"/>
+        <location filename="../../App/Widget/Delegate.py" line="242"/>
         <source>Select Color</source>
         <translation>Selezionare il colore</translation>
     </message>
@@ -2135,22 +2135,22 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>IconSet</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="98"/>
+        <location filename="../../App/Core/Gui.py" line="99"/>
         <source>Oxygen</source>
         <translation>Oxygen</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="99"/>
+        <location filename="../../App/Core/Gui.py" line="100"/>
         <source>Crystal Clear</source>
         <translation>Crystal Clear</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="100"/>
+        <location filename="../../App/Core/Gui.py" line="101"/>
         <source>Fluent UI</source>
         <translation>Fluent UI</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="101"/>
+        <location filename="../../App/Core/Gui.py" line="102"/>
         <source>Flatwoken</source>
         <translation>Flatwoken</translation>
     </message>
@@ -2322,32 +2322,32 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Login</name>
     <message>
-        <location filename="../../App/System/Login.py" line="95"/>
+        <location filename="../../App/System/Login.py" line="97"/>
         <source>{APPNAME} - Login</source>
         <translation>{APPNAME} - Login</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="147"/>
+        <location filename="../../App/System/Login.py" line="149"/>
         <source>Database connection</source>
         <translation>Connessione al database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="220"/>
+        <location filename="../../App/System/Login.py" line="222"/>
         <source>Setting working company</source>
         <translation>Imposta l&apos;azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="235"/>
+        <location filename="../../App/System/Login.py" line="237"/>
         <source>There is no company you can log on</source>
         <translation>Non ci sono aziende disponibili</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="241"/>
+        <location filename="../../App/System/Login.py" line="243"/>
         <source>Getting current event</source>
         <translation>Recupero l&apos;evento corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="249"/>
+        <location filename="../../App/System/Login.py" line="251"/>
         <source>Password change is required</source>
         <translation>E&apos; necessario modificare la password</translation>
     </message>
@@ -2360,95 +2360,95 @@ Proseguire ugualmente ?</translation>
         <translation>Login</translation>
     </message>
     <message>
+        <location filename="../../App/Ui/LoginDialog.ui" line="321"/>
         <location filename="../../App/Ui/LoginDialog.ui" line="327"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="333"/>
         <source>Insert the password for application user</source>
         <translation>Inserire la password per l&apos;utente applicativo</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="352"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="337"/>
         <source>User</source>
         <translation>Utente</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="362"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="368"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="347"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="353"/>
         <source>Insert the application user name</source>
         <translation>Inserire l&apos;utente applicativo</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="381"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="366"/>
         <source>Password</source>
         <translation>Password</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="403"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="406"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="388"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="391"/>
         <source>Show/hide the connection parameters</source>
         <translation>Mostra/Nascondi i parametri della connessione</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="409"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="394"/>
         <source>Connection details</source>
         <translation>Dettagli della connessione</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="430"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="433"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="415"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="418"/>
         <source>Insert the db server IP port</source>
         <translation>Inserire la porta IP del server di database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="449"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="434"/>
         <source>Database</source>
         <translation>Database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="459"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="462"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="444"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="447"/>
         <source>Insert the database name</source>
         <translation>Inserire il nome del database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="475"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="478"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="460"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="463"/>
         <source>Insert the database server name or IP address</source>
         <translation>Inserire il nome oppure l&apos;indirizzo IP del database server</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="491"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="494"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="476"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="479"/>
         <source>Insert the database user name</source>
         <translation>Inserire l&apos;utente di database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="507"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="492"/>
         <source>DB User</source>
         <translation>Utente DB</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="517"/>
-        <location filename="../../App/Ui/LoginDialog.ui" line="520"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="502"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="505"/>
         <source>Insert the database user password</source>
         <translation>Inserire la password dell&apos;utente di database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="536"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="521"/>
         <source>DB Password</source>
         <translation>Password DB</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="546"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="531"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="556"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="541"/>
         <source>Port</source>
         <translation>Porta</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="568"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="553"/>
         <source>Current App Version</source>
         <translation>Versione corrente dell&apos;applicazione</translation>
     </message>
@@ -2618,7 +2618,7 @@ Proseguire ugualmente ?</translation>
     <name>MessageDialog</name>
     <message>
         <location filename="../../App/System/Company.py" line="237"/>
-        <location filename="../../App/System/Login.py" line="234"/>
+        <location filename="../../App/System/Login.py" line="236"/>
         <location filename="../../App/System/Mainwindow.py" line="564"/>
         <location filename="../../App/System/User.py" line="360"/>
         <location filename="../../App/System/User.py" line="413"/>
@@ -2688,7 +2688,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Connection.py" line="139"/>
         <location filename="../../App/System/Customization.py" line="93"/>
         <location filename="../../App/System/Menu.py" line="85"/>
-        <location filename="../../App/System/Preferences.py" line="77"/>
+        <location filename="../../App/System/Preferences.py" line="79"/>
         <location filename="../../App/System/Profile.py" line="92"/>
         <location filename="../../App/System/Report.py" line="101"/>
         <location filename="../../App/System/Scripting.py" line="173"/>
@@ -2739,7 +2739,7 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/System/About.py" line="91"/>
-        <location filename="../../App/System/Preferences.py" line="78"/>
+        <location filename="../../App/System/Preferences.py" line="80"/>
         <source>No access right to this function</source>
         <translation>Nessun diritto di accesso a questa funzione</translation>
     </message>
@@ -2754,7 +2754,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Customization.py" line="186"/>
         <location filename="../../App/System/Customization.py" line="229"/>
         <location filename="../../App/System/Customization.py" line="248"/>
-        <location filename="../../App/System/Login.py" line="248"/>
+        <location filename="../../App/System/Login.py" line="250"/>
         <location filename="../../App/System/Menu.py" line="116"/>
         <location filename="../../App/System/Menu.py" line="207"/>
         <location filename="../../App/System/Profile.py" line="121"/>
@@ -5596,12 +5596,12 @@ Devo procedere comunque?</translation>
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../App/System/Preferences.py" line="111"/>
+        <location filename="../../App/System/Preferences.py" line="113"/>
         <source>Load user preferences</source>
         <translation>Carica le preferenze utente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="167"/>
+        <location filename="../../App/System/Preferences.py" line="175"/>
         <source>Save user preferences</source>
         <translation>Salva le preferenze utente</translation>
     </message>
@@ -7406,22 +7406,22 @@ Devo procedere comunque?</translation>
 <context>
     <name>TabPosition</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="119"/>
+        <location filename="../../App/Core/Gui.py" line="120"/>
         <source>Tabs above the pages</source>
         <translation>Schede sopra le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="120"/>
+        <location filename="../../App/Core/Gui.py" line="121"/>
         <source>Tabs below the pages</source>
         <translation>Schede sotto le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="121"/>
+        <location filename="../../App/Core/Gui.py" line="122"/>
         <source>Tabs to the left of the pages</source>
         <translation>Schede a sinistra delle pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="122"/>
+        <location filename="../../App/Core/Gui.py" line="123"/>
         <source>Tabs to the right of the pages</source>
         <translation>Schede a destra delle pagine</translation>
     </message>
@@ -7472,27 +7472,27 @@ You can recover data only from a backup copy of the database.</source>
 <context>
     <name>ToolButtonStyle</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="108"/>
+        <location filename="../../App/Core/Gui.py" line="109"/>
         <source>Icon only</source>
         <translation>Solo icone</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="109"/>
+        <location filename="../../App/Core/Gui.py" line="110"/>
         <source>Text only</source>
         <translation>Solo testo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="110"/>
+        <location filename="../../App/Core/Gui.py" line="111"/>
         <source>Text beside icon</source>
         <translation>Testo accanto all&apos;icona</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="111"/>
+        <location filename="../../App/Core/Gui.py" line="112"/>
         <source>Text under icon</source>
         <translation>Testo sotto l&apos;icona</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="112"/>
+        <location filename="../../App/Core/Gui.py" line="113"/>
         <source>Follow style</source>
         <translation>Segue lo stile</translation>
     </message>

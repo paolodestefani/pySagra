@@ -62,6 +62,8 @@ from PySide6.QtGui import QFont
 from PySide6.QtGui import QFontMetrics
 from PySide6.QtGui import QStandardItemModel
 from PySide6.QtGui import QStandardItem
+from PySide6.QtGui import QAction
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QStyledItemDelegate
 from PySide6.QtWidgets import QStyleOptionViewItem
 from PySide6.QtWidgets import QLabel
@@ -697,31 +699,6 @@ class CheckableComboBox(QComboBox):
             for i in range(model.rowCount()):
                 model.item(i).setCheckState(Qt.CheckState.Unchecked)
 
-
-# class PasswordLineEdit(QLineEdit):
-#     """A QLineEdit that encrypt text"""
-
-#     textChanged=Signal()
-
-#     def __init__(self, parent: QWidget) -> None:
-#         super().__init__(parent)
-#         self.setEchoMode(QLineEdit.EchoMode.Password)
-#         self.setClearButtonEnabled(True)
-#         self.setPlaceholderText(_tr("controls", "Type the password here"))
-
-#     def _get_modelDataEncrypt(self) -> str:
-#         return string_encode(self.text())
-
-#     def _set_modelDataEncrypt(self, data: str) -> None:
-#         if data:
-#             self.setText(string_decode(data))
-
-#     modelDataEncrypt = Property(str, 
-#                                 fget=_get_modelDataEncrypt,
-#                                 fset=_set_modelDataEncrypt,
-#                                 notify=textChanged,
-#                                 user=True)
-        
         
 class ButtonSeat(QPushButton):
     """A QPushButton with a custom paint event to create a 3D effect and custom colors, 
@@ -773,9 +750,6 @@ class ButtonSeat(QPushButton):
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
         painter.end()
 
-# from PySide6.QtWidgets import QPushButton, QWidget, QStyle, QStyleOptionButton
-# from PySide6.QtGui import QFont, QColor, QPixmap, QPainter, QPen, QLinearGradient
-# from PySide6.QtCore import Qt, QRect
 
 class ButtonItem(QPushButton):
     """
@@ -1074,3 +1048,50 @@ class ButtonColor(QPushButton):
         painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
         painter.end()
 
+
+class PasswordLineEdit(QLineEdit):
+    "A custom lineedit with show/hide password feature"
+    
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.setEchoMode(QLineEdit.EchoMode.Password)
+        
+        # initialize the icons
+        self.show_light = QIcon(":/eye_off_light")
+        self.hide_light = QIcon(":/eye_light")
+        self.show_dark = QIcon(":/eye_off_dark")
+        self.hide_dark = QIcon(":/eye_dark")
+        # action
+        self.password_action = QAction(self)
+        self.addAction(self.password_action, QLineEdit.ActionPosition.TrailingPosition)
+        # initialize the graphics
+        self.update_icon()
+        # signal slot
+        self.password_action.triggered.connect(self.toggle_password)
+
+    def update_icon(self):
+        """Sceglie l'icona precaricata corretta incrociando Tema e EchoMode"""
+        # dark mode or light mode
+        is_dark = QGuiApplication.instance().styleHints().colorScheme() == Qt.ColorScheme.Dark
+        # 
+        is_password = self.echoMode() == QLineEdit.EchoMode.Password
+        if is_dark:
+            icon = self.show_dark if is_password else self.hide_dark
+        else:
+            icon = self.show_light if is_password else self.hide_light
+        self.password_action.setIcon(icon)
+
+    def toggle_password(self):
+        # Inverte lo stato del testo
+        if self.echoMode() == QLineEdit.EchoMode.Password:
+            self.setEchoMode(QLineEdit.EchoMode.Normal)
+        else:
+            self.setEchoMode(QLineEdit.EchoMode.Password)
+        # update icon
+        self.update_icon()
+            
+    def changeEvent(self, event):
+        # Se il sistema operativo cambia tema a runtime, aggiorna l'icona al volo
+        if event.type() == event.Type.PaletteChange:
+            self.update_icon()
+        super().changeEvent(event)

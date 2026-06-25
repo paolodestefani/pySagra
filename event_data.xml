@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <event>
-    <title>SAGRA DEL ROSARIO 2026</title>
+    <title>SAGRA DEL PITTORE 2026</title>
     <start_date>2026-06-01T15:49:33+02:00</start_date>
     <end_date>2026-10-25T23:59:59+01:00</end_date>
     <items>
@@ -197,16 +197,16 @@
                 <variants>False</variants>
             </item>
             <item>
-                <id>29</id>
-                <description>ACQUA FRIZZANTE 1/2 LITRO</description>
-                <price>2.50</price>
+                <id>28</id>
+                <description>ACQUA NATURALE 1 LITRO</description>
+                <price>4.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>28</id>
-                <description>ACQUA NATURALE 1 LITRO</description>
-                <price>4.00</price>
+                <id>29</id>
+                <description>ACQUA FRIZZANTE 1/2 LITRO</description>
+                <price>2.50</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
@@ -260,13 +260,6 @@
                 <variants>False</variants>
             </item>
             <item>
-                <id>37</id>
-                <description>CREMA CAFFE'</description>
-                <price>2.50</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
                 <id>38</id>
                 <description>CAFFE' NORMALE</description>
                 <price>1.00</price>
@@ -274,8 +267,15 @@
                 <variants>False</variants>
             </item>
             <item>
+                <id>37</id>
+                <description>CREMA CAFFE'</description>
+                <price>2.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
                 <id>39</id>
-                <description>CORRETTO</description>
+                <description>CAFFE' CORRETTO</description>
                 <price>1.50</price>
                 <active>True</active>
                 <variants>False</variants>

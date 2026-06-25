@@ -1869,7 +1869,7 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Help|QDialogButtonBox::StandardButton::Ok</set>
      </property>
      <property name="centerButtons">
       <bool>true</bool>
@@ -1880,13 +1880,13 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ButtonItemExample</class>
-   <extends>QPushButton</extends>
+   <class>RelationalComboBox</class>
+   <extends>QComboBox</extends>
    <header>App.Widget.Control</header>
   </customwidget>
   <customwidget>
-   <class>RelationalComboBox</class>
-   <extends>QComboBox</extends>
+   <class>ButtonItemExample</class>
+   <extends>QPushButton</extends>
    <header>App.Widget.Control</header>
   </customwidget>
   <customwidget>
