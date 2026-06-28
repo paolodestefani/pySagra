@@ -36,7 +36,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QLocale
+from PySide6.QtCore import QSettings
 from PySide6.QtGui import QAction
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QAbstractItemView
@@ -151,6 +153,10 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
                                 False, False, False, False)
         self.ui = Ui_OrderProgressWidget()
         self.ui.setupUi(self)
+        # restore state
+        st = QSettings()
+        if s := st.value("OrderProgress/SplitterState", None):
+            self.ui.splitter.restoreState(s)
         self.setView(self.ui.tableViewOrder)  # required for formviewmanager
         self.ui.tableViewOrder.setLayoutName('OrderProgress')
         self.ui.tableViewOrder.setItemDelegate(GenericDelegate(self))
@@ -369,4 +375,10 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         with gui_exception_context(self, _tr('OrderProgress', 'Mark order as unprocessed')):
             set_order_as_unprocessed(ord_header_id)
         self.reload()
+        
+    def closeEvent(self, event: QCloseEvent) -> None:
+        "Save splitter status on close event"
+        st = QSettings()
+        st.setValue("OrderProgress/SplitterState", self.ui.splitter.saveState())
+        super().closeEvent(event)
         
