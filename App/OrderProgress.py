@@ -47,6 +47,8 @@ from App import session
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Order import get_order_header_department_details
 from App.Database.Order import update_order_header_department_status
+from App.Database.Order import set_order_as_processed
+from App.Database.Order import set_order_as_unprocessed
 from App.Database.Models import OrderStatusModel
 from App.Widget.Form import FormViewManager
 from App.Widget.Delegate import GenericDelegate
@@ -59,6 +61,40 @@ from App.Core.ExceptionHandler import gui_exception_context
 # logger
 logger = logging.getLogger(__name__)
 
+# order status qwery model
+class ords(IntEnum):
+    COMPANY_ID          = 0
+    COMPANY_DESC        = 1
+    EVENT_ID            = 2
+    EVENT_DESC          = 3
+    ORDER_HEADER_ID     = 4
+    ORDER_DATE          = 5
+    STAT_ORDER_DATE     = 6
+    STAT_ORDER_DAYPART  = 7
+    ORDER_TIME          = 8
+    ORDER_NUMBER        = 9
+    DELIVERY            = 10
+    TABLE_NUM           = 11
+    CUSTOMER_NAME       = 12
+    COVERS              = 13
+    STATUS              = 14
+    FULFILLMENT_DATE    = 15
+    CASH_DESK           = 16
+    USER_INS            = 17
+    FROM_WEB            = 18
+    DEPARTMENT1         = 19
+    FULFILLMENT1        = 20
+    DEPARTMENT2         = 21
+    FULFILLMENT2        = 22
+    DEPARTMENT3         = 23
+    FULFILLMENT3        = 24
+    DEPARTMENT4         = 25
+    FULFILLMENT4        = 26
+    DEPARTMENT5         = 27
+    FULFILLMENT5        = 28
+    DEPARTMENT6         = 29
+    FULFILLMENT6        = 30
+                        
 
 class ordp(IntEnum):
     ID          = 0
@@ -111,7 +147,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False, False, False, False, False, False, False, False,
+        self.availableStatus = (False, False, False, True, False, False, False, False,
                                 False, False, False, False)
         self.ui = Ui_OrderProgressWidget()
         self.ui.setupUi(self)
@@ -151,17 +187,20 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         # self.ui.tableWidgetScans.hideColumn(ID)
         # signal/slot connections
         self.ui.lineEditBarcode.editingFinished.connect(self.scan)
-        self.ui.pushButtonSetAsUnprocessed.clicked.connect(self.setAsUnprocessed)
+        self.ui.pushButtonSetUnprocessed.clicked.connect(self.setAsUnprocessed)
+        self.ui.pushButtonSetOrderProcessed.clicked.connect(self.setOrderProcessed)
+        self.ui.pushButtonSetOrderUnprocessed.clicked.connect(self.setOrderUnprocessed)
         
     def reload(self) -> None:
         "Reload all widgets"
-        super().reload()
+        #super().reload()
         self.updateFilterConditions()
         # focus on barcode lineedit must be after widgets is shown
         self.ui.lineEditBarcode.setFocus()
     
     def updateFilterConditions(self) -> None:
         "Update model filter conditions"
+        self.model.whereCondition.clear()
         # event
         self.model.addWhere('event_id = %s', session['event_id'])
         # status
@@ -294,4 +333,40 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.tableWidgetScans.removeRow(row)
         self.ui.lineEditBarcode.setFocus()
         self.updateFilterConditions()
+        
+    def setOrderProcessed(self) -> None:
+        "Mark whole order processed"
+        current_index = self.ui.tableViewOrder.currentIndex()
+        if not current_index.isValid():
+            return
+        if QMessageBox.question(self,
+                                _tr('MessageDialog', "Question"),
+                                _tr('OrderProgress', 'Mark the selected order as Processed ?'),
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
+            return
+        # create a new index that points to column ORDER_HEADER_ID of the same row
+        ord_header_id = int(current_index.siblingAtColumn(ords.ORDER_HEADER_ID).data())
+        with gui_exception_context(self, _tr('OrderProgress', 'Mark order as processed')):
+            set_order_as_processed(ord_header_id)
+        self.reload()
+    
+    def setOrderUnprocessed(self) -> None:
+        "Mark whole order unprocessed"
+        current_index = self.ui.tableViewOrder.currentIndex()
+        if not current_index.isValid():
+            return
+        if QMessageBox.question(self,
+                                _tr('MessageDialog', "Question"),
+                                _tr('OrderProgress', 'Mark the selected order as Unprocessed ?'),
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
+            return
+        # create a new index that points to column ORDER_HEADER_ID of the same row
+        ord_header_id = int(current_index.siblingAtColumn(ords.ORDER_HEADER_ID).data())
+        with gui_exception_context(self, _tr('OrderProgress', 'Mark order as unprocessed')):
+            set_order_as_unprocessed(ord_header_id)
+        self.reload()
         

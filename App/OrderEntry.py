@@ -152,7 +152,7 @@ class VariantCheckBox(QCheckBox):
         self.price_delta = price_delta
 
         if price_delta > 0:
-            displayed_price = session['qlocale'].toString(float(price_delta), 'f', decimals)
+            displayed_price = session['qlocale'].toString(float(price_delta / 10 ** decimals), 'f', decimals)
             self.setText(f"{desc} (+{displayed_price})")
         else:
             self.setText(desc)

@@ -285,7 +285,7 @@ class ChangeCompanyDialog(QDialog):
         
     def showHelp(self) -> None:
         "Open help dialog for contextual help"
-        dialog = HelpDialog(APPNAME, "help/login.html" , self)
+        dialog = HelpDialog(APPNAME, "help/change_company.html" , self)
         dialog.show()
 
     def accept(self) -> None:

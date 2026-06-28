@@ -1063,6 +1063,7 @@ class PasswordLineEdit(QLineEdit):
         self.hide_dark = QIcon(":/eye_dark")
         # action
         self.password_action = QAction(self)
+        self.password_action.setToolTip(_tr('PasswordLineEdit', 'Press to show/hide the password'))
         self.addAction(self.password_action, QLineEdit.ActionPosition.TrailingPosition)
         # initialize the graphics
         self.update_icon()
@@ -1070,10 +1071,9 @@ class PasswordLineEdit(QLineEdit):
         self.password_action.triggered.connect(self.toggle_password)
 
     def update_icon(self):
-        """Sceglie l'icona precaricata corretta incrociando Tema e EchoMode"""
+        """Choose the correct preloaded icon by crossing Theme and EchoMode"""
         # dark mode or light mode
         is_dark = QGuiApplication.instance().styleHints().colorScheme() == Qt.ColorScheme.Dark
-        # 
         is_password = self.echoMode() == QLineEdit.EchoMode.Password
         if is_dark:
             icon = self.show_dark if is_password else self.hide_dark
@@ -1082,7 +1082,7 @@ class PasswordLineEdit(QLineEdit):
         self.password_action.setIcon(icon)
 
     def toggle_password(self):
-        # Inverte lo stato del testo
+        # Inverts the state of the text
         if self.echoMode() == QLineEdit.EchoMode.Password:
             self.setEchoMode(QLineEdit.EchoMode.Normal)
         else:
@@ -1091,7 +1091,7 @@ class PasswordLineEdit(QLineEdit):
         self.update_icon()
             
     def changeEvent(self, event):
-        # Se il sistema operativo cambia tema a runtime, aggiorna l'icona al volo
+        # If the operating system changes theme at runtime, update the icon on the fly
         if event.type() == event.Type.PaletteChange:
             self.update_icon()
         super().changeEvent(event)

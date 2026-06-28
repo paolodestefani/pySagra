@@ -400,7 +400,7 @@ class ChangePasswordDialog(QDialog):
         
     def showHelp(self) -> None:
         "Open help dialog for contextual help"
-        dialog = HelpDialog(APPNAME, "help/password.html" , self)
+        dialog = HelpDialog(APPNAME, "help/change_password.html" , self)
         dialog.show()
 
     def accept(self) -> None:

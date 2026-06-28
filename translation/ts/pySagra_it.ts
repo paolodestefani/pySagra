@@ -1792,7 +1792,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Error</name>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="174"/>
+        <location filename="../../App/Core/ExceptionHandler.py" line="178"/>
         <source>Unexpected error</source>
         <translation>Errore imprevisto</translation>
     </message>
@@ -2069,12 +2069,12 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Help</name>
     <message>
-        <location filename="../../App/System/Help.py" line="159"/>
+        <location filename="../../App/System/Help.py" line="164"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
     <message>
-        <location filename="../../App/System/Help.py" line="160"/>
+        <location filename="../../App/System/Help.py" line="165"/>
         <source>Text not found</source>
         <translation>Testo non trovato</translation>
     </message>
@@ -2084,7 +2084,7 @@ Proseguire ugualmente ?</translation>
         <translation>Trova</translation>
     </message>
     <message>
-        <location filename="../../App/System/Help.py" line="148"/>
+        <location filename="../../App/System/Help.py" line="153"/>
         <source>Print preview of</source>
         <translation>Anteprima di stampa di</translation>
     </message>
@@ -2678,6 +2678,7 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Core/ExceptionHandler.py" line="164"/>
+        <location filename="../../App/Core/ExceptionHandler.py" line="168"/>
         <location filename="../../App/System/About.py" line="90"/>
         <location filename="../../App/System/Company.py" line="106"/>
         <location filename="../../App/System/Company.py" line="201"/>
@@ -2718,9 +2719,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderEntry.py" line="1231"/>
         <location filename="../../App/OrderEntry.py" line="1300"/>
         <location filename="../../App/OrderNumbering.py" line="78"/>
-        <location filename="../../App/OrderProgress.py" line="85"/>
-        <location filename="../../App/OrderProgress.py" line="91"/>
-        <location filename="../../App/OrderProgress.py" line="210"/>
+        <location filename="../../App/OrderProgress.py" line="121"/>
+        <location filename="../../App/OrderProgress.py" line="127"/>
+        <location filename="../../App/OrderProgress.py" line="249"/>
         <location filename="../../App/PriceList.py" line="98"/>
         <location filename="../../App/Printer.py" line="92"/>
         <location filename="../../App/SalesSummary.py" line="99"/>
@@ -2834,8 +2835,10 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderEntry.py" line="1288"/>
         <location filename="../../App/OrderEntry.py" line="1349"/>
         <location filename="../../App/OrderEntry.py" line="1416"/>
-        <location filename="../../App/OrderProgress.py" line="221"/>
-        <location filename="../../App/OrderProgress.py" line="283"/>
+        <location filename="../../App/OrderProgress.py" line="260"/>
+        <location filename="../../App/OrderProgress.py" line="322"/>
+        <location filename="../../App/OrderProgress.py" line="343"/>
+        <location filename="../../App/OrderProgress.py" line="361"/>
         <location filename="../../App/PriceList.py" line="165"/>
         <location filename="../../App/Printer.py" line="158"/>
         <location filename="../../App/SeatMap.py" line="182"/>
@@ -2880,6 +2883,14 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Ui/MessageDialog.ui" line="53"/>
         <source>Message</source>
         <translation>Messaggio</translation>
+    </message>
+</context>
+<context>
+    <name>MessageError</name>
+    <message>
+        <location filename="../../App/Core/ExceptionHandler.py" line="169"/>
+        <source>Is not possible to set the same row and column of a salable item</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5116,90 +5127,110 @@ Devo procedere comunque?</translation>
 <context>
     <name>OrderProgress</name>
     <message>
-        <location filename="../../App/OrderProgress.py" line="86"/>
+        <location filename="../../App/OrderProgress.py" line="122"/>
         <source>No access right to this feature</source>
         <translation>Nessun diritto di accesso a questa funzionalità</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="92"/>
+        <location filename="../../App/OrderProgress.py" line="128"/>
         <source>No event available, for order progress is necessary to setup an event for the current date</source>
         <translation>Nessun evento disponibile, per l&apos;avanzamento degli ordini è necessario impostare un evento per la data corrente</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="133"/>
+        <location filename="../../App/OrderProgress.py" line="169"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="134"/>
+        <location filename="../../App/OrderProgress.py" line="170"/>
         <source>Barcode</source>
         <translation>Codice a barre</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="135"/>
+        <location filename="../../App/OrderProgress.py" line="171"/>
         <source>Num</source>
         <translation>Num</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="136"/>
+        <location filename="../../App/OrderProgress.py" line="172"/>
         <source>Date</source>
         <translation>Data</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="137"/>
+        <location filename="../../App/OrderProgress.py" line="173"/>
         <source>Time</source>
         <translation>Ora</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="138"/>
+        <location filename="../../App/OrderProgress.py" line="174"/>
         <source>Delivery</source>
         <translation>Consegna</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="139"/>
+        <location filename="../../App/OrderProgress.py" line="175"/>
         <source>Table</source>
         <translation>Tavolo</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="140"/>
+        <location filename="../../App/OrderProgress.py" line="176"/>
         <source>Customer</source>
         <translation>Cliente</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="141"/>
+        <location filename="../../App/OrderProgress.py" line="177"/>
         <source>Department</source>
         <translation>Reparto</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="142"/>
+        <location filename="../../App/OrderProgress.py" line="178"/>
         <source>Fulfillment date</source>
         <translation>Data dell&apos;evasione</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="203"/>
+        <location filename="../../App/OrderProgress.py" line="242"/>
         <source>Errore on getting order details</source>
         <translation>Errore nel recupero dei dettagli dell&apos;ordine</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="211"/>
+        <location filename="../../App/OrderProgress.py" line="250"/>
         <source>Order not found</source>
         <translation>Ordine non trovato</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="222"/>
+        <location filename="../../App/OrderProgress.py" line="261"/>
         <source>Order already processed, process again ?</source>
         <translation>Ordine già elaborato, lo elaboro ancora ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="233"/>
-        <location filename="../../App/OrderProgress.py" line="291"/>
+        <location filename="../../App/OrderProgress.py" line="272"/>
+        <location filename="../../App/OrderProgress.py" line="330"/>
         <source>Update order status</source>
         <translation>Aggiorna lo stato dell&apos;ordine</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="284"/>
+        <location filename="../../App/OrderProgress.py" line="323"/>
         <source>Set current selected order as unprocessed ?</source>
         <translation>Imposta l&apos;ordine selezionato come non elaborato</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="344"/>
+        <source>Mark the selected order as Processed ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="351"/>
+        <source>Mark order as processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="362"/>
+        <source>Mark the selected order as Unprocessed ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderProgress.py" line="369"/>
+        <source>Mark order as unprocessed</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5210,63 +5241,73 @@ Devo procedere comunque?</translation>
         <translation>Avanzamento ordini</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="32"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="25"/>
         <source>Order status</source>
         <translation>Stato dell&apos;ordine</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="47"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="40"/>
         <source>View orders</source>
         <translation>Mostra ordini</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="57"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="50"/>
         <source>Acquired</source>
         <translation>Acquisito</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="67"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="60"/>
         <source>In progress</source>
         <translation>In corso</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="77"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="70"/>
         <source>Processed</source>
         <translation>Evaso</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="97"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="105"/>
         <source>Records:</source>
         <translation>Records:</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="127"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="77"/>
         <source>Date:</source>
         <translation>Data:</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="141"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="91"/>
         <source>Lunch</source>
         <translation>Pranzo</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="148"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="98"/>
         <source>Dinner</source>
         <translation>Cena</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="166"/>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="181"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="135"/>
+        <source>Set whole order Processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="142"/>
+        <source>Set whole order Unprocessed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="156"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="171"/>
         <source>Barcode scan</source>
         <translation>Scansiona codice a barre</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="238"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="228"/>
         <source>Edit scan</source>
         <translation>Modifica scansione</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="244"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="234"/>
         <source>Set as unprocessed</source>
         <translation>Imposta come non evaso</translation>
     </message>
@@ -5591,6 +5632,14 @@ Devo procedere comunque?</translation>
         <location filename="../../App/Core/ExceptionHandler.py" line="161"/>
         <source>Undefined database error</source>
         <translation>Errore di database non definito</translation>
+    </message>
+</context>
+<context>
+    <name>PasswordLineEdit</name>
+    <message>
+        <location filename="../../App/Widget/Control.py" line="1066"/>
+        <source>Press to show/hide the password</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

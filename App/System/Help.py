@@ -101,7 +101,7 @@ class HelpDialog(QDialog):
             self.ui.textBrowserContent.zoomIn(1)
         # signal/slot
         self.ui.toolButtonBack.clicked.connect(self.ui.textBrowserContent.backward)
-        self.ui.toolButtonHome.clicked.connect(self.ui.textBrowserContent.home)
+        self.ui.toolButtonHome.clicked.connect(self.goToCustomHome)
         self.ui.toolButtonForward.clicked.connect(self.ui.textBrowserContent.forward)
         #self.ui.textBrowserContent.setSource(QUrl(f"qrc:/{source}"))        
         self.setWindowTitle(f"{title}")
@@ -128,6 +128,11 @@ class HelpDialog(QDialog):
         # build the canonical URL using the correct prefix
         qrc_url = QUrl.fromUserInput(f"qrc:/{page_name}")
         # start browsing
+        self.ui.textBrowserContent.setSource(qrc_url)
+        
+    def goToCustomHome(self) -> None:
+        "Go to the main help page"
+        qrc_url = QUrl.fromUserInput(f"qrc:/help/main.html")
         self.ui.textBrowserContent.setSource(qrc_url)
         
     def sliderChangedValue(self, value: int) -> None:

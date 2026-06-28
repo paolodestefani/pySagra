@@ -180,6 +180,33 @@ WHERE
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
 
+def set_order_as_processed(order_id: int) -> None:
+    "Set to processed the given order id modifing header department and order status"
+    # a trigger manage order status ad fulfillment date in order_header
+    script = t"""
+UPDATE order_header_department
+SET fulfillment_date = CURRENT_TIMESTAMP
+WHERE
+    company_id = system.pa_current_company()
+    AND order_header_id = {order_id};"""
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
+def set_order_as_unprocessed(order_id: int) -> None:
+    "Set to unprocessed the given order id modifing header department and order status"
+    # a trigger manage order status ad fulfillment date in order_header
+    script = t"""
+UPDATE order_header_department
+SET fulfillment_date = Null
+WHERE
+    company_id = system.pa_current_company()
+    AND order_header_id = {order_id};"""
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
+
 
 class Order():
     "A order header and lines"
@@ -189,18 +216,6 @@ class Order():
         self.lines = RecordSet('order_line', ('order_line_id',))
         self.depnote: dict = {} # dict(dep: note)
         
-    # def out_of_stock(self) -> list[str]:
-    #     "Returns a list of out of stock items"
-    #     event_id, _ = get_event_from_date(self.header['date_time'])
-    #     if not event_id:
-    #         raise PyAppDBError("02000", "No event found for order date")
-    #     out_of_stock = []
-    #     for i in self.lines:
-    #         if has_stock_management(i['item_id']):
-    #             if get_item_stock_level(event_id, i['item_id']) - i['quantity'] < 0:
-    #                 out_of_stock.append(get_item_desc(i['item_id']))
-    #     return out_of_stock
-    
     def out_of_stock(self) -> list[str]:
         """
         Flattens the entire order into raw ingredient requirements (Type 'I'),
@@ -351,8 +366,8 @@ class Order():
                 # set barcode on header department if required
                 if setting['manage_order_progress']:
                     # as we don't know header_department_id yet, we will create a unique barcode
-                    # based on department barcode + order_header_id padded to 9 digits
-                    r['barcode'] = f"{get_department_barcode(r['department_id'])}{t:09}"
+                    # based on department id + order_header_id padded to 9 digits
+                    r['barcode'] = f"{r['department_id']:03}{t:09}"
             for r in self.lines:
                 r['order_header_id'] = t
             self.lines.insert_records()
@@ -366,8 +381,6 @@ class Order():
                         r['event_date'] = self.header['stat_order_date']
                         r['day_part'] = self.header['stat_order_day_part']
                         r['item_id'] = i['item_id']
-                         #[j['order_header_department_id'] for j in headersdep 
-                                                        #if j['department_id'] == get_item_dep(r['item_id'])][0]
                         r['variants'] = i['variants']
                         r['quantity'] = i['quantity']
                         if setting['manage_order_progress']:

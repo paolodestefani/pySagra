@@ -162,7 +162,11 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
         if er.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008', 'CCER'):
             QMessageBox.warning(parent_widget,
                                  _tr('MessageDialog', 'Warning'),
-                                 msg)            
+                                 msg)   
+        elif "item_grid_position" in str(er):
+            QMessageBox.warning(parent_widget,
+                                 _tr('MessageDialog', 'Warning'),
+                                 _tr('MessageError', "Is not possible to set the same row and column of a salable item"))  
         else:
             # Display the custom PySide6 critical dialog box
             MessageBoxCritical(parent_widget, operation_title, er.code, msg, er.message)

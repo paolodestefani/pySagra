@@ -107,7 +107,7 @@ ALTER TABLE item
 CREATE INDEX item_keys_idx ON item (company_id, item_id, department_id);
 
 CREATE UNIQUE INDEX item_grid_position 
-    ON item(company_id, department_id, item_id, pos_row, pos_column) 
+    ON item(company_id, department_id, pos_row, pos_column) 
     WHERE is_salable IS true;
 
 CREATE TRIGGER t99_update_company_user_date 

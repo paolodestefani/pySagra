@@ -88,7 +88,7 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         model = CashDeskModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/cash_desk.html"
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
