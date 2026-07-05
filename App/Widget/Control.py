@@ -797,8 +797,6 @@ class ButtonItem(QPushButton):
         self.current_bg = self.default_bg
         self.current_text = self.default_text
         
-        # OPTIMIZATION: Pre-cache HEX string colors into QColor objects.
-        # This prevents costly hex-string parsing inside real-time updates.
         self._color_cache = {
             'warning_bg': QColor(self.setting.get('warning_background_color', '#ffaa00')),
             'warning_tx': QColor(self.setting.get('warning_text_color', '#000000')),

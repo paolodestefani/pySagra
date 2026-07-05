@@ -227,6 +227,8 @@ class CompanyModel(TableModel):
                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
         # True if is a company table
         self.isCompanyTable = False
+        # is_system column
+        self.isSystemColumn = 2
         # primary key fields, tuple or list
         self.primaryKey = ("company_id",)
         # sql order by clause, plain sql string without ORDER BY
@@ -306,6 +308,8 @@ class UserModel(TableModel):
                         ("updated_at", _tr('Models', 'Date Update'), True, 'date')) 
         # True if is a company table
         self.isCompanyTable = False
+        # is_system
+        self.isSystemColumn = 6
         # primary key fields, tuple or list
         self.primaryKey = ("user_code",)
         # sql order by clause, plain sql string without ORDER BY
@@ -403,6 +407,8 @@ class ProfileModel(TableModel):
                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
         # True if is a company table
         self.isCompanyTable = False
+        # is_system
+        self.isSystemColumn = 2
         # primary key fields, tuple or list
         self.primaryKey = ("profile_code",)
         # sql order by clause, plain sql string without ORDER BY
@@ -490,6 +496,8 @@ class MenuModel(TableModel):
                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
         # True if is a company table
         self.isCompanyTable = False
+        # is_system column
+        self.isSystemColumn = 2
         # primary key fields, tuple or list
         self.primaryKey = ("code",)
         self.recordType = {'type': 'M'}
@@ -544,6 +552,8 @@ class ToolbarModel(TableModel):
                         ("updated_at", _tr('Models', 'Date Update'), True, 'date')) 
         # True if is a company table
         self.isCompanyTable = False
+        # is_system column
+        self.isSystemColumn = 2
         # primary key fields, tuple or list
         self.primaryKey = ("code",)
         self.recordType = {'type': 'T'}
@@ -574,7 +584,7 @@ FROM system.report;"""
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (
-            ("reprot_id", _tr('Models', 'ID'), True, 'int'),
+            ("report_id", _tr('Models', 'ID'), True, 'int'),
             ("report_code", _tr('Models', 'Report code'), False, 'str'),
             ("l10n", _tr('Models', 'Localization'), False, 'str'),
             ("report_class", _tr('Models', 'Report class'), False, 'str'),
@@ -612,6 +622,8 @@ class ReportModel(TableModel):
             ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
         # True if is a company table
         self.isCompanyTable = False
+        # is_system column
+        self.isSystemColumn = 6
         self.primaryKey = ("report_id",)
         self.automaticPKey = True
         # sql order by clause, plain sql string without ORDER BY
@@ -686,6 +698,8 @@ class ScriptingModel(TableModel):
             ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
         # True if is a company table
         self.isCompanyTable = False
+        # is_system column
+        self.isSystemColumn = 8
         # primary key fields, tuple or list
         self.primaryKey = ("script_id",)
         self.automaticPKey = True

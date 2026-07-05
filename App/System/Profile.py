@@ -213,13 +213,13 @@ class ProfileForm(FormIndexManager):
 
     def delete(self) -> None:
         "Delete current profile"
-        if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "Information"),
-                _tr('Profile', "Is not possible to delete a system profile")
-            )
-            return
+        # if self.ui.checkBoxSystem.isChecked():
+        #     QMessageBox.information(
+        #         self,
+        #         _tr('MessageDialog', "Information"),
+        #         _tr('Profile', "Is not possible to delete a system profile")
+        #     )
+        #     return
         profile = self.ui.lineEditCode.text()
         description = self.ui.lineEditDescription.text()
         msg = _tr('Profile', "Are you sure you want to delete this profile ?")

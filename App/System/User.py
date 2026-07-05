@@ -235,9 +235,10 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
     def new(self) -> None:
         "New user"
         super().new()
+        self.ui.checkBoxSystem.setChecked(False)
         self.ui.lineEditUser.setEnabled(True)
         self.ui.lineEditUserDescription.setEnabled(True)
-        self.ui.lineEditUser.setFocus()
+        self.ui.lineEditUser.setFocus()        
 
     def save(self) -> None:
         "Save and ask for password if null (new user)"
@@ -258,13 +259,13 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         "Delete current user"
         userId = self.ui.lineEditUser.text()
         userDescription = self.ui.lineEditUserDescription.text()
-        if self.ui.checkBoxSystem.isChecked():
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "Information"),
-                _tr('User', "It is not possible to delete a system user")
-            )
-            return
+        # if self.ui.checkBoxSystem.isChecked():
+        #     QMessageBox.information(
+        #         self,
+        #         _tr('MessageDialog', "Information"),
+        #         _tr('User', "It is not possible to delete a system user")
+        #     )
+        #     return
         msg = _tr('User', "Are you sure you want to delete this user ?")
         if QMessageBox.question(
             self,
@@ -278,18 +279,16 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         super().delete()
 
     def mapperIndexChanged(self, row: int) -> None:
-        "Change sittings on change record"
+        "Change settings on change record"
         super().mapperIndexChanged(row)         
         if self.ui.checkBoxSystem.isChecked():
-            self.write_perm = False
             self.ui.lineEditUserDescription.setReadOnly(True)
             self.ui.comboBoxL10n.setDisabled(True)
             self.ui.pushButtonUpload.setDisabled(True)
             self.ui.pushButtonDownload.setDisabled(True)
             self.ui.pushButtonDelete.setDisabled(True)
-            self.ui.checkBoxIsAdmin.setDisabled(True)  # setChackable don't work...
+            self.ui.checkBoxIsAdmin.setDisabled(True)
         else:
-            self.write_perm = True
             self.ui.lineEditUserDescription.setReadOnly(False)
             self.ui.comboBoxL10n.setDisabled(False)
             self.ui.pushButtonUpload.setDisabled(False)
