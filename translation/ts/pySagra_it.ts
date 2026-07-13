@@ -5299,12 +5299,20 @@ Devo procedere comunque?</translation>
         <translation>Cena</translation>
     </message>
     <message>
+<<<<<<< HEAD
         <location filename="../../App/Ui/OrderProgressWidget.ui" line="176"/>
+=======
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="169"/>
+>>>>>>> a1d6c6ecfa370867c63d85a03d02775f9ce0568a
         <source>Barcode scanned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+<<<<<<< HEAD
         <location filename="../../App/Ui/OrderProgressWidget.ui" line="193"/>
+=======
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="186"/>
+>>>>>>> a1d6c6ecfa370867c63d85a03d02775f9ce0568a
         <source>Barcode scan</source>
         <translation>Scansiona codice a barre</translation>
     </message>
