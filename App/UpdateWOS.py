@@ -50,6 +50,7 @@ from App.Database.Lookup import event_lookup
 from App.Database.Department import department_web_list
 from App.Database.Item import item_web_list
 from App.Database.Item import get_variants
+from App.Database.SeatMap import table_list
 from App.Database.WebOrderServer import get_web_order_server_params
 from App.Database.WebOrderServer import set_web_order_server_params 
 from App.Core.L10n import _tr
@@ -112,6 +113,15 @@ class UpdateWebOrderServerDialog(QDialog):
         ET.SubElement(root, "title").text = ed
         ET.SubElement(root, "start_date").text = ds.toString(Qt.ISODate)
         ET.SubElement(root, "end_date").text = de.toString(Qt.ISODate)
+        # tables
+        tl = []
+        with gui_exception_context(self, _tr('UpdateWOS', "Loading tables from database")):
+            for table_code, row_pos, col_pos, text_color, bg_color, unavailable in table_list():
+                if row_pos is None or col_pos is None:
+                    continue
+                if not unavailable and not ',' in table_code:
+                    tl.append(table_code)
+            ET.SubElement(root, "tables").text = ",".join(tl)
 
         items = ET.SubElement(root, "items")        
         with gui_exception_context(self, _tr("UpdateWOS", "Generate items")):

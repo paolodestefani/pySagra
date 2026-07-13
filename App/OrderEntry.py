@@ -820,7 +820,7 @@ class BaseOrderDialog(QDialog):
             self.idleTimer.start()
 
     
-    def buttonClicked(self, button: Any, ivars: str | None = "", priced_cents: int = 0, web: bool = False) -> None:
+    def buttonClicked(self, button: Any, ivars: str | None = "", variant_price: int = 0, web: bool = False) -> None:
         """React to an item button click, manage variants, and update the order lines structure using integers,
         recalculate inventory"""
         btn = cast(ButtonItem, button) # cast directly to our optimized custom class
@@ -828,7 +828,6 @@ class BaseOrderDialog(QDialog):
             raise TypeError(_tr('OrderEntry', "Any button must have an ID"))
         
         # HANDLE ITEM VARIANTS
-        variant_price = 0
         if btn.hasVariants and not web: # orders from web already have variants and prices
             if not ivars:
                 if (not self.ui.pushButtonVariants.isEnabled()) or self.ui.pushButtonVariants.isChecked():
