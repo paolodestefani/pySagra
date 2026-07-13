@@ -5241,11 +5241,6 @@ Devo procedere comunque?</translation>
         <translation>Avanzamento ordini</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="32"/>
-        <source>Order status</source>
-        <translation>Stato dell&apos;ordine</translation>
-    </message>
-    <message>
         <location filename="../../App/Ui/OrderProgressWidget.ui" line="47"/>
         <source>View orders</source>
         <translation>Mostra ordini</translation>
@@ -5286,6 +5281,11 @@ Devo procedere comunque?</translation>
         <translation>Data:</translation>
     </message>
     <message>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="32"/>
+        <source>Orders</source>
+        <translation type="unfinished">Ordini</translation>
+    </message>
+    <message>
         <location filename="../../App/Ui/OrderProgressWidget.ui" line="98"/>
         <source>Lunch</source>
         <translation>Pranzo</translation>
@@ -5297,6 +5297,10 @@ Devo procedere comunque?</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderProgressWidget.ui" line="169"/>
+        <source>Barcode scanned</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../App/Ui/OrderProgressWidget.ui" line="186"/>
         <source>Barcode scan</source>
         <translation>Scansiona codice a barre</translation>
