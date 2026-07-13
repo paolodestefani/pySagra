@@ -702,6 +702,7 @@ class FormIndexManager[T](QWidget):
                             if idx_master.isValid():
                                 value = idx_master.data()
                                 relation.filter(detailColumn, value)
+                # update the main window status
                 self.updateEditStatus()
         finally:
             # release the block in any case
@@ -757,6 +758,13 @@ class FormIndexManager[T](QWidget):
         if not self.write_perm:
             for i in (es.SAVE, es.DELETE):
                 status[i] = False
+        # disable write option if is_system is set on the main model
+        if hasattr(self.model, 'isSystemColumn'):
+            system_index = self.model.index(0, self.model.isSystemColumn)
+            if system_index.isValid() and bool(system_index.data(Qt.ItemDataRole.EditRole)):
+                for i in (es.SAVE, es.DELETE):
+                    status[i] = False
+            
         session['mainwin'].updateEditStatus(status, current, total, self.indexModel.limitCondition)
 
     def toFirst(self) -> None:
@@ -814,6 +822,7 @@ class FormIndexManager[T](QWidget):
         finally:
             # 2. Rilasciamo il blocco di navigazione ma manteniamo lo stato di editing attivo
             self._is_navigating = False
+            self._new = False
             self.updateEditStatus()
 
 
