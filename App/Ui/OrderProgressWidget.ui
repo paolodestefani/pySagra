@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1261</width>
+    <width>1362</width>
     <height>593</height>
    </rect>
   </property>
@@ -103,6 +103,13 @@
           <widget class="QRadioButton" name="radioButtonDinner">
            <property name="text">
             <string>Dinner</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBoxWholeEvent">
+           <property name="text">
+            <string>Whole event</string>
            </property>
           </widget>
          </item>
@@ -269,5 +276,54 @@ QLineEdit#lineEditBarcode::focus {
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>checkBoxWholeEvent</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>dateEdit</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>712</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxWholeEvent</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>radioButtonLunch</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>712</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>546</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxWholeEvent</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>radioButtonDinner</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>712</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>620</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

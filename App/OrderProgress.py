@@ -171,6 +171,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.checkBoxProcessed.checkStateChanged.connect(self.updateFilterConditions)
         self.ui.dateEdit.userDateChanged.connect(self.updateFilterConditions)
         self.ui.radioButtonDinner.toggled.connect(self.updateFilterConditions)
+        self.ui.checkBoxWholeEvent.toggled.connect(self.updateFilterConditions)
         # scans tablewidget
         header = [_tr('OrderProgress', "ID"),
                   _tr('OrderProgress', "Barcode"),
@@ -218,13 +219,15 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         if self.ui.checkBoxProcessed.isChecked():
             status.append("P")
         self.model.addWhere("status = ANY(%s)", status)
-        # limit date
-        self.model.addWhere("stat_order_date = %s", self.ui.dateEdit.date())
-        # day part
-        if self.ui.radioButtonDinner.isChecked():
-            self.model.addWhere("stat_order_day_part = %s", 'D')
-        else:
-            self.model.addWhere("stat_order_day_part = %s", 'L')
+        # subevent if required
+        if not self.ui.checkBoxWholeEvent.isChecked():
+            # limit date
+            self.model.addWhere("stat_order_date = %s", self.ui.dateEdit.date())
+            # day part
+            if self.ui.radioButtonDinner.isChecked():
+                self.model.addWhere("stat_order_day_part = %s", 'D')
+            else:
+                self.model.addWhere("stat_order_day_part = %s", 'L')
         # reload
         self.model.select()
         self.ui.spinBoxRecords.setValue(self.model.rowCount())
