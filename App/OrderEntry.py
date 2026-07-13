@@ -828,7 +828,7 @@ class BaseOrderDialog(QDialog):
             raise TypeError(_tr('OrderEntry', "Any button must have an ID"))
         
         # HANDLE ITEM VARIANTS
-        if btn.hasVariants and not web: # orders from web already have variants and prices
+        if btn.hasVariants and not web: # orders from web already have variants and prices and sum of this values is already in the order_lines
             if not ivars:
                 if (not self.ui.pushButtonVariants.isEnabled()) or self.ui.pushButtonVariants.isChecked():
                     item_description = getattr(btn, 'description', '')
