@@ -65,8 +65,6 @@ from App.Ui.OrderWidget import Ui_OrderWidget
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-from App.Core.Constant import deliveryType
-from App.Core.Constant import orderStatus
 from App.Report.ReportEngine import ReportException
 from App.Report.ReportEngine import ReportNoDataError
 from App.Report.Order import printOrderReport
@@ -167,6 +165,19 @@ class orddd(IntEnum):
     QUANTITY        = 3
     PARENT          = 4
     CHILD           = 5
+
+
+
+def deliveryType():
+    return [('T', _tr('OrderArchive', 'Table')),
+            ('A', _tr('OrderArchive', 'Take Away'))]
+
+
+def orderStatus():
+    return [('A', _tr('OrderArchive', 'Acquired')),
+            ('I', _tr('OrderArchive', 'In progress')),
+            ('P', _tr('OrderArchive', 'Processed'))]
+
 
 
 

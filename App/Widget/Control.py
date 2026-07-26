@@ -86,8 +86,8 @@ from PySide6.QtGui import QLinearGradient
 # application modules
 from App import currentIcon
 from App.Core.L10n import _tr
-from App.Core.Cryptography import string_encode
-from App.Core.Cryptography import string_decode
+#from App.Core.Cryptography import string_encode
+#from App.Core.Cryptography import string_decode
 
 
 class LabelImage(QLabel):

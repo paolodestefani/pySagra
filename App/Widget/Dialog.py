@@ -116,9 +116,9 @@ from App.Database.Adaptation import set_adapt_setting
 from App.Database.Adaptation import get_adapt_sorting
 from App.Database.Adaptation import set_adapt_sorting
 from App.Database.Adaptation import get_adapt_default
-from App.Database.Adaptation import get_adapt_class_default
+#from App.Database.Adaptation import get_adapt_class_default
 from App.Database.Adaptation import set_adapt_class_default
-from App.Database.Adaptation import get_adapt_user_default
+#from App.Database.Adaptation import get_adapt_user_default
 from App.Database.Adaptation import set_adapt_user_default
 from App.Database.Event import get_event_data
 from App.Database.Exceptions import PyAppDBError
@@ -175,6 +175,7 @@ class MessageBox(QDialog):
         sty = app.style()
         icon = sty.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
         self.ui.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
+        
         
 def MessageBoxCritical(parent, 
                        title: str|None = None,
@@ -312,6 +313,7 @@ class LineEditInts(QLineEdit):
     def value(self) -> list:
         "Return the list of values separated by comma"
         return [int(v.strip()) for v in self.text().split(',') if v.strip()]
+    
     
 class LineEditDecimals(QLineEdit):
     "Custom line edit for list of decimal values separated by comma"
@@ -1026,7 +1028,6 @@ class EventFilterDialog(QDialog):
                                                             dayPart)
 
         super().accept()
-
 
 
 class PrintDialog(QDialog):

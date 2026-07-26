@@ -517,12 +517,13 @@ class BaseRenderer():
             target_rect.setHeight(max(self.height, bandHeight - self.top))
         
         if isinstance(self.value, QImage):
-            img = self.value.scaled(int(target_rect.width()),
-                                    int(target_rect.height()),
-                                    self.aspectRatio,
-                                    Qt.TransformationMode.SmoothTransformation)
-            painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-            painter.drawImage(target_rect, img)
+            if not self.value.isNull(): # avoid null images
+                img = self.value.scaled(int(target_rect.width()),
+                                        int(target_rect.height()),
+                                        self.aspectRatio,
+                                        Qt.TransformationMode.SmoothTransformation)
+                painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+                painter.drawImage(target_rect, img)
         else:
             text = self.textFormat()
             if text:
@@ -2313,7 +2314,7 @@ else:
                 ('A', 'description 37', 'Production', True, 1225, QDate(2018, 2, 2)),
                 ('AA', 'description 38', 'Production', True, 26, QDate(2018, 2, 2)),
                 ('AAA', 'description 39', 'Production', True, 27, QDate(2018, 2, 2)),
-                ('AAAA', 'description 40 go to 2 lines description *', 'Production', True, 28, QDate(2018, 2, 2)),
+                ('AAAA', 'description 40 go to 2 lines description if long enough *', 'Production', True, 28, QDate(2018, 2, 2)),
                 ('AAAAA', 'description 41', 'Production', True, 29, QDate(2018, 2, 2)),
                 ('AAAAAA', 'description 42', 'Production', True, 30, QDate(2018, 2, 2)),
                 ('AAAAAAA', 'description 43', 'Production', True, 31, QDate(2018, 2, 2)),

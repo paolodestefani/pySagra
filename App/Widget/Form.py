@@ -35,8 +35,8 @@ from enum import IntEnum
 # PySide6
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QAbstractItemModel
-from PySide6.QtGui import QCursor
-from PySide6.QtGui import QGuiApplication
+#from PySide6.QtGui import QCursor
+#from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -51,8 +51,9 @@ from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import wait_cursor_context
 from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Connect import appconn
-from App.Database.Exceptions import PyAppDBError
-from App.Database.AbstractModels.TableModel import TableModel, QueryModel
+#from App.Database.Exceptions import PyAppDBError
+from App.Database.AbstractModels.TableModel import QueryModel
+from App.Database.AbstractModels.TableModel import TableModel
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
 from App.Widget.Dialog import EventFilterDialog
@@ -331,7 +332,6 @@ class FormManager[T](QWidget):
         if row + 1 > self.model.rowCount(): 
             row = self.model.rowCount() - 1
         self.mapper.setCurrentIndex(row)
-
 
     def reload(self) -> None:
         "Undo pending changes and Reload data from db"
@@ -708,7 +708,6 @@ class FormIndexManager[T](QWidget):
             # release the block in any case
             self._is_navigating = False
 
-
     def updateEditStatus(self) -> None:
         "Update main window edit status based on current model and mapper index"
         # get current values
@@ -735,7 +734,6 @@ class FormIndexManager[T](QWidget):
         # otherwise
         else:
             nav = True, True, True, True
-
         if self.state == ev.EDIT:
             # don't allow navigation while editing
             nav = False, False, False, False
@@ -764,7 +762,6 @@ class FormIndexManager[T](QWidget):
             if system_index.isValid() and bool(system_index.data(Qt.ItemDataRole.EditRole)):
                 for i in (es.SAVE, es.DELETE):
                     status[i] = False
-            
         session['mainwin'].updateEditStatus(status, current, total, self.indexModel.limitCondition)
 
     def toFirst(self) -> None:
@@ -787,44 +784,28 @@ class FormIndexManager[T](QWidget):
         "Create a new record on model deleting the current one"
         if isinstance(self.model, QueryModel):
             return
-
-        # 1. Attiviamo i flag di sicurezza all'inizio per bloccare i falsi positivi dei widget
         self._new = True
         self._is_navigating = True
-
         try:
-            # Abilita il widget e sposta sulla vista FORM
             if hasattr(self.ui, 'stackedWidget') and self.ui.stackedWidget:
                 self.ui.stackedWidget.setEnabled(True)
                 self.ui.stackedWidget.setCurrentIndex(vw.FORM)
-
-            # Svuota i dati correnti nel modello a riga singola
             if hasattr(self.model, 'clearData'):
                 self.model.clearData() 
-
-            # Inserisce la nuova riga in prima posizione
             if not self.model.insertRow(0):
                 MessageBoxCritical(self,
                                     _tr("MessageDialog", "Critical"),
                                     _tr("Form", "Error inserting a new row"))
                 self._new = False
                 return
-
             self.state = ev.EDIT
-            
-            # Sincronizza il mapper principale sulla riga vuota appena creata
             self.mapper.toFirst() 
-
-            # Svuota le relazioni di dettaglio passando un filtro nullo
             for relation, masterColumn, detailColumn in self.detailRelations:
                 relation.filter(detailColumn, None)
-
         finally:
-            # 2. Rilasciamo il blocco di navigazione ma manteniamo lo stato di editing attivo
             self._is_navigating = False
             self._new = False
             self.updateEditStatus()
-
 
     def save(self) -> None:
         "Save data to db and commit"
@@ -833,11 +814,8 @@ class FormIndexManager[T](QWidget):
         active_widget = QApplication.focusWidget()
         if active_widget:
             active_widget.clearFocus()
-            
         if isinstance(self.model, QueryModel):
-            return
-            
-        # Sottomissione dei dati della form principale
+            return 
         if not self.mapper.submit():
             QMessageBox.critical(
                 self,
@@ -845,13 +823,11 @@ class FormIndexManager[T](QWidget):
                 _tr("Form", "Error on mapper submit")
             )
             return
-        
         with gui_exception_context(self, _tr("Form", "Master and detail model submit all")):
-            # Salva il record principale (genera l'eventuale ID autoincrementale)
+            # save the main model record
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
-                
-            # Salva i dettagli collegati
+            # save the detail records
             for relation, masterColumn, detailColumn in self.detailRelations:
                 idx = self.model.index(0, masterColumn)
                 value = idx.data() if idx.isValid() else None
@@ -867,43 +843,26 @@ class FormIndexManager[T](QWidget):
             return
         if isinstance(self.model, QueryModel):
             return
-            
         current_index = self.indexMapper.currentIndex()
-        
         with gui_exception_context(self, _tr("Form", "Master and detail model delete")):
-            # Dettagli protetti contro tabelle già vuote
             for relation, masterColumn, detailColumn in self.detailRelations:
                 if relation.rowCount() > 0:
                     relation.removeRows(0, relation.rowCount())
                     if hasattr(relation, 'submitAll'): # sometimes relation i read only
                         relation.submitAll()
-                    
-            # Cancellazione record principale (riga singola 0)
             self.model.removeRow(0)
             if hasattr(self.model, 'submitAll'):
-                self.model.submitAll()
-                
-        # 1. Impostiamo lo stato su ev.VIEW prima di aggiornare i mapper e la UI
+                self.model.submitAll()   
         self.state = ev.VIEW
-        
-        # 2. Ricarica l'indice dal database per rimuovere visivamente il record eliminato
         self.reload()
-        
-        # 3. Riposizionamento sicuro del cursore sull'indice aggiornato
-        nuovo_indice = current_index - 1
-        
-        # Se siamo scesi sotto zero, proviamo a metterci sulla riga 0 (se c'è ancora almeno un record)
-        if nuovo_indice < 0:
-            nuovo_indice = 0
-            
-        # Verifichiamo se il modello ha ancora record dopo l'eliminazione
+        new_indice = current_index - 1
+        if new_indice < 0:
+            new_indice = 0
         if self.indexModel and self.indexModel.rowCount() > 0:
-            # Se il nuovo indice calcolato supera il totale dei record rimasti, agganciamo l'ultimo
-            if nuovo_indice >= self.indexModel.rowCount():
-                nuovo_indice = self.indexModel.rowCount() - 1
-            self.indexMapper.setCurrentIndex(nuovo_indice)
+            if new_indice >= self.indexModel.rowCount():
+                new_indice = self.indexModel.rowCount() - 1
+            self.indexMapper.setCurrentIndex(new_indice)
         else:
-            # Se la tabella dell'indice è completamente vuota, svuotiamo il mapper in sicurezza
             self.indexMapper.toFirst()
             self.updateEditStatus()
     
@@ -911,62 +870,49 @@ class FormIndexManager[T](QWidget):
         "Undo pending changes and Reload data from db. Automatically stays on the same or new record"
         if not self.indexModel: 
             return
-        
         with wait_cursor_context():
             # DYNAMIC IDENTIFICATION OF THE PRIMARY KEY COLUMN
             # If it is not defined, we assume column 0 as the fallback.
             pk_col = getattr(self.model, 'pkColumn', 0)
-
             # PRIMARY KEY RECOVERY BEFORE REFRESH
             last_saved_key = None
             was_new_record = getattr(self, '_new', False)
-            
             if was_new_record and self.model and self.model.rowCount() > 0:
                 # in the new record (row 0 of the main model), we search in the correct key column
                 last_saved_key = self.model.index(0, pk_col).data()
             elif self.indexMapper.currentIndex() >= 0:
                 # in the index, we look for the key in the correct column
                 last_saved_key = self.indexModel.index(self.indexMapper.currentIndex(), pk_col).data()
-
             currentIndex = self.indexMapper.currentIndex() 
             self.state = ev.VIEW
-            
             with gui_exception_context(self, _tr("Form", "Form reload")):
                 self.indexModel.revertAll()  # reruns the SQL select with filters and sorts
-                
             crc = self.indexModel.rowCount()
-            
             # SEQUENTIAL SEARCH ON THE REAL KEY COLUMN
             row_found = -1
             if last_saved_key is not None and crc > 0:
                 for i in range(crc):
                     # compare the data on the correct pk_col column
                     valore_indice = self.indexModel.index(i, pk_col).data()
-                    
                     # we use str() for comparison so we are immune to type differences (e.g. integer vs. string)
                     if str(valore_indice) == str(last_saved_key):
                         row_found = i
                         break
-
             # REPOSITIONING THE MAPPER
             if crc == 0:  
                 if hasattr(self.model, 'clearData'):
                     self.model.clearData()
                 self.mapper.revert()
                 self.updateEditStatus()
-                
             elif row_found >= 0:
                 self.indexMapper.setCurrentIndex(row_found)
-                
             else:
                 if currentIndex >= crc:
                     currentIndex = crc - 1
                 if currentIndex < 0:
                     currentIndex = 0
                 self.indexMapper.setCurrentIndex(currentIndex)    
-                
             self.updateEditStatus()
-
 
     def setIndexModel(self, model: QueryModel) -> None:
         self.indexModel = model
@@ -1009,5 +955,4 @@ class FormIndexManager[T](QWidget):
                     self.model.revert()
                     self.state = ev.VIEW
                     self.updateEditStatus()
-        
         event.accept()

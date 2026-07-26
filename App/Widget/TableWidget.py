@@ -74,13 +74,11 @@ class TableWidgetDragRows(QTableWidget):
     
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.viewport().setAcceptDrops(True)
         self.setDragDropOverwriteMode(False)
         self.setDropIndicatorShown(True)
-
         self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
@@ -94,7 +92,6 @@ class TableWidgetDragRows(QTableWidget):
     def dropEvent(self, event: QDropEvent) -> None:
         if not event.isAccepted() and event.source() == self:
             drop_row = self.drop_on(event)
-
             rows = sorted(set(item.row() for item in self.selectedItems()))
             rows_to_move = [[self.item(row_index, column_index).copy() 
                              for column_index in range(self.columnCount())]
@@ -103,7 +100,6 @@ class TableWidgetDragRows(QTableWidget):
                 self.removeRow(row_index)
                 if row_index < drop_row:
                     drop_row -= 1
-
             for row_index, data in enumerate(rows_to_move):
                 row_index += drop_row
                 self.insertRow(row_index)
@@ -119,7 +115,6 @@ class TableWidgetDragRows(QTableWidget):
         index = self.indexAt(event.pos())
         if not index.isValid():
             return self.rowCount()
-
         return index.row() + 1 if self.is_below(event.pos(), index) else index.row()
 
     def is_below(self, pos: QPoint, index: QModelIndex) -> bool:

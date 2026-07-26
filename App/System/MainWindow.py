@@ -149,10 +149,10 @@ def createActions(mainWindow: MainWindow) -> None:
 def addMenuItems(item: str, menu: QMenuBar|QMenu) -> None:
     "Add action or submenu to menu"
     with gui_exception_context(menu, _tr('MainWindow', 'Create menu')):
-        for child, itemType, description, action in get_menu(item):
-            if itemType == 'S':
+        for child, item_type, description, action in get_menu(item):
+            if item_type == 'S':
                 menu.addSeparator()
-            elif itemType == 'M':
+            elif item_type == 'M':
                 subMenu = menu.addMenu(description)
                 addMenuItems(child, subMenu)
             else:
@@ -163,7 +163,7 @@ def createMenuBar(mainWindow: QMainWindow) -> None:
     "Create menu bar adding menus"
     menuBar = QMenuBar() # for MAC we need to create a menubar and set later
     with gui_exception_context(menuBar, _tr('MainWindow', 'Create menu')):
-        for child, itemType, description, action in get_menu(session['menu']):
+        for child, item_type, description, action in get_menu(session['menu']):
             menu = menuBar.addMenu(description or "EMPTY MENU")
             addMenuItems(child, menu)
         mainWindow.setMenuBar(menuBar)
@@ -173,12 +173,12 @@ def createMenuBar(mainWindow: QMainWindow) -> None:
 def createToolBar(mainWindow: QMainWindow) -> None:
     "Create toolbars"
     with gui_exception_context(mainWindow, _tr('MainWindow', 'Create toolbars')):
-        for child, itemType, description, action in get_toolbar(session['toolbar']):
+        for child, item_type, description, action in get_toolbar(session['toolbar']):
             toolBar = QToolBar(description)
             toolBar.setObjectName(description)
             toolBar.setToolButtonStyle(get_toolbutton_styles()[session['tool_button_style'] or 'I'][1])
-            for child2, itemType2, description2, action2 in get_toolbar(child):
-                if itemType2 == 'S':
+            for child2, item_type2, description2, action2 in get_toolbar(child):
+                if item_type2 == 'S':
                     toolBar.addSeparator()
                 else:
                     if action2 in currentAction:

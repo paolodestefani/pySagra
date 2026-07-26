@@ -68,7 +68,7 @@ from App.Widget.Dialog import PrintDialog
 from App.Ui.ReportWidget import Ui_ReportWidget
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Constant import langCountryFlags
+from App.Core.L10n import langCountryFlags
 from App.Core.SyntaxHighlighter import XMLHighlighter
 
 

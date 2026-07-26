@@ -74,8 +74,8 @@ from App.Ui.UserWidget import Ui_UserWidget
 from App.Ui.ChangePasswordDialog import Ui_ChangePasswordDialog
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Constant import langCountry
-from App.Core.Constant import langCountryFlags
+from App.Core.L10n import langCountry
+from App.Core.L10n import langCountryFlags
 
 
 # logger

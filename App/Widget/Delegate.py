@@ -79,7 +79,8 @@ from PySide6.QtWidgets import QColorDialog
 from App import session
 from App import actionDefinition
 from App.Core.L10n import _tr
-from App.Database.AbstractModels.TableModel import QueryModel, TableModel
+from App.Database.AbstractModels.TableModel import QueryModel
+from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Setting import Setting
 from App.Widget.Control import ColorComboBox
 from App.Widget.Dialog import SelectImageDialog
@@ -775,6 +776,7 @@ class QuantityDelegate(DecimalDelegate):
                          currency=False,
                          bold=bold)
            
+
 class PriceDelegate(DecimalDelegate):
     "Delegate for price values"
 
@@ -786,6 +788,7 @@ class PriceDelegate(DecimalDelegate):
                          maximum=99999.9,
                          currency=True)
         
+
 class AmountDelegate(DecimalDelegate):
     "Delegate for currency values"
 
