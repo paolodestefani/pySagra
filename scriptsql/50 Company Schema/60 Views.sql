@@ -291,7 +291,7 @@ SELECT
 	oh.order_date	        AS order_date,
     oh.stat_order_date      AS stat_order_date,
 	oh.stat_order_day_part  AS stat_order_day_part,
-	oh.order_time	        AS order_time,
+	oh.order_date_time	    AS order_date_time,
 	oh.order_number	        AS order_number,
 	oh.delivery		        AS delivery,
 	oh.table_num	        AS table_number,
