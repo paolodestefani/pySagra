@@ -222,7 +222,7 @@ class Order():
         locks the database rows concurrently, and returns a list of human-readable
         descriptions for items that cannot be fulfilled.
         """
-        event_id, _ = get_event_from_date(self.header['date_time'])
+        event_id, _ = get_event_from_date(self.header['order_date_time'])
         if not event_id:
             raise PyAppDBError("02000", "No event found for order date")
             
@@ -274,13 +274,13 @@ class Order():
         headersdep = RecordSet('order_header_department', ('order_header_department_id',))
         linesdep = RecordSet('order_line_department', ('order_line_department_id',))
         # set event
-        event_id, _ = get_event_from_date(self.header['date_time'])
+        event_id, _ = get_event_from_date(self.header['order_date_time'])
         if not event_id:
             raise PyAppDBError("02000", "No event found for order date")
         self.header['event_id'] = event_id
         # order date and time set in insert for management of event date changes
-        self.header['order_date'] = self.header['date_time'].date()
-        self.header['order_time'] = self.header['date_time'].time()
+        self.header['order_date'] = self.header['order_date_time'].date()
+        self.header['order_time'] = self.header['order_date_time'].time()
         # set date, statistical date and date part
         setting = Setting()
         # if time between 0.0.0 and lunch start time stat date is the day before date part is dinner
@@ -350,7 +350,7 @@ class Order():
         # set status and fulfillment date if required
         if not setting['manage_order_progress']:
             self.header['status'] = 'P'  # set as already processed
-            self.header['fulfillment_date'] = self.header['date_time']
+            self.header['fulfillment_date'] = self.header['order_date_time']
             for i in headersdep:
                 i['fulfillment_date'] = self.header['fulfillment_date']
         # insert

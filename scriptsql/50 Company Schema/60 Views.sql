@@ -362,7 +362,7 @@ SELECT
     oh.order_number         	    AS order_number,
     oh.order_date::text  		    AS order_date,
     oh.order_time::text			    AS order_time,
-    oh.date_time::text      	    AS order_date_time,  
+    oh.order_date_time::text      	    AS order_date_time,  
     oh.fulfillment_date::text	    AS fulfillment_date, 
     oh.stat_order_date::text	    AS stat_order_date,
     oh.stat_order_day_part  	    AS stat_order_day_part,

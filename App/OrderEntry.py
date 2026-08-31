@@ -1303,7 +1303,7 @@ class BaseOrderDialog(QDialog):
 
         # create the Order
         order = Order()
-        order.header['date_time'] = QDateTime.currentDateTime().addSecs(self.dateTimeDiff or 0)
+        order.header['order_date_time'] = QDateTime.currentDateTime().addSecs(self.dateTimeDiff or 0)
         order.header['cash_desk'] = self.ui.labelCashDeskDescription.text()
         order.header['delivery'] = 'T' if self.ui.radioButtonTable.isChecked() else 'A'
         order.header['is_electronic_payment'] = self.ui.checkBoxElectronicPayment.isChecked()
