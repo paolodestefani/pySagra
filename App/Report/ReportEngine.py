@@ -557,6 +557,9 @@ class Field(BaseRenderer):
         if isinstance(value, QByteArray):
             image = QImage()
             image.loadFromData(value)
+            if image.isNull():
+                self.value = QImage() # null image
+                return
             # scale image if necessary
             if image.width != int(self.width) or image.height() != int(self.height):
                 self.value = image.scaled(int(self.width),
@@ -876,7 +879,10 @@ class Image():
             image.loadFromData(QByteArray.fromBase64(bytearray(text.encode('utf-8')))) # Image in base64 encoding
         if self.fromResource:
             image.load(f":/{self.fromResource}")  # from resource
-        self.image = image.scaled(int(self.width), int(self.height), self.aspectRatio, Qt.TransformationMode.SmoothTransformation)
+        if not image.isNull():
+            self.image = image.scaled(int(self.width), int(self.height), self.aspectRatio, Qt.TransformationMode.SmoothTransformation)
+        else:
+            self.image = QImage()
         if paramdict.get("isVisibleParameter"):
             t = paramdict.get("isVisibleParameter", "").split(' ')
             if t[0] == "Not":

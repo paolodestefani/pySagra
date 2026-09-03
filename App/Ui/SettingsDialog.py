@@ -697,26 +697,12 @@ class Ui_SettingsDialog(object):
         self.horizontalSliderDinner.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.horizontalSliderDinner.setTickInterval(1)
 
-        self.gridLayout_3.addWidget(self.horizontalSliderDinner, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.horizontalSliderDinner, 1, 2, 1, 1)
 
         self.label_6 = QLabel(self.groupBox_6)
         self.label_6.setObjectName(u"label_6")
 
         self.gridLayout_3.addWidget(self.label_6, 1, 0, 1, 1)
-
-        self.spinBoxLunch = QSpinBox(self.groupBox_6)
-        self.spinBoxLunch.setObjectName(u"spinBoxLunch")
-        self.spinBoxLunch.setMaximum(24)
-        self.spinBoxLunch.setValue(11)
-
-        self.gridLayout_3.addWidget(self.spinBoxLunch, 0, 2, 1, 1)
-
-        self.spinBoxDinner = QSpinBox(self.groupBox_6)
-        self.spinBoxDinner.setObjectName(u"spinBoxDinner")
-        self.spinBoxDinner.setMaximum(24)
-        self.spinBoxDinner.setValue(18)
-
-        self.gridLayout_3.addWidget(self.spinBoxDinner, 1, 2, 1, 1)
 
         self.horizontalSliderLunch = QSlider(self.groupBox_6)
         self.horizontalSliderLunch.setObjectName(u"horizontalSliderLunch")
@@ -728,7 +714,21 @@ class Ui_SettingsDialog(object):
         self.horizontalSliderLunch.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.horizontalSliderLunch.setTickInterval(1)
 
-        self.gridLayout_3.addWidget(self.horizontalSliderLunch, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.horizontalSliderLunch, 0, 2, 1, 1)
+
+        self.spinBoxLunch = QSpinBox(self.groupBox_6)
+        self.spinBoxLunch.setObjectName(u"spinBoxLunch")
+        self.spinBoxLunch.setMaximum(24)
+        self.spinBoxLunch.setValue(11)
+
+        self.gridLayout_3.addWidget(self.spinBoxLunch, 0, 1, 1, 1)
+
+        self.spinBoxDinner = QSpinBox(self.groupBox_6)
+        self.spinBoxDinner.setObjectName(u"spinBoxDinner")
+        self.spinBoxDinner.setMaximum(24)
+        self.spinBoxDinner.setValue(18)
+
+        self.gridLayout_3.addWidget(self.spinBoxDinner, 1, 1, 1, 1)
 
 
         self.verticalLayout_6.addLayout(self.gridLayout_3)
@@ -1214,7 +1214,7 @@ class Ui_SettingsDialog(object):
         self.checkBoxInactivity.clicked["bool"].connect(self.spinBoxInactivityTime.setEnabled)
         self.checkBoxInactivity.clicked["bool"].connect(self.labelInactivity.setEnabled)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(SettingsDialog)
