@@ -43,6 +43,7 @@ from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QMovie
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QIcon
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
@@ -121,7 +122,13 @@ class LoginDialog(QDialog):
         self.ui.lineEditUser.setFocus()
         self.ui.checkBoxMore.clicked.connect(self.expand) # error if i set this in QtDesigner
         self.ui.labelVersion.setText(f"Application Version: {APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}")
-        # help request
+        # help
+        # self.helpAction = QAction("LoginHelp")
+        # self.helpAction.setShortcut(QKeySequence.StandardKey.HelpContents)
+        # msg = _tr("Login", 'for help on login')
+        # self.ui.labelMain.setToolTip(self.helpAction.shortcut().toString(QKeySequence.SequenceFormat.NativeText) + " " + msg)
+        # self.helpAction.triggered.connect(self.showHelp)
+        # self.addAction(self.helpAction)
         self.ui.buttonBox.helpRequested.connect(self.showHelp)
         
     def showHelp(self) -> None:

@@ -133,8 +133,9 @@ class Ui_LoginDialog(object):
 
         self.buttonBox = QDialogButtonBox(LoginDialog)
         self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
-        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setCenterButtons(False)
 
         self.verticalLayout_2.addWidget(self.buttonBox)
 

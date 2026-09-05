@@ -739,32 +739,32 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>ChangeCompany</name>
     <message>
-        <location filename="../../App/System/Login.py" line="268"/>
+        <location filename="../../App/System/Login.py" line="275"/>
         <source>Change company</source>
         <translation>Cambia azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="272"/>
+        <location filename="../../App/System/Login.py" line="279"/>
         <source>Getting companies list</source>
         <translation>Recupero la lista delle aziende</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="275"/>
+        <location filename="../../App/System/Login.py" line="282"/>
         <source>There are no other companies you can login</source>
         <translation>Non ci sono altre aziende disponibili</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="278"/>
+        <location filename="../../App/System/Login.py" line="285"/>
         <source>Select a company from the list below</source>
         <translation>Selezionare un&apos;azienda dalla lista seguente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="302"/>
+        <location filename="../../App/System/Login.py" line="309"/>
         <source>Setting working company</source>
         <translation>Imposta l&apos;azienda attiva</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="313"/>
+        <location filename="../../App/System/Login.py" line="320"/>
         <source>Getting current event</source>
         <translation>Recupero l&apos;evento corrente</translation>
     </message>
@@ -2337,32 +2337,32 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Login</name>
     <message>
-        <location filename="../../App/System/Login.py" line="97"/>
+        <location filename="../../App/System/Login.py" line="98"/>
         <source>{APPNAME} - Login</source>
         <translation>{APPNAME} - Login</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="149"/>
+        <location filename="../../App/System/Login.py" line="156"/>
         <source>Database connection</source>
         <translation>Connessione al database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="222"/>
+        <location filename="../../App/System/Login.py" line="229"/>
         <source>Setting working company</source>
         <translation>Imposta l&apos;azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="237"/>
+        <location filename="../../App/System/Login.py" line="244"/>
         <source>There is no company you can log on</source>
         <translation>Non ci sono aziende disponibili</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="243"/>
+        <location filename="../../App/System/Login.py" line="250"/>
         <source>Getting current event</source>
         <translation>Recupero l&apos;evento corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="251"/>
+        <location filename="../../App/System/Login.py" line="258"/>
         <source>Password change is required</source>
         <translation>E&apos; necessario modificare la password</translation>
     </message>
@@ -2397,73 +2397,73 @@ Proseguire ugualmente ?</translation>
         <translation>Password</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="388"/>
         <location filename="../../App/Ui/LoginDialog.ui" line="391"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="394"/>
         <source>Show/hide the connection parameters</source>
         <translation>Mostra/Nascondi i parametri della connessione</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="394"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="397"/>
         <source>Connection details</source>
         <translation>Dettagli della connessione</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="415"/>
         <location filename="../../App/Ui/LoginDialog.ui" line="418"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="421"/>
         <source>Insert the db server IP port</source>
         <translation>Inserire la porta IP del server di database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="434"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="437"/>
         <source>Database</source>
         <translation>Database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="444"/>
         <location filename="../../App/Ui/LoginDialog.ui" line="447"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="450"/>
         <source>Insert the database name</source>
         <translation>Inserire il nome del database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="460"/>
         <location filename="../../App/Ui/LoginDialog.ui" line="463"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="466"/>
         <source>Insert the database server name or IP address</source>
         <translation>Inserire il nome oppure l&apos;indirizzo IP del database server</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="476"/>
         <location filename="../../App/Ui/LoginDialog.ui" line="479"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="482"/>
         <source>Insert the database user name</source>
         <translation>Inserire l&apos;utente di database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="492"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="495"/>
         <source>DB User</source>
         <translation>Utente DB</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="502"/>
         <location filename="../../App/Ui/LoginDialog.ui" line="505"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="508"/>
         <source>Insert the database user password</source>
         <translation>Inserire la password dell&apos;utente di database</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="521"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="524"/>
         <source>DB Password</source>
         <translation>Password DB</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="531"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="534"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="541"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="544"/>
         <source>Port</source>
         <translation>Porta</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/LoginDialog.ui" line="553"/>
+        <location filename="../../App/Ui/LoginDialog.ui" line="556"/>
         <source>Current App Version</source>
         <translation>Versione corrente dell&apos;applicazione</translation>
     </message>
@@ -2633,7 +2633,7 @@ Proseguire ugualmente ?</translation>
     <name>MessageDialog</name>
     <message>
         <location filename="../../App/System/Company.py" line="237"/>
-        <location filename="../../App/System/Login.py" line="236"/>
+        <location filename="../../App/System/Login.py" line="243"/>
         <location filename="../../App/System/Mainwindow.py" line="564"/>
         <location filename="../../App/System/User.py" line="359"/>
         <location filename="../../App/System/User.py" line="412"/>
@@ -2770,7 +2770,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Customization.py" line="186"/>
         <location filename="../../App/System/Customization.py" line="229"/>
         <location filename="../../App/System/Customization.py" line="248"/>
-        <location filename="../../App/System/Login.py" line="250"/>
+        <location filename="../../App/System/Login.py" line="257"/>
         <location filename="../../App/System/Menu.py" line="116"/>
         <location filename="../../App/System/Menu.py" line="207"/>
         <location filename="../../App/System/Profile.py" line="121"/>
