@@ -367,7 +367,7 @@ class Order():
                 if setting['manage_order_progress']:
                     # as we don't know header_department_id yet, we will create a unique barcode
                     # based on department id + order_header_id padded to 9 digits
-                    r['barcode'] = f"PSP{r['department_id']:03}{t:09}"
+                    r['barcode'] = f"PS{r['department_id']:03}{t:09}"
             for r in self.lines:
                 r['order_header_id'] = t
             self.lines.insert_records()
