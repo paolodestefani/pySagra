@@ -1,175 +1,1165 @@
 <?xml version='1.0' encoding='utf-8'?>
 <event>
-    <title>SAGRA SAN PAOLO 2026</title>
-    <start_date>2026-09-02T22:59:57+02:00</start_date>
-    <end_date>2026-09-21T23:59:59+02:00</end_date>
-    <tables>101,102,107,108,201,202,207,208,301,302,303,306,307,308,401,402,403,404,405,406,407,408,501,502,503,504,505,506,507,508,601,602,603,604,605,606,607,608,701,702,703,704,705,706,707,708,802,803,804,805,806,807,903,904,905,906</tables>
+    <title>FESTA D'AUTUNNO 2026</title>
+    <start_date>2026-09-04T09:59:40+02:00</start_date>
+    <end_date>2026-09-22T23:59:59+02:00</end_date>
+    <tables>101,102,103,104,105,106,114,115,116,117,118,201,202,203,204,205,206,214,215,216,217,218,301,302,303,304,305,306,314,315,316,317,318,401,402,403,404,405,406,407,408,409,412,413,414,415,416,RSV 1,RSV 2,RSV 3,417,418,501,502,503,504,505,506,507,508,509,512,513,514,515,516,517,518,601,602,603,604,605,606,607,608,609,612,613,614,615,616,617,618,701,702,703,704,705,706,707,708,709,712,713,714,715,716,717,718</tables>
     <items>
-        <department description="CUCINA">
+        <department description="PRIMI">
             <item>
-                <id>1</id>
+                <id>31</id>
                 <description>PENNE AL RAGU'</description>
-                <price>5.00</price>
+                <price>6.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>2</id>
+                <id>32</id>
+                <description>PENNE AI 4 FORMAGGI</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>33</id>
                 <description>PENNE ALL'AMATRICIANA</description>
-                <price>5.00</price>
+                <price>6.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>3</id>
+                <id>34</id>
                 <description>GNOCCHI AL RAGU'</description>
                 <price>6.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>4</id>
+                <id>35</id>
                 <description>GNOCCHI AI 4 FORMAGGI</description>
                 <price>6.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>5</id>
+                <id>36</id>
                 <description>GNOCCHI AL RAGU' D'ANATRA</description>
-                <price>6.00</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>6</id>
-                <description>SALSICCE CON POLENTA</description>
                 <price>7.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>7</id>
-                <description>COSTICINE CON POLENTA</description>
+                <id>37</id>
+                <description>TAGLIATELLE AI FUNGHI DI BOSCO</description>
                 <price>7.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>8</id>
-                <description>BRACIOLA CON POLENTA</description>
+                <id>38</id>
+                <description>LASAGNE AI SAPORI D'AUTUNNO</description>
+                <price>7.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>39</id>
+                <description>RAVIOLI FUNGHI E CASTAGNE</description>
+                <price>6.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>40</id>
+                <description>TAGLIERE DI SALUMI</description>
                 <price>8.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>9</id>
-                <description>TRIS (Salsiccia + Costicina + Braciola)</description>
-                <price>12.00</price>
+                <id>41</id>
+                <description>TAGLIERE DI FORMAGGI</description>
+                <price>7.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>10</id>
+                <id>42</id>
+                <description>ANTIPASTO D'AUTUNNO</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+        </department>
+        <department description="SECONDI">
+            <item>
+                <id>43</id>
+                <description>SALSICCE CON POLENTA</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>44</id>
+                <description>COSTICINE CON POLENTA</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>45</id>
+                <description>BRACIOLA CON POLENTA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>46</id>
+                <description>BIS CON POLENTA (Salsiccia + Costicina)</description>
+                <price>6.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>47</id>
+                <description>TRIS CON POLENTA (Salsiccia + Costicina + Braciola)</description>
+                <price>11.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>48</id>
+                <description>PIATTO SAGRA (Salsicce + Braciola + Patate)</description>
+                <price>14.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>49</id>
                 <description>PATATE FRITTE</description>
                 <price>3.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>11</id>
-                <description>FAGIOLI CON CIPOLLA</description>
+                <id>50</id>
+                <description>FUNGHI TRIFOLATI</description>
                 <price>3.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>12</id>
-                <description>VERDURE GRIGLIATE</description>
+                <id>51</id>
+                <description>VERDURE GRIGLITE</description>
                 <price>3.50</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
+            <item>
+                <id>52</id>
+                <description>PIATTO DEL GIORNO</description>
+                <price>12.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+        </department>
+        <department description="PIZZERIA">
+            <item>
+                <id>53</id>
+                <description>MARGHERITA</description>
+                <price>5.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>54</id>
+                <description>PROSCIUTTO</description>
+                <price>6.50</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>55</id>
+                <description>FUNGHI</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>56</id>
+                <description>PROSCIUTTO E FUNGHI</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>57</id>
+                <description>CAPRICCIOSA</description>
+                <price>7.50</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>58</id>
+                <description>SICILIANA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>59</id>
+                <description>PUGLIESE</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>60</id>
+                <description>VERDURE</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>61</id>
+                <description>QUATTRO FORMAGGI</description>
+                <price>7.50</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>62</id>
+                <description>QUATTRO STAGIONI</description>
+                <price>7.50</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>63</id>
+                <description>SAPORITA</description>
+                <price>6.50</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>64</id>
+                <description>SQUISITA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>65</id>
+                <description>CONTADINA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>66</id>
+                <description>MONTANARA</description>
+                <price>7.50</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>67</id>
+                <description>CARBONARA</description>
+                <price>7.50</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>68</id>
+                <description>DIAVOLA</description>
+                <price>6.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>69</id>
+                <description>TONNO E CIPOLLA</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>70</id>
+                <description>PROSCIUTTO CRUDO</description>
+                <price>10.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>71</id>
+                <description>PORCHETTA</description>
+                <price>8.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>72</id>
+                <description>CALZONE</description>
+                <price>8.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
         </department>
         <department description="BAR">
             <item>
-                <id>13</id>
-                <description>BIRRA BIONDA</description>
+                <id>73</id>
+                <description>BIRRA BIONDA PICCOLA</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>74</id>
+                <description>BIRRA BIONDA MEDIA</description>
                 <price>5.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>14</id>
-                <description>BIRRA ROSSA</description>
-                <price>5.50</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>15</id>
-                <description>CARAFFA BIRRA BIONDA (1,5 LT)</description>
+                <id>75</id>
+                <description>BIRRA BIONDA CARAFFA 1,5 LT</description>
                 <price>12.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>16</id>
-                <description>CARAFFA BIRRA ROSSA (1,5 LT)</description>
+                <id>76</id>
+                <description>BIRRA ROSSA PICCOLA</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>77</id>
+                <description>BIRRA ROSSA MEDIA</description>
+                <price>5.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>78</id>
+                <description>BIRRA ROSSA CARAFFA 1,5 LT</description>
                 <price>13.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>17</id>
+                <id>79</id>
+                <description>VINO BIANCO 1/2 LT</description>
+                <price>2.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>80</id>
+                <description>VINO BIANCO 1 LT</description>
+                <price>4.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>81</id>
+                <description>VINO ROSSO 1/2 LT</description>
+                <price>2.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>82</id>
+                <description>VINO ROSSO 1 LT</description>
+                <price>4.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>83</id>
+                <description>BOTTIGLIA DI PROSECCO</description>
+                <price>7.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>84</id>
+                <description>BOTTIGLIA DI CABERNET</description>
+                <price>8.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>85</id>
                 <description>ACQUA NATURALE 1/2 LT</description>
+                <price>2.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>86</id>
+                <description>ACQUA NATURALE 1 LT</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>87</id>
+                <description>ACQUA FRIZZANTE 1/2 LT</description>
+                <price>1.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>88</id>
+                <description>ACQUA FRIZZANTE 1 LT</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>89</id>
+                <description>ARANCIATA (Lattina)</description>
+                <price>3.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>90</id>
+                <description>COCACOLA (Lattina)</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>91</id>
+                <description>CROSTATA DI FRUTTA</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>92</id>
+                <description>PROFITEROLES</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>93</id>
+                <description>TORTA DELLA NONNA</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>94</id>
+                <description>MERINGATA</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>95</id>
+                <description>TARTUFO BIANCO</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>96</id>
+                <description>TARTUFO NERO</description>
+                <price>3.50</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>97</id>
+                <description>SGROPPINO</description>
                 <price>2.50</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>18</id>
-                <description>ACQUA NATURALE 1 LITRO</description>
-                <price>3.50</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>19</id>
-                <description>ACQUA FRIZZANTE 1/2 LITRO</description>
+                <id>98</id>
+                <description>CREMA CAFFE'</description>
                 <price>2.50</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>20</id>
-                <description>ACQUA FRIZZANTE 1 LITRO</description>
-                <price>3.50</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>21</id>
-                <description>ARANCIATA LATTINA</description>
-                <price>3.50</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>22</id>
-                <description>COCA COLA LATTINA</description>
-                <price>3.50</price>
-                <active>True</active>
-                <variants>False</variants>
-            </item>
-            <item>
-                <id>23</id>
+                <id>99</id>
                 <description>CAFFE'</description>
                 <price>1.00</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+            <item>
+                <id>100</id>
+                <description>DECAFFEINATO</description>
+                <price>1.20</price>
+                <active>True</active>
+                <variants>True</variants>
+            </item>
+        </department>
+        <department description="MENU">
+            <item>
+                <id>101</id>
+                <description>MENU' SAGRA (Gnocchi ragù, Tris, Patate, Birra bionda media)</description>
+                <price>18.00</price>
+                <active>True</active>
+                <variants>False</variants>
+            </item>
+            <item>
+                <id>102</id>
+                <description>MENU' SAGRA (Gnocchi ragù, Tris, Patate, Birra rossa media)</description>
+                <price>18.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
         </department>
     </items>
-    <itemvariants />
+    <itemvariants>
+        <item id="53">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="54">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="55">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="56">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="57">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="58">
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="59">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="60">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="61">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="62">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="63">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="64">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="65">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="66">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="67">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="68">
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="69">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="70">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PORCHETTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="71">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CRUDO</description>
+                <price>1.50</price>
+            </variant>
+            <variant>
+                <description>BATTUTA</description>
+                <price>1.00</price>
+            </variant>
+            <variant>
+                <description>BEN COTTA</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="72">
+            <variant>
+                <description>+ SALAMINO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ CIPOLLA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ FUNGHI</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>+ PROSCIUTTO</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>BEN COTTO</description>
+                <price>0.00</price>
+            </variant>
+        </item>
+        <item id="99">
+            <variant>
+                <description>CORRETTO GRAPPA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO SANBUCA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO BRANDY</description>
+                <price>0.80</price>
+            </variant>
+        </item>
+        <item id="100">
+            <variant>
+                <description>CORRETTO GRAPPA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO SANBUCA</description>
+                <price>0.50</price>
+            </variant>
+            <variant>
+                <description>CORRETTO BRANDY</description>
+                <price>0.80</price>
+            </variant>
+        </item>
+    </itemvariants>
 </event>
