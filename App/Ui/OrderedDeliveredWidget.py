@@ -37,14 +37,19 @@ class Ui_OrderedDeliveredWidget(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.checkBoxAutomaticUpdate = QCheckBox(OrderedDeliveredWidget)
-        self.checkBoxAutomaticUpdate.setObjectName(u"checkBoxAutomaticUpdate")
+        self.checkBoxOnlyOrdered = QCheckBox(OrderedDeliveredWidget)
+        self.checkBoxOnlyOrdered.setObjectName(u"checkBoxOnlyOrdered")
 
-        self.horizontalLayout.addWidget(self.checkBoxAutomaticUpdate)
+        self.horizontalLayout.addWidget(self.checkBoxOnlyOrdered)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
+
+        self.checkBoxAutomaticUpdate = QCheckBox(OrderedDeliveredWidget)
+        self.checkBoxAutomaticUpdate.setObjectName(u"checkBoxAutomaticUpdate")
+
+        self.horizontalLayout.addWidget(self.checkBoxAutomaticUpdate)
 
         self.label = QLabel(OrderedDeliveredWidget)
         self.label.setObjectName(u"label")
@@ -74,6 +79,7 @@ class Ui_OrderedDeliveredWidget(object):
 
     def retranslateUi(self, OrderedDeliveredWidget):
         OrderedDeliveredWidget.setWindowTitle(QCoreApplication.translate("OrderedDeliveredWidget", u"Ordered delivered", None))
+        self.checkBoxOnlyOrdered.setText(QCoreApplication.translate("OrderedDeliveredWidget", u"Only Ordered", None))
         self.checkBoxAutomaticUpdate.setText(QCoreApplication.translate("OrderedDeliveredWidget", u"Automatic update", None))
         self.label.setText(QCoreApplication.translate("OrderedDeliveredWidget", u"Last update:", None))
         self.dateTimeEdit.setDisplayFormat(QCoreApplication.translate("OrderedDeliveredWidget", u"MM/dd/yyyy HH:mm", None))

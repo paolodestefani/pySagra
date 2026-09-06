@@ -5514,16 +5514,21 @@ Devo procedere comunque?</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="27"/>
+        <source>Only Ordered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="47"/>
         <source>Automatic update</source>
         <translation>Aggiornamento automatico</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="47"/>
+        <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="54"/>
         <source>Last update:</source>
         <translation>Ultimo aggiornamento:</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="60"/>
+        <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="67"/>
         <source>MM/dd/yyyy HH:mm</source>
         <translation>MM/dd/yyyy HH:mm</translation>
     </message>

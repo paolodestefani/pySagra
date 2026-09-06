@@ -34,6 +34,7 @@ import logging
 
 # PySide6
 from PySide6.QtCore import QDateTime
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QAbstractItemView
@@ -121,11 +122,14 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
             self.updateFilterConditions(session['event_id'])
         else:
             self.sortFilterDialog.show()
+        # hide rows with no ordered
+        self.ui.checkBoxOnlyOrdered.checkStateChanged.connect(self.hideRows)
         # scripting init
         self.script = scriptInit(self)
         
     def updateFilterConditions(self, event, eventDate=None, dayPart=None):
         "Filter model based on filter dialog selections"
+        self.model.whereCondition.clear()
         self.eventParams = (event, eventDate, dayPart)  # used on printing
         self.model.addWhere('s.event_id = %s', event)
         if eventDate:
@@ -134,6 +138,14 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
             self.model.addWhere('s.day_part = %s', dayPart)
         self.model.select()
         
+    def hideRows(self, checked: bool) -> None:
+        "Hide rows with no ordered"
+        state = True if checked == Qt.CheckState.Checked else False
+        for row in range(self.model.rowCount()):
+            ordered = self.model.data(self.model.index(row, ord.ORDERED))
+            if not ordered or ordered == 0:
+                self.ui.tableView.setRowHidden(row, state)
+            
     def setAutomaticUpdate(self, state):
         if state:
             self.updateTimer.start()

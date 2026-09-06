@@ -22,9 +22,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QCheckBox" name="checkBoxAutomaticUpdate">
+        <widget class="QCheckBox" name="checkBoxOnlyOrdered">
          <property name="text">
-          <string>Automatic update</string>
+          <string>Only Ordered &gt; 0</string>
          </property>
         </widget>
        </item>
@@ -40,6 +40,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxAutomaticUpdate">
+         <property name="text">
+          <string>Automatic update</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label">
