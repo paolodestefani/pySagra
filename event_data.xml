@@ -135,9 +135,9 @@
                 <variants>False</variants>
             </item>
             <item>
-                <id>49</id>
-                <description>PATATE FRITTE</description>
-                <price>3.00</price>
+                <id>52</id>
+                <description>PIATTO DEL GIORNO</description>
+                <price>12.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
@@ -149,16 +149,16 @@
                 <variants>False</variants>
             </item>
             <item>
-                <id>51</id>
-                <description>VERDURE GRIGLITE</description>
-                <price>3.50</price>
+                <id>49</id>
+                <description>PATATE FRITTE</description>
+                <price>3.00</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
             <item>
-                <id>52</id>
-                <description>PIATTO DEL GIORNO</description>
-                <price>12.00</price>
+                <id>51</id>
+                <description>VERDURE GRIGLIATE</description>
+                <price>3.50</price>
                 <active>True</active>
                 <variants>False</variants>
             </item>
