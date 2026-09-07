@@ -160,7 +160,7 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
     def print(self):
         "Ordered delivered report"
         dialog = PrintDialog(self, 'ORDERED_DELIVERED')
-        if not dialog.layoutFilters.itemAtPosition(0, 0):
+        if not dialog.ui.layoutFilters.itemAtPosition(0, 0):
             QMessageBox.warning(self,
                                 _tr("MessageDialog", "Warning"),
                                 _tr("OrderedDelivered", "A report customization for ordered delivered is required"))
@@ -168,15 +168,15 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         # filter on current selected event/date/datepart
         # report definition must have these conditions and in this order
         # event
-        dialog.layoutFilters.itemAtPosition(0, 0).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(0, 2).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.eventParams[0])
+        dialog.ui.layoutFilters.itemAtPosition(0, 0).widget().setCurrentIndex(1)
+        dialog.ui.layoutFilters.itemAtPosition(0, 2).widget().setCurrentIndex(1)
+        dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.eventParams[0])
         # date
-        dialog.layoutFilters.itemAtPosition(1, 0).widget().setCurrentIndex(2)
-        dialog.layoutFilters.itemAtPosition(1, 2).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(1, 3).widget().setDate(self.eventParams[1])
+        dialog.ui.layoutFilters.itemAtPosition(1, 0).widget().setCurrentIndex(2)
+        dialog.ui.layoutFilters.itemAtPosition(1, 2).widget().setCurrentIndex(1)
+        dialog.ui.layoutFilters.itemAtPosition(1, 3).widget().setDate(self.eventParams[1])
         # day part
-        dialog.layoutFilters.itemAtPosition(2, 0).widget().setCurrentIndex(3)
-        dialog.layoutFilters.itemAtPosition(2, 2).widget().setCurrentIndex(1)
-        dialog.layoutFilters.itemAtPosition(2, 3).widget().setText(self.eventParams[2])
+        dialog.ui.layoutFilters.itemAtPosition(2, 0).widget().setCurrentIndex(3)
+        dialog.ui.layoutFilters.itemAtPosition(2, 2).widget().setCurrentIndex(1)
+        dialog.ui.layoutFilters.itemAtPosition(2, 3).widget().setText(self.eventParams[2])
         dialog.show()

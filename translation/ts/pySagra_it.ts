@@ -2723,8 +2723,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Item.py" line="184"/>
         <location filename="../../App/OrderArchive.py" line="192"/>
         <location filename="../../App/OrderArchive.py" line="389"/>
-        <location filename="../../App/OrderedDelivered.py" line="84"/>
-        <location filename="../../App/OrderedDelivered.py" line="153"/>
+        <location filename="../../App/OrderedDelivered.py" line="85"/>
+        <location filename="../../App/OrderedDelivered.py" line="165"/>
         <location filename="../../App/OrderEntry.py" line="116"/>
         <location filename="../../App/OrderEntry.py" line="122"/>
         <location filename="../../App/OrderEntry.py" line="436"/>
@@ -5495,12 +5495,12 @@ Devo procedere comunque?</translation>
 <context>
     <name>OrderedDelivered</name>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="85"/>
+        <location filename="../../App/OrderedDelivered.py" line="86"/>
         <source>No access right to this archive</source>
         <translation>Nessun diritto di accesso a questo archivio</translation>
     </message>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="154"/>
+        <location filename="../../App/OrderedDelivered.py" line="166"/>
         <source>A report customization for ordered delivered is required</source>
         <translation>Una personalizzazione del report per l&apos;ordinato consegnato è richiesta</translation>
     </message>
@@ -5514,8 +5514,8 @@ Devo procedere comunque?</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="27"/>
-        <source>Only Ordered</source>
-        <translation type="unfinished"></translation>
+        <source>Only Ordered &gt; 0</source>
+        <translation>Solo Ordinato &gt; 0</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="47"/>
@@ -7453,12 +7453,12 @@ Devo procedere comunque?</translation>
 <context>
     <name>StockUnload</name>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="72"/>
+        <location filename="../../App/OrderedDelivered.py" line="73"/>
         <source>L</source>
         <translation>P</translation>
     </message>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="73"/>
+        <location filename="../../App/OrderedDelivered.py" line="74"/>
         <source>D</source>
         <translation>C</translation>
     </message>

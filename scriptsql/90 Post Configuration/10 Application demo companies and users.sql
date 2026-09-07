@@ -237,7 +237,9 @@ VALUES
 ('system', 10, 'full', 'm_full_en', 't_full_en'),
 ('system', 20, 'full', 'm_full_en', 't_full_en'),
 ('sistema', 10, 'full', 'm_full_it', 't_full_en'),
-('sistema', 20, 'full', 'm_full_it', 't_full_en');
+('sistema', 20, 'full', 'm_full_it', 't_full_en'),
+('pySagraWeb', 10, 'full', 'm_full_it', 't_full_en'),
+('pySagraWeb', 20, 'full', 'm_full_it', 't_full_en');
 
 -- USERS
 -- create application users
