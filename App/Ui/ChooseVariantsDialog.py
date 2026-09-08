@@ -17,25 +17,23 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QAbstractSpinBox, QApplication, QDialog,
     QDialogButtonBox, QDoubleSpinBox, QHBoxLayout, QLabel,
-    QLineEdit, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QLineEdit, QSizePolicy, QSpacerItem, QSpinBox,
+    QVBoxLayout, QWidget)
 
 class Ui_ChooseVariantsDialog(object):
     def setupUi(self, ChooseVariantsDialog):
         if not ChooseVariantsDialog.objectName():
             ChooseVariantsDialog.setObjectName(u"ChooseVariantsDialog")
-        ChooseVariantsDialog.resize(350, 200)
+        ChooseVariantsDialog.resize(306, 220)
         ChooseVariantsDialog.setModal(True)
-        self.verticalLayout_2 = QVBoxLayout(ChooseVariantsDialog)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout = QVBoxLayout(ChooseVariantsDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.layout = QVBoxLayout()
         self.layout.setObjectName(u"layout")
 
         self.verticalLayout.addLayout(self.layout)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 75, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout.addItem(self.verticalSpacer)
 
@@ -62,6 +60,27 @@ class Ui_ChooseVariantsDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label_2 = QLabel(ChooseVariantsDialog)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout_2.addWidget(self.label_2)
+
+        self.spinBoxQuantity = QSpinBox(ChooseVariantsDialog)
+        self.spinBoxQuantity.setObjectName(u"spinBoxQuantity")
+        self.spinBoxQuantity.setMinimum(1)
+        self.spinBoxQuantity.setMaximum(97)
+
+        self.horizontalLayout_2.addWidget(self.spinBoxQuantity)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+
         self.buttonBox = QDialogButtonBox(ChooseVariantsDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
@@ -70,9 +89,6 @@ class Ui_ChooseVariantsDialog(object):
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout.addWidget(self.buttonBox)
-
-
-        self.verticalLayout_2.addLayout(self.verticalLayout)
 
         QWidget.setTabOrder(self.lineEditFreeVariant, self.doubleSpinBoxPriceDelta)
         QWidget.setTabOrder(self.doubleSpinBoxPriceDelta, self.buttonBox)
@@ -87,5 +103,6 @@ class Ui_ChooseVariantsDialog(object):
     def retranslateUi(self, ChooseVariantsDialog):
         ChooseVariantsDialog.setWindowTitle(QCoreApplication.translate("ChooseVariantsDialog", u"Varianti", None))
         self.label.setText(QCoreApplication.translate("ChooseVariantsDialog", u"+", None))
+        self.label_2.setText(QCoreApplication.translate("ChooseVariantsDialog", u"Quantity", None))
     # retranslateUi
 

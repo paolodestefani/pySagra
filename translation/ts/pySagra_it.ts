@@ -739,32 +739,32 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>ChangeCompany</name>
     <message>
-        <location filename="../../App/System/Login.py" line="275"/>
+        <location filename="../../App/System/Login.py" line="269"/>
         <source>Change company</source>
         <translation>Cambia azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="279"/>
+        <location filename="../../App/System/Login.py" line="273"/>
         <source>Getting companies list</source>
         <translation>Recupero la lista delle aziende</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="282"/>
+        <location filename="../../App/System/Login.py" line="276"/>
         <source>There are no other companies you can login</source>
         <translation>Non ci sono altre aziende disponibili</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="285"/>
+        <location filename="../../App/System/Login.py" line="279"/>
         <source>Select a company from the list below</source>
         <translation>Selezionare un&apos;azienda dalla lista seguente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="309"/>
+        <location filename="../../App/System/Login.py" line="303"/>
         <source>Setting working company</source>
         <translation>Imposta l&apos;azienda attiva</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="320"/>
+        <location filename="../../App/System/Login.py" line="314"/>
         <source>Getting current event</source>
         <translation>Recupero l&apos;evento corrente</translation>
     </message>
@@ -919,9 +919,14 @@ insieme a questo programma. In caso contrario, consulta
         <translation>Varianti</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ChooseVariantsDialog.ui" line="46"/>
+        <location filename="../../App/Ui/ChooseVariantsDialog.ui" line="44"/>
         <source>+</source>
         <translation>+</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/ChooseVariantsDialog.ui" line="65"/>
+        <source>Quantity</source>
+        <translation>Quantità</translation>
     </message>
 </context>
 <context>
@@ -2342,27 +2347,27 @@ Proseguire ugualmente ?</translation>
         <translation>{APPNAME} - Login</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="156"/>
+        <location filename="../../App/System/Login.py" line="150"/>
         <source>Database connection</source>
         <translation>Connessione al database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="229"/>
+        <location filename="../../App/System/Login.py" line="223"/>
         <source>Setting working company</source>
         <translation>Imposta l&apos;azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="244"/>
+        <location filename="../../App/System/Login.py" line="238"/>
         <source>There is no company you can log on</source>
         <translation>Non ci sono aziende disponibili</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="250"/>
+        <location filename="../../App/System/Login.py" line="244"/>
         <source>Getting current event</source>
         <translation>Recupero l&apos;evento corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Login.py" line="258"/>
+        <location filename="../../App/System/Login.py" line="252"/>
         <source>Password change is required</source>
         <translation>E&apos; necessario modificare la password</translation>
     </message>
@@ -2633,7 +2638,7 @@ Proseguire ugualmente ?</translation>
     <name>MessageDialog</name>
     <message>
         <location filename="../../App/System/Company.py" line="237"/>
-        <location filename="../../App/System/Login.py" line="243"/>
+        <location filename="../../App/System/Login.py" line="237"/>
         <location filename="../../App/System/Mainwindow.py" line="564"/>
         <location filename="../../App/System/User.py" line="359"/>
         <location filename="../../App/System/User.py" line="412"/>
@@ -2770,7 +2775,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Customization.py" line="186"/>
         <location filename="../../App/System/Customization.py" line="229"/>
         <location filename="../../App/System/Customization.py" line="248"/>
-        <location filename="../../App/System/Login.py" line="257"/>
+        <location filename="../../App/System/Login.py" line="251"/>
         <location filename="../../App/System/Menu.py" line="116"/>
         <location filename="../../App/System/Menu.py" line="207"/>
         <location filename="../../App/System/Profile.py" line="121"/>

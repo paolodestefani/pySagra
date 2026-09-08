@@ -181,7 +181,7 @@ class ChooseVariantDialog(QDialog):
             self.bg.addButton(v)
             self.ui.layout.addWidget(v)
 
-    def getVariants(self) -> tuple[str, int]:
+    def getVariants(self) -> tuple[str, int, int]:
         """Return a string of selected variant names and the accumulated price delta in Decimal"""
         selected_descriptions: list[str] = []
         total_price_delta = 0
@@ -198,8 +198,9 @@ class ChooseVariantDialog(QDialog):
         total_price_delta += int(round(self.ui.doubleSpinBoxPriceDelta.value() * 10 ** self._decimals))
         if free_text:
             selected_descriptions.append(free_text)
-            
-        return " ".join(selected_descriptions), total_price_delta
+        
+        return " ".join(selected_descriptions), self.ui.spinBoxQuantity.value(), total_price_delta
+
 
 
 #---------------------#
@@ -828,6 +829,7 @@ class BaseOrderDialog(QDialog):
             raise TypeError(_tr('OrderEntry', "Any button must have an ID"))
         
         # HANDLE ITEM VARIANTS
+        iqty = 0
         if btn.hasVariants and not web: # orders from web already have variants and prices and sum of this values is already in the order_lines
             if not ivars:
                 if (not self.ui.pushButtonVariants.isEnabled()) or self.ui.pushButtonVariants.isChecked():
@@ -838,7 +840,7 @@ class BaseOrderDialog(QDialog):
                     dlg = ChooseVariantDialog(self, item_description, variants, self.setting['price_decimal_places'])
                     rv = dlg.exec()
                     if rv:
-                        ivars, variant_price = dlg.getVariants()
+                        ivars, iqty, variant_price = dlg.getVariants()
                     dlg.deleteLater()  
                     if not rv:
                         return
@@ -853,6 +855,10 @@ class BaseOrderDialog(QDialog):
         qty_int = int(round(qty_float * self._qty_factor))
         
         self.ui.radioButton1.setChecked(True)
+        
+        # for variants, the quantity is determined by the variant dialog, not the radio buttons
+        if iqty > 0:
+            qty_int = iqty
         
         # VERIFY STOCK LEVEL ON THE BUTTON IN INTEGER SPACE
         if btn.hasInventory and (self._inventory[btn.id]['qty'] - qty_int < 0):
