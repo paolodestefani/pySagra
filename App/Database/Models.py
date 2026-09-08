@@ -30,10 +30,12 @@ This module provide all the sql models derived from an abstract model
 # standard library
 
 # PySide6
+from typing import Any
+
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QModelIndex
-from PySide6.QtGui import QFont
+from PySide6.QtCore import QModelIndex, QPersistentModelIndex
+from PySide6.QtGui import QBrush, QColorConstants, QFont, QColor, QGuiApplication
 
 # application modules
 from App.Database.AbstractModels.TableModel import QueryModel
@@ -1439,7 +1441,37 @@ FROM company.vw_order_status;"""
         self.reference = {'event_id': event_lookup}
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy(("event_id", "order_date", "order_time"))
-
+    
+    def data(self,
+             index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+             role: int = Qt.ItemDataRole.DisplayRole
+             ) -> Any:
+            """Different backgroup color based on the order status."""
+            if (not index.isValid() 
+                or index.row() >= self.rowCount()
+                or index.column() >= self.columnCount()):
+                return None
+            
+            if role == Qt.ItemDataRole.BackgroundRole:
+                status = self.dataSet.get((index.row(), 15))  # status column index
+                # color selection based on system color scheme
+                if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Light:
+                    bgp = QColorConstants.Svg.lightgreen
+                    bgi = QColorConstants.Svg.lightyellow
+                    bga = QColorConstants.Svg.lightgray
+                else:
+                    bgp = QColorConstants.Svg.darkgreen
+                    bgi = QColorConstants.Svg.saddlebrown
+                    bga = QColorConstants.Svg.darkslategray
+                if status == 'P':
+                    return bgp
+                elif status == 'I':
+                    return bgi
+                elif status == 'A':
+                    return bga
+            else:
+                return super().data(index, role)
+            
 
 class SalesSummaryModel(QueryWithParamsModel):
 
