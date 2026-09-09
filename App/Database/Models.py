@@ -1543,7 +1543,7 @@ class SalesSummaryModel(QueryWithParamsModel):
                         ("cash", _tr('Models', 'Total cash'), True, 'decimal2'),
                         ("total_lunch", _tr('Models', 'Total L'), True, 'decimal2'),
                         ("total_dinner", _tr('Models', 'Total D'), True, 'decimal2'),
-                        ("total", _tr('Models', 'Total'), True, 'decimal2'))
+                        ("total", _tr('Models', 'Total collected'), True, 'decimal2'))
         self.repr = 'Sales summary query with params model'
         
     def rowCount(self, index=QModelIndex()):

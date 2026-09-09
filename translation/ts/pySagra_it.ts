@@ -3823,6 +3823,11 @@ Proseguire ugualmente ?</translation>
         <translation>Data ordine</translation>
     </message>
     <message>
+        <location filename="../../App/Database/Models.py" line="1546"/>
+        <source>Total collected</source>
+        <translation>Totale incasso</translation>
+    </message>
+    <message>
         <location filename="../../App/Database/Models.py" line="1615"/>
         <location filename="../../App/Database/Models.py" line="1660"/>
         <source>Stat order date</source>
@@ -4102,11 +4107,6 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="1545"/>
         <source>Total D</source>
         <translation>Totale C</translation>
-    </message>
-    <message>
-        <location filename="../../App/Database/Models.py" line="1546"/>
-        <source>Total</source>
-        <translation>Totale</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1564"/>
