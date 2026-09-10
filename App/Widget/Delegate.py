@@ -112,7 +112,11 @@ class GenericDelegate(QStyledItemDelegate):
                 option.text = session['qlocale'].toString(value, QLocale.FormatType.ShortFormat)
                 option.displayAlignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
             case Decimal():
-                option.text = session['qlocale'].toString(float(value or 0.0), 'f', 2)
+                q_locale = session['qlocale']
+                thousand_sep = q_locale.groupSeparator()
+                decimal_sep = q_locale.decimalPoint()
+                raw_formatted = f"{float(value or 0.0):,.2f}"
+                option.text = raw_formatted.replace(",", "X").replace(".", decimal_sep).replace("X", thousand_sep)
                 option.displayAlignment = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
             case _:
                 option.text = str(value) if value is not None else ""
