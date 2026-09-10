@@ -15,8 +15,9 @@ pyinstaller --clean^
  --exclude-module PySide6.QtQml^
  --exclude-module PySide6.QtQuick^
  pySagra.py
-	
-\PyWare\.venv\pysidepsycopg\Scripts\deactivate.bat
+
+ECHO deactivate virtual env
+call "C:\PyWare\.venv\pysidepsycopg\Scripts\deactivate.bat"
 
 pause
 
