@@ -49,6 +49,7 @@ from PySide6.QtWidgets import QFileDialog
 from App import session
 from App.Database.Scripting import load_script
 from App.Database.Scripting import get_all_scripts
+from App.Database.Scripting import activate_script
 from App.Database.Company import company_list
 from App.Database.Models import ScriptingIndexModel
 from App.Database.Models import ScriptingModel
@@ -237,6 +238,7 @@ class ScriptingForm(FormIndexManager):
         self.ui.pushButtonUploadAll.clicked.connect(self.uploadAll)
         self.ui.fontComboBox.currentFontChanged.connect(self.changeFont)
         self.ui.spinBoxFontSize.valueChanged.connect(self.changeFontSize)
+        self.ui.checkBoxActive.clicked.connect(self.activateScript)
 
     def fillMethods(self, text: str) -> None:
         "fill available methods"
@@ -251,6 +253,24 @@ class ScriptingForm(FormIndexManager):
         else:
             self.write_perm = True
             
+    def activateScript(self, checked: bool) -> None:
+        "Activate/Deactivate script"
+        if checked:
+            msg = _tr('Scripting', 'Activate current script ?')
+        else:
+            msg = _tr('Scripting', 'Deactivate current script ?')
+        if QMessageBox.question(
+            self,
+            _tr('MessageDialog', 'Question'),
+            f"{msg}",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+            QMessageBox.StandardButton.No  # default botton
+            ) == QMessageBox.StandardButton.Yes:
+            script_id = self.model.index(self.mapper.currentIndex(), scr.ID).data()
+            activate_script(script_id, checked)
+        else:
+            self.ui.checkBoxActive.setChecked(not checked)
+
     def new(self) -> None:
         "New script"
         super().new()

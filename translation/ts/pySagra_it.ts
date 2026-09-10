@@ -721,7 +721,7 @@ insieme a questo programma. In caso contrario, consulta
         <location filename="../../App/System/Menu.py" line="86"/>
         <location filename="../../App/System/Profile.py" line="93"/>
         <location filename="../../App/System/Report.py" line="102"/>
-        <location filename="../../App/System/Scripting.py" line="174"/>
+        <location filename="../../App/System/Scripting.py" line="175"/>
         <location filename="../../App/System/User.py" line="144"/>
         <location filename="../../App/CashDesk.py" line="75"/>
         <source>No access right to this archive</source>
@@ -1515,7 +1515,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Delegate</name>
     <message>
-        <location filename="../../App/Widget/Delegate.py" line="243"/>
+        <location filename="../../App/Widget/Delegate.py" line="247"/>
         <source>Select Color</source>
         <translation>Selezionare il colore</translation>
     </message>
@@ -2712,7 +2712,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Preferences.py" line="79"/>
         <location filename="../../App/System/Profile.py" line="92"/>
         <location filename="../../App/System/Report.py" line="101"/>
-        <location filename="../../App/System/Scripting.py" line="173"/>
+        <location filename="../../App/System/Scripting.py" line="174"/>
         <location filename="../../App/System/User.py" line="143"/>
         <location filename="../../App/System/User.py" line="326"/>
         <location filename="../../App/Widget/Dialog.py" line="798"/>
@@ -2832,7 +2832,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Profile.py" line="228"/>
         <location filename="../../App/System/Report.py" line="211"/>
         <location filename="../../App/System/Report.py" line="263"/>
-        <location filename="../../App/System/Scripting.py" line="279"/>
+        <location filename="../../App/System/Scripting.py" line="264"/>
+        <location filename="../../App/System/Scripting.py" line="299"/>
         <location filename="../../App/System/User.py" line="272"/>
         <location filename="../../App/Widget/Dialog.py" line="802"/>
         <location filename="../../App/Widget/Dialog.py" line="1307"/>
@@ -2871,14 +2872,14 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Connection.py" line="237"/>
         <location filename="../../App/System/Report.py" line="371"/>
         <location filename="../../App/System/Report.py" line="406"/>
-        <location filename="../../App/System/Scripting.py" line="270"/>
-        <location filename="../../App/System/Scripting.py" line="426"/>
-        <location filename="../../App/System/Scripting.py" line="477"/>
+        <location filename="../../App/System/Scripting.py" line="290"/>
+        <location filename="../../App/System/Scripting.py" line="446"/>
+        <location filename="../../App/System/Scripting.py" line="497"/>
         <source>information</source>
         <translation>Informazione</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="483"/>
+        <location filename="../../App/System/Scripting.py" line="503"/>
         <source>warning</source>
         <translation>avviso</translation>
     </message>
@@ -6328,80 +6329,90 @@ Devo procedere comunque?</translation>
 <context>
     <name>Scripting</name>
     <message>
-        <location filename="../../App/System/Scripting.py" line="276"/>
+        <location filename="../../App/System/Scripting.py" line="296"/>
         <source>Delete current script ?</source>
         <translation>Cancello lo script corrente ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="313"/>
-        <location filename="../../App/System/Scripting.py" line="355"/>
-        <location filename="../../App/System/Scripting.py" line="436"/>
+        <location filename="../../App/System/Scripting.py" line="333"/>
+        <location filename="../../App/System/Scripting.py" line="375"/>
+        <location filename="../../App/System/Scripting.py" line="456"/>
         <source>Select the directory</source>
         <translation>Selezionare la directory</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="266"/>
+        <location filename="../../App/System/Scripting.py" line="286"/>
         <source>Warning: script linked to an __init__ method will be executed only if trigger is set to &apos;after&apos;</source>
         <translation>Attenzione: lo script collegato al metodo __init__ verrà eseguito solo se trigger è impostato su &apos;after&apos;</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="328"/>
+        <location filename="../../App/System/Scripting.py" line="259"/>
+        <source>Activate current script ?</source>
+        <translation>Attivo lo script corrente ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Scripting.py" line="261"/>
+        <source>Deactivate current script ?</source>
+        <translation>Disattivo lo script corrente ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Scripting.py" line="348"/>
         <source>Saving current script to file</source>
         <translation>Memorizzo lo script corento sul file</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="340"/>
+        <location filename="../../App/System/Scripting.py" line="360"/>
         <source>Current script saved to file:</source>
         <translation>Lo script corrente salvato sul file:</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="360"/>
+        <location filename="../../App/System/Scripting.py" line="380"/>
         <source>Saving all scripts to files</source>
         <translation>Salva tutti gli script su file</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="402"/>
-        <location filename="../../App/System/Scripting.py" line="449"/>
+        <location filename="../../App/System/Scripting.py" line="422"/>
+        <location filename="../../App/System/Scripting.py" line="469"/>
         <source>Uploading script file</source>
         <translation>Carica script da file</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="413"/>
+        <location filename="../../App/System/Scripting.py" line="433"/>
         <source>Saving script file to database</source>
         <translation>Salva il file scritp sul database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="427"/>
+        <location filename="../../App/System/Scripting.py" line="447"/>
         <source>Script file imported to database</source>
         <translation>File dello script importato nel database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="461"/>
+        <location filename="../../App/System/Scripting.py" line="481"/>
         <source>Saving script file {fileName} to database</source>
         <translation>Salvataggio del file script {fileName} nel database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="484"/>
+        <location filename="../../App/System/Scripting.py" line="504"/>
         <source>No valid .scp.zip files found</source>
         <translation>Nessun file .scp.zip valido trovato</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="343"/>
+        <location filename="../../App/System/Scripting.py" line="363"/>
         <source>Download current script</source>
         <translation>Scarica lo script corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="383"/>
+        <location filename="../../App/System/Scripting.py" line="403"/>
         <source>Download all script</source>
         <translation>Scarica tutti gli script</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="380"/>
+        <location filename="../../App/System/Scripting.py" line="400"/>
         <source>All scripts saved to directory:</source>
         <translation>Tutti gli script sono stati salvato nella directory:</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="478"/>
+        <location filename="../../App/System/Scripting.py" line="498"/>
         <source>All files imported successfully</source>
         <translation>Tutti i file importati correttamente</translation>
     </message>
@@ -6492,7 +6503,7 @@ Devo procedere comunque?</translation>
 <context>
     <name>Scripts</name>
     <message>
-        <location filename="../../App/System/Scripting.py" line="395"/>
+        <location filename="../../App/System/Scripting.py" line="415"/>
         <source>Select the file to import</source>
         <translation>Selezionare il file da importare</translation>
     </message>
@@ -8223,17 +8234,17 @@ Apro il file generato ?</translation>
 <context>
     <name>script</name>
     <message>
-        <location filename="../../App/System/Scripting.py" line="159"/>
+        <location filename="../../App/System/Scripting.py" line="160"/>
         <source>Before</source>
         <translation>Prima</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="161"/>
+        <location filename="../../App/System/Scripting.py" line="162"/>
         <source>After</source>
         <translation>Dopo</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="160"/>
+        <location filename="../../App/System/Scripting.py" line="161"/>
         <source>Instead</source>
         <translation>Al posto di</translation>
     </message>
