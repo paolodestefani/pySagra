@@ -78,7 +78,8 @@ def department_web_list() -> list[tuple]:
     script = ("""
 SELECT
 	d.department_id,
-	d.description
+	d.description,
+    d.is_for_takeaway
 FROM company.department d
 JOIN (
 	-- department that have items web available and not obsolete

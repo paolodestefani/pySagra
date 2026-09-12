@@ -393,9 +393,10 @@ class BaseOrderDialog(QDialog):
             depta = department_takeaway_list()
             for i in range(self.ui.tabWidgetList.count()):
                 if self.ui.tabWidgetList.tabText(i) in depta:
-                    self.ui.tabWidgetList.widget(i).setEnabled(True)
+                    self.ui.tabWidgetList.setTabEnabled(i, True)
                 else:
-                    self.ui.tabWidgetList.widget(i).setDisabled(True)
+                    self.ui.tabWidgetList.setTabEnabled(i, False)
+            self.ui.tabWidgetList.setCurrentIndex(0)
         else: # = table
             self.ui.lineEditTable.setEnabled(True)
             self.ui.spinBoxCovers.setEnabled(True)
@@ -403,7 +404,7 @@ class BaseOrderDialog(QDialog):
                 self.ui.pushButtonTablesSwitch.setEnabled(True)
                 self.ui.stackedWidgetTableOrder.setCurrentIndex(1)
             for i in range(self.ui.tabWidgetList.count()):
-                self.ui.tabWidgetList.widget(i).setEnabled(True)
+                self.ui.tabWidgetList.setTabEnabled(i, True)
 
     def resetAdvice(self) -> None:
         "Reset dialog advice from idle timer"

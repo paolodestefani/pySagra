@@ -125,9 +125,10 @@ class UpdateWebOrderServerDialog(QDialog):
 
         items = ET.SubElement(root, "items")        
         with gui_exception_context(self, _tr("UpdateWOS", "Generate items")):
-            for did, d in department_web_list():
+            for did, desc, ta in department_web_list():
                     dep = ET.SubElement(items, "department")
-                    dep.set('description', d)
+                    dep.set('description', desc)
+                    dep.set('is_for_takeaway', str(ta))
                     for i, d, p, a, v in item_web_list(event, did):
                         item = ET.SubElement(dep, "item")
                         ET.SubElement(item, "id").text = str(i)
@@ -137,7 +138,7 @@ class UpdateWebOrderServerDialog(QDialog):
                         ET.SubElement(item, "variants").text = str(v)
         vars = ET.SubElement(root, "itemvariants")   
         with gui_exception_context(self, _tr("UpdateWOS", "Generate item variants")):
-            for did, d in department_web_list():     
+            for did, desc, ta in department_web_list():     
                 for i, d, p, a, v in item_web_list(event, did):
                     if v:
                         item = ET.SubElement(vars, "item")
