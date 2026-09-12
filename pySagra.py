@@ -72,6 +72,18 @@ from App.Widget.Dialog import MessageBoxCritical
 from App.System.Login import LoginDialog
 from App.System.MainWindow import MainWindow
 
+
+# PYINSTALLER FIX ON MACOS
+# prevents crashes caused by print statements in macOS applications that lack a console
+if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
+    # redirects print output and errors to a log file in the user's folder
+    log_path = os.path.expanduser("~/Library/Logs/pySagra.log")
+    sys.stdout = open(log_path, "w", encoding="utf-8")
+    sys.stderr = sys.stdout
+    # forces the active working directory to the actual folder containing the executable inside the .app bundle
+    os.chdir(os.path.dirname(sys.executable))
+    
+
 # logger
 logger = logging.getLogger(__name__)
 
