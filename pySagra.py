@@ -35,9 +35,11 @@ import traceback
 import types
 import logging
 import argparse
+from typing import Any
 
 # check component version modules
 from sys import version_info
+from typing import Any
 from psycopg import __version__ as psycopg_version
 from PySide6 import __version__ as pyside6_version
 from PySide6.QtCore import qVersion 
@@ -71,17 +73,6 @@ from App import session
 from App.Widget.Dialog import MessageBoxCritical
 from App.System.Login import LoginDialog
 from App.System.MainWindow import MainWindow
-
-
-# PYINSTALLER FIX ON MACOS
-# prevents crashes caused by print statements in macOS applications that lack a console
-if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
-    #redirects print output and errors to a log file in the user's folder
-    #log_path = os.path.expanduser("~/Library/Logs/pySagra.log")
-    #sys.stdout = open(log_path, "w", encoding="utf-8")
-    #sys.stderr = sys.stdout
-    #forces the active working directory to the actual folder containing the executable inside the .app bundle
-    os.chdir(os.path.dirname(sys.executable))
     
 
 # logger
@@ -89,17 +80,18 @@ logger = logging.getLogger(__name__)
 
 
 def logUnhandledException(ex_cls: type[BaseException], ex: BaseException, tb: types.TracebackType | None) -> None:
-    "Function to get and log unhadked exceptions"
+    "Function to get and log unhandled exceptions"
     logger.critical(''.join(traceback.format_tb(tb)))
     logger.critical('%s', ex_cls)
     logger.critical('%s', ex)
     # normal cursor
     QApplication.restoreOverrideCursor() # good in any case
     MessageBoxCritical(session.get('mainwin'),
-                       "Unhadled exception",
+                       "Unhandled exception",
                        "Uncaught exception occurred, see details for more information",
                        str(ex),
                        ''.join(traceback.format_tb(tb)))
+
 
 # -------------------------------------------------------------------------- #
 
@@ -114,7 +106,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--loglevel",
                         default="CRITICAL",
-                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAl'],
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                         help="Set the required log level")
     parser.add_argument("-f", "--logfile",
                         nargs='?',
@@ -130,7 +122,8 @@ if __name__ == "__main__":
         logfile = None  # Console
     elif args.logfile:
         try:
-            open(args.logfile, 'a', encoding="utf-8").close()
+            with open(args.logfile, 'a', encoding="utf-8") as f:
+                pass
             logfile = args.logfile
         except IOError:
             # not able to write to the specified file, fallback to default
@@ -144,13 +137,18 @@ if __name__ == "__main__":
             logfile = os.path.join(log_dir, "pySagra.log")
         else:
             logfile = os.path.join(os.getcwd(), 'logfile.log')
+            
+    log_config: dict[str, Any] = {
+        "level": loglevel,
+        "format": '%(asctime)s %(levelname)s %(module)s: %(message)s',
+        "datefmt": '%Y-%m-%d %H:%M:%S'
+    }
+    # if logfile is None, basicConfig write automatically to sys.stderr (Console)
+    if logfile:
+        log_config["filename"] = logfile
+        log_config["encoding"] = "utf-8"
 
-    # start logging
-    logging.basicConfig(
-        filename=logfile,
-        level=loglevel,
-        format='%(asctime)s %(levelname)s %(module)s: %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(**log_config)
     
     # check client component minimum required version
     # python version
