@@ -2677,11 +2677,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/View.py" line="494"/>
         <location filename="../../App/Event.py" line="198"/>
         <location filename="../../App/OrderArchive.py" line="402"/>
-        <location filename="../../App/OrderEntry.py" line="1073"/>
-        <location filename="../../App/OrderEntry.py" line="1086"/>
-        <location filename="../../App/OrderEntry.py" line="1110"/>
-        <location filename="../../App/OrderEntry.py" line="1114"/>
-        <location filename="../../App/OrderEntry.py" line="1126"/>
+        <location filename="../../App/OrderEntry.py" line="1074"/>
+        <location filename="../../App/OrderEntry.py" line="1087"/>
+        <location filename="../../App/OrderEntry.py" line="1111"/>
+        <location filename="../../App/OrderEntry.py" line="1115"/>
+        <location filename="../../App/OrderEntry.py" line="1127"/>
         <location filename="../../App/Settings.py" line="354"/>
         <location filename="../../App/Settings.py" line="360"/>
         <location filename="../../App/Settings.py" line="366"/>
@@ -2732,12 +2732,12 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderedDelivered.py" line="165"/>
         <location filename="../../App/OrderEntry.py" line="116"/>
         <location filename="../../App/OrderEntry.py" line="122"/>
-        <location filename="../../App/OrderEntry.py" line="437"/>
-        <location filename="../../App/OrderEntry.py" line="465"/>
-        <location filename="../../App/OrderEntry.py" line="1144"/>
-        <location filename="../../App/OrderEntry.py" line="1228"/>
-        <location filename="../../App/OrderEntry.py" line="1236"/>
-        <location filename="../../App/OrderEntry.py" line="1305"/>
+        <location filename="../../App/OrderEntry.py" line="438"/>
+        <location filename="../../App/OrderEntry.py" line="466"/>
+        <location filename="../../App/OrderEntry.py" line="1145"/>
+        <location filename="../../App/OrderEntry.py" line="1229"/>
+        <location filename="../../App/OrderEntry.py" line="1237"/>
+        <location filename="../../App/OrderEntry.py" line="1306"/>
         <location filename="../../App/OrderNumbering.py" line="78"/>
         <location filename="../../App/OrderProgress.py" line="123"/>
         <location filename="../../App/OrderProgress.py" line="129"/>
@@ -2814,7 +2814,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Tool.py" line="219"/>
         <location filename="../../App/Tool.py" line="276"/>
         <location filename="../../App/Tool.py" line="334"/>
-        <location filename="../../App/UpdateWOS.py" line="193"/>
+        <location filename="../../App/UpdateWOS.py" line="194"/>
         <source>Information</source>
         <translation>Informazione</translation>
     </message>
@@ -2847,13 +2847,13 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Event.py" line="236"/>
         <location filename="../../App/Item.py" line="411"/>
         <location filename="../../App/OrderArchive.py" line="324"/>
-        <location filename="../../App/OrderEntry.py" line="476"/>
-        <location filename="../../App/OrderEntry.py" line="1247"/>
-        <location filename="../../App/OrderEntry.py" line="1260"/>
-        <location filename="../../App/OrderEntry.py" line="1273"/>
-        <location filename="../../App/OrderEntry.py" line="1293"/>
-        <location filename="../../App/OrderEntry.py" line="1354"/>
-        <location filename="../../App/OrderEntry.py" line="1421"/>
+        <location filename="../../App/OrderEntry.py" line="477"/>
+        <location filename="../../App/OrderEntry.py" line="1248"/>
+        <location filename="../../App/OrderEntry.py" line="1261"/>
+        <location filename="../../App/OrderEntry.py" line="1274"/>
+        <location filename="../../App/OrderEntry.py" line="1294"/>
+        <location filename="../../App/OrderEntry.py" line="1355"/>
+        <location filename="../../App/OrderEntry.py" line="1422"/>
         <location filename="../../App/OrderProgress.py" line="269"/>
         <location filename="../../App/OrderProgress.py" line="331"/>
         <location filename="../../App/OrderProgress.py" line="352"/>
@@ -4462,7 +4462,7 @@ Proseguire ugualmente ?</translation>
         <translation>Ordine</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1401"/>
+        <location filename="../../App/OrderEntry.py" line="1402"/>
         <source>Printing ordered delivered report</source>
         <translation>Sto stampando il report ordinato consegnato</translation>
     </message>
@@ -4969,165 +4969,165 @@ Proseguire ugualmente ?</translation>
         <translation>Selezionare la data per la selezione dell&apos;evento</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="411"/>
+        <location filename="../../App/OrderEntry.py" line="412"/>
         <source>Warning: No order inserted since {} seconds.
 It is recommended to update the window data, Update it now ?</source>
         <translation>Attenzione: non è stato inserito nessun ordine da {} secondi
 Si consiglia di aggiornare i dati della finestra. Aggiorno adesso ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="415"/>
+        <location filename="../../App/OrderEntry.py" line="416"/>
         <source>Question</source>
         <translation>Richiesta</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="435"/>
+        <location filename="../../App/OrderEntry.py" line="436"/>
         <source>Warning: the number of covers is greater than {}</source>
         <translation>Attenzione: il numero di coperti è maggiore di {}</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="447"/>
+        <location filename="../../App/OrderEntry.py" line="448"/>
         <source>Order</source>
         <translation>Ordine</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="450"/>
-        <location filename="../../App/OrderEntry.py" line="1091"/>
+        <location filename="../../App/OrderEntry.py" line="451"/>
+        <location filename="../../App/OrderEntry.py" line="1092"/>
         <source>Tables</source>
         <translation>Tavoli</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="466"/>
+        <location filename="../../App/OrderEntry.py" line="467"/>
         <source>No event available. For order entry it is necessary to setup an event for the current date.</source>
         <translation>Nessun evento disponibile. Per inserire un ordine è necessario impostare un evento per la data odierna.</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="477"/>
+        <location filename="../../App/OrderEntry.py" line="478"/>
         <source>There are items already entered, the item list will be cleared. Proceed anyway ?</source>
         <translation>Sono già presenti degli articoli, l&apos;elenco verrà cancellato. Procedere comunque?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="527"/>
+        <location filename="../../App/OrderEntry.py" line="528"/>
         <source>Loading tables from database</source>
         <translation>Caricamento dei tavoli dal database</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="625"/>
+        <location filename="../../App/OrderEntry.py" line="626"/>
         <source>Loading items from database</source>
         <translation>Caricamento degli articoli dal database</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="641"/>
+        <location filename="../../App/OrderEntry.py" line="642"/>
         <source>Item &apos;{}&apos; lacks layout position settings, will not be created.</source>
         <translation>l&apos;articolo &apos;{}&apos; manca dell&apos;impostazione della posizione, non verrà creato.</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="642"/>
-        <location filename="../../App/OrderEntry.py" line="865"/>
+        <location filename="../../App/OrderEntry.py" line="643"/>
+        <location filename="../../App/OrderEntry.py" line="866"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="829"/>
+        <location filename="../../App/OrderEntry.py" line="830"/>
         <source>Any button must have an ID</source>
         <translation>Tutti i pulsanti devono avere un ID</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="865"/>
+        <location filename="../../App/OrderEntry.py" line="866"/>
         <source>Not enough stock available.</source>
         <translation>Giacenza non disponibile</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1029"/>
+        <location filename="../../App/OrderEntry.py" line="1030"/>
         <source>Department note</source>
         <translation>Nota del reparto</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1030"/>
+        <location filename="../../App/OrderEntry.py" line="1031"/>
         <source>Message text for {}</source>
         <translation>Messaggio per {}</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1072"/>
+        <location filename="../../App/OrderEntry.py" line="1073"/>
         <source>Unrecognized QRC structure:</source>
         <translation>Struttura del QRC non riconosciuta:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1079"/>
+        <location filename="../../App/OrderEntry.py" line="1080"/>
         <source>Unrecognized QRC format:</source>
         <translation>Formato del QRC non riconosciuto:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1081"/>
+        <location filename="../../App/OrderEntry.py" line="1082"/>
         <source>Unrecognized delivery option:</source>
         <translation>Opzione di consegna non riconosciuta:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1083"/>
+        <location filename="../../App/OrderEntry.py" line="1084"/>
         <source>Unrecognized covers number:</source>
         <translation>Numero di coperti non coerente:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1085"/>
+        <location filename="../../App/OrderEntry.py" line="1086"/>
         <source>Unrecognized parameters:</source>
         <translation>Parametri non riconosciuti:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1109"/>
+        <location filename="../../App/OrderEntry.py" line="1110"/>
         <source>Unrecognized item id:</source>
         <translation>Articolo non riconosciuto:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1113"/>
+        <location filename="../../App/OrderEntry.py" line="1114"/>
         <source>Unrecognized quantity:</source>
         <translation>Quantità non coerente:</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1127"/>
+        <location filename="../../App/OrderEntry.py" line="1128"/>
         <source>Item NOT available in buttons&apos; grid, web order skipped.</source>
         <translation>Articolo NON disponibile nella griglia dei pulsanti, ordine web saltato.</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1141"/>
+        <location filename="../../App/OrderEntry.py" line="1142"/>
         <source>These items are not available and not included in the order:
 </source>
         <translation>Questi articoli non sono disponibili e non saranno inclusi nell&apos;ordine:
 </translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1227"/>
+        <location filename="../../App/OrderEntry.py" line="1228"/>
         <source>No item inserted!</source>
         <translation>Nessun articolo inserito!</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1235"/>
+        <location filename="../../App/OrderEntry.py" line="1236"/>
         <source>The table number is missing!</source>
         <translation>Manca il numero del tavolo!</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1245"/>
+        <location filename="../../App/OrderEntry.py" line="1246"/>
         <source>The table number does not exist, use it anyway ?</source>
         <translation>Il numero del tavolo non esiste, lo uso lo stesso?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1258"/>
+        <location filename="../../App/OrderEntry.py" line="1259"/>
         <source>Customer&apos;s name is missing! proced anyway?</source>
         <translation>Il nome del cliente non è presente! Procedo comunque ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1269"/>
+        <location filename="../../App/OrderEntry.py" line="1270"/>
         <source>Warning: there are no covers even though delivery to the table has been indicated,
 do you want to correct it?</source>
         <translation>Attenzione: non sono presenti coperti nonostante sia stata indicata la consegna al tavolo
 Vuoi correggere ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1304"/>
+        <location filename="../../App/OrderEntry.py" line="1305"/>
         <source>Discount amount greater than the total amount!</source>
         <translation>L&apos;importo dello sconto supera il totale ordine!</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1350"/>
+        <location filename="../../App/OrderEntry.py" line="1351"/>
         <source>Warning: these items are unavailable for the current order:
 
 - {0}
@@ -5140,27 +5140,27 @@ Do i proceed anyway ?</source>
 Devo procedere comunque?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1366"/>
+        <location filename="../../App/OrderEntry.py" line="1367"/>
         <source>Saving order to database</source>
         <translation>Memorizzo l&apos;ordine sul database</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1376"/>
+        <location filename="../../App/OrderEntry.py" line="1377"/>
         <source>Printing order customer copy</source>
         <translation>Stampa ordine copia cliente</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1381"/>
+        <location filename="../../App/OrderEntry.py" line="1382"/>
         <source>Printing order cover copy</source>
         <translation>Stampa ordine copia coperti</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1388"/>
+        <location filename="../../App/OrderEntry.py" line="1389"/>
         <source>Printing order department copies</source>
         <translation>Stampa ordine copia reparti</translation>
     </message>
     <message>
-        <location filename="../../App/OrderEntry.py" line="1419"/>
+        <location filename="../../App/OrderEntry.py" line="1420"/>
         <source>Do you want to exit the order entry?</source>
         <translation>Vuoi uscire dall&apos;inserimento ordini ?</translation>
     </message>
@@ -7660,22 +7660,22 @@ You can recover data only from a backup copy of the database.</source>
         <translation>Genera articoli</translation>
     </message>
     <message>
-        <location filename="../../App/UpdateWOS.py" line="139"/>
+        <location filename="../../App/UpdateWOS.py" line="140"/>
         <source>Generate item variants</source>
         <translation>Genera varianti articoli</translation>
     </message>
     <message>
-        <location filename="../../App/UpdateWOS.py" line="152"/>
+        <location filename="../../App/UpdateWOS.py" line="153"/>
         <source>Save XML file</source>
         <translation>Salva il file XML</translation>
     </message>
     <message>
-        <location filename="../../App/UpdateWOS.py" line="171"/>
+        <location filename="../../App/UpdateWOS.py" line="172"/>
         <source>Update ftp server</source>
         <translation>Aggiorna il server ftp</translation>
     </message>
     <message>
-        <location filename="../../App/UpdateWOS.py" line="194"/>
+        <location filename="../../App/UpdateWOS.py" line="195"/>
         <source>Web order server updated successfully.</source>
         <translation>Server degli ordini web aggiornato correttamente</translation>
     </message>

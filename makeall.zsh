@@ -111,9 +111,9 @@ pyside6-lupdate	\
     App/Statistics.py \
     App/Tool.py \
     App/UpdateWOS.py \
-	-tr-function-alias translate+=_tr -noobsolete -ts translation/ts/pySagra_it.ts 
+	-tr-function-alias translate+=_tr -noobsolete -ts Translation/ts/pySagra_it.ts 
 
-pyside6-lrelease translation/ts/pySagra_it.ts -qm translation/pySagra_it.qm
+pyside6-lrelease Translation/ts/pySagra_it.ts -qm Translation/pySagra_it.qm
 
 echo "Translation file updated"
 
