@@ -76,11 +76,11 @@ from App.System.MainWindow import MainWindow
 # PYINSTALLER FIX ON MACOS
 # prevents crashes caused by print statements in macOS applications that lack a console
 if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
-    # redirects print output and errors to a log file in the user's folder
-    log_path = os.path.expanduser("~/Library/Logs/pySagra.log")
-    sys.stdout = open(log_path, "w", encoding="utf-8")
-    sys.stderr = sys.stdout
-    # forces the active working directory to the actual folder containing the executable inside the .app bundle
+    #redirects print output and errors to a log file in the user's folder
+    #log_path = os.path.expanduser("~/Library/Logs/pySagra.log")
+    #sys.stdout = open(log_path, "w", encoding="utf-8")
+    #sys.stderr = sys.stdout
+    #forces the active working directory to the actual folder containing the executable inside the .app bundle
     os.chdir(os.path.dirname(sys.executable))
     
 
@@ -105,32 +105,11 @@ def logUnhandledException(ex_cls: type[BaseException], ex: BaseException, tb: ty
 
 if __name__ == "__main__":
     "Start application"
-    # check client component minimum required version
-    # python version
-    pyv = (version_info.major, version_info.minor, version_info.micro)
-    if pyv < MRV_PYTHON:
-        print(f"This program require Python rel. >= {MRV_PYTHON} but detected "
-              f"rel. {pyv}")
-        sys.exit(0)
-    # PySide version
-    psv = tuple(map(int, pyside6_version.split('.')[:3]))
-    if psv < MRV_PYSIDE:
-        print(f"This program require PySide6 rel. >= {MRV_PYSIDE} but detected "
-              f"rel. {psv}")
-        sys.exit(0)
-    # Qt version
-    qtv = tuple(map(int, qVersion().split('.')[:3]))
-    if qtv < MRV_QT:
-        print(f"This program require Qt rel. >= {MRV_QT} but detected "
-              f"rel. {qtv}")
-        sys.exit(0)
-    # psycopg version
-    ppv = tuple(map(int, psycopg_version.split('.')[:3]))
-    if ppv < MRV_PSYCOPG:
-        print(f"This program require psycopg rel. >= {MRV_PSYCOPG} but detected "
-              f"rel. {ppv}")
-        sys.exit(0)
-        
+    # set working directory to the executable folder if frozen (= execut from pyinstaller bundle)
+    # mandatory for macos and usefull for windows and linux as well
+    if getattr(sys, 'frozen', False):
+        os.chdir(os.path.dirname(sys.executable))
+            
     # parse command line arguments for logging
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--loglevel",
@@ -143,42 +122,61 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--console",
                         action='store_true',
                         help="Log to console if available, overcome logging to a file")  # only if a console is available
-    args = parser.parse_args()
-    # LOGGING TO TEXT FILEs
-    # an empty (None) logfile cause logging to <cwd>/logfile.log
-    if args.logfile:
-        # check log file access
-        try:
-            open(args.logfile, 'w')
-        except IOError:
-            print(f"No write access to {args.logfile}")
-            sys.exit(0)
-        else:
-            logfile = args.logfile
-    else:
-        logfile = os.path.join(os.getcwd(), 'logfile.log')
-    # log to console
+    args, unknown = parser.parse_known_args()
+    loglevel = getattr(logging, args.loglevel.upper(), logging.CRITICAL)
+    logfile = None
+    # logging to console if available, otherwise to a file
     if args.console:
-        logfile = None
-    # set required log level
-    if args.loglevel == 'DEBUG':
-        loglevel = logging.DEBUG
-    elif args.loglevel == 'INFO':
-        loglevel = logging.INFO
-    elif args.loglevel == 'WARNING':
-        loglevel = logging.WARNING
-    elif args.loglevel == 'ERROR':
-        loglevel = logging.ERROR
+        logfile = None  # Console
+    elif args.logfile:
+        try:
+            open(args.logfile, 'a', encoding="utf-8").close()
+            logfile = args.logfile
+        except IOError:
+            # not able to write to the specified file, fallback to default
+            logfile = os.path.join(os.getcwd(), 'logfile.log')
     else:
-        loglevel = logging.CRITICAL  # default loglevel
+        # default behavior
+        # save log file to system folder on MacOS, to current working directory on other platforms
+        if sys.platform == 'darwin':
+            log_dir = os.path.expanduser("~/Library/Logs")
+            os.makedirs(log_dir, exist_ok=True)
+            logfile = os.path.join(log_dir, "pySagra.log")
+        else:
+            logfile = os.path.join(os.getcwd(), 'logfile.log')
+
     # start logging
-    logging.basicConfig(filename=logfile,
-                        level=loglevel,
-                        format='%(asctime)s %(levelname)s %(module)s: %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(
+        filename=logfile,
+        level=loglevel,
+        format='%(asctime)s %(levelname)s %(module)s: %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S')
+    
+    # check client component minimum required version
+    # python version
+    pyv = (version_info.major, version_info.minor, version_info.micro)
+    if pyv < MRV_PYTHON:
+        logger.critical(f"This program require Python rel. >= {MRV_PYTHON} but detected rel. {pyv}")
+        sys.exit(0)
+    # PySide version
+    psv = tuple(map(int, pyside6_version.split('.')[:3]))
+    if psv < MRV_PYSIDE:
+        logger.critical(f"This program require PySide6 rel. >= {MRV_PYSIDE} but detected rel. {psv}")
+        sys.exit(0)
+    # Qt version
+    qtv = tuple(map(int, qVersion().split('.')[:3]))
+    if qtv < MRV_QT:
+        logger.critical(f"This program require Qt rel. >= {MRV_QT} but detected rel. {qtv}")
+        sys.exit(0)
+    # psycopg version
+    ppv = tuple(map(int, psycopg_version.split('.')[:3]))
+    if ppv < MRV_PSYCOPG:
+        logger.critical(f"This program require psycopg rel. >= {MRV_PSYCOPG} but detected rel. {ppv}")
+        sys.exit(0)
+    
     ##########################################
     # redirect uncaught exceptions to logger
-    #sys.excepthook = logUnhandledException
+    sys.excepthook = logUnhandledException
     ##########################################
     # logging information
     logger.info('')
