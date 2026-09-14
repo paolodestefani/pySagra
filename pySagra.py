@@ -97,7 +97,7 @@ def logUnhandledException(ex_cls: type[BaseException], ex: BaseException, tb: ty
 
 if __name__ == "__main__":
     "Start application"
-    # set working directory to the executable folder if frozen (= execut from pyinstaller bundle)
+    # set working directory to the executable folder if frozen (= executed from pyinstaller's bundle)
     # mandatory for macos and usefull for windows and linux as well
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(sys.executable))

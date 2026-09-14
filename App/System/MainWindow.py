@@ -44,9 +44,6 @@ from PySide6.QtGui import QAction
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QPainter
-from PySide6.QtGui import QColor
-from PySide6.QtGui import QPen
-from PySide6.QtGui import QLinearGradient
 from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QPaintEvent
 from PySide6.QtGui import QCloseEvent
