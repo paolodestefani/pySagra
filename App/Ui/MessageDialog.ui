@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
-    <height>378</height>
+    <width>512</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,9 +19,9 @@
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
      <item>
       <widget class="QLabel" name="labelIcon">
        <property name="text">
@@ -30,35 +30,33 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="labelErrorCode">
-       <property name="maximumSize">
-        <size>
-         <width>100</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Error code</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelMessage">
-       <property name="font">
-        <font>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Message</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::TextFormat::MarkdownText</enum>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="labelErrorCode">
+         <property name="text">
+          <string>Error code</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelMessage">
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Message</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::TextFormat::MarkdownText</enum>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -88,12 +86,6 @@
       </property>
       <item>
        <widget class="QTextEdit" name="textEditDetailMessage">
-        <property name="minimumSize">
-         <size>
-          <width>300</width>
-          <height>200</height>
-         </size>
-        </property>
         <property name="lineWrapMode">
          <enum>QTextEdit::LineWrapMode::WidgetWidth</enum>
         </property>

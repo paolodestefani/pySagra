@@ -359,11 +359,12 @@ ALTER VIEW vw_order_status
 CREATE OR REPLACE VIEW bi_order_header AS
 SELECT 
     ev.company_id           	    AS company_id,
+    oh.event_id             	    AS event_id,
     ev.description          	    AS event,
     oh.order_number         	    AS order_number,
     oh.order_date::text  		    AS order_date,
     oh.order_time::text			    AS order_time,
-    oh.order_date_time::text      	    AS order_date_time,  
+    oh.order_date_time::text      	AS order_date_time,  
     oh.fulfillment_date::text	    AS fulfillment_date, 
     oh.stat_order_date::text	    AS stat_order_date,
     oh.stat_order_day_part  	    AS stat_order_day_part,
@@ -394,6 +395,7 @@ ALTER VIEW bi_order_header
 CREATE OR REPLACE VIEW bi_order_line AS
 SELECT 
     ev.company_id       		    AS company_id,
+    oh.event_id         		    AS event_id,
     ev.description				    AS event,
     oh.order_number				    AS order_number,
     oh.order_date::text			    AS order_date,

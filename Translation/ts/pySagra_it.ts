@@ -2029,7 +2029,7 @@ Proseguire ugualmente ?</translation>
         <translation>Ricarica la Form</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="503"/>
+        <location filename="../../App/System/Mainwindow.py" line="500"/>
         <source>Undo changes and reload data ?</source>
         <translation>Annullare le modifiche e ricaricare i dati ?</translation>
     </message>
@@ -2476,73 +2476,73 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="210"/>
+        <location filename="../../App/System/Mainwindow.py" line="207"/>
         <source>Show tabbar</source>
         <translation>Visualizza barra delle linguette</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="360"/>
+        <location filename="../../App/System/Mainwindow.py" line="357"/>
         <source>User</source>
         <translation>Utente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="292"/>
+        <location filename="../../App/System/Mainwindow.py" line="289"/>
         <source>Current view&apos;s record counter</source>
         <translation>Contatore dei record della vista corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="112"/>
+        <location filename="../../App/System/Mainwindow.py" line="109"/>
         <source>Create actions</source>
         <translation>Crea un azione</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="151"/>
-        <location filename="../../App/System/Mainwindow.py" line="165"/>
+        <location filename="../../App/System/Mainwindow.py" line="148"/>
+        <location filename="../../App/System/Mainwindow.py" line="162"/>
         <source>Create menu</source>
         <translation>Crea un menu</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="175"/>
+        <location filename="../../App/System/Mainwindow.py" line="172"/>
         <source>Create toolbars</source>
         <translation>Crea una toolbar</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="422"/>
+        <location filename="../../App/System/Mainwindow.py" line="419"/>
         <source>Company</source>
         <translation>Azienda</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="578"/>
+        <location filename="../../App/System/Mainwindow.py" line="575"/>
         <source>Warning: open tabs will be closed, continue anyway ?</source>
         <translation>Avviso: le linguette aperte verranno chiuse, procedo comunque ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="598"/>
+        <location filename="../../App/System/Mainwindow.py" line="595"/>
         <source>Are you sure you want to quit</source>
         <translation>Sei sicuro di voler uscire da</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="560"/>
+        <location filename="../../App/System/Mainwindow.py" line="557"/>
         <source>The connection is not active with the following error message:</source>
         <translation>La connessione non è più attiva per il seguente messaggio di errore:</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="205"/>
+        <location filename="../../App/System/Mainwindow.py" line="202"/>
         <source>Close all tabs</source>
         <translation>Chiudi tutte le schede</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="561"/>
+        <location filename="../../App/System/Mainwindow.py" line="558"/>
         <source>Quitting the application...</source>
         <translation>Uscita dall&apos;applicazione...</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="260"/>
+        <location filename="../../App/System/Mainwindow.py" line="257"/>
         <source>No event available</source>
         <translation>Nessun evento disponibile</translation>
     </message>
     <message>
-        <location filename="../../App/System/Mainwindow.py" line="289"/>
+        <location filename="../../App/System/Mainwindow.py" line="286"/>
         <source>Current view&apos;s record counter, shows current record number and total records count</source>
         <translation>Contatore della vista corrente, mostra il numero del record corrente ed il numero totale di record presenti</translation>
     </message>
@@ -2639,7 +2639,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/System/Company.py" line="237"/>
         <location filename="../../App/System/Login.py" line="237"/>
-        <location filename="../../App/System/Mainwindow.py" line="564"/>
+        <location filename="../../App/System/Mainwindow.py" line="561"/>
         <location filename="../../App/System/User.py" line="359"/>
         <location filename="../../App/System/User.py" line="412"/>
         <location filename="../../App/System/User.py" line="420"/>
@@ -2825,9 +2825,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Connection.py" line="147"/>
         <location filename="../../App/System/Connection.py" line="226"/>
         <location filename="../../App/System/Customization.py" line="237"/>
-        <location filename="../../App/System/Mainwindow.py" line="502"/>
-        <location filename="../../App/System/Mainwindow.py" line="577"/>
-        <location filename="../../App/System/Mainwindow.py" line="601"/>
+        <location filename="../../App/System/Mainwindow.py" line="499"/>
+        <location filename="../../App/System/Mainwindow.py" line="574"/>
+        <location filename="../../App/System/Mainwindow.py" line="598"/>
         <location filename="../../App/System/Menu.py" line="216"/>
         <location filename="../../App/System/Profile.py" line="228"/>
         <location filename="../../App/System/Report.py" line="211"/>
@@ -2894,12 +2894,12 @@ Proseguire ugualmente ?</translation>
         <translation>icona</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/MessageDialog.ui" line="41"/>
+        <location filename="../../App/Ui/MessageDialog.ui" line="37"/>
         <source>Error code</source>
         <translation>Codice di errore</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/MessageDialog.ui" line="53"/>
+        <location filename="../../App/Ui/MessageDialog.ui" line="49"/>
         <source>Message</source>
         <translation>Messaggio</translation>
     </message>

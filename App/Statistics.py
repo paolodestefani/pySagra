@@ -65,6 +65,7 @@ from App.Ui.AnalysisWidget import Ui_AnalysisWidget
 from App.Ui.StatisticsExportDialog import Ui_StatisticsExportDialog
 from App.Widget.Dialog import PrintDialog
 #from App.Widget.Delegate import PandasDelegate
+from App.Database.Statistics import load_statistic_bi_data
 from App.Core.L10n import _tr
 
 
@@ -201,7 +202,7 @@ class StatisticsExportDialog(QDialog):
         fnameh = self.ui.lineEditHeadersFileName.text()
         fnamed = self.ui.lineEditDetailsFileName.text()
         try:
-            for view, fn in (('bi_order_header', fnameh), ('bi_order_detail', fnamed)):
+            for view, fn in (('bi_order_header', fnameh), ('bi_order_line', fnamed)):
                 # write to csv file
                 with open(fn, 'w', encoding="utf-8", newline='') as f:
                     writer = csv.writer(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -237,9 +238,9 @@ class StatisticsExportDialog(QDialog):
                                     _tr('Statistics', 'Operation completed successfully'))
         # save settings
         st = QSettings()
-        st.setValue("StatisticsExport/IncludeAll", self.checkBoxIncludeAll.isChecked())
-        st.setValue("StatisticsExport/FromEvent", self.comboBoxFromEvent.currentIndex())
-        st.setValue("StatisticsExport/ToEvent", self.comboBoxToEvent.currentIndex())
+        st.setValue("StatisticsExport/IncludeAll", self.ui.checkBoxIncludeAll.isChecked())
+        st.setValue("StatisticsExport/FromEvent", self.ui.comboBoxFromEvent.currentIndex())
+        st.setValue("StatisticsExport/ToEvent", self.ui.comboBoxToEvent.currentIndex())
         super().accept()
 
 

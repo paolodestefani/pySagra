@@ -58,7 +58,7 @@ def load_statistic_bi_data(view: str,
                            to_event: int
                            ) -> list[Any] | None:
     "Load a statistic data"
-    script = f"""SELECT * FROM {view} WHERE "ID Evento" BETWEEN %s AND %s;"""
+    script = f"""SELECT * FROM {view} WHERE event_id BETWEEN %s AND %s;"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script, (from_event, to_event))
