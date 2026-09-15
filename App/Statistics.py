@@ -216,19 +216,15 @@ class StatisticsExportDialog(QDialog):
                             match c:
                                 case QByteArray():
                                     data = 'BINARY DATA'
-                                case QDate():
-                                    data = locale.toString(c, QLocale.FormatType.ShortFormat)
-                                case QDateTime():
-                                    data = locale.toString(c, QLocale.FormatType.ShortFormat)
-                                case QTime():
+                                case QDate() | QDateTime() | QTime():
                                     data = locale.toString(c, QLocale.FormatType.ShortFormat)
                                 case bool():
                                     data = "I" if c else "O"
-                                case float() | decimal.Decimal():  # Il carattere | unisce più tipi nello stesso case
+                                case float() | decimal.Decimal():
                                     data = str(c).replace(".", ",")
                                 case None:
                                     data = ''
-                                case _:  # Sostituisce l'ultimo 'else' (wildcard pattern)
+                                case _:
                                     data = str(c)
                             row.append(data)
                         writer.writerow(row)
