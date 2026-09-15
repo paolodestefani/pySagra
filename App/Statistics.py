@@ -74,8 +74,6 @@ from App.Core.L10n import _tr
 logger = logging.getLogger(__name__)
 
 
-locale = QLocale()
-
 
 def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
     "Statistical analysis"
@@ -217,7 +215,7 @@ class StatisticsExportDialog(QDialog):
                                 case QByteArray():
                                     data = 'BINARY DATA'
                                 case QDate() | QDateTime() | QTime():
-                                    data = locale.toString(c, QLocale.FormatType.ShortFormat)
+                                    data = session['qlocale'].toString(c, QLocale.FormatType.ShortFormat)
                                 case bool():
                                     data = "I" if c else "O"
                                 case float() | decimal.Decimal():
