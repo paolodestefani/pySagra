@@ -56,14 +56,15 @@ from App.Database.Connect import appconn
 def load_statistic_bi_data(view: str,
                            from_event: int,
                            to_event: int
-                           ) -> list[Any] | None:
+                           ) -> list[tuple[Any, ...]]:
     "Load a statistic data"
     script = f"""SELECT * FROM {view} WHERE event_id BETWEEN %s AND %s;"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script, (from_event, to_event))
         if cur.description:
-            return [(i[0] for i in cur.description)] + cur.fetchall()
+            headers = tuple(i[0] for i in cur.description)
+            return [headers] + cur.fetchall()
         else:
             return []
 

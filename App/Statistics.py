@@ -44,6 +44,7 @@ from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
 from PySide6.QtCore import Qt
+from PySide6.QtCore import QLocale
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QCursor
@@ -71,6 +72,9 @@ from App.Core.L10n import _tr
 
 # logger
 logger = logging.getLogger(__name__)
+
+
+locale = QLocale()
 
 
 def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
@@ -209,23 +213,23 @@ class StatisticsExportDialog(QDialog):
                     for r in load_statistic_bi_data(view, fromEvent, toEvent):
                         row = []
                         for c in r:
-                            if isinstance(c, QByteArray):
-                                data = 'BINARY DATA'
-                            elif isinstance(c, QDate):
-                                data = c.toString(Qt.DefaultLocaleShortDate)
-                            elif isinstance(c, QDateTime):
-                                data = c.toString(Qt.DefaultLocaleShortDate)
-                            elif isinstance(c, QTime):
-                                data = c.toString(Qt.DefaultLocaleShortDate)
-                            elif isinstance(c, bool):
-                                #data = "\u2611" if data else "\u2610" # tick
-                                data = "I" if c else "O" # less problem with excel
-                            elif isinstance(c, (float, decimal.Decimal)):
-                                data = str(c).replace(".", ",")
-                            elif c is None:
-                                data = ''
-                            else:
-                                data = str(c)
+                            match c:
+                                case QByteArray():
+                                    data = 'BINARY DATA'
+                                case QDate():
+                                    data = locale.toString(c, QLocale.FormatType.ShortFormat)
+                                case QDateTime():
+                                    data = locale.toString(c, QLocale.FormatType.ShortFormat)
+                                case QTime():
+                                    data = locale.toString(c, QLocale.FormatType.ShortFormat)
+                                case bool():
+                                    data = "I" if c else "O"
+                                case float() | decimal.Decimal():  # Il carattere | unisce più tipi nello stesso case
+                                    data = str(c).replace(".", ",")
+                                case None:
+                                    data = ''
+                                case _:  # Sostituisce l'ultimo 'else' (wildcard pattern)
+                                    data = str(c)
                             row.append(data)
                         writer.writerow(row)
         except PyAppDBError as er:
