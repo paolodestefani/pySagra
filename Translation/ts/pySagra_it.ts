@@ -2685,7 +2685,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Settings.py" line="354"/>
         <location filename="../../App/Settings.py" line="360"/>
         <location filename="../../App/Settings.py" line="366"/>
-        <location filename="../../App/Statistics.py" line="232"/>
+        <location filename="../../App/Statistics.py" line="277"/>
         <location filename="../../App/Tool.py" line="272"/>
         <location filename="../../App/Tool.py" line="330"/>
         <source>Critical</source>
@@ -2748,9 +2748,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/SalesSummary.py" line="190"/>
         <location filename="../../App/SeatMap.py" line="94"/>
         <location filename="../../App/Settings.py" line="73"/>
-        <location filename="../../App/Statistics.py" line="83"/>
-        <location filename="../../App/Statistics.py" line="99"/>
-        <location filename="../../App/Statistics.py" line="116"/>
+        <location filename="../../App/Statistics.py" line="131"/>
+        <location filename="../../App/Statistics.py" line="147"/>
+        <location filename="../../App/Statistics.py" line="164"/>
         <location filename="../../App/Tool.py" line="87"/>
         <location filename="../../App/Tool.py" line="110"/>
         <location filename="../../App/Tool.py" line="128"/>
@@ -2809,7 +2809,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderArchive.py" line="411"/>
         <location filename="../../App/Printer.py" line="180"/>
         <location filename="../../App/Printer.py" line="195"/>
-        <location filename="../../App/Statistics.py" line="236"/>
+        <location filename="../../App/Statistics.py" line="281"/>
         <location filename="../../App/Tool.py" line="92"/>
         <location filename="../../App/Tool.py" line="219"/>
         <location filename="../../App/Tool.py" line="276"/>
@@ -7314,112 +7314,272 @@ Devo procedere comunque?</translation>
 <context>
     <name>Statistics</name>
     <message>
-        <location filename="../../App/Statistics.py" line="84"/>
-        <location filename="../../App/Statistics.py" line="100"/>
-        <location filename="../../App/Statistics.py" line="117"/>
+        <location filename="../../App/Statistics.py" line="132"/>
+        <location filename="../../App/Statistics.py" line="148"/>
+        <location filename="../../App/Statistics.py" line="165"/>
         <source>No access right to this function</source>
         <translation>Nessun diritto di accesso a questa funzione</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="183"/>
+        <location filename="../../App/Statistics.py" line="231"/>
         <source>Select file name and path</source>
         <translation>Selezionare il nome del file ed il percorso</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="185"/>
+        <location filename="../../App/Statistics.py" line="233"/>
         <source>Comma separated values (*.csv);;All files (*.*)</source>
         <translation>Valori separati da virgola (*.csv);;Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="237"/>
+        <location filename="../../App/Statistics.py" line="282"/>
         <source>Operation completed successfully</source>
         <translation>Operazione completata correttamente</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="263"/>
+        <location filename="../../App/Statistics.py" line="308"/>
         <source>Order header analysis</source>
         <translation>Analisi delle testate degli ordini</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="264"/>
+        <location filename="../../App/Statistics.py" line="309"/>
         <source>Order lines analysis</source>
         <translation>Analisi delle righe degli ordini</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="272"/>
+        <location filename="../../App/Statistics.py" line="317"/>
         <source>Sum</source>
         <translation>Somma</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="273"/>
+        <location filename="../../App/Statistics.py" line="318"/>
         <source>Count</source>
         <translation>Conteggio</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="274"/>
+        <location filename="../../App/Statistics.py" line="319"/>
         <source>Average</source>
         <translation>Media</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="275"/>
+        <location filename="../../App/Statistics.py" line="320"/>
         <source>Median</source>
         <translation>Mediana</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="276"/>
+        <location filename="../../App/Statistics.py" line="321"/>
         <source>Min</source>
         <translation>Minimo</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="277"/>
+        <location filename="../../App/Statistics.py" line="322"/>
         <source>Max</source>
         <translation>Massimo</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="278"/>
+        <location filename="../../App/Statistics.py" line="323"/>
         <source>Standard Deviation</source>
         <translation>Deviazione standard</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="279"/>
+        <location filename="../../App/Statistics.py" line="324"/>
         <source>Variance</source>
         <translation>Varianza</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="283"/>
+        <location filename="../../App/Statistics.py" line="328"/>
         <source>Ascending</source>
         <translation>Crescente</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="284"/>
+        <location filename="../../App/Statistics.py" line="329"/>
         <source>Descending</source>
         <translation>Decrescente</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="333"/>
+        <location filename="../../App/Statistics.py" line="378"/>
         <source>Show options</source>
         <translation>Mostra le opzioni</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="367"/>
-        <location filename="../../App/Statistics.py" line="383"/>
+        <location filename="../../App/Statistics.py" line="412"/>
+        <location filename="../../App/Statistics.py" line="428"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="368"/>
+        <location filename="../../App/Statistics.py" line="413"/>
         <source>At least one value must be selected</source>
         <translation>E&apos; necessario selezionare almeno un valore</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="384"/>
+        <location filename="../../App/Statistics.py" line="429"/>
         <source>At least one row must be selected</source>
         <translation>E&apos; necessario selezionare almeno una riga</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="438"/>
+        <location filename="../../App/Statistics.py" line="483"/>
         <source>Apply/Refresh</source>
         <translation>Applica/Ricarica</translation>
+    </message>
+</context>
+<context>
+    <name>Statistics Export</name>
+    <message>
+        <location filename="../../App/Statistics.py" line="77"/>
+        <location filename="../../App/Statistics.py" line="100"/>
+        <source>Company ID</source>
+        <translation>ID azienda</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="78"/>
+        <location filename="../../App/Statistics.py" line="101"/>
+        <source>Event ID</source>
+        <translation>ID evento</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="79"/>
+        <location filename="../../App/Statistics.py" line="102"/>
+        <source>Event description</source>
+        <translation>Descrizione evento</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="80"/>
+        <location filename="../../App/Statistics.py" line="103"/>
+        <source>Order number</source>
+        <translation>Numero ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="81"/>
+        <location filename="../../App/Statistics.py" line="104"/>
+        <source>Order date</source>
+        <translation>Data ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="82"/>
+        <location filename="../../App/Statistics.py" line="105"/>
+        <source>Order time</source>
+        <translation>Ora ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="83"/>
+        <source>Order date time</source>
+        <translation>Data e ora Ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="84"/>
+        <source>Fulfillment date</source>
+        <translation>Data evasione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="85"/>
+        <location filename="../../App/Statistics.py" line="106"/>
+        <source>Stat order date</source>
+        <translation>Data statistica dell&apos;ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="86"/>
+        <location filename="../../App/Statistics.py" line="107"/>
+        <source>Stat L/D</source>
+        <translation>P/C stat</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="87"/>
+        <source>Cash desk</source>
+        <translation>Cassa</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="88"/>
+        <location filename="../../App/Statistics.py" line="108"/>
+        <source>Delivery</source>
+        <translation>Consegna</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="89"/>
+        <location filename="../../App/Statistics.py" line="109"/>
+        <source>Payment</source>
+        <translation>Pagamento</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="90"/>
+        <source>WO</source>
+        <translation>OW</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="91"/>
+        <location filename="../../App/Statistics.py" line="110"/>
+        <source>Table number</source>
+        <translation>Numero del tavolo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="92"/>
+        <location filename="../../App/Statistics.py" line="111"/>
+        <source>Customer name</source>
+        <translation>Nome cliente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="93"/>
+        <source>Customer contact</source>
+        <translation>Contatto</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="94"/>
+        <source>Covers</source>
+        <translation>Coperti</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="95"/>
+        <source>Total Amount</source>
+        <translation>Importo totale</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="96"/>
+        <source>Discount</source>
+        <translation>Sconto</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="97"/>
+        <source>Cash</source>
+        <translation>Contanti</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="112"/>
+        <source>Department</source>
+        <translation>Reparto</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="113"/>
+        <source>I/T</source>
+        <translation>T/A</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="114"/>
+        <source>Item</source>
+        <translation>Articolo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="115"/>
+        <source>Variants</source>
+        <translation>Varianti</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="116"/>
+        <source>Item with variants</source>
+        <translation>Articolo con varianti</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="117"/>
+        <source>Quantity</source>
+        <translation>Quantità</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="118"/>
+        <source>Price</source>
+        <translation>Prezzo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Statistics.py" line="119"/>
+        <source>Amount</source>
+        <translation>Importo</translation>
     </message>
 </context>
 <context>
@@ -8137,13 +8297,13 @@ You can recover data only from a backup copy of the database.</source>
     </message>
     <message>
         <location filename="../../App/Widget/View.py" line="443"/>
-        <location filename="../../App/Statistics.py" line="167"/>
+        <location filename="../../App/Statistics.py" line="215"/>
         <source>Select file name and path</source>
         <translation>Seleziona il nome del file ed il percorso</translation>
     </message>
     <message>
         <location filename="../../App/Widget/View.py" line="445"/>
-        <location filename="../../App/Statistics.py" line="169"/>
+        <location filename="../../App/Statistics.py" line="217"/>
         <source>Comma separated values (*.csv);;All files (*.*)</source>
         <translation>Valori separati da virgole (*.csv);; Tutti i file (*.*)</translation>
     </message>

@@ -74,6 +74,55 @@ from App.Core.L10n import _tr
 logger = logging.getLogger(__name__)
 
 
+def csv_header():
+    return [
+        _tr('Statistics Export', 'Company ID'),
+        _tr('Statistics Export', 'Event ID'),
+        _tr('Statistics Export', 'Event description'),
+        _tr('Statistics Export', 'Order number'),
+        _tr('Statistics Export', 'Order date'),
+        _tr('Statistics Export', 'Order time'),
+        _tr('Statistics Export', 'Order date time'),
+        _tr('Statistics Export', 'Fulfillment date'),
+        _tr('Statistics Export', 'Stat order date'),
+        _tr('Statistics Export', 'Stat L/D'),
+        _tr('Statistics Export', 'Cash desk'),
+        _tr('Statistics Export', 'Delivery'),
+        _tr('Statistics Export', 'Payment'),
+        _tr('Statistics Export', 'WO'),
+        _tr('Statistics Export', 'Table number'),
+        _tr('Statistics Export', 'Customer name'),
+        _tr('Statistics Export', 'Customer contact'), 
+        _tr('Statistics Export', 'Covers'), 
+        _tr('Statistics Export', 'Total Amount'), 
+        _tr('Statistics Export', 'Discount'),
+        _tr('Statistics Export', 'Cash')
+        ]
+    
+def csv_line():
+    return [
+        _tr('Statistics Export', 'Company ID'),
+        _tr('Statistics Export', 'Event ID'),
+        _tr('Statistics Export', 'Event description'),
+        _tr('Statistics Export', 'Order number'), 
+        _tr('Statistics Export', 'Order date'),
+        _tr('Statistics Export', 'Order time'),
+        _tr('Statistics Export', 'Stat order date'),
+        _tr('Statistics Export', 'Stat L/D'),
+        _tr('Statistics Export', 'Delivery'),
+        _tr('Statistics Export', 'Payment'),
+        _tr('Statistics Export', 'Table number'),
+        _tr('Statistics Export', 'Customer name'),
+        _tr('Statistics Export', 'Department'),
+        _tr('Statistics Export', 'I/T'),
+        _tr('Statistics Export', 'Item'),
+        _tr('Statistics Export', 'Variants'),
+        _tr('Statistics Export', 'Item with variants'),
+        _tr('Statistics Export', 'Quantity'),
+        _tr('Statistics Export', 'Price'),
+        _tr('Statistics Export', 'Amount')
+        ]
+
 
 def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
     "Statistical analysis"
@@ -202,12 +251,13 @@ class StatisticsExportDialog(QDialog):
             fromEvent = int(self.ui.comboBoxFromEvent.currentData())
             toEvent = int(self.ui.comboBoxToEvent.currentData())
         fnameh = self.ui.lineEditHeadersFileName.text()
-        fnamed = self.ui.lineEditDetailsFileName.text()
+        fnamel = self.ui.lineEditDetailsFileName.text()
         try:
-            for view, fn in (('bi_order_header', fnameh), ('bi_order_line', fnamed)):
+            for view, fn, hfunc in (('bi_order_header', fnameh, csv_header), ('bi_order_line', fnamel, csv_line)):
                 # write to csv file
                 with open(fn, 'w', encoding="utf-8", newline='') as f:
                     writer = csv.writer(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    writer.writerow(hfunc())
                     for r in load_statistic_bi_data(view, fromEvent, toEvent):
                         row = []
                         for c in r:
