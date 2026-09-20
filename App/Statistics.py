@@ -124,20 +124,20 @@ def csv_line():
         ]
 
 
-def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
-    "Statistical analysis"
-    logger.info('Starting Statistical Analysis')
-    mw = session['mainwin']
-    title = action.text()
-    auth = action.data()
-    if not auth[2]: # no execute permission
-        QMessageBox.warning(mw,
-                            _tr('MessageDialog', "Warning"),
-                            _tr('Statistics', 'No access right to this function'))
-        return
-    af = AnalysisForm(mw, title, auth)
-    mw.addTab(title, af)
-    logger.info('Statistical Analysis added to main window')
+# def statisticsAnalysis(action: QAction, checked: bool = False) -> None:
+#     "Statistical analysis"
+#     logger.info('Starting Statistical Analysis')
+#     mw = session['mainwin']
+#     title = action.text()
+#     auth = action.data()
+#     if not auth[2]: # no execute permission
+#         QMessageBox.warning(mw,
+#                             _tr('MessageDialog', "Warning"),
+#                             _tr('Statistics', 'No access right to this function'))
+#         return
+#     af = AnalysisForm(mw, title, auth)
+#     mw.addTab(title, af)
+#     logger.info('Statistical Analysis added to main window')
 
 
 def statisticsPrint(action: QAction, checked: bool = False) -> None:
@@ -292,196 +292,196 @@ class StatisticsExportDialog(QDialog):
         super().accept()
 
 
-class AnalysisForm(QWidget):
+# class AnalysisForm(QWidget):
 
-    def __init__(self, parent: QWidget, title: str, auth: str) -> None:
-        super().__init__(parent)
-        self.model: PandasModel|None = None
-        self.tabName = title
-        self.helpLink = None
-        # available edit status
-        # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
-        # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False, False, False, False, False, False, False, False,
-                                False, False, False, False)
-        self.ui = Ui_AnalysisWidget()
-        self.ui.setupUi(self)
-        self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
-        # select Analysis
-        self.ui.comboBoxAnalysis.addItems(['',
-                                           _tr("Statistics", "Order header analysis"),
-                                           _tr("Statistics", "Order lines analysis")])
-        # signal slot connections
-        self.ui.comboBoxAnalysis.currentIndexChanged.connect(self.changeAnalysis)
-        self.ui.pushButtonShowApply.clicked.connect(self.showApplyOptions)
-        # fill comboboxes for functions and sorting, not depending on dataframe
-        for f in (self.ui.comboBoxFunction1,
-                  self.ui.comboBoxFunction2):
-            for i, j in [('', ''),
-                         (_tr('Statistics', 'Sum'), 'sum'),
-                         (_tr('Statistics', 'Count'), 'count'),
-                         (_tr('Statistics', 'Average'), 'mean'),
-                         (_tr('Statistics', 'Median'), 'median'),
-                         (_tr('Statistics', 'Min'), 'min'),
-                         (_tr('Statistics', 'Max'), 'max'),
-                         (_tr('Statistics', 'Standard Deviation'), 'std'),
-                         (_tr('Statistics', 'Variance'), 'var')]:
-                f.addItem(i, j)
-        for c in (self.ui.comboBoxSort1, self.ui.comboBoxSort2):
-            for i, j in [('', ''), # type: ignore
-                         (_tr('Statistics', 'Ascending'), True),
-                         (_tr('Statistics', 'Descending'), False)]:
-                c.addItem(i, j)
+#     def __init__(self, parent: QWidget, title: str, auth: str) -> None:
+#         super().__init__(parent)
+#         self.model: PandasModel|None = None
+#         self.tabName = title
+#         self.helpLink = None
+#         # available edit status
+#         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
+#         # FILTER, CHANGE, REPORT, EXPORT
+#         self.availableStatus = (False, False, False, False, False, False, False, False,
+#                                 False, False, False, False)
+#         self.ui = Ui_AnalysisWidget()
+#         self.ui.setupUi(self)
+#         self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
+#         # select Analysis
+#         self.ui.comboBoxAnalysis.addItems(['',
+#                                            _tr("Statistics", "Order header analysis"),
+#                                            _tr("Statistics", "Order lines analysis")])
+#         # signal slot connections
+#         self.ui.comboBoxAnalysis.currentIndexChanged.connect(self.changeAnalysis)
+#         self.ui.pushButtonShowApply.clicked.connect(self.showApplyOptions)
+#         # fill comboboxes for functions and sorting, not depending on dataframe
+#         for f in (self.ui.comboBoxFunction1,
+#                   self.ui.comboBoxFunction2):
+#             for i, j in [('', ''),
+#                          (_tr('Statistics', 'Sum'), 'sum'),
+#                          (_tr('Statistics', 'Count'), 'count'),
+#                          (_tr('Statistics', 'Average'), 'mean'),
+#                          (_tr('Statistics', 'Median'), 'median'),
+#                          (_tr('Statistics', 'Min'), 'min'),
+#                          (_tr('Statistics', 'Max'), 'max'),
+#                          (_tr('Statistics', 'Standard Deviation'), 'std'),
+#                          (_tr('Statistics', 'Variance'), 'var')]:
+#                 f.addItem(i, j)
+#         for c in (self.ui.comboBoxSort1, self.ui.comboBoxSort2):
+#             for i, j in [('', ''), # type: ignore
+#                          (_tr('Statistics', 'Ascending'), True),
+#                          (_tr('Statistics', 'Descending'), False)]:
+#                 c.addItem(i, j)
                 
-    def changeAnalysis(self, index: int) -> None:
-        "Change analysis type"
-        # cursor wait
-        QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        match index:
-            case 1:
-                self.model = OrderHeaderPandasModel()
-                self.model.select()
-            case 2:
-                self.model = OrderLinePandasModel()
-                self.model.select()
-            case _:
-                self.model = None
-                logging.info("No analysis selected")
-        # cursor restore
-        QGuiApplication.restoreOverrideCursor()
-        # events filter
-        self.ui.comboBoxEvent.clear()
-        if self.model and hasattr(self.model, 'getEvents'):
-            self.ui.comboBoxEvent.addItems([''] + self.model.getEvents())
-        # assign columns to comboboxes
-        for c in (self.ui.comboBoxColumn1,
-                  self.ui.comboBoxColumn2,
-                  self.ui.comboBoxColumn3,
-                  self.ui.comboBoxRow1,
-                  self.ui.comboBoxRow2,
-                  self.ui.comboBoxRow3,
-                  self.ui.comboBoxRow4,
-                  self.ui.comboBoxRow5,
-                  self.ui.comboBoxRow6,
-                  self.ui.comboBoxRow7):
-            c.clear()
-            if self.model and hasattr(self.model, 'columns'):
-                c.addItems([''] + [i[0] for i in self.model.columns.values() if i[2]])
-        # values comboboxes
-        for v in (self.ui.comboBoxValue1,
-                  self.ui.comboBoxValue2):
-            v.clear()
-            if self.model and hasattr(self.model, 'columns'):
-                v.addItems([''] + [i[0] for i in self.model.columns.values() if i[1]])
+#     def changeAnalysis(self, index: int) -> None:
+#         "Change analysis type"
+#         # cursor wait
+#         QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+#         match index:
+#             case 1:
+#                 self.model = OrderHeaderPandasModel()
+#                 self.model.select()
+#             case 2:
+#                 self.model = OrderLinePandasModel()
+#                 self.model.select()
+#             case _:
+#                 self.model = None
+#                 logging.info("No analysis selected")
+#         # cursor restore
+#         QGuiApplication.restoreOverrideCursor()
+#         # events filter
+#         self.ui.comboBoxEvent.clear()
+#         if self.model and hasattr(self.model, 'getEvents'):
+#             self.ui.comboBoxEvent.addItems([''] + self.model.getEvents())
+#         # assign columns to comboboxes
+#         for c in (self.ui.comboBoxColumn1,
+#                   self.ui.comboBoxColumn2,
+#                   self.ui.comboBoxColumn3,
+#                   self.ui.comboBoxRow1,
+#                   self.ui.comboBoxRow2,
+#                   self.ui.comboBoxRow3,
+#                   self.ui.comboBoxRow4,
+#                   self.ui.comboBoxRow5,
+#                   self.ui.comboBoxRow6,
+#                   self.ui.comboBoxRow7):
+#             c.clear()
+#             if self.model and hasattr(self.model, 'columns'):
+#                 c.addItems([''] + [i[0] for i in self.model.columns.values() if i[2]])
+#         # values comboboxes
+#         for v in (self.ui.comboBoxValue1,
+#                   self.ui.comboBoxValue2):
+#             v.clear()
+#             if self.model and hasattr(self.model, 'columns'):
+#                 v.addItems([''] + [i[0] for i in self.model.columns.values() if i[1]])
         
-    def showApplyOptions(self):
-        if self.ui.groupBoxValues.isVisible():
-            self.ui.groupBoxValues.setVisible(False)
-            self.ui.groupBoxRow.setVisible(False)
-            self.ui.groupBoxColumn.setVisible(False)
-            self.ui.pushButtonShowApply.setText(_tr("Statistics", "Show options"))
-            # filter by event first
-            if self.ui.comboBoxEvent.currentText() != '':
-                self.model.filterEvent(self.ui.comboBoxEvent.currentText())
-            # filter by index
-            for c, l in ((self.ui.comboBoxRow1, self.ui.lineEditRow1),
-                         (self.ui.comboBoxRow2, self.ui.lineEditRow2),
-                         (self.ui.comboBoxRow3, self.ui.lineEditRow3),
-                         (self.ui.comboBoxRow4, self.ui.lineEditRow4),
-                         (self.ui.comboBoxRow5, self.ui.lineEditRow5),
-                         (self.ui.comboBoxRow6, self.ui.lineEditRow6),
-                         (self.ui.comboBoxRow7, self.ui.lineEditRow7)):
-                if c.currentText() != '':
-                    self.model.filterLike(c.currentText(), l.text())
-            # filter by columns
-            for c, l in ((self.ui.comboBoxColumn1, self.ui.lineEditColumn1),
-                         (self.ui.comboBoxColumn2, self.ui.lineEditColumn2),
-                         (self.ui.comboBoxColumn3, self.ui.lineEditColumn3)):
-                if c.currentText() != '':
-                    self.model.filterLike(c.currentText(), l.text())
-            # get selected values and aggregations
-            values = []
-            aggfunc = {}
-            if self.ui.comboBoxValue1.currentText() != '':
-                values.append(self.ui.comboBoxValue1.currentText())
-                if self.ui.comboBoxFunction1.currentData() != '':
-                    aggfunc[self.ui.comboBoxValue1.currentText()] = self.ui.comboBoxFunction1.currentData()
-            if self.ui.comboBoxValue2.currentText() != '':
-                values.append(self.ui.comboBoxValue2.currentText())
-                if self.ui.comboBoxFunction2.currentData() != '':
-                    aggfunc[self.ui.comboBoxValue2.currentText()] = self.ui.comboBoxFunction2.currentData()
+#     def showApplyOptions(self):
+#         if self.ui.groupBoxValues.isVisible():
+#             self.ui.groupBoxValues.setVisible(False)
+#             self.ui.groupBoxRow.setVisible(False)
+#             self.ui.groupBoxColumn.setVisible(False)
+#             self.ui.pushButtonShowApply.setText(_tr("Statistics", "Show options"))
+#             # filter by event first
+#             if self.ui.comboBoxEvent.currentText() != '':
+#                 self.model.filterEvent(self.ui.comboBoxEvent.currentText())
+#             # filter by index
+#             for c, l in ((self.ui.comboBoxRow1, self.ui.lineEditRow1),
+#                          (self.ui.comboBoxRow2, self.ui.lineEditRow2),
+#                          (self.ui.comboBoxRow3, self.ui.lineEditRow3),
+#                          (self.ui.comboBoxRow4, self.ui.lineEditRow4),
+#                          (self.ui.comboBoxRow5, self.ui.lineEditRow5),
+#                          (self.ui.comboBoxRow6, self.ui.lineEditRow6),
+#                          (self.ui.comboBoxRow7, self.ui.lineEditRow7)):
+#                 if c.currentText() != '':
+#                     self.model.filterLike(c.currentText(), l.text())
+#             # filter by columns
+#             for c, l in ((self.ui.comboBoxColumn1, self.ui.lineEditColumn1),
+#                          (self.ui.comboBoxColumn2, self.ui.lineEditColumn2),
+#                          (self.ui.comboBoxColumn3, self.ui.lineEditColumn3)):
+#                 if c.currentText() != '':
+#                     self.model.filterLike(c.currentText(), l.text())
+#             # get selected values and aggregations
+#             values = []
+#             aggfunc = {}
+#             if self.ui.comboBoxValue1.currentText() != '':
+#                 values.append(self.ui.comboBoxValue1.currentText())
+#                 if self.ui.comboBoxFunction1.currentData() != '':
+#                     aggfunc[self.ui.comboBoxValue1.currentText()] = self.ui.comboBoxFunction1.currentData()
+#             if self.ui.comboBoxValue2.currentText() != '':
+#                 values.append(self.ui.comboBoxValue2.currentText())
+#                 if self.ui.comboBoxFunction2.currentData() != '':
+#                     aggfunc[self.ui.comboBoxValue2.currentText()] = self.ui.comboBoxFunction2.currentData()
 
-            if not values or not aggfunc or len(values) != len(aggfunc):
-                QMessageBox.warning(self,
-                                    _tr("Statistics", "Warning"),
-                                    _tr("Statistics", "At least one value must be selected"))
-                return
-            # get selected rows
-            rows = []
-            for r in (self.ui.comboBoxRow1,
-                      self.ui.comboBoxRow2,
-                      self.ui.comboBoxRow3,
-                      self.ui.comboBoxRow4,
-                      self.ui.comboBoxRow5,
-                      self.ui.comboBoxRow6,
-                      self.ui.comboBoxRow7):
-                if r.currentText() != '':
-                    rows.append(r.currentText())
-            if not rows:
-                QMessageBox.warning(self,
-                                    _tr("Statistics", "Warning"),
-                                    _tr("Statistics", "At least one row must be selected"))
-                return
-            # get selected columns
-            columns = []
-            for c in (self.ui.comboBoxColumn1,
-                      self.ui.comboBoxColumn2,
-                      self.ui.comboBoxColumn3):
-                if c.currentText() != '':
-                    columns.append(c.currentText())
-            # totals
-            t = self.ui.checkBoxTotal.isChecked()
-            # create pivot table
-            self.model.createPivot(rows, columns, values, aggfunc, t)
-            # pivot = pd.pivot_table(df,
-            #                         index=rows,
-            #                         columns=columns,
-            #                         values=values,
-            #                         aggfunc=aggfunc,
-            #                         fill_value=0.0,
-            #                         margins=False,
-            #                         margins_name='Totale Generale')
-            #logging.info(f"Pivot table created with {len(pivot)} rows and {len(pivot.columns)} columns")
-            # sorting
-            # if self.ui.comboBoxValue1.currentText() != '':
-            #     if self.ui.comboBoxSort1.currentData() != '':
-            #         pivot = pivot.sort_values(by=[self.ui.comboBoxValue1.currentText()], ascending=self.ui.comboBoxSort1.currentData())
-            # if self.ui.comboBoxValue2.currentText() != '':
-            #     if self.ui.comboBoxSort2.currentData() != '':
-            #         pivot = pivot.sort_values(by=[self.ui.comboBoxValue2.currentText()], ascending=self.ui.comboBoxSort2.currentData())
-            # display pivot table
-            #print('Index:', pivot.index.names, 'Columns:', pivot.columns)
-            #model = PandasModel(pivot)
-            self.ui.tableView.setModel(self.model)   
-            # set span for aggregated rows
-            agg = len(rows)
-            rc = self.model.rowCount()
-            # set span
-            #self.ui.tableView.clearSpans()
-            # for c in range(agg): # for each aggregated column
-            #     rowStart, rowCount = 0, 1
-            #     for i in range(rc):
-            #         if self.model.index(i, c).data() == self.model.index(i + 1, c).data():
-            #             rowCount += 1
-            #         else:
-            #             if rowCount > 1: # set span only if more than one row
-            #                 self.ui.tableView.setSpan(rowStart, c, rowCount, 1)
-            #             rowStart = i + 1
-            #             rowCount = 1
+#             if not values or not aggfunc or len(values) != len(aggfunc):
+#                 QMessageBox.warning(self,
+#                                     _tr("Statistics", "Warning"),
+#                                     _tr("Statistics", "At least one value must be selected"))
+#                 return
+#             # get selected rows
+#             rows = []
+#             for r in (self.ui.comboBoxRow1,
+#                       self.ui.comboBoxRow2,
+#                       self.ui.comboBoxRow3,
+#                       self.ui.comboBoxRow4,
+#                       self.ui.comboBoxRow5,
+#                       self.ui.comboBoxRow6,
+#                       self.ui.comboBoxRow7):
+#                 if r.currentText() != '':
+#                     rows.append(r.currentText())
+#             if not rows:
+#                 QMessageBox.warning(self,
+#                                     _tr("Statistics", "Warning"),
+#                                     _tr("Statistics", "At least one row must be selected"))
+#                 return
+#             # get selected columns
+#             columns = []
+#             for c in (self.ui.comboBoxColumn1,
+#                       self.ui.comboBoxColumn2,
+#                       self.ui.comboBoxColumn3):
+#                 if c.currentText() != '':
+#                     columns.append(c.currentText())
+#             # totals
+#             t = self.ui.checkBoxTotal.isChecked()
+#             # create pivot table
+#             self.model.createPivot(rows, columns, values, aggfunc, t)
+#             # pivot = pd.pivot_table(df,
+#             #                         index=rows,
+#             #                         columns=columns,
+#             #                         values=values,
+#             #                         aggfunc=aggfunc,
+#             #                         fill_value=0.0,
+#             #                         margins=False,
+#             #                         margins_name='Totale Generale')
+#             #logging.info(f"Pivot table created with {len(pivot)} rows and {len(pivot.columns)} columns")
+#             # sorting
+#             # if self.ui.comboBoxValue1.currentText() != '':
+#             #     if self.ui.comboBoxSort1.currentData() != '':
+#             #         pivot = pivot.sort_values(by=[self.ui.comboBoxValue1.currentText()], ascending=self.ui.comboBoxSort1.currentData())
+#             # if self.ui.comboBoxValue2.currentText() != '':
+#             #     if self.ui.comboBoxSort2.currentData() != '':
+#             #         pivot = pivot.sort_values(by=[self.ui.comboBoxValue2.currentText()], ascending=self.ui.comboBoxSort2.currentData())
+#             # display pivot table
+#             #print('Index:', pivot.index.names, 'Columns:', pivot.columns)
+#             #model = PandasModel(pivot)
+#             self.ui.tableView.setModel(self.model)   
+#             # set span for aggregated rows
+#             agg = len(rows)
+#             rc = self.model.rowCount()
+#             # set span
+#             #self.ui.tableView.clearSpans()
+#             # for c in range(agg): # for each aggregated column
+#             #     rowStart, rowCount = 0, 1
+#             #     for i in range(rc):
+#             #         if self.model.index(i, c).data() == self.model.index(i + 1, c).data():
+#             #             rowCount += 1
+#             #         else:
+#             #             if rowCount > 1: # set span only if more than one row
+#             #                 self.ui.tableView.setSpan(rowStart, c, rowCount, 1)
+#             #             rowStart = i + 1
+#             #             rowCount = 1
             
-            logging.info("Pivot table displayed in analysis widget")
-        else:
-            self.ui.groupBoxValues.setVisible(True)
-            self.ui.groupBoxRow.setVisible(True)
-            self.ui.groupBoxColumn.setVisible(True)
-            self.ui.pushButtonShowApply.setText(_tr("Statistics", "Apply/Refresh"))
+#             logging.info("Pivot table displayed in analysis widget")
+#         else:
+#             self.ui.groupBoxValues.setVisible(True)
+#             self.ui.groupBoxRow.setVisible(True)
+#             self.ui.groupBoxColumn.setVisible(True)
+#             self.ui.pushButtonShowApply.setText(_tr("Statistics", "Apply/Refresh"))

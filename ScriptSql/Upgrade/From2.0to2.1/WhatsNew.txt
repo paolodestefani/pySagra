@@ -1,4 +1,0 @@
-Inserito un blocco alla modifica delle date degli eventi se esistono già degli ordini inseriti
-Modificata la gestione e stampa riepilogo incassi per considerare il dato per pranzo/cena oltre che totale
-Inserito un checkbox a gestione manuale ma con default su Impostazioni per identificare i pagamenti elettronici, modificato riepilogo incassi di conseguenza
-Modificata vista per analisi BI creandone una con dati di testata ed una con dati di riga

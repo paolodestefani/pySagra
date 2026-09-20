@@ -258,7 +258,8 @@ SELECT
 	c.description AS company_description
 FROM system.connection n
 JOIN system.company c ON n.company_id = c.company_id 
-WHERE session_id = pg_backend_pid();"""
+WHERE session_id = pg_backend_pid()
+ORDER BY company_id;"""
     try:
         with appconn.cursor() as cur:
             cur.execute(script)

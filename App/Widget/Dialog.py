@@ -346,65 +346,82 @@ class SortFilterDialog(QDialog):
         # 3 = operand included in operator with argument literal
         self.FILTERING = {
             # integer
-            'int': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'SB'), # spinbox
-                  ('<', _tr('Operator', '<'), 0, 'SB'),
-                  ('<=', _tr('Operator', '<='), 0, 'SB'),
-                  ('>', _tr('Operator', '>'), 0, 'SB'),
-                  ('>=', _tr('Operator', '>='), 0, 'SB'),
-                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None),
-                  ('=', _tr('Operator', 'From list'), 0, 'LIST')], # list of reference values
+            'int': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', 'From list'), 0, 'LIST'), # list of reference values
+                ('=', _tr('Operator', '='), 0, 'SB'), # spinbox
+                ('<', _tr('Operator', '<'), 0, 'SB'),
+                ('<=', _tr('Operator', '<='), 0, 'SB'),
+                ('>', _tr('Operator', '>'), 0, 'SB'),
+                ('>=', _tr('Operator', '>='), 0, 'SB'),
+                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None),
+                ],
             # decimal number
-            'decimal': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
-                  ('<', _tr('Operator', '<'), 0, 'DSB'),
-                  ('<=', _tr('Operator', '<='), 0, 'DSB'),
-                  ('>', _tr('Operator', '>'), 0, 'DSB'),
-                  ('>=', _tr('Operator', '>='), 0, 'DSB'),
-                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+            'decimal': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
+                ('<', _tr('Operator', '<'), 0, 'DSB'),
+                ('<=', _tr('Operator', '<='), 0, 'DSB'),
+                ('>', _tr('Operator', '>'), 0, 'DSB'),
+                ('>=', _tr('Operator', '>='), 0, 'DSB'),
+                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
+                ],
             # boolean
-            'bool': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'CB'), # checkbox
-                  ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
+            'bool': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', '='), 0, 'CB'), # checkbox
+                ('IS NULL', _tr('Operator', 'Is null'), 1, None)
+                ],
             # string
-            'str': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'LE'), # line edit
-                  ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
-                  ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
-                  ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
-                  ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
-                  ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
+            'str': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', '='), 0, 'LE'), # line edit
+                ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
+                ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
+                ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
+                ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
+                ('IS NULL', _tr('Operator', 'Is null'), 1, None)
+                ],
             # date
-            'date': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'DE'), # date edit
-                  ('<', _tr('Operator', '<'), 0, 'DE'),
-                  ('<=', _tr('Operator', '<='), 0, 'DE'),
-                  ('>', _tr('Operator', '>'), 0, 'DE'),
-                  ('>=', _tr('Operator', '>='), 0, 'DE'),
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+            'date': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', '='), 0, 'DE'), # date edit
+                ('<', _tr('Operator', '<'), 0, 'DE'),
+                ('<=', _tr('Operator', '<='), 0, 'DE'),
+                ('>', _tr('Operator', '>'), 0, 'DE'),
+                ('>=', _tr('Operator', '>='), 0, 'DE'),
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
+                ],
             # date time
-            'datetime': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'DTE'), # date time edit
-                  ('<', _tr('Operator', '<'), 0, 'DTE'),
-                  ('<=', _tr('Operator', '<='), 0, 'DTE'),
-                  ('>', _tr('Operator', '>'), 0, 'DTE'),
-                  ('>=', _tr('Operator', '>='), 0, 'DTE'),
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+            'datetime': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', '='), 0, 'DTE'), # date time edit
+                ('<', _tr('Operator', '<'), 0, 'DTE'),
+                ('<=', _tr('Operator', '<='), 0, 'DTE'),
+                ('>', _tr('Operator', '>'), 0, 'DTE'),
+                ('>=', _tr('Operator', '>='), 0, 'DTE'),
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
+                ],
              # time
-            'time': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
-                  ('<', _tr('Operator', '<'), 0, 'TE'),
-                  ('<=', _tr('Operator', '<='), 0, 'TE'),
-                  ('>', _tr('Operator', '>'), 0, 'TE'),
-                  ('>=', _tr('Operator', '>='), 0, 'TE'),
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+            'time': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
+                ('<', _tr('Operator', '<'), 0, 'TE'),
+                ('<=', _tr('Operator', '<='), 0, 'TE'),
+                ('>', _tr('Operator', '>'), 0, 'TE'),
+                ('>=', _tr('Operator', '>='), 0, 'TE'),
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
+                ],
             # reference field / list
-            'refstr': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'SCB'), # standard combo box
-                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'CCB'), # checkable combo box
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)]}
+            'refstr': [
+                ('', '', 0, None),  # first row means no data
+                ('=', _tr('Operator', '='), 0, 'SCB'), # standard combo box
+                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'CCB'), # checkable combo box
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
+                ]
+            }
 
         self.ORDERING = (('ASC', _tr('Sort', 'Ascending')),
                          ('DESC', _tr('Sort', 'Descending')))

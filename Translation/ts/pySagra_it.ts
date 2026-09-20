@@ -2514,7 +2514,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/System/Mainwindow.py" line="575"/>
         <source>Warning: open tabs will be closed, continue anyway ?</source>
-        <translation>Avviso: le linguette aperte verranno chiuse, procedo comunque ?</translation>
+        <translation>Avviso: le schede aperte verranno chiuse, procedo comunque ?</translation>
     </message>
     <message>
         <location filename="../../App/System/Mainwindow.py" line="595"/>

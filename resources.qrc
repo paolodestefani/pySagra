@@ -1,6 +1,6 @@
 <RCC>
   <qresource>
-    <file alias="pySagra">Icon/pySagra.png</file>
+    <file alias="pySagra">Icon/food.png</file>
     <file alias="login_gif">Icon/login.gif</file>
     <file alias="eye_light">Icon/eye_light.png</file>
     <file alias="eye_off_light">Icon/eye_off_light.png</file>

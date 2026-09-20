@@ -248,6 +248,6 @@ INSERT INTO app_user (user_code, description, user_password, is_admin, is_system
 VALUES 
 ('system', '{pyAppName} system administrator', system.crypt('G@str0n0m1c', system.gen_salt('bf')), True, True, True, True, True, 'en_US', 'oxygen'),
 ('sistema', 'Amministratore del sistema {pyAppName}', system.crypt('G@str0n0m1c0', system.gen_salt('bf')), True, True, True, True, True, 'it_IT', 'flatwoken'),
-('pySagraWeb', '{pyAppName} web order entry system user', system.crypt('pySagraWeb', system.gen_salt('bf')), False, True, False, False, False, 'en_US', Null);
+('pySagraWeb', '{pyAppName} web system user', system.crypt('pySagraWeb', system.gen_salt('bf')), False, True, False, False, False, 'en_US', Null);
 
 
