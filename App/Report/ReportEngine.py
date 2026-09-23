@@ -54,7 +54,6 @@ All sections are optional but a report need at least one detail band.
 
 # standard library
 import sys
-import os
 import collections
 import decimal
 import itertools
@@ -91,7 +90,6 @@ from PySide6.QtGui import QPageSize
 from PySide6.QtGui import QPageLayout
 from PySide6.QtGui import QPaintDevice
 from PySide6.QtGui import QPdfWriter
-from PySide6.QtGui import QTransform
 from PySide6.QtWidgets import QApplication
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
@@ -1089,7 +1087,7 @@ class Report():
         self.pages: list = [] # list of pages (QPicture)
         self.offset = 0.0
         self.page_num = 0
-
+        
     def appendBands(self, childElement: ET.Element) -> list:
         outList = []
         for band in childElement.findall('band'):
@@ -1591,7 +1589,7 @@ if __name__ == "__main__":
             <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="red">Arial Normal Red</label>
             <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="green">Arial Normal Green</label>
             <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="blue">Arial Normal Blue</label>
-            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="magenta">Arial Normal magenta</label> 
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Arial" fontSize="8" color="magenta">Arial Normal Magenta</label> 
         </band>
         <band height="190.0"> <!-- Helvetica font family -->
             <!-- Font sizes -->
@@ -1630,7 +1628,7 @@ if __name__ == "__main__":
             <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="red">Helvetica Normal Red</label>
             <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="green">Helvetica Normal Green</label>
             <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="blue">Helvetica Normal Blue</label>
-            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="magenta">Helvetica Normal magenta</label>  
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Helvetica" fontSize="8" color="magenta">Helvetica Normal Magenta</label>  
         </band>
         <band height="190.0"> <!-- Verdana font family -->
             <!-- Font sizes -->
@@ -1669,7 +1667,7 @@ if __name__ == "__main__":
             <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="red">Verdana Normal Red</label>
             <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="green">Verdana Normal Green</label>
             <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="blue">Verdana Normal Blue</label> 
-            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="magenta">Verdana Normal magenta</label>  
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Verdana" fontSize="8" color="magenta">Verdana Normal Magenta</label>  
         </band>
         <band height="190.0"> <!-- Comic Sans MS font family -->
             <!-- Font sizes -->
@@ -1708,7 +1706,7 @@ if __name__ == "__main__":
             <label left="345.0" top="120.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="red">Comic Sans MS Normal Red</label>
             <label left="345.0" top="135.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="green">Comic Sans MS Normal Green</label>
             <label left="345.0" top="150.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="blue">Comic Sans MS Normal Blue</label> 
-            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="magenta">Comic Sans MS Normal magenta</label>
+            <label left="345.0" top="165.0" width="225.0" height="15.0" fontFamily="Comic Sans MS" fontSize="8" color="magenta">Comic Sans MS Normal Magenta</label>
         </band>
         <band height="75.0"> <!-- Circles and Ellipses -->
             <!-- Circle -->
@@ -1935,6 +1933,7 @@ if __name__ == "__main__":
         <band height="20.0">
             <line x1="10.0" y1="5.0" x2="280.0" y2="5.0" style="SolidLine" lineWidth="1.0"/>
             <special left="0.0" top="0.0" width="595.0" height="10.0" textAlign="AlignHCenter" fontWeight="Bold">pageNumber</special>
+            <special left="10.0" top="0.0" width="585.0" height="10.0" textAlign="AlignHCenter" fontWeight="Bold">totalPageCount</special>
             <line x1="310.0" y1="5.0" x2="585.0" y2="5.0" style="SolidLine" lineWidth="1.0"/>
         </band>
     </pageFooter>
