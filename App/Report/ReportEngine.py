@@ -288,6 +288,8 @@ defaultOptions = {'documentName':           'pyReportEngine document',
                   'aspectRatio':            'KeepAspectRatio',
                   'opacity':                1.0,
                   'quantityDecimals':       2,
+                  'priceDecimals':          2,
+                  'amountDecimals':         2,
                   'currencySymbol':         '€',
                   'trueSymbol':             '\u25CF',
                   'falseSymbol':            '\u25CB'
@@ -392,10 +394,12 @@ class BaseRenderer():
             self.color = '???' # an invalid color that Qt interpret as black on any platforms
         self.canGrow = 'True' == paramdict.get("canGrow", "False")
         self.quantityDecimals = int(paramdict.get("quantityDecimals", options['quantityDecimals']))
+        self.priceDecimals = int(paramdict.get("priceDecimals", options['priceDecimals']))
+        self.amountDecimals = int(paramdict.get("amountDecimals", options['amountDecimals']))
         self.currencySymbol = paramdict.get("currencySymbol", options['currencySymbol'])
         self.trueSymbol = paramdict.get("trueSymbol", options['trueSymbol'])
         self.falseSymbol = paramdict.get("falseSymbol", options['falseSymbol'])
-        self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # default value
+        self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # current value
         if paramdict.get("isVisibleParameter"):
             t = paramdict.get("isVisibleParameter", "").split(' ')
             if t[0] == "Not":
@@ -413,17 +417,45 @@ class BaseRenderer():
                 text = self.trueSymbol if self.value else self.falseSymbol
             case int()|float()|decimal.Decimal():
                 if self.fieldFormat:
-                    if self.fieldFormat == 'currency':
-                        text = session['qlocale'].toCurrencyString(float(self.value),
-                                                                   self.currencySymbol) # looks like int/decimal require a float conversion before currency string
-                    elif self.fieldFormat == 'decimal2':
-                        text = session['qlocale'].toString(float(self.value),
-                                                           'f',
-                                                           2)
+                    if self.fieldFormat == 'currency': # bypass qlocale.toCurrencyString() that dont't show thousand separator for float with small < 10_000 values
+                        raw_formatted = f"{float(self.value or 0.0):,.2f}"
+                        integer_part, decimal_part = raw_formatted.split('.')
+                        text = f"{self.currencySymbol} {integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                        #text = session['qlocale'].toCurrencyString(float(self.value),
+                        #                                           self.currencySymbol)
+                    elif self.fieldFormat == 'amount': # bypass qlocale.toString() that dont't show thousand separator for float with small < 10_000 values
+                        raw_formatted = f"{float(self.value or 0.0):,.{self.amountDecimals}f}"
+                        if self.amountDecimals > 0:
+                            integer_part, decimal_part = raw_formatted.split('.')
+                            text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                        else:
+                            text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"
+                        
+                        # text = session['qlocale'].toString(float(self.value),
+                        #                                    'f',
+                        #                                    self.amountDecimals)
+                    elif self.fieldFormat == 'price':
+                        raw_formatted = f"{float(self.value or 0.0):,.{self.priceDecimals}f}"
+                        if self.priceDecimals > 0:
+                            integer_part, decimal_part = raw_formatted.split('.')
+                            text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                        else:
+                            text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"
+                        
+                        # text = session['qlocale'].toString(float(self.value),
+                        #                                    'f',
+                        #                                    self.priceDecimals)
                     elif self.fieldFormat == 'quantity':
-                        text = session['qlocale'].toString(float(self.value),
-                                                           'f',
-                                                           self.quantityDecimals)
+                        raw_formatted = f"{float(self.value or 0.0):,.{self.quantityDecimals}f}"
+                        if self.quantityDecimals > 0:
+                            integer_part, decimal_part = raw_formatted.split('.')
+                            text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                        else:
+                            text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"                   
+                          
+                        # text = session['qlocale'].toString(float(self.value),
+                        #                                    'f',
+                        #                                    self.quantityDecimals)
                     else:
                         # python string format for numbers f.e. '{0:.2f}'
                         text = self.fieldFormat.format(self.value)
@@ -434,7 +466,7 @@ class BaseRenderer():
                         text = session['qlocale'].toString(self.value)
             case QDate()|QDateTime()|QTime():
                 if self.fieldFormat: # qt string format f.e. 'dd.MM.yyyy'
-                    text = self.value.toString(self.fieldFormat)
+                    text = session['qlocale'].toString(self.value, self.fieldFormat)
                 else:
                     text = session['qlocale'].toString(self.value, QLocale.FormatType.ShortFormat)
             case str() if self.barcode == 'Code39':
@@ -547,11 +579,14 @@ class Field(BaseRenderer):
     def __init__(self, options: dict, paramdict: dict, fieldName: str) -> None:
         super().__init__(options, paramdict)
         self.value = None
+        self.prev_value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # previous value
         self.fieldName = fieldName
         self.aspectRatio = AspectRatio[paramdict.get("aspectRatio", options['aspectRatio'])]
         self.hideIfRepeated = 'True' == paramdict.get("hideIfRepeated", "False") 
 
     def setValue(self, value: str|int|float|decimal.Decimal|QByteArray) -> None:
+        if self.value is not None and self.value != '':
+            self.prev_value = self.value
         if isinstance(value, QByteArray):
             image = QImage()
             image.loadFromData(value)
@@ -991,10 +1026,8 @@ class Band(list):
         # draw band's elements
         for element in self:
             if isinstance(element, Field):
-                if element.hideIfRepeated: 
-                    if prev_record:
-                        if record[element.fieldName] == prev_record[element.fieldName]:
-                            continue 
+                if element.hideIfRepeated and element.prev_value and record[element.fieldName] == element.prev_value:
+                    element.setValue('')
                 else:
                     element.setValue(record[element.fieldName])
             # if element.isVisible:
@@ -1078,7 +1111,11 @@ class Report():
         if 'App.Database.Setting' in sys.modules:
             setting = Setting()
             defaultOptions['quantityDecimals'] = setting['quantity_decimal_places']
+            defaultOptions['priceDecimals'] = setting['price_decimal_places']
+            defaultOptions['amountDecimals'] = setting['amount_decimal_places']
             defaultOptions['currencySymbol'] = setting['currency_symbol']
+        self.thousand_sep = session['qlocale'].groupSeparator()
+        self.decimal_sep = session['qlocale'].decimalPoint()
         if xml_string:
             self.setReportDefinition(xml_string)
 
