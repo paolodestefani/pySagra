@@ -579,14 +579,14 @@ class Field(BaseRenderer):
     def __init__(self, options: dict, paramdict: dict, fieldName: str) -> None:
         super().__init__(options, paramdict)
         self.value = None
-        self.prev_value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # previous value
+        #self.prev_value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # previous value
         self.fieldName = fieldName
         self.aspectRatio = AspectRatio[paramdict.get("aspectRatio", options['aspectRatio'])]
-        self.hideIfRepeated = 'True' == paramdict.get("hideIfRepeated", "False") 
+        self.suppressRepeated = 'True' == paramdict.get("suppressRepeated", "False") 
 
     def setValue(self, value: str|int|float|decimal.Decimal|QByteArray) -> None:
-        if self.value is not None and self.value != '':
-            self.prev_value = self.value
+        # if self.value is not None and self.value != '':
+        #     self.prev_value = self.value
         if isinstance(value, QByteArray):
             image = QImage()
             image.loadFromData(value)
@@ -1026,10 +1026,13 @@ class Band(list):
         # draw band's elements
         for element in self:
             if isinstance(element, Field):
-                if element.hideIfRepeated and element.prev_value and record[element.fieldName] == element.prev_value:
-                    element.setValue('')
-                else:
-                    element.setValue(record[element.fieldName])
+                value = record[element.fieldName]
+                if element.suppressRepeated:
+                    if self.report.last_printed_values.get(element.fieldName) == value:
+                        value = None
+                    else:
+                        self.report.last_printed_values[element.fieldName] = value
+                element.setValue(value)
             # if element.isVisible:
             element.render(newHeight)
         # update report offset
@@ -1108,6 +1111,7 @@ class Report():
         # report parameters as a param: value dictionary
         self.parameter: collections.OrderedDict = collections.OrderedDict()
         self.summaries: list = []  # each summary init update this list, must be set before calling setReportDefinition
+        self.last_printed_values: dict = {} # for suppressRepeated fields
         if 'App.Database.Setting' in sys.modules:
             setting = Setting()
             defaultOptions['quantityDecimals'] = setting['quantity_decimal_places']
@@ -1320,6 +1324,8 @@ class Report():
         "Add a new page with header/footer if required"
         # reset newPageRequest first
         self.newPageRequest = False
+        # clear fields for suppressRepeated
+        self.last_printed_values.clear()
         # close last page and start with the new one
         if self.painter.isActive():
             self.painter.end()
@@ -1433,12 +1439,13 @@ class Report():
         self.current_group_index = 0
         for s in self.summaries:
             s.reset()
+        self.last_printed_values.clear()
             
         # Calculate the space available for details bands and all the other bands
-        self.page_width = (self.pageLayout.fullRect(Unit[self.options["unit"]]).width() #type: ignore
+        self.page_width = (self.pageLayout.fullRect(Unit[self.options["unit"]]).width() # type: ignore
                            - self.options['leftMargin'] #type: ignore
                            - self.options['rightMargin']) #type: ignore
-        self.page_height = (self.pageLayout.fullRect(Unit[self.options["unit"]]).height()#type: ignore
+        self.page_height = (self.pageLayout.fullRect(Unit[self.options["unit"]]).height() # type: ignore
                             - self.options['topMargin'] #type: ignore
                             - self.options['bottomMargin']) #type: ignore
         self.offset = 0.0 #float(self.options['topMargin']) #type: ignore
@@ -1448,6 +1455,15 @@ class Report():
         if self.page_footer:
             for b in self.page_footer:
                 self.footer_height += b.height
+                
+        # report scripting, only one time before starting
+        if self.execute:
+            globalsParameters = {'Qt': Qt,
+                                 'Sort': Sort,
+                                 'Parameter': Parameter,
+                                 'SqlField': SqlField,
+                                 'report': self}
+            exec(self.execute, globalsParameters)
 
         # sort for required sorting
         for col, rev in [(self.column[i], i.reverse) for i in reversed(self.sortings)]:
@@ -1475,12 +1491,6 @@ class Report():
                     
         self.rn = 1 # record number, start from 1 for compatibility with report definition functions
         self.last_record_num = len(self.data) # reference for bands
-
-        # report scripting, only one time before starting
-        if self.execute:
-            globalsParameters = {'Qt': Qt,
-                                 'report': self}
-            exec(self.execute, globalsParameters)
 
         # begin with new page and report header if required on first record
         first_record = {k: self.data[0][v] for k, v in self.column.items()}
@@ -1582,6 +1592,9 @@ if __name__ == "__main__":
     <pageBackground>
         <rectangle left="0.0" top="0.0" width="575.0" height="822.0" lineWidth="0.5"/>
     </pageBackground>
+    <execute>
+print('Report Instanse:', report)
+    </execute>
     <reportHeader>
         <band height="40">
             <label left="0.0" top="0.0" width="575.0" height="40.0" color="blue"
@@ -2292,7 +2305,7 @@ else:
     <details>
         <band height="8" canGrow="True">
             <special left="2" top="2" width="13" height="6" fontSize="3" textAlign="AlignLeft" color="green" format="{:0>3d}">recordNumber</special>
-            <field left="15" top="2" width="30" height="6" fontSize="3" textAlign="AlignLeft" hideIfRepeated="True">code</field>
+            <field left="15" top="2" width="30" height="6" fontSize="3" textAlign="AlignLeft" suppressRepeated="True">code</field>
             <field left="45" top="2" width="65" height="6" fontSize="3" canGrow="True">description</field>
             <field left="110" top="2" width="30" height="6" fontSize="3">department</field>
             <field left="140" top="2" width="10" height="6" fontSize="3" textAlign="AlignHCenter">stock_control</field>

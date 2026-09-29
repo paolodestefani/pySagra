@@ -16,9 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFontComboBox,
-    QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
-    QLabel, QLineEdit, QPlainTextEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QStackedWidget,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QPlainTextEdit, QPushButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QStackedWidget, QToolButton,
     QVBoxLayout, QWidget)
 
 from App.Widget.Control import RelationalComboBox
@@ -40,44 +40,44 @@ class Ui_ReportWidget(object):
         self.form.setObjectName(u"form")
         self.verticalLayout_3 = QVBoxLayout(self.form)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.gridLayout = QGridLayout()
-        self.gridLayout.setObjectName(u"gridLayout")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.label = QLabel(self.form)
         self.label.setObjectName(u"label")
 
-        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.horizontalLayout_2.addWidget(self.label)
 
         self.lineEditCode = QLineEdit(self.form)
         self.lineEditCode.setObjectName(u"lineEditCode")
         self.lineEditCode.setEnabled(True)
 
-        self.gridLayout.addWidget(self.lineEditCode, 0, 1, 1, 1)
+        self.horizontalLayout_2.addWidget(self.lineEditCode)
 
         self.label_3 = QLabel(self.form)
         self.label_3.setObjectName(u"label_3")
 
-        self.gridLayout.addWidget(self.label_3, 0, 2, 1, 1)
+        self.horizontalLayout_2.addWidget(self.label_3)
 
         self.comboBoxL10n = RelationalComboBox(self.form)
         self.comboBoxL10n.setObjectName(u"comboBoxL10n")
         self.comboBoxL10n.setEnabled(True)
         self.comboBoxL10n.setEditable(False)
 
-        self.gridLayout.addWidget(self.comboBoxL10n, 0, 3, 1, 1)
+        self.horizontalLayout_2.addWidget(self.comboBoxL10n)
 
         self.label_2 = QLabel(self.form)
         self.label_2.setObjectName(u"label_2")
 
-        self.gridLayout.addWidget(self.label_2, 0, 4, 1, 1)
+        self.horizontalLayout_2.addWidget(self.label_2)
 
         self.comboBoxClass = QComboBox(self.form)
         self.comboBoxClass.setObjectName(u"comboBoxClass")
 
-        self.gridLayout.addWidget(self.comboBoxClass, 0, 5, 1, 1)
+        self.horizontalLayout_2.addWidget(self.comboBoxClass)
 
         self.horizontalSpacer_2 = QSpacerItem(168, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout.addItem(self.horizontalSpacer_2, 0, 6, 1, 1)
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
 
         self.checkBoxSystem = QCheckBox(self.form)
         self.checkBoxSystem.setObjectName(u"checkBoxSystem")
@@ -85,20 +85,43 @@ class Ui_ReportWidget(object):
         self.checkBoxSystem.setChecked(False)
         self.checkBoxSystem.setTristate(False)
 
-        self.gridLayout.addWidget(self.checkBoxSystem, 0, 7, 1, 1)
+        self.horizontalLayout_2.addWidget(self.checkBoxSystem)
 
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_4 = QLabel(self.form)
         self.label_4.setObjectName(u"label_4")
 
-        self.gridLayout.addWidget(self.label_4, 1, 0, 1, 1)
+        self.horizontalLayout_3.addWidget(self.label_4)
 
         self.lineEditDescription = QLineEdit(self.form)
         self.lineEditDescription.setObjectName(u"lineEditDescription")
 
-        self.gridLayout.addWidget(self.lineEditDescription, 1, 1, 1, 7)
+        self.horizontalLayout_3.addWidget(self.lineEditDescription)
 
+        self.label2 = QLabel(self.form)
+        self.label2.setObjectName(u"label2")
 
-        self.verticalLayout_3.addLayout(self.gridLayout)
+        self.horizontalLayout_3.addWidget(self.label2)
+
+        self.lineEditFind = QLineEdit(self.form)
+        self.lineEditFind.setObjectName(u"lineEditFind")
+        self.lineEditFind.setMaxLength(64)
+
+        self.horizontalLayout_3.addWidget(self.lineEditFind)
+
+        self.toolButtonFind = QToolButton(self.form)
+        self.toolButtonFind.setObjectName(u"toolButtonFind")
+        self.toolButtonFind.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_3.addWidget(self.toolButtonFind)
+
+        self.horizontalLayout_3.setStretch(1, 1)
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
 
         self.groupBox_5 = QGroupBox(self.form)
         self.groupBox_5.setObjectName(u"groupBox_5")
@@ -222,13 +245,15 @@ class Ui_ReportWidget(object):
         self.label_2.setText(QCoreApplication.translate("ReportWidget", u"Class", None))
         self.checkBoxSystem.setText(QCoreApplication.translate("ReportWidget", u"System report", None))
         self.label_4.setText(QCoreApplication.translate("ReportWidget", u"Description", None))
+        self.label2.setText(QCoreApplication.translate("ReportWidget", u"Find text:", None))
+        self.toolButtonFind.setText(QCoreApplication.translate("ReportWidget", u"Find", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("ReportWidget", u"XML report definition", None))
         self.label_5.setText(QCoreApplication.translate("ReportWidget", u"Font", None))
-        self.pushButtonInsertImage.setText(QCoreApplication.translate("ReportWidget", u"Insert image from file to clipboard", None))
+        self.pushButtonInsertImage.setText(QCoreApplication.translate("ReportWidget", u"Image to clipboard", None))
         self.pushButtonDeleteAll.setText(QCoreApplication.translate("ReportWidget", u"Delete All", None))
         self.pushButtonDownload.setText(QCoreApplication.translate("ReportWidget", u"Download ...", None))
         self.pushButtonUpload.setText(QCoreApplication.translate("ReportWidget", u"Upload ...", None))
-        self.pushButtonDownloadAll.setText(QCoreApplication.translate("ReportWidget", u"Download all reports...", None))
-        self.pushButtonUploadAll.setText(QCoreApplication.translate("ReportWidget", u"Upload all reports ...", None))
+        self.pushButtonDownloadAll.setText(QCoreApplication.translate("ReportWidget", u"Download all ...", None))
+        self.pushButtonUploadAll.setText(QCoreApplication.translate("ReportWidget", u"Upload all ...", None))
     # retranslateUi
 

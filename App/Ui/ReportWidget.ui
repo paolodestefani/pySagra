@@ -27,29 +27,29 @@
        <widget class="QWidget" name="form">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
             <widget class="QLabel" name="label">
              <property name="text">
               <string>Code</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
+           <item>
             <widget class="QLineEdit" name="lineEditCode">
              <property name="enabled">
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="0" column="2">
+           <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
               <string>Language/Country</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="3">
+           <item>
             <widget class="RelationalComboBox" name="comboBoxL10n">
              <property name="enabled">
               <bool>true</bool>
@@ -59,17 +59,17 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="4">
+           <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Class</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
+           <item>
             <widget class="QComboBox" name="comboBoxClass"/>
            </item>
-           <item row="0" column="6">
+           <item>
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
@@ -82,7 +82,7 @@
              </property>
             </spacer>
            </item>
-           <item row="0" column="7">
+           <item>
             <widget class="QCheckBox" name="checkBoxSystem">
              <property name="focusPolicy">
               <enum>Qt::FocusPolicy::NoFocus</enum>
@@ -98,15 +98,46 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,0,0">
+           <item>
             <widget class="QLabel" name="label_4">
              <property name="text">
               <string>Description</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1" colspan="7">
+           <item>
             <widget class="QLineEdit" name="lineEditDescription"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label2">
+             <property name="text">
+              <string>Find text:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEditFind">
+             <property name="maxLength">
+              <number>64</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="toolButtonFind">
+             <property name="text">
+              <string>Find</string>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -175,7 +206,7 @@
        <item>
         <widget class="QPushButton" name="pushButtonInsertImage">
          <property name="text">
-          <string>Insert image from file to clipboard</string>
+          <string>Image to clipboard</string>
          </property>
         </widget>
        </item>
@@ -216,14 +247,14 @@
        <item>
         <widget class="QPushButton" name="pushButtonDownloadAll">
          <property name="text">
-          <string>Download all reports...</string>
+          <string>Download all ...</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonUploadAll">
          <property name="text">
-          <string>Upload all reports ...</string>
+          <string>Upload all ...</string>
          </property>
         </widget>
        </item>
@@ -235,14 +266,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>EnhancedTableView</class>
-   <extends>QTableView</extends>
-   <header>App.Widget.View</header>
-  </customwidget>
-  <customwidget>
    <class>RelationalComboBox</class>
    <extends>QComboBox</extends>
    <header>App.Widget.Control</header>
+  </customwidget>
+  <customwidget>
+   <class>EnhancedTableView</class>
+   <extends>QTableView</extends>
+   <header>App.Widget.View</header>
   </customwidget>
  </customwidgets>
  <tabstops>

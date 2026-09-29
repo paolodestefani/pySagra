@@ -47,7 +47,7 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QFontMetrics
 from PySide6.QtGui import QPixmap
-from PySide6.QtGui import QCursor
+from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -153,6 +153,7 @@ class ReportForm(FormIndexManager):
         # syntax highlighting
         self.highlighter = XMLHighlighter(self.ui.textEditXML.document())
         # signal/slot
+        self.ui.toolButtonFind.clicked.connect(self.findText)
         self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonUpload.clicked.connect(self.upload)
@@ -161,6 +162,16 @@ class ReportForm(FormIndexManager):
         self.ui.fontComboBox.currentFontChanged.connect(self.changeFont)
         self.ui.spinBoxFontSize.valueChanged.connect(self.changeFontSize)
         self.ui.pushButtonInsertImage.clicked.connect(self.insertImage)
+        
+    def findText(self) -> None:
+        "Find text"
+        self.ui.textEditXML.setFocus()
+        if not self.ui.textEditXML.find(self.ui.lineEditFind.text()):
+            QMessageBox.warning(
+                self,
+                _tr('Help', "Warning"),
+                _tr('Help', "Text not found")
+            )
 
     def mapperIndexChanged(self, index: int) -> None:
         "Change form settings on change record"
