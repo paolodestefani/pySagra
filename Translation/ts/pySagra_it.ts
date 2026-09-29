@@ -2780,8 +2780,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Menu.py" line="116"/>
         <location filename="../../App/System/Menu.py" line="207"/>
         <location filename="../../App/System/Profile.py" line="121"/>
-        <location filename="../../App/System/Report.py" line="207"/>
-        <location filename="../../App/System/Report.py" line="218"/>
+        <location filename="../../App/System/Report.py" line="203"/>
+        <location filename="../../App/System/Report.py" line="214"/>
         <location filename="../../App/System/User.py" line="353"/>
         <location filename="../../App/System/User.py" line="432"/>
         <location filename="../../App/Widget/Dialog.py" line="665"/>
@@ -2831,8 +2831,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Mainwindow.py" line="598"/>
         <location filename="../../App/System/Menu.py" line="216"/>
         <location filename="../../App/System/Profile.py" line="228"/>
-        <location filename="../../App/System/Report.py" line="226"/>
-        <location filename="../../App/System/Report.py" line="278"/>
+        <location filename="../../App/System/Report.py" line="222"/>
+        <location filename="../../App/System/Report.py" line="274"/>
         <location filename="../../App/System/Scripting.py" line="264"/>
         <location filename="../../App/System/Scripting.py" line="299"/>
         <location filename="../../App/System/User.py" line="272"/>
@@ -2871,8 +2871,8 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/System/Connection.py" line="218"/>
         <location filename="../../App/System/Connection.py" line="237"/>
-        <location filename="../../App/System/Report.py" line="386"/>
-        <location filename="../../App/System/Report.py" line="421"/>
+        <location filename="../../App/System/Report.py" line="382"/>
+        <location filename="../../App/System/Report.py" line="417"/>
         <location filename="../../App/System/Scripting.py" line="290"/>
         <location filename="../../App/System/Scripting.py" line="446"/>
         <location filename="../../App/System/Scripting.py" line="497"/>
@@ -6129,93 +6129,93 @@ Devo procedere comunque?</translation>
 <context>
     <name>Report</name>
     <message>
-        <location filename="../../App/System/Report.py" line="294"/>
-        <location filename="../../App/System/Report.py" line="329"/>
-        <location filename="../../App/System/Report.py" line="396"/>
+        <location filename="../../App/System/Report.py" line="290"/>
+        <location filename="../../App/System/Report.py" line="325"/>
+        <location filename="../../App/System/Report.py" line="392"/>
         <source>Select the directory</source>
         <translation>Selezionare la directory</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="305"/>
-        <location filename="../../App/System/Report.py" line="317"/>
+        <location filename="../../App/System/Report.py" line="301"/>
+        <location filename="../../App/System/Report.py" line="313"/>
         <source>Download current report</source>
         <translation>Scarica il report corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="364"/>
+        <location filename="../../App/System/Report.py" line="360"/>
         <source>Select the file to import</source>
         <translation>Selezionare il file da importare</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="219"/>
+        <location filename="../../App/System/Report.py" line="215"/>
         <source>It is not possible to delete a system report</source>
         <translation>Non è possibile cancellare un report di sistema</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="208"/>
+        <location filename="../../App/System/Report.py" line="204"/>
         <source>Can&apos;t use &apos;.&apos; (dot) in report code</source>
         <translation>Non è possibile utilizzare &apos;.&apos; (punto) nel codice del report</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="284"/>
+        <location filename="../../App/System/Report.py" line="280"/>
         <source>Delete all reports</source>
         <translation>Cancella tutti i report</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="314"/>
+        <location filename="../../App/System/Report.py" line="310"/>
         <source>Current report saved to file:</source>
         <translation>Report corrente salvato su file:</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="223"/>
+        <location filename="../../App/System/Report.py" line="219"/>
         <source>Delete current report ?</source>
         <translation>Cancello il report corrente ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="275"/>
+        <location filename="../../App/System/Report.py" line="271"/>
         <source>Delete ALL reports ?</source>
         <translation>Cancellare TUTTI i report ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="334"/>
-        <location filename="../../App/System/Report.py" line="352"/>
+        <location filename="../../App/System/Report.py" line="330"/>
+        <location filename="../../App/System/Report.py" line="348"/>
         <source>Download all reports</source>
         <translation>Scarica tutti i report</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="349"/>
+        <location filename="../../App/System/Report.py" line="345"/>
         <source>All reports saved to directory</source>
         <translation>Tutti i report sono stati salvati nella directory</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="370"/>
-        <location filename="../../App/System/Report.py" line="380"/>
+        <location filename="../../App/System/Report.py" line="366"/>
+        <location filename="../../App/System/Report.py" line="376"/>
         <source>Upload current report</source>
         <translation>Carica il report corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="387"/>
+        <location filename="../../App/System/Report.py" line="383"/>
         <source>Report file imported to database</source>
         <translation>File di report importati nel database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="405"/>
-        <location filename="../../App/System/Report.py" line="415"/>
+        <location filename="../../App/System/Report.py" line="401"/>
+        <location filename="../../App/System/Report.py" line="411"/>
         <source>Upload all reports</source>
         <translation>Carica tutti i report</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="422"/>
+        <location filename="../../App/System/Report.py" line="418"/>
         <source>All reports imported to database</source>
         <translation>Tutti i report son stati importati nel database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="258"/>
+        <location filename="../../App/System/Report.py" line="254"/>
         <source>Portable Network Graphics (*.png);;All files (*.*)</source>
         <translation>Portable Network Graphics (*.png);;Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../../App/System/Report.py" line="256"/>
+        <location filename="../../App/System/Report.py" line="252"/>
         <source>Select the image to insert into clipboard</source>
         <translation>Selezionare l&apos;immagine da inserire nella clipboard</translation>
     </message>
@@ -6263,12 +6263,12 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/Ui/ReportWidget.ui" line="118"/>
         <source>Find text:</source>
-        <translation type="unfinished">Cerca testo</translation>
+        <translation>Cerca testo</translation>
     </message>
     <message>
         <location filename="../../App/Ui/ReportWidget.ui" line="132"/>
         <source>Find</source>
-        <translation type="unfinished">Trova</translation>
+        <translation>Trova</translation>
     </message>
     <message>
         <location filename="../../App/Ui/ReportWidget.ui" line="147"/>
@@ -6283,17 +6283,17 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/Ui/ReportWidget.ui" line="209"/>
         <source>Image to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagine negli appunti</translation>
     </message>
     <message>
         <location filename="../../App/Ui/ReportWidget.ui" line="250"/>
         <source>Download all ...</source>
-        <translation type="unfinished"></translation>
+        <translation>Scarica tutto ...</translation>
     </message>
     <message>
         <location filename="../../App/Ui/ReportWidget.ui" line="257"/>
         <source>Upload all ...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carica tutto ...</translation>
     </message>
     <message>
         <location filename="../../App/Ui/ReportWidget.ui" line="229"/>
