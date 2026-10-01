@@ -643,6 +643,7 @@ class FormIndexManager[T](QWidget):
         if hasattr(self.model, 'userDataChanged'):
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.indexModel, self)
+        #self.sortFilterDialog.applySortFilter()
 
     def setIndexView(self, view: QTableView) -> None:
         "Set index view"

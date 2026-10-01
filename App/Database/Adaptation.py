@@ -455,12 +455,12 @@ WHERE
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         # 1. Try to fetch user-specific default configuration
         result = cur.execute(script1).fetchone()
-        if result:
-            return result
+        if result is not None:
+            return result[0]
         # 2. Fallback to system-wide default configuration
         result = cur.execute(script2).fetchone()
-        if result:
-            return result
+        if result is not None:
+            return result[0]
         return None
 
 

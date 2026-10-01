@@ -149,6 +149,8 @@ class PreferencesDialog(QDialog):
         app = QApplication.instance()
         if app is None or not isinstance(app, QApplication):
             return
+        # close all tabs
+        session['mainwin'].closeAllTabs()
         # gui preferences
         theme = self.ui.comboBoxTheme.currentText()
         color = self.ui.comboBoxColorScheme.modelDataStr
