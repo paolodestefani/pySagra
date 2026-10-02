@@ -32,6 +32,8 @@ creating, deleting, listing, exporting, importing adaptations and their settings
 import logging
 from typing import List, Tuple, Any
 
+from psycopg.rows import dict_row
+
 # application modules
 from App.Database.Exceptions import PyAppDBError
 from App.Core.ExceptionHandler import db_exception_context
@@ -113,11 +115,11 @@ SELECT setval(
         cur.execute(script3)
     
     
-def clear_adaptation() -> None:
+def clear_adaptation(adapt_type: str) -> None:
     """Delete all adaptations and reset all related sequences"""
     # Also delete adaptation settings and user defaults (handled via cascade constraints in DB)
-    script1 = """
-DELETE FROM system.adaptation;"""
+    script1 = t"""
+DELETE FROM system.adaptation WHERE type = {adapt_type};"""
     script2 = """
 SELECT setval(
     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
@@ -160,10 +162,10 @@ ORDER BY class_sorting;"""
         return cur.fetchall()
     
 
-def export_adaptation() -> List[Tuple[Any, ...]]:
+def export_adaptation(adapt_type: str) -> List[Tuple[Any, ...]]:
     """List all adaptation records for export"""
     # System objects query
-    script = """ 
+    script = t""" 
 SELECT
     adaptation_id,
     type, 
@@ -175,20 +177,19 @@ SELECT
     row_count_limit,
     is_system_object
 FROM system.adaptation
+WHERE type = {adapt_type}
 ORDER BY adaptation_id;
 """
     # Unified context managers for safe execution and clean tracking
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=dict_row) as cur:
         cur.execute(script)
         return cur.fetchall()
 
 
-def export_adaptation_setting() -> List[Tuple[Any, ...]]:
+def export_adaptation_setting(adapt_id: int) -> List[Tuple[Any, ...]]:
     """List all adaptation_setting records for export"""
-    script = """ 
+    script = t""" 
 SELECT
-    adaptation_setting_id,
-    adaptation_id,
     column_number,
     sorting,
     is_visible,
@@ -200,26 +201,78 @@ SELECT
     combo2_index,
     widget_value
 FROM system.adaptation_setting
+WHERE adaptation_id = {adapt_id}
 ORDER BY adaptation_setting_id;"""
     # Unified context managers handling error trapping, transaction lifecycle, and cursor
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=dict_row) as cur:
         cur.execute(script)
         return cur.fetchall()
 
 
-def import_adaptation(adaptations: List[Tuple[Any, ...]], 
-                      adaptsettings: List[Tuple[Any, ...]]) -> None:
-    """Import all records into adaptation and adaptation_setting tables"""
-    # For executemany, traditional placeholder syntax (%s) is required
-    script1 = """
-DELETE FROM system.adaptation;"""  # Also deletes adaptation settings via cascade
-    script2 = """
-ALTER TABLE system.adaptation ALTER COLUMN adaptation_id RESTART WITH 1;"""
-    script3 = """
-ALTER TABLE system.adaptation_setting ALTER COLUMN adaptation_setting_id RESTART WITH 1;"""
-    script4 = """
+# def import_adaptation(adaptations: List[Tuple[Any, ...]], 
+#                       adaptsettings: List[Tuple[Any, ...]]) -> None:
+#     """Import all records into adaptation and adaptation_setting tables"""
+#     # For executemany, traditional placeholder syntax (%s) is required
+#     script1 = """
+# DELETE FROM system.adaptation;"""  # Also deletes adaptation settings via cascade
+#     script2 = """
+# ALTER TABLE system.adaptation ALTER COLUMN adaptation_id RESTART WITH 1;"""
+#     script3 = """
+# ALTER TABLE system.adaptation_setting ALTER COLUMN adaptation_setting_id RESTART WITH 1;"""
+#     script4 = """
+# INSERT INTO system.adaptation (
+#     adaptation_id,
+#     type,
+#     class,
+#     description,
+#     class_sorting,
+#     is_default_for_class,
+#     report_id,
+#     row_count_limit,
+#     is_system_object)
+# VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+#     script5 = """
+# INSERT INTO system.adaptation_setting (
+#     adaptation_setting_id, 
+#     adaptation_id,
+#     column_number,
+#     sorting,
+#     is_visible,
+#     size,
+#     element_type,
+#     layout_row,
+#     combo1_index,
+#     negate_state,
+#     combo2_index,
+#     widget_value)
+# VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+#     script6 = """
+# SELECT setval(
+#     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
+#     COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
+#     (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
+# );"""
+#     script7 = """
+# SELECT setval(
+#     pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
+#     COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
+#     (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
+# );"""
+#     # Unified context managers ensure that if any batch insert or sequence reset fails,
+#     # the entire database import operation undergoes a clean rollback.
+#     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+#         cur.execute(script1)
+#         cur.execute(script2)
+#         cur.execute(script3)
+#         cur.executemany(script4, adaptations)
+#         cur.executemany(script5, adaptsettings)
+#         cur.execute(script6)
+#         cur.execute(script7)
+
+def import_adaptation(apt: dict) -> int|None:
+    """Import a record into adaptation table and return assigned id"""
+    script = t"""
 INSERT INTO system.adaptation (
-    adaptation_id,
     type,
     class,
     description,
@@ -228,10 +281,28 @@ INSERT INTO system.adaptation (
     report_id,
     row_count_limit,
     is_system_object)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    script5 = """
+VALUES (
+    {apt['type']},
+    {apt['class']},
+    {apt['description']},
+    {apt['class_sorting']},
+    {apt['is_default_for_class']},
+    {apt['report_id']},
+    {apt['row_count_limit']},
+    {apt['is_system_object']})
+RETURNING adaptation_id;"""
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        print(script)
+        cur.execute(script)
+        result = cur.fetchone()
+        if result is not None:
+            return result[0]
+        return None
+    
+def import_adaptation_settings(stg: dict) -> None:
+    """Import a record into adaptation_setting table"""
+    script = t"""
 INSERT INTO system.adaptation_setting (
-    adaptation_setting_id, 
     adaptation_id,
     column_number,
     sorting,
@@ -243,30 +314,21 @@ INSERT INTO system.adaptation_setting (
     negate_state,
     combo2_index,
     widget_value)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    script6 = """
-SELECT setval(
-    pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
-    COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
-    (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
-);"""
-    script7 = """
-SELECT setval(
-    pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
-    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
-    (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
-);"""
-    # Unified context managers ensure that if any batch insert or sequence reset fails,
-    # the entire database import operation undergoes a clean rollback.
+VALUES (
+    {stg['adaptation_id']},
+    {stg['column_number']},
+    {stg['sorting']},
+    {stg['is_visible']},
+    {stg['size']},
+    {stg['element_type']},
+    {stg['layout_row']},
+    {stg['combo1_index']},
+    {stg['negate_state']},
+    {stg['combo2_index']},
+    {stg['widget_value']});"""
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script1)
-        cur.execute(script2)
-        cur.execute(script3)
-        cur.executemany(script4, adaptations)
-        cur.executemany(script5, adaptsettings)
-        cur.execute(script6)
-        cur.execute(script7)
-
+        cur.execute(script)
+   
 
 def get_adapt_limit(adapt_id: int) -> int | None:
     """Get row count limit for the given adaptation_id"""

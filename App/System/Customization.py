@@ -28,6 +28,7 @@ Import/export of report, itemview and sort-filter customizations
 """
 
 # standard library
+import json
 import os
 import csv
 import io
@@ -35,7 +36,7 @@ import zipfile
 import logging
 
 # PySide6
-from PySide6.QtCore import QDir
+from PySide6.QtCore import QDir, QFile
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
@@ -52,6 +53,7 @@ from App.Core.ExceptionHandler import gui_exception_context
 from App.Database.Adaptation import export_adaptation
 from App.Database.Adaptation import export_adaptation_setting
 from App.Database.Adaptation import import_adaptation
+from App.Database.Adaptation import import_adaptation_settings
 from App.Database.Adaptation import clear_adaptation
 from App.Widget.Dialog import MessageBoxCritical
 
@@ -115,115 +117,89 @@ class CustomizationsDialog(QDialog):
         self.ui.pushButtonClear.clicked.connect(self.clearCustomization)
 
     def exportCustomization(self) -> None:
-        "Export customizations to a zipped CSV files - *.zip"
-        st = QSettings()
-        path = st.value("Adatpations/FileName", QDir.current().path(), type=str)
-        fileName, _ = QFileDialog.getSaveFileName(
-            self,
-            caption=_tr('Customizations', "Select the file name to create"),
-            dir=str(path),
-            filter= 'pySagra Zipped Adaptation File (*.zip *.*)'
+        "Export customizations to a psa files"
+        types = []
+        if self.ui.checkBoxItemView.isChecked():
+            types.append(('I', 'itemview')) # itemview
+        if self.ui.checkBoxSortFilter.isChecked():
+            types.append(('S', 'sortfilter')) # sortfilter
+        if self.ui.checkBoxReport.isChecked():
+            types.append(('R', 'report')) # report
+        if not types:
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('Customizations', 'No customization type selected')
             )
-        if fileName == "":
+            return
+        st = QSettings()
+        path = st.value("Adatpations/PathExportCustomizations", QDir.current().path(), type=str)
+        directory = QFileDialog.getExistingDirectory(self,
+                                                     _tr('Customizations', "Select the directory"),
+                                                     str(path))
+        if directory == "":
             # ---  WORKAROUND FOR MACOS ---
             self.raise_()
             self.activateWindow()
             return
-        if not fileName.endswith('.zip'):
-            fileName += '.zip'
+        completed = False
         with gui_exception_context(self, _tr('Customizations', 'Export customizations')):
-            # looks like zipfile accept qt file path with / so no need to use os.path.join
-            with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
-                # version
-                string_buffer = io.StringIO()
-                writer = csv.writer(string_buffer)
-                writer.writerow(ADAPTVERSION)
-                zf.writestr('version', string_buffer.getvalue())
-                # adaptation
-                string_buffer = io.StringIO()
-                writer = csv.writer(string_buffer)
-                writer.writerows(export_adaptation())
-                zf.writestr('adaptation', string_buffer.getvalue())
-                # adaptation setting
-                string_buffer = io.StringIO()
-                writer = csv.writer(string_buffer)
-                writer.writerows(export_adaptation_setting())
-                zf.writestr('adaptation_setting', string_buffer.getvalue())
-    
-            st.setValue("Adatptations/FileName", fileName)
-            # ---  WORKAROUND FOR MACOS ---
-            self.raise_() 
-            self.activateWindow() 
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', 'Information'),
-                _tr('Customizations', 'Export completed successfully')
-            )
+            for adapt_type, adapt_name in types:
+                fileName = f"{directory}/{adapt_name}.psa" # pySagra Adaptation
+                if QFile.exists(fileName):
+                    if QMessageBox.question(
+                        self,
+                        _tr('MessageDialog', 'Question'),
+                        _tr('Customizations', 'File {0} already exists, overwrite ?').format(fileName),
+                        QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+                        QMessageBox.StandardButton.No  # default botton
+                        ) == QMessageBox.StandardButton.No:
+                        continue
+                export_data = []
+                for adapt in export_adaptation(adapt_type):
+                    adapt['settings'] = export_adaptation_setting(adapt['adaptation_id'])
+                    del adapt['adaptation_id'] # remove id from export
+                    export_data.append(adapt)
+                    
+                with open(fileName, 'w', encoding='utf-8') as f:
+                    json.dump(export_data, f, indent=4, ensure_ascii=False)
+                
+                completed = True
+
+            st.setValue("Adatpations/PathExportCustomizations", directory)
+            if completed:
+                # ---  WORKAROUND FOR MACOS ---
+                self.raise_() 
+                self.activateWindow() 
+                QMessageBox.information(
+                    self,
+                    _tr('MessageDialog', 'Information'),
+                    _tr('Customizations', 'Export completed successfully')
+                )
 
     def importCustomization(self) -> None:
-        "Import customizations from a zipped CSV files - *.zip"
+        "Import customizations from psa files"
         st = QSettings()
-        path = st.value("Adaptations/FileName", QDir.current().path(), type=str)
+        path = st.value("Adatpations/PathExportCustomizations", QDir.current().path(), type=str)
         fileName, _ = QFileDialog.getOpenFileName(
             self,
             caption=_tr('Customizations', "Select the file name to load"),
             dir=str(path),
-            filter= 'pySagra Zipped Adaptation File (*.zip *.*)'
+            filter= 'pySagra Adaptation File (*.psa);;All files (*.*)'
         )
         if fileName == "":
             return
         with gui_exception_context(self, _tr('Customizations', 'Import customizations')):
-            adaptations: list[tuple] = []
-            adaptsettings: list[tuple] = []
-            with zipfile.ZipFile(fileName, 'r') as zf:
-                # check version
-                string_buffer = io.StringIO(zf.read('version').decode('utf-8'))
-                reader = csv.reader(string_buffer)
-                for row in reader:
-                    if [row[0], row[1]] != ADAPTVERSION:
-                        QMessageBox.information(
-                            self,
-                            _tr('MessageDialog', 'Information'),
-                            _tr('Customizations', 'Wrong file format or version')
-                        )
-                        return
-                # adaptation
-                clear_adaptation()
-                string_buffer = io.StringIO(zf.read('adaptation').decode('utf-8'))
-                reader = csv.reader(string_buffer)
-                for row in reader:
-                    adaptations.append((
-                        int(row[0]),                        # id
-                        row[1],                             # type
-                        row[2],                             # class
-                        row[3],                             # description
-                        int(row[4]),                        # class sorting
-                        decodebool(row[5]),                 # class default
-                        int(row[6]) if row[6] else None,    # report id
-                        int(row[7]) if row[7] else None,    # row count limit
-                        decodebool(row[8]),                 # system
-                        ))
-                # adaptation setting
-                string_buffer = io.StringIO(zf.read('adaptation_setting').decode('utf-8'))
-                reader = csv.reader(string_buffer)
-                for row in reader:
-                    adaptsettings.append((
-                        int(row[0]),                        # setting id
-                        int(row[1]),                        # adapt id
-                        int(row[2]) if row[2] else None,    # column
-                        int(row[3]) if row[3] else None,    # sorting
-                        decodebool(row[4]),                 # is visible
-                        int(row[5]) if row[5] else None,    # size
-                        row[6] or None,                     # element type
-                        int(row[7]) if row[7] else None,    # layout row
-                        int(row[8]) if row[8] else None,    # combo1 index
-                        decodebool(row[9]),                 # negate
-                        int(row[10]) if row[10] else None,  # combo2 index
-                        row[11] or None                     # widget value
-                                    ))
-                import_adaptation(adaptations, adaptsettings)
-       
-            st.setValue("Adaptations/FileName", fileName)
+            with open(fileName, 'r', encoding='utf-8') as f:
+                import_data = json.load(f)
+                
+            for adapt in import_data:
+                adp_id = import_adaptation(adapt)
+                for setting in adapt.get('settings', []):
+                    setting['adaptation_id'] = adp_id
+                    import_adaptation_settings(setting)
+                
+            st.setValue("Adatpations/PathExportCustomizations", path)
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),
@@ -232,6 +208,20 @@ class CustomizationsDialog(QDialog):
 
     def clearCustomization(self) -> None:
         "Clear current customizations"
+        types = []
+        if self.ui.checkBoxItemView.isChecked():
+            types.append('I') # itemview
+        if self.ui.checkBoxSortFilter.isChecked():
+            types.append('S') # sortfilter
+        if self.ui.checkBoxReport.isChecked():
+            types.append('R') # report
+        if not types:
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('Customizations', 'No customization type selected')
+            )
+            return
         if QMessageBox.question(
             self,
             _tr('MessageDialog', 'Question'),
@@ -240,8 +230,10 @@ class CustomizationsDialog(QDialog):
             QMessageBox.StandardButton.No  # default botton
             ) == QMessageBox.StandardButton.No:
             return
+        
         with gui_exception_context(self, _tr('Customizations', "Clear customizations")):
-            clear_adaptation()
+            for adapt_type in types:
+                clear_adaptation(adapt_type)
         
             QMessageBox.information(
                 self,

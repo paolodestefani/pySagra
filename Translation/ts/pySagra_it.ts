@@ -1484,17 +1484,37 @@ Proseguire ugualmente ?</translation>
         <translation>Icona</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="48"/>
+        <location filename="../../App/Ui/CustomizationsDialog.ui" line="46"/>
+        <source>Customization type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/CustomizationsDialog.ui" line="52"/>
+        <source>ItemView</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/CustomizationsDialog.ui" line="59"/>
+        <source>SortFilter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/CustomizationsDialog.ui" line="66"/>
+        <source>Report</source>
+        <translation type="unfinished">Report</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/CustomizationsDialog.ui" line="78"/>
         <source>Export</source>
         <translation>Esporta</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="58"/>
+        <location filename="../../App/Ui/CustomizationsDialog.ui" line="88"/>
         <source>Import</source>
         <translation>Importa</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="68"/>
+        <location filename="../../App/Ui/CustomizationsDialog.ui" line="98"/>
         <source>Clear</source>
         <translation>Cancella</translation>
     </message>
@@ -1975,19 +1995,19 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Widget/Form.py" line="379"/>
         <location filename="../../App/Widget/Form.py" line="576"/>
-        <location filename="../../App/Widget/Form.py" line="942"/>
+        <location filename="../../App/Widget/Form.py" line="943"/>
         <source>The data has been modified, save ?</source>
         <translation>I dati sono stati modificati, vuoi salvare ?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="254"/>
-        <location filename="../../App/Widget/Form.py" line="798"/>
+        <location filename="../../App/Widget/Form.py" line="799"/>
         <source>Error inserting a new row</source>
         <translation>Errore in inserimento di una nuova riga</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Form.py" line="270"/>
-        <location filename="../../App/Widget/Form.py" line="823"/>
+        <location filename="../../App/Widget/Form.py" line="824"/>
         <source>Error on mapper submit</source>
         <translation>Errore in mapper submit</translation>
     </message>
@@ -2014,17 +2034,17 @@ Proseguire ugualmente ?</translation>
         <translation>conferma tutto</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="826"/>
+        <location filename="../../App/Widget/Form.py" line="827"/>
         <source>Master and detail model submit all</source>
         <translation>Master and detail model submit all</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="847"/>
+        <location filename="../../App/Widget/Form.py" line="848"/>
         <source>Master and detail model delete</source>
         <translation>Master and detail model delete</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Form.py" line="888"/>
+        <location filename="../../App/Widget/Form.py" line="889"/>
         <source>Form reload</source>
         <translation>Ricarica la Form</translation>
     </message>
@@ -2042,7 +2062,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>FormIndexManager</name>
     <message>
-        <location filename="../../App/Widget/Form.py" line="685"/>
+        <location filename="../../App/Widget/Form.py" line="686"/>
         <source>Reloading data</source>
         <translation>Ricarico i dati</translation>
     </message>
@@ -2672,8 +2692,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1847"/>
         <location filename="../../App/Widget/Form.py" line="253"/>
         <location filename="../../App/Widget/Form.py" line="269"/>
-        <location filename="../../App/Widget/Form.py" line="797"/>
-        <location filename="../../App/Widget/Form.py" line="822"/>
+        <location filename="../../App/Widget/Form.py" line="798"/>
+        <location filename="../../App/Widget/Form.py" line="823"/>
         <location filename="../../App/Widget/View.py" line="399"/>
         <location filename="../../App/Widget/View.py" line="427"/>
         <location filename="../../App/Widget/View.py" line="494"/>
@@ -2841,7 +2861,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1853"/>
         <location filename="../../App/Widget/Form.py" line="378"/>
         <location filename="../../App/Widget/Form.py" line="575"/>
-        <location filename="../../App/Widget/Form.py" line="941"/>
+        <location filename="../../App/Widget/Form.py" line="942"/>
         <location filename="../../App/Widget/View.py" line="415"/>
         <location filename="../../App/Widget/View.py" line="503"/>
         <location filename="../../App/Widget/View.py" line="616"/>
@@ -5714,7 +5734,7 @@ Devo procedere comunque?</translation>
         <translation>Carica le preferenze utente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="175"/>
+        <location filename="../../App/System/Preferences.py" line="177"/>
         <source>Save user preferences</source>
         <translation>Salva le preferenze utente</translation>
     </message>
