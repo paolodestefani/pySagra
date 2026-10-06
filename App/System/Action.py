@@ -56,7 +56,7 @@ from App.System.Menu import menu
 from App.System.Toolbar import toolbar
 from App.System.Report import report
 from App.System.Scripting import scripting
-from App.System.Customization import customization
+from App.System.Adaptation import adaptation
 from App.CashDesk import cashDesk
 from App.Printer import printer
 from App.Department import department
@@ -231,13 +231,13 @@ def createActionDictionary(mw) -> None:
     
     actionDefinition['sys_customization'] = (
         _tr("Action", 'Customizations'),
-        customization,
+        adaptation,
         False,
         'system_customization',
         None,
-        _tr("Action", 'Import/Export customizations'),
-        _tr("Action", 'Import/Export customizations'),
-        _tr("Action", 'Import/Export customizations'),
+        _tr("Action", 'Import/Export adaptations'),
+        _tr("Action", 'Import/Export adaptations'),
+        _tr("Action", 'Import/Export adaptations'),
         QAction.MenuRole.TextHeuristicRole)
 
     actionDefinition['sys_quit'] = (

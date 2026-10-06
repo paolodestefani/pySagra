@@ -29,10 +29,6 @@ Import/export of report, itemview and sort-filter customizations
 
 # standard library
 import json
-import os
-import csv
-import io
-import zipfile
 import logging
 
 # PySide6
@@ -57,33 +53,29 @@ from App.Database.Adaptation import import_adaptation_settings
 from App.Database.Adaptation import clear_adaptation
 from App.Widget.Dialog import MessageBoxCritical
 
-from App.Ui.CustomizationsDialog import Ui_CustomizationsDialog
+from App.Ui.AdaptationsDialog import Ui_AdaptationsDialog
 
 
 # logger
 logger = logging.getLogger(__name__)
 
 
-# export type and version
-ADAPTVERSION = ['Adaptation archive for pySagra', '1.0']
+# def decodebool(instr: str) -> bool|None:
+#     "Decode boolean from string"
+#     outstr: bool|None = None
+#     match instr:
+#         case 'True':
+#             outstr = True
+#         case 'False':
+#             outstr = False
+#         case _:
+#             outstr = None
+#     return outstr 
 
 
-def decodebool(instr: str) -> bool|None:
-    "Decode boolean from string"
-    outstr: bool|None = None
-    match instr:
-        case 'True':
-            outstr = True
-        case 'False':
-            outstr = False
-        case _:
-            outstr = None
-    return outstr 
-
-
-def customization(action: QAction, checked: bool = False) -> None:
-    "Show customization dialog"
-    logger.info('Starting customization dialog')
+def adaptation(action: QAction, checked: bool = False) -> None:
+    "Show adaptation dialog"
+    logger.info('Starting adaptation dialog')
     mw = session['mainwin']
     title = action.text()
     icon = action.icon()
@@ -96,28 +88,28 @@ def customization(action: QAction, checked: bool = False) -> None:
             _tr('CashDesk', 'No access right to this function')
         )
         return
-    dialog = CustomizationsDialog(mw, title, icon, auth)
+    dialog = AdaptationsDialog(mw, title, icon, auth)
     dialog.show()
-    logger.info('Customization dialog shown')
+    logger.info('Adaptation dialog shown')
 
 
-class CustomizationsDialog(QDialog):
-    """Customizations dialog for import/export and clear of 
-    report, itemview and sort-filter customizations"""
+class AdaptationsDialog(QDialog):
+    """Adaptations dialog for import/export and clear of 
+    report, itemview and sort-filter adaptations"""
 
     def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: str) -> None:
         super().__init__(parent)
-        self.ui = Ui_CustomizationsDialog()
+        self.ui = Ui_AdaptationsDialog()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         # signal/slot
-        self.ui.pushButtonExport.clicked.connect(self.exportCustomization)
-        self.ui.pushButtonImport.clicked.connect(self.importCustomization)
-        self.ui.pushButtonClear.clicked.connect(self.clearCustomization)
+        self.ui.pushButtonExport.clicked.connect(self.exportAdaptations)
+        self.ui.pushButtonImport.clicked.connect(self.importAdaptations)
+        self.ui.pushButtonClear.clicked.connect(self.clearAdaptations)
 
-    def exportCustomization(self) -> None:
-        "Export customizations to a psa files"
+    def exportAdaptations(self) -> None:
+        "Export adaptations to a psa files"
         types = []
         if self.ui.checkBoxItemView.isChecked():
             types.append(('I', 'itemview')) # itemview
@@ -129,13 +121,13 @@ class CustomizationsDialog(QDialog):
             QMessageBox.warning(
                 self,
                 _tr('MessageDialog', "Warning"),
-                _tr('Customizations', 'No customization type selected')
+                _tr('Adaptations', 'No adaptation type selected')
             )
             return
         st = QSettings()
-        path = st.value("Adatpations/PathExportCustomizations", QDir.current().path(), type=str)
+        path = st.value("Adaptations/PathExportAdaptations", QDir.current().path(), type=str)
         directory = QFileDialog.getExistingDirectory(self,
-                                                     _tr('Customizations', "Select the directory"),
+                                                     _tr('Adaptations', "Select the directory"),
                                                      str(path))
         if directory == "":
             # ---  WORKAROUND FOR MACOS ---
@@ -143,14 +135,14 @@ class CustomizationsDialog(QDialog):
             self.activateWindow()
             return
         completed = False
-        with gui_exception_context(self, _tr('Customizations', 'Export customizations')):
+        with gui_exception_context(self, _tr('Adaptations', 'Export adaptations')):
             for adapt_type, adapt_name in types:
                 fileName = f"{directory}/{adapt_name}.psa" # pySagra Adaptation
                 if QFile.exists(fileName):
                     if QMessageBox.question(
                         self,
                         _tr('MessageDialog', 'Question'),
-                        _tr('Customizations', 'File {0} already exists, overwrite ?').format(fileName),
+                        _tr('Adaptations', 'File {0} already exists, overwrite ?').format(fileName),
                         QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
                         QMessageBox.StandardButton.No  # default botton
                         ) == QMessageBox.StandardButton.No:
@@ -166,7 +158,7 @@ class CustomizationsDialog(QDialog):
                 
                 completed = True
 
-            st.setValue("Adatpations/PathExportCustomizations", directory)
+            st.setValue("Adaptations/PathExportAdaptations", directory)
             if completed:
                 # ---  WORKAROUND FOR MACOS ---
                 self.raise_() 
@@ -174,22 +166,22 @@ class CustomizationsDialog(QDialog):
                 QMessageBox.information(
                     self,
                     _tr('MessageDialog', 'Information'),
-                    _tr('Customizations', 'Export completed successfully')
+                    _tr('Adaptations', 'Export completed successfully')
                 )
 
-    def importCustomization(self) -> None:
-        "Import customizations from psa files"
+    def importAdaptations(self) -> None:
+        "Import adaptations from psa files"
         st = QSettings()
-        path = st.value("Adatpations/PathExportCustomizations", QDir.current().path(), type=str)
+        path = st.value("Adaptations/PathExportAdaptations", QDir.current().path(), type=str)
         fileName, _ = QFileDialog.getOpenFileName(
             self,
-            caption=_tr('Customizations', "Select the file name to load"),
+            caption=_tr('Adaptations', "Select the file name to load"),
             dir=str(path),
             filter= 'pySagra Adaptation File (*.psa);;All files (*.*)'
         )
         if fileName == "":
             return
-        with gui_exception_context(self, _tr('Customizations', 'Import customizations')):
+        with gui_exception_context(self, _tr('Adaptations', 'Import adaptations')):
             with open(fileName, 'r', encoding='utf-8') as f:
                 import_data = json.load(f)
                 
@@ -199,15 +191,15 @@ class CustomizationsDialog(QDialog):
                     setting['adaptation_id'] = adp_id
                     import_adaptation_settings(setting)
                 
-            st.setValue("Adatpations/PathExportCustomizations", path)
+            st.setValue("Adaptations/PathExportAdaptations", path)
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),
-                _tr('Customizations', 'Import completed successfully')
+                _tr('Adaptations', 'Import completed successfully')
             )
 
-    def clearCustomization(self) -> None:
-        "Clear current customizations"
+    def clearAdaptations(self) -> None:
+        "Clear current adaptations"
         types = []
         if self.ui.checkBoxItemView.isChecked():
             types.append('I') # itemview
@@ -219,25 +211,25 @@ class CustomizationsDialog(QDialog):
             QMessageBox.warning(
                 self,
                 _tr('MessageDialog', "Warning"),
-                _tr('Customizations', 'No customization type selected')
+                _tr('Adaptations', 'No adaptation type selected')
             )
             return
         if QMessageBox.question(
             self,
             _tr('MessageDialog', 'Question'),
-            _tr('Customizations', 'Customizations will be cleared, continue ?'),
+            _tr('Adaptations', 'Adaptations will be cleared, continue ?'),
             QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
             QMessageBox.StandardButton.No  # default botton
             ) == QMessageBox.StandardButton.No:
             return
         
-        with gui_exception_context(self, _tr('Customizations', "Clear customizations")):
+        with gui_exception_context(self, _tr('Adaptations', "Clear adaptations")):
             for adapt_type in types:
                 clear_adaptation(adapt_type)
         
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),
-                _tr('Customizations', 'Customizations deleted')
+                _tr('Adaptations', 'Adaptations deleted')
             )
 

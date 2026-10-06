@@ -66,10 +66,10 @@ class Ui_PrintDialog(object):
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.comboBoxReportCustomizations = QComboBox(PrintDialog)
-        self.comboBoxReportCustomizations.setObjectName(u"comboBoxReportCustomizations")
+        self.comboBoxReportAdaptations = QComboBox(PrintDialog)
+        self.comboBoxReportAdaptations.setObjectName(u"comboBoxReportAdaptations")
 
-        self.horizontalLayout_7.addWidget(self.comboBoxReportCustomizations)
+        self.horizontalLayout_7.addWidget(self.comboBoxReportAdaptations)
 
         self.horizontalLayout_7.setStretch(0, 1)
 
@@ -122,7 +122,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaFilters.setWidgetResizable(True)
         self.scrollAreaWidgetContentsFilters = QWidget()
         self.scrollAreaWidgetContentsFilters.setObjectName(u"scrollAreaWidgetContentsFilters")
-        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 714, 316))
         self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContentsFilters)
         self.verticalLayout_5.setSpacing(0)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
@@ -149,7 +149,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaPrintOptions.setWidgetResizable(True)
         self.scrollAreaWidgetContentsOptions = QWidget()
         self.scrollAreaWidgetContentsOptions.setObjectName(u"scrollAreaWidgetContentsOptions")
-        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 574, 259))
+        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 686, 296))
         self.verticalLayout_18 = QVBoxLayout(self.scrollAreaWidgetContentsOptions)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
         self.horizontalLayout_8 = QHBoxLayout()
@@ -443,8 +443,8 @@ class Ui_PrintDialog(object):
         QWidget.setTabOrder(self.toolButtonPrintPreview, self.toolButtonPrint)
         QWidget.setTabOrder(self.toolButtonPrint, self.toolButtonPrintDirect)
         QWidget.setTabOrder(self.toolButtonPrintDirect, self.toolButtonPrintPDF)
-        QWidget.setTabOrder(self.toolButtonPrintPDF, self.comboBoxReportCustomizations)
-        QWidget.setTabOrder(self.comboBoxReportCustomizations, self.tabWidget)
+        QWidget.setTabOrder(self.toolButtonPrintPDF, self.comboBoxReportAdaptations)
+        QWidget.setTabOrder(self.comboBoxReportAdaptations, self.tabWidget)
         QWidget.setTabOrder(self.tabWidget, self.scrollAreaParameters)
         QWidget.setTabOrder(self.scrollAreaParameters, self.scrollAreaFilters)
         QWidget.setTabOrder(self.scrollAreaFilters, self.scrollAreaPrintOptions)
@@ -516,9 +516,9 @@ class Ui_PrintDialog(object):
         self.pushButtonSetSorting.setText(QCoreApplication.translate("PrintDialog", u"Set sorting to", None))
         self.groupBox.setTitle(QCoreApplication.translate("PrintDialog", u"Report class / Report", None))
         self.labelReportClass.setText(QCoreApplication.translate("PrintDialog", u"Class", None))
-        self.groupBoxNew.setTitle(QCoreApplication.translate("PrintDialog", u"New customization", None))
+        self.groupBoxNew.setTitle(QCoreApplication.translate("PrintDialog", u"New adaptation", None))
         self.pushButtonNewCustomization.setText(QCoreApplication.translate("PrintDialog", u"Create", None))
-        self.labelWarningOnNew.setText(QCoreApplication.translate("PrintDialog", u"Creating a new customization does not save its parameters, you need to select the new customization, set the parameters/filters/sorting and update it", None))
+        self.labelWarningOnNew.setText(QCoreApplication.translate("PrintDialog", u"Creating a new adaptation does not save its parameters, you need to select the new adaptation, set the parameters/filters/sorting and update it", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCustomize), QCoreApplication.translate("PrintDialog", u"Customize", None))
     # retranslateUi
 

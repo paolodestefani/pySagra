@@ -98,7 +98,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1">
      <item>
-      <widget class="QComboBox" name="comboBoxReportCustomizations"/>
+      <widget class="QComboBox" name="comboBoxReportAdaptations"/>
      </item>
     </layout>
    </item>
@@ -230,8 +230,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>714</width>
+            <height>316</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -293,8 +293,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>574</width>
-            <height>259</height>
+            <width>686</width>
+            <height>296</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -643,7 +643,7 @@
              <item>
               <widget class="QGroupBox" name="groupBoxNew">
                <property name="title">
-                <string>New customization</string>
+                <string>New adaptation</string>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
                 <item>
@@ -668,7 +668,7 @@
            <item>
             <widget class="QLabel" name="labelWarningOnNew">
              <property name="text">
-              <string>Creating a new customization does not save its parameters, you need to select the new customization, set the parameters/filters/sorting and update it</string>
+              <string>Creating a new adaptation does not save its parameters, you need to select the new adaptation, set the parameters/filters/sorting and update it</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -723,7 +723,7 @@
   <tabstop>toolButtonPrint</tabstop>
   <tabstop>toolButtonPrintDirect</tabstop>
   <tabstop>toolButtonPrintPDF</tabstop>
-  <tabstop>comboBoxReportCustomizations</tabstop>
+  <tabstop>comboBoxReportAdaptations</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>scrollAreaParameters</tabstop>
   <tabstop>scrollAreaFilters</tabstop>

@@ -708,9 +708,57 @@ insieme a questo programma. In caso contrario, consulta
     </message>
 </context>
 <context>
+    <name>AdaptationsDialog</name>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation type="unfinished">Dialogo</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="24"/>
+        <source>Icon</source>
+        <translation type="unfinished">Icona</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="46"/>
+        <source>Customization type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="52"/>
+        <source>ItemView</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="59"/>
+        <source>SortFilter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="66"/>
+        <source>Report</source>
+        <translation type="unfinished">Report</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="78"/>
+        <source>Export</source>
+        <translation type="unfinished">Esporta</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="88"/>
+        <source>Import</source>
+        <translation type="unfinished">Importa</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/AdaptationsDialog.ui" line="98"/>
+        <source>Clear</source>
+        <translation type="unfinished">Cancella</translation>
+    </message>
+</context>
+<context>
     <name>CashDesk</name>
     <message>
-        <location filename="../../App/System/Customization.py" line="94"/>
+        <location filename="../../App/System/Customization.py" line="92"/>
         <source>No access right to this function</source>
         <translation>Nessun diritto di accesso a questa funzione</translation>
     </message>
@@ -1421,102 +1469,60 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Customizations</name>
     <message>
-        <location filename="../../App/System/Customization.py" line="123"/>
-        <source>Select the file name to create</source>
-        <translation>Selezionare il nome del file da creare</translation>
-    </message>
-    <message>
-        <location filename="../../App/System/Customization.py" line="160"/>
+        <location filename="../../App/System/Customization.py" line="173"/>
         <source>Export completed successfully</source>
         <translation>Export completato correttamente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="169"/>
+        <location filename="../../App/System/Customization.py" line="182"/>
         <source>Select the file name to load</source>
         <translation>Selezionare il file da caricare</translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="187"/>
-        <source>Wrong file format or version</source>
-        <translation>Formato o versione del file errata</translation>
+        <location filename="../../App/System/Customization.py" line="128"/>
+        <location filename="../../App/System/Customization.py" line="218"/>
+        <source>No customization type selected</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="175"/>
+        <location filename="../../App/System/Customization.py" line="134"/>
+        <source>Select the directory</source>
+        <translation type="unfinished">Selezionare la directory</translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Customization.py" line="149"/>
+        <source>File {0} already exists, overwrite ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../App/System/Customization.py" line="188"/>
         <source>Import customizations</source>
         <translation>Importazione delle personalizzazioni</translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="230"/>
+        <location filename="../../App/System/Customization.py" line="202"/>
         <source>Import completed successfully</source>
         <translation>Import completato correttamente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="238"/>
+        <location filename="../../App/System/Customization.py" line="224"/>
         <source>Customizations will be cleared, continue ?</source>
         <translation>Le personalizzazioni verranno cancellate, procedo ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="243"/>
+        <location filename="../../App/System/Customization.py" line="230"/>
         <source>Clear customizations</source>
         <translation>Cancella personalizzazioni</translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="249"/>
+        <location filename="../../App/System/Customization.py" line="237"/>
         <source>Customizations deleted</source>
         <translation>Personalizzazioni eliminate</translation>
     </message>
     <message>
-        <location filename="../../App/System/Customization.py" line="134"/>
+        <location filename="../../App/System/Customization.py" line="142"/>
         <source>Export customizations</source>
         <translation>Esportazione personalizzazioni</translation>
-    </message>
-</context>
-<context>
-    <name>CustomizationsDialog</name>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="14"/>
-        <source>Dialog</source>
-        <translation>Dialogo</translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="24"/>
-        <source>Icon</source>
-        <translation>Icona</translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="46"/>
-        <source>Customization type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="52"/>
-        <source>ItemView</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="59"/>
-        <source>SortFilter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="66"/>
-        <source>Report</source>
-        <translation type="unfinished">Report</translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="78"/>
-        <source>Export</source>
-        <translation>Esporta</translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="88"/>
-        <source>Import</source>
-        <translation>Importa</translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/CustomizationsDialog.ui" line="98"/>
-        <source>Clear</source>
-        <translation>Cancella</translation>
     </message>
 </context>
 <context>
@@ -2729,7 +2735,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Connection.py" line="88"/>
         <location filename="../../App/System/Connection.py" line="131"/>
         <location filename="../../App/System/Connection.py" line="139"/>
-        <location filename="../../App/System/Customization.py" line="93"/>
+        <location filename="../../App/System/Customization.py" line="91"/>
+        <location filename="../../App/System/Customization.py" line="127"/>
+        <location filename="../../App/System/Customization.py" line="217"/>
         <location filename="../../App/System/Menu.py" line="85"/>
         <location filename="../../App/System/Preferences.py" line="79"/>
         <location filename="../../App/System/Profile.py" line="92"/>
@@ -2792,10 +2800,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Company.py" line="300"/>
         <location filename="../../App/System/Company.py" line="396"/>
         <location filename="../../App/System/Connection.py" line="251"/>
-        <location filename="../../App/System/Customization.py" line="159"/>
-        <location filename="../../App/System/Customization.py" line="186"/>
-        <location filename="../../App/System/Customization.py" line="229"/>
-        <location filename="../../App/System/Customization.py" line="248"/>
+        <location filename="../../App/System/Customization.py" line="172"/>
+        <location filename="../../App/System/Customization.py" line="201"/>
+        <location filename="../../App/System/Customization.py" line="236"/>
         <location filename="../../App/System/Login.py" line="251"/>
         <location filename="../../App/System/Menu.py" line="116"/>
         <location filename="../../App/System/Menu.py" line="207"/>
@@ -2845,7 +2852,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Company.py" line="363"/>
         <location filename="../../App/System/Connection.py" line="147"/>
         <location filename="../../App/System/Connection.py" line="226"/>
-        <location filename="../../App/System/Customization.py" line="237"/>
+        <location filename="../../App/System/Customization.py" line="148"/>
+        <location filename="../../App/System/Customization.py" line="223"/>
         <location filename="../../App/System/Mainwindow.py" line="499"/>
         <location filename="../../App/System/Mainwindow.py" line="574"/>
         <location filename="../../App/System/Mainwindow.py" line="598"/>

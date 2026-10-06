@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CustomizationsDialog</class>
- <widget class="QDialog" name="CustomizationsDialog">
+ <class>AdaptationsDialog</class>
+ <widget class="QDialog" name="AdaptationsDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -43,7 +43,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_5">
        <property name="title">
-        <string>Customization type</string>
+        <string>Adaptation type</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -139,7 +139,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>CustomizationsDialog</receiver>
+   <receiver>AdaptationsDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -155,7 +155,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>CustomizationsDialog</receiver>
+   <receiver>AdaptationsDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

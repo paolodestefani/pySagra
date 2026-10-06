@@ -238,6 +238,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.ui.checkBoxSystem.setChecked(False)
         self.ui.lineEditUser.setEnabled(True)
         self.ui.lineEditUserDescription.setEnabled(True)
+        # self.ui.lineEditUserDescription.setReadOnly(False) 
         self.ui.lineEditUser.setFocus()        
 
     def save(self) -> None:
@@ -282,14 +283,14 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         "Change settings on change record"
         super().mapperIndexChanged(row)         
         if self.ui.checkBoxSystem.isChecked():
-            self.ui.lineEditUserDescription.setReadOnly(True)
+            #self.ui.lineEditUserDescription.setReadOnly(True)
             self.ui.comboBoxL10n.setDisabled(True)
             self.ui.pushButtonUpload.setDisabled(True)
             self.ui.pushButtonDownload.setDisabled(True)
             self.ui.pushButtonDelete.setDisabled(True)
             self.ui.checkBoxIsAdmin.setDisabled(True)
         else:
-            self.ui.lineEditUserDescription.setReadOnly(False)
+            #self.ui.lineEditUserDescription.setReadOnly(False)
             self.ui.comboBoxL10n.setDisabled(False)
             self.ui.pushButtonUpload.setDisabled(False)
             self.ui.pushButtonDownload.setDisabled(False)

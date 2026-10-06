@@ -36,6 +36,7 @@ pyside6-lupdate^
  App\Widget\Form.py^
  App\Widget\View.py^
  App\Ui\AboutDialog.ui^
+ App\Ui\AdaptationsDialog.ui^
  App\Ui\CashDeskWidget.ui^
  App\Ui\ChangeCompanyDialog.ui^
  App\Ui\ChangePasswordDialog.ui^
@@ -45,7 +46,6 @@ pyside6-lupdate^
  App\Ui\ConnectionHistoryWidget.ui^
  App\Ui\ConnectionWidget.ui^
  App\Ui\CopyToolDialog.ui^
- App\Ui\CustomizationsDialog.ui^
  App\Ui\DateTimeInputDialog.ui^
  App\Ui\DeleteToolDialog.ui^
  App\Ui\DepartmentPrinterWidget.ui^

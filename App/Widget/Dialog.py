@@ -81,6 +81,7 @@ from PySide6.QtWidgets import QPushButton
 from App import session
 from App import currentIcon
 from App.Core.L10n import _tr
+from App.Core.ExceptionHandler import gui_exception_context
 from App.Ui.MessageDialog import Ui_MessageDialog
 from App.Ui.SelectImageDialog import Ui_SelectImageDialog
 from App.Ui.PrintDialog import Ui_PrintDialog
@@ -157,6 +158,7 @@ class pti(IntEnum):
     CUSTIMIZE   = 3
 
 
+# for reference list selection in print dialog
 referenceList = {'eventList': event_lookup,
                  'itemList': item_lookup,
                  'departmentList':department_lookup}
@@ -274,12 +276,44 @@ class SelectImageDialog(QDialog):
 
 
 class RowComboBox(QComboBox):
-    "Custom combo box for store row number"
+    "Custom combo box for store row number and set currentData"
 
     def __init__(self, parent: QWidget|None = None) -> None:
         super().__init__(parent)
         self.row: int|None = None
         
+    def setCurrentData(self, data: Any) -> None:
+        "Set current index based on data"
+        idx = self.findData(data)
+        if idx >= 0:
+            self.setCurrentIndex(idx)
+        else:
+            self.setCurrentIndex(0)
+            
+    def setCurrentOperator(self, operator: str) -> None:
+        "Set current index based on operator string inside a tuple stored in userData"
+        for idx in range(self.count()):
+            tuple_data = self.itemData(idx)
+            if tuple_data and tuple_data[0] == operator:
+                self.setCurrentIndex(idx)
+                return
+        self.setCurrentIndex(0)
+        
+    def currentOperator(self) -> str|None:
+        "Return the operator string inside a tuple stored in userData"
+        tuple_data = self.currentData()
+        return tuple_data[0] if tuple_data else None
+    
+    def currentFormat(self) -> int|None:
+        "Return the format code inside a tuple stored in userData"
+        tuple_data = self.currentData()
+        return tuple_data[2] if tuple_data else None
+    
+    def currentWidgetType(self) -> str|None:
+        "Return the widget type string inside a tuple stored in userData"
+        tuple_data = self.currentData()
+        return tuple_data[3] if tuple_data else None
+    
         
 class RowCheckBox(QCheckBox):
     "Custom checkbox for storeing row number"
@@ -446,23 +480,27 @@ class SortFilterDialog(QDialog):
         # create filter and sorting comboboxes
         # filters comboboxes
         for row in range(FILTER_ROWS):
+            # field combobox
             field = RowComboBox(self)
             field.addItem('', None) # item 0 for clear/reset
             for f, d, r, t in self.model.columns:
                 if t: # except None fields
                     field.addItem(d, f)
             field.row = row
-            field.currentIndexChanged.connect(self.condIndexChanged)
+            field.currentIndexChanged.connect(self.fieldIndexChanged)
+            # negate checkbox
             neg = RowCheckBox(self)
             neg.row = row
             neg.setToolTip(_tr('SoftFilterDialog','Not'))
+            # operator combobox
             oper = RowComboBox(self)
             oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
+            # operand widget placeholder
+            sw = SpacerWidget(self)
             self.ui.layoutFilters.addWidget(field, row,ff.FIELD)
             self.ui.layoutFilters.addWidget(neg, row, ff.NEGATE)
             self.ui.layoutFilters.addWidget(oper, row,ff.OPERATOR)
-            sw = SpacerWidget(self)
             self.ui.layoutFilters.addWidget(sw, row,ff.OPERAND) # position widget only
         if self.model.limitCondition:
             self.ui.checkBoxMaxRows.setChecked(True)
@@ -477,13 +515,15 @@ class SortFilterDialog(QDialog):
         self.ui.layoutFilters.setRowStretch(row + 1, 1)
         # sorting comboboxes
         for row in range(len(self.model.columns)):
+            # field combobox
             field = RowComboBox(self)
             field.addItem('', None) # item 0 for clear/reset
             for f, d, r, t in self.model.columns:
                 field.addItem(d, f)
             field.row = row
             field.currentIndexChanged.connect(self.sortIndexChanged)
-            order = QComboBox(self)
+            # order combobox
+            order = RowComboBox(self)
             self.ui.layoutSorting.addWidget(field, row, sf.SORTFIELD)
             self.ui.layoutSorting.addWidget(order, row, sf.SORTORDER)
         # set layout stretch
@@ -500,13 +540,12 @@ class SortFilterDialog(QDialog):
         # disable signal
         self.ui.comboBoxSetting.currentIndexChanged.disconnect()
         self.ui.comboBoxSetting.clear()
-        # get customizations list for class
-        try:
+        # adaptation list
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation list')):
             result = list_adaptation('S', self.sortfilterClass)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            success = True
+        if not success:
             return
         # fill the combobox
         for i, d, y in result:
@@ -547,18 +586,17 @@ class SortFilterDialog(QDialog):
             self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(0)
             self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(0)
         # get sort and filter params
-        try:
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation settings')):
             _, filters, sortings = get_adapt_setting(sortFilterId)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            success = True
+        if not success:
             return
         # set filters settings
-        for t, row, cmb1, neg, cmb2, wv in filters:
-            self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().setCurrentIndex(cmb1)
+        for t, row, fn, neg, op, wv in filters:
+            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentData(fn)
             self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(neg)
-            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(cmb2)
+            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentOperator(op)
             widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
             match widget:
                 case QComboBox():
@@ -583,21 +621,21 @@ class SortFilterDialog(QDialog):
                 case _:
                     pass
         # limit
-        try:
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation limit')):
             result = get_adapt_limit(sortFilterId)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+            success = True
+        if not success:
+            return
         if result:
             self.ui.checkBoxMaxRows.setChecked(True)
             self.ui.spinBoxMaxRows.setValue(result)
         else:
             self.ui.checkBoxMaxRows.setChecked(False)
         # set sorting settings
-        for t, row, cmb1, neg, cmb2, wv in sortings:
-            self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(cmb1)
-            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(cmb2)
+        for t, row, fn, neg, so, wv in sortings:
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentData(fn)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentData(so)
         # sort filter class sorting
         self.ui.spinBoxClassSorting.setValue(get_adapt_sorting(sortFilterId))
 
@@ -610,9 +648,9 @@ class SortFilterDialog(QDialog):
         # filters
         for row in range(FILTER_ROWS):
             if self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex() != 0:
-                cmb1 = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex()
+                fn = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
                 neg = self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().isChecked()
-                cmb2 = self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().currentIndex()
+                op = self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().currentOperator()
                 widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
                 wv: str|float|bool|None = None
                 match widget:
@@ -635,37 +673,34 @@ class SortFilterDialog(QDialog):
                             wv = False
                     case _:
                         wv = None
-                columns.append((cid, None, None, None, None, 'F',row, cmb1, neg, cmb2, str(wv)))
+                columns.append((cid, None, None, None, None, 'F',row, fn, neg, op, str(wv)))
         # sorting
         for row in range(len(self.model.columns)):
             if self.ui.layoutSorting.itemAtPosition(row, ff.FIELD).widget().currentIndex() != 0:
-                cmb1 = self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().currentIndex()
-                cmb2 = self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().currentIndex()
+                fn = self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().currentData()
+                so = self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().currentData()
                 wv = None
-                columns.append((cid, None, None, None, None, 'S', row, cmb1, None, cmb2, str(wv)))
+                columns.append((cid, None, None, None, None, 'S', row, fn, None, so, str(wv)))
         # update sort filter
-        try:
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Update adaptation settings')):
             set_adapt_setting(cid, columns)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                _tr("MessageDialog", "Critical"),
-                                f"Database error: {er.code}\n{er.message}")
+            success = True
+        if not success:
             return
         # limit
         if self.ui.checkBoxMaxRows.isChecked():
-            try:
+            success = False
+            with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation limit')):
                 set_adapt_limit(cid, self.ui.spinBoxMaxRows.value())
-            except PyAppDBError as er:
-                    QMessageBox.critical(self,
-                                         _tr("MessageDialog", "Critical"),
-                                         f"Database error: {er.code}\n{er.message}")
-                    return
-
+                success = True
+            if not success:
+                return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
-                                _tr("Dialog", "Current customization was updated"))
+                                _tr("Dialog", "Current adaptation was updated"))
 
-    def condIndexChanged(self, index: int) -> None:
+    def fieldIndexChanged(self, index: int) -> None:
         "Set combobox items (operator) and operand QWidget"
         if not self.model or index < 0:
             return
@@ -688,11 +723,12 @@ class SortFilterDialog(QDialog):
             return
         # set operator alternatives
         self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().clear()
-        for o, d, r, w in self.FILTERING[ftype]:
+        for item in self.FILTERING[ftype]:
+            o, d, r, w = item
             if hasattr(self.model, 'reference') and w == 'LIST':
                 if field not in self.model.reference: # skip list if not required
                     continue
-            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().addItem(d, o)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().addItem(d, item)
 
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
@@ -715,10 +751,11 @@ class SortFilterDialog(QDialog):
             return
         # get field type
         field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
-        fi = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex() -1
-        ftype = self.fieldType[field]
         w = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
-        nwt = self.FILTERING[ftype][index][3]
+        op = s.currentOperator()
+        if not op:
+            return
+        nwt = s.currentWidgetType()
         # insert new operand widget
         widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
         match nwt:
@@ -756,11 +793,13 @@ class SortFilterDialog(QDialog):
                 widget = LineEditDecimals(self)
             case 'SCB': # standard combo box
                 widget = QComboBox(self)
-                for k, v in get_list(self.model.columns[fi][6]):
+                #for k, v in get_list(self.model.columns[fi][6]):
+                for k, v in get_list(field):
                     widget.addItem(v, k)
             case 'CCB': # chackable combo box
                 widget = CheckableComboBox(self)
-                for k, v in get_list(self.model.columns[fi][6]):
+                #for k, v in get_list(self.model.columns[fi][6]):
+                for k, v in get_list(field):
                     widget.addItem(v, k)
             case 'LIST':
                 if hasattr(self.model, 'reference'):
@@ -774,7 +813,7 @@ class SortFilterDialog(QDialog):
         self.ui.layoutFilters.removeWidget(w)
         w.deleteLater()
         # new widget
-        self.ui.layoutFilters.addWidget(widget, row,ff.OPERAND)
+        self.ui.layoutFilters.addWidget(widget, row, ff.OPERAND)
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter qwidget"
@@ -794,18 +833,17 @@ class SortFilterDialog(QDialog):
     def newCustomization(self) -> None:
         "Create a new customization"
         name = self.ui.lineEditNewName.text()
-        try:
-            cid = create_adaptation('S', self.sortfilterClass, name, None)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                                _tr("MessageDialog", "Critical"),
-                                f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "New customization saved"))
-            self.ui.lineEditNewName.clear()
-            self.availableCustomizations() # reload all customizations including new one
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Create new adaptation')):
+            _ = create_adaptation('S', self.sortfilterClass, name, None)
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "New customization saved"))
+        self.ui.lineEditNewName.clear()
+        self.availableCustomizations() # reload all customizations including new one
 
     def deleteCurrent(self) -> None:
         "Remove current customization from database"
@@ -813,77 +851,71 @@ class SortFilterDialog(QDialog):
         if is_system_object(cid):
             QMessageBox.warning(self,
                                 _tr("MessageDialog", "Warning"),
-                                _tr("View", "System customization cannot be deleted"))
+                                _tr("View", "System adaptation cannot be deleted"))
             return
         if QMessageBox.question(self,
                                 _tr("MessageDialog", "Question"),
-                                _tr("View", "Are you sure to delete the current customization ?"),
+                                _tr("View", "Are you sure to delete the current adaptation?"),
                                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
             return
-        try:
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Delete current adaptation')):
             delete_adaptation(cid)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                                _tr("MessageDialog", "Critical"),
-                                f"Database error: {er.code}\n{er.message}")
-        else:
-            self.availableCustomizations()
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Current customization deleted"))
+            success = True
+        if not success:
+            return
+        self.availableCustomizations()
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Current adaptation deleted"))
 
     def setCustomizationSorting(self) -> None:
         "Set current customization sort index"
         if self.ui.comboBoxSetting.count() == 0:
             return
         sortfilterId = int(self.ui.comboBoxSetting.currentData())
-        try:
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation sorting')):
             set_adapt_sorting(sortfilterId, self.ui.spinBoxClassSorting.value())
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Current customization sorting updated"))
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Current customization sorting updated"))
             
     def setUserDefault(self) -> None:
         "Set current adaptation as default for current user"
         if self.ui.comboBoxSetting.count() == 0:
             return
         cid = int(self.ui.comboBoxSetting.currentData())
-        # get sort and filter params
-        try:
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation user default')):
             set_adapt_user_default('S',
-                               self.sortfilterClass,
-                               session['user'],
-                               cid)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                               _tr("MessageDialog", "Critical"),
-                               f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Current adaptation set as default for current user"))
+                                    self.sortfilterClass,
+                                    session['user'],
+                                    cid)
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Current adaptation set as default for current user"))
 
     def setClassDefault(self) -> None:
         "Set current adaptation as default for current class"
         if self.ui.comboBoxSetting.count() == 0:
             return
         cid = int(self.ui.comboBoxSetting.currentData())
-        # get sort and filter params
-        try:
+        success = False
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation class default')):
             set_adapt_class_default(cid)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                            _tr("MessageDialog", "Critical"),
-                            f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Current adaptation set as default for class"))
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Current adaptation set as default for class"))
 
     def clicked(self, button: QPushButton|None = None) -> None:
         "Intercept Reset button action"
@@ -909,12 +941,11 @@ class SortFilterDialog(QDialog):
         for r in range(FILTER_ROWS):
             if (self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentIndex() != 0 and # field
                 self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex() != 0): # operator
-                ty = self.model.columns[self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentIndex() -1][3]
                 fl = self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentData()
                 ng = self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentData()
-                oi = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex()
-                wd = self.ui.layoutFilters.itemAtPosition(r,ff.OPERAND).widget()
+                op = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentOperator()
+                format = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentFormat()
+                wd = self.ui.layoutFilters.itemAtPosition(r, ff.OPERAND).widget()
                 match wd:
                     case CheckableComboBox():
                         v = wd.currentData() # list
@@ -940,7 +971,7 @@ class SortFilterDialog(QDialog):
                     case _:
                         v = None
                 arg: Any
-                match self.FILTERING[ty][oi][2]:
+                match format:
                     case 0:
                         cond = f"{fl} {op} %s"
                         arg = v
@@ -959,6 +990,7 @@ class SortFilterDialog(QDialog):
                     cond = f"NOT {cond}" 
                 #print("WHERE ", cond, arg)
                 self.model.addWhere(cond, arg)
+                #print("WHERE ", self.model.whereCondition)
         if self.ui.checkBoxMaxRows.isChecked():
             self.model.limitCondition = self.ui.spinBoxMaxRows.value()
         else:
@@ -1069,64 +1101,60 @@ class PrintDialog(QDialog):
         self.FILTERING = {
             # integer
             'int': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'SB'), # spinbox
-                  ('<', _tr('Operator', '<'), 0, 'SB'),
-                  ('<=', _tr('Operator', '<='), 0, 'SB'),
-                  ('>', _tr('Operator', '>'), 0, 'SB'),
-                  ('>=', _tr('Operator', '>='), 0, 'SB'),
-                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None),
-                  ('=', _tr('Operator', 'From list'), 0, 'LIST')], # list of reference values
+                ('=', _tr('Operator', 'From list'), 0, 'LIST'), # list of reference values
+                ('=', _tr('Operator', '='), 0, 'SB'), # spinbox
+                ('<', _tr('Operator', '<'), 0, 'SB'),
+                ('<=', _tr('Operator', '<='), 0, 'SB'),
+                ('>', _tr('Operator', '>'), 0, 'SB'),
+                ('>=', _tr('Operator', '>='), 0, 'SB'),
+                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
             # decimal number
             'decimal': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
-                  ('<', _tr('Operator', '<'), 0, 'DSB'),
-                  ('<=', _tr('Operator', '<='), 0, 'DSB'),
-                  ('>', _tr('Operator', '>'), 0, 'DSB'),
-                  ('>=', _tr('Operator', '>='), 0, 'DSB'),
-                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+                ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
+                ('<', _tr('Operator', '<'), 0, 'DSB'),
+                ('<=', _tr('Operator', '<='), 0, 'DSB'),
+                ('>', _tr('Operator', '>'), 0, 'DSB'),
+                ('>=', _tr('Operator', '>='), 0, 'DSB'),
+                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
             # boolean
             'bool': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'CB'), # checkbox
-                  ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
+                ('=', _tr('Operator', '='), 0, 'CB'), # checkbox
+                ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
             # string
             'str': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'LE'), # line edit
-                  ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
-                  ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
-                  ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
-                  ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
-                  ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
+                ('=', _tr('Operator', 'From list'), 0, 'LIST'), # list of reference values
+                ('=', _tr('Operator', '='), 0, 'LE'), # line edit
+                ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
+                ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
+                ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
+                ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
+                ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
             # date
             'date': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'DE'), # date edit
-                  ('<', _tr('Operator', '<'), 0, 'DE'),
-                  ('<=', _tr('Operator', '<='), 0, 'DE'),
-                  ('>', _tr('Operator', '>'), 0, 'DE'),
-                  ('>=', _tr('Operator', '>='), 0, 'DE'),
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+                ('=', _tr('Operator', '='), 0, 'DE'), # date edit
+                ('<', _tr('Operator', '<'), 0, 'DE'),
+                ('<=', _tr('Operator', '<='), 0, 'DE'),
+                ('>', _tr('Operator', '>'), 0, 'DE'),
+                ('>=', _tr('Operator', '>='), 0, 'DE'),
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
             # date time
             'datetime': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'DTE'), # date time edit
-                  ('<', _tr('Operator', '<'), 0, 'DTE'),
-                  ('<=', _tr('Operator', '<='), 0, 'DTE'),
-                  ('>', _tr('Operator', '>'), 0, 'DTE'),
-                  ('>=', _tr('Operator', '>='), 0, 'DTE'),
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
+                ('=', _tr('Operator', '='), 0, 'DTE'), # date time edit
+                ('<', _tr('Operator', '<'), 0, 'DTE'),
+                ('<=', _tr('Operator', '<='), 0, 'DTE'),
+                ('>', _tr('Operator', '>'), 0, 'DTE'),
+                ('>=', _tr('Operator', '>='), 0, 'DTE'),
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
              # time
             'time': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
-                  ('<', _tr('Operator', '<'), 0, 'TE'),
-                  ('<=', _tr('Operator', '<='), 0, 'TE'),
-                  ('>', _tr('Operator', '>'), 0, 'TE'),
-                  ('>=', _tr('Operator', '>='), 0, 'TE'),
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
-            # reference field / list
-            'refstr': [('', '', 0, None),  # first row means no data
-                  ('=', _tr('Operator', '='), 0, 'SCB'), # standard combo box
-                  ('= ANY(%s)', _tr('Operator', 'In'), 2, 'CCB'), # checkable combo box
-                  ('IS NULL', _tr('Operator', 'Is Null'), 1, None)]}
+                ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
+                ('<', _tr('Operator', '<'), 0, 'TE'),
+                ('<=', _tr('Operator', '<='), 0, 'TE'),
+                ('>', _tr('Operator', '>'), 0, 'TE'),
+                ('>=', _tr('Operator', '>='), 0, 'TE'),
+                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)]}
         
         # omit ordering for reports as it is useless
 
@@ -1162,9 +1190,9 @@ class PrintDialog(QDialog):
             if self.reportClass:
                 for i, c, d in get_report_list(self.reportClass, self.l10n):
                     self.ui.comboBoxReportList.addItem(d, i)
-        # signal for change report customization
-        self.ui.comboBoxReportCustomizations.currentIndexChanged.connect(self.setReportCustomization)
-        self.ui.comboBoxReportList.currentIndexChanged.connect(self.setReportCustomization)
+        # signal for change report adaptation
+        self.ui.comboBoxReportAdaptations.currentIndexChanged.connect(self.setReportAdaptation)
+        #self.ui.comboBoxReportList.currentIndexChanged.connect(self.setReportAdaptation)
         # signal/slot for buttonbox
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Reset).clicked.connect(self.reset)
         # signal/slot for toolbuttons
@@ -1173,11 +1201,11 @@ class PrintDialog(QDialog):
         self.ui.toolButtonPrintDirect.clicked.connect(self.printDirect)
         self.ui.toolButtonPrintPDF.clicked.connect(self.printPDF)
         # signal/slot other
-        self.ui.pushButtonDelete.clicked.connect(self.deleteReportCustomization)
-        self.ui.pushButtonNewCustomization.clicked.connect(self.saveNewCustomizationAs)
-        self.ui.pushButtonUpdate.clicked.connect(self.saveReportCustomization)
+        self.ui.pushButtonDelete.clicked.connect(self.deleteReportAdaptation)
+        self.ui.pushButtonNewCustomization.clicked.connect(self.saveNewAdaptationAs)
+        self.ui.pushButtonUpdate.clicked.connect(self.saveReportAdaptation)
         self.ui.pushButtonSelectDirectory.clicked.connect(self.selectDirectoryClicked)
-        self.ui.pushButtonSetSorting.clicked.connect(self.setReportCustomizationSorting)
+        self.ui.pushButtonSetSorting.clicked.connect(self.setReportAdaptationSorting)
         self.ui.pushButtonUserDefault.clicked.connect(self.setUserDefault)
         self.ui.pushButtonClassDefault.clicked.connect(self.setClassDefault)
         # check authorization
@@ -1185,29 +1213,33 @@ class PrintDialog(QDialog):
                                             session['is_admin'])
         # create filter comboboxes
         for row in range(FILTER_ROWS):
+            # field combobox
             field = RowComboBox(self)
             field.row = row
-            field.currentIndexChanged.connect(self.condIndexChanged)
+            field.currentIndexChanged.connect(self.fieldIndexChanged)
+            # negate checkbox
             neg = RowCheckBox(self)
             neg.row = row
             neg.setToolTip(_tr('SoftFilterDialog','Not'))
+            # operator combobox
             oper = RowComboBox(self)
             oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
-            self.ui.layoutFilters.addWidget(field, row,ff.FIELD)
+            self.ui.layoutFilters.addWidget(field, row, ff.FIELD)
             self.ui.layoutFilters.addWidget(neg, row, ff.NEGATE)
-            self.ui.layoutFilters.addWidget(oper, row,ff.OPERATOR)
+            self.ui.layoutFilters.addWidget(oper, row, ff.OPERATOR)
+            # operand spacer widget (will be replaced by a widget if required)
             sw = SpacerWidget(self)
-            self.ui.layoutFilters.addWidget(sw, row,ff.OPERAND) # position widget only
+            self.ui.layoutFilters.addWidget(sw, row, ff.OPERAND) # position widget only
         # set layout stretch
         self.ui.layoutFilters.setColumnStretch(ff.FIELD, 2)
         self.ui.layoutFilters.setColumnStretch(ff.NEGATE, 0)
         self.ui.layoutFilters.setColumnStretch(ff.OPERATOR, 1)
         self.ui.layoutFilters.setColumnStretch(ff.OPERAND, 1)
         self.ui.layoutFilters.setRowStretch(row + 1, 1)
-        # report customization list
-        self.reportCustomizationList()
-        self.setReportCustomization(-1)  # initial settings
+        # report adaptation list
+        self.reportAdaptationList()
+        self.setReportAdaptation(-1)  # initial settings
 
     def reset(self) -> None:
         "Clear all filters"
@@ -1225,28 +1257,32 @@ class PrintDialog(QDialog):
                                _tr('MessageDialog', 'Critical'),
                                _tr('Dialog', 'No report available'))
 
-    def reportCustomizationList(self) -> None:
-        "Fill available customizations"
+    def reportAdaptationList(self) -> None:
+        "Fill available adaptations"
         # disable signal first
-        self.ui.comboBoxReportCustomizations.currentIndexChanged.disconnect(self.setReportCustomization)
-        # report customization list for current class and l10n
-        self.ui.comboBoxReportCustomizations.clear()
-        try:
+        self.ui.comboBoxReportAdaptations.currentIndexChanged.disconnect(self.setReportAdaptation)
+        # report adaptation list for current class and l10n
+        self.ui.comboBoxReportAdaptations.clear()
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Get report adaptation list')):
             if self.reportClass:
                 result = report_class_adapt_list(self.reportClass, session['l10n'])
                 for i, j, in result:
-                    self.ui.comboBoxReportCustomizations.addItem(j, i)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}")
+                    self.ui.comboBoxReportAdaptations.addItem(j, i)
+            success = True
+        if not success:
             return
+        # set default for user or class
+        if self.reportClass:
+            adaptid = get_adapt_default('R', self.reportClass, session['user'])
+            cid = self.ui.comboBoxReportAdaptations.findData(adaptid)
+            self.ui.comboBoxReportAdaptations.setCurrentIndex(cid)
         # reenable signal
-        self.ui.comboBoxReportCustomizations.currentIndexChanged.connect(self.setReportCustomization)
+        self.ui.comboBoxReportAdaptations.currentIndexChanged.connect(self.setReportAdaptation)
 
-    def saveReportCustomization(self) -> None:
-        "Save current customization settings"
-        cid = self.ui.comboBoxReportCustomizations.currentData()
+    def saveReportAdaptation(self) -> None:
+        "Save current adaptation settings"
+        cid = self.ui.comboBoxReportAdaptations.currentData()
         columns: Any = []
         wv: int|str|float|QDate|QDateTime|bool|list[object]|None
         # parameters
@@ -1256,7 +1292,7 @@ class PrintDialog(QDialog):
             widget = self.ui.layoutParameters.itemAtPosition(row, 1).widget()
             match widget:
                 case QComboBox():
-                    wv = widget.currentIndex()
+                    wv = widget.currentText()
                 case QLineEdit():
                     wv = widget.text()
                 case (QSpinBox()|QDoubleSpinBox()):
@@ -1276,9 +1312,9 @@ class PrintDialog(QDialog):
         # filters
         for row in range(FILTER_ROWS):
             if self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex() != 0:
-                cmb1 = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentIndex()
+                fn = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
                 neg = self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().isChecked()
-                cmb2 = self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().currentIndex()
+                op = self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().currentOperator()
                 widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
                 match widget:
                     case QComboBox():
@@ -1300,46 +1336,44 @@ class PrintDialog(QDialog):
                             wv = False
                     case _:
                         wv = None
-                columns.append((cid, None, None, None, None, 'F',row, cmb1, neg, cmb2, str(wv)))
-        try:
+                columns.append((cid, None, None, None, None, 'F', row, fn, neg, op, str(wv)))
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Save adaptation settings')):
             set_adapt_setting(cid, columns)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                    _tr("MessageDialog", "Critical"),
-                                    f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Customization saved"))
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Adaptation saved"))
 
-    def deleteReportCustomization(self) -> None:
-        "Delete current report customization"
-        custId = self.ui.comboBoxReportCustomizations.currentData()
-        if is_system_object(custId):
+    def deleteReportAdaptation(self) -> None:
+        "Delete current report adaptation"
+        adaptId = self.ui.comboBoxReportAdaptations.currentData()
+        if is_system_object(adaptId):
             QMessageBox.warning(self,
                                 _tr("MessageDialog", "Warning"),
-                                _tr("View", "System customization cannot be deleted"))
+                                _tr("View", "System adaptation cannot be deleted"))
             return
         if QMessageBox.question(self,
                                 _tr("MessageDialog", "Question"),
-                                _tr("View", "Are you sure to delete the current customization ?"),
+                                _tr("View", "Are you sure to delete the current adaptation ?"),
                                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
             return
-        try:
-            delete_adaptation(custId)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                               _tr("MessageDialog", "Critical"),
-                               f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Customization deleted"))
-        # update report customization list
-        self.reportCustomizationList()
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Delete adaptation')):
+            delete_adaptation(adaptId)
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Adaptation deleted"))
+        # update report adaptation list
+        self.reportAdaptationList()
 
-    def saveNewCustomizationAs(self) -> None:
-        "Create a new customization"
+    def saveNewAdaptationAs(self) -> None:
+        "Create a new adaptation"
         if not self.reportClass:
             return
         report_id = self.ui.comboBoxReportList.currentData()
@@ -1347,35 +1381,33 @@ class PrintDialog(QDialog):
         if not report_id or not description:
             MessageBoxCritical(self,
                                _tr("MessageDialog", "Critical"),
-                               _tr("Dialog", "You must fill all the parameters of a new customization"))
+                               _tr("Dialog", "You must fill all the parameters of a new adaptation"))
             return
-        try:
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Save new adaptation as')):
             create_adaptation('R', self.reportClass, description, report_id)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                               _tr("MessageDialog", "Critical"),
-                               f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "New customization '{}' created").format(description))
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "New adaptation '{}' created").format(description))
         self.ui.lineEditNewName.clear()
-        # update report customization list
-        self.reportCustomizationList()
+        # update report adaptation list
+        self.reportAdaptationList()
 
-    def setCustomizationSetting(self) -> None:
-        "Restore saved customization settings"
-        cid = self.ui.comboBoxReportCustomizations.currentData()
-        try:
-            params, filters, skip = get_adapt_setting(cid)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
+    def setAdaptationSettings(self) -> None:
+        "Restore saved adaptation settings"
+        cid = self.ui.comboBoxReportAdaptations.currentData()
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Get adaptation settings')):
+            params, filters, _ = get_adapt_setting(cid)
+            success = True
+        if not success:
             return
         # parameters
-        for t, row, cmb1, neg, cmb2, wv in params:
-            if not wv:  # this happens on report modification, old customization could refer to deleted objects
+        for t, row, fn, neg, op, wv in params:
+            if not wv:  # this happens on report modification, old adaptation could refer to deleted objects
                 continue
             widget = self.ui.layoutParameters.itemAtPosition(row, 1).widget()
             match widget:
@@ -1394,11 +1426,15 @@ class PrintDialog(QDialog):
                         widget.setChecked(True)
                     else:
                         widget.setChecked(False)
+                case QComboBox():
+                    widget.setCurrentText(wv)
+                case _:
+                    pass
         # set filters settings
-        for t, row, cmb1, neg, cmb2, wv in filters:
-            self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().setCurrentIndex(cmb1)
+        for t, row, fn, neg, op, wv in filters:
+            self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().setCurrentData(fn)
             self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(neg)
-            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(cmb2)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentOperator(op)
             widget = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
             match widget:
                 case QComboBox():
@@ -1426,19 +1462,20 @@ class PrintDialog(QDialog):
         if cid:
             self.ui.lineEditFileName.setText(self.report.options.get('documentName'))
 
-    def setReportCustomization(self, index: int) -> None:
-        "Set report definition from customization and create widgets"
-        custId = self.ui.comboBoxReportCustomizations.currentData()
-        if custId:
+    def setReportAdaptation(self, index: int) -> None:
+        "Set report definition from adaptation and create widgets"
+        adaptId = self.ui.comboBoxReportAdaptations.currentData()
+        if adaptId:
             # create a report instance for current report id and l10n
-            report_id, cd, cl, report_desc, l10n = get_report_from_adapt(custId)
+            report_id, cd, cl, report_desc, l10n = get_report_from_adapt(adaptId)
             self.ui.comboBoxReportList.setCurrentText((report_desc))
         else:
-            # no customizations, use the current report
+            # no adaptation, use the current report
             report_id =  self.ui.comboBoxReportList.currentData()    
         if not report_id:
             return
         self.report = Report(report_xml(report_id))
+        # clear parameters layout
         for row in range(self.ui.layoutParameters.rowCount()):
             for c in range(3):
                 if self.ui.layoutParameters.itemAtPosition(row, c):
@@ -1489,77 +1526,78 @@ class PrintDialog(QDialog):
             self.ui.layoutParameters.setColumnStretch(1, 1)
             self.ui.layoutParameters.setRowStretch(row + 1, 1)
         # filters already created in init only fill the field comboboxes values
+        # initial reset
+        for row in range(FILTER_ROWS):
+            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
+            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
         for row in range(FILTER_ROWS):
             field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget()
-            field.currentIndexChanged.disconnect(self.condIndexChanged)
+            field.currentIndexChanged.disconnect(self.fieldIndexChanged)
             field.clear()
             field.addItem('', None) # item 0 for clear/reset
             for k, v in self.report.conditions.items():
                  field.addItem(v.description, k)
-            field.currentIndexChanged.connect(self.condIndexChanged)
+            field.currentIndexChanged.connect(self.fieldIndexChanged)
         # report class sorting
-        self.ui.spinBoxClassSorting.setValue(get_adapt_sorting(custId))
+        self.ui.spinBoxClassSorting.setValue(get_adapt_sorting(adaptId))
         # restore customizations
-        self.setCustomizationSetting()
+        self.setAdaptationSettings()
 
-    def setReportCustomizationSorting(self) -> None:
+    def setReportAdaptationSorting(self) -> None:
         "Set current report sorting for report class"
-        if self.ui.comboBoxReportCustomizations.count() == 0:
+        if self.ui.comboBoxReportAdaptations.count() == 0:
             return
-        custId = self.ui.comboBoxReportCustomizations.currentData()
-        try:
-            set_adapt_sorting(custId,self.ui.spinBoxClassSorting.value())
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr("MessageDialog", "Critical"),
-                                 f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Current customization sorting updated"))
+        adaptId = self.ui.comboBoxReportAdaptations.currentData()
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation sorting')):
+            set_adapt_sorting(adaptId,self.ui.spinBoxClassSorting.value())
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Current adaptation sorting updated"))
         # apply sorting
-        self.reportCustomizationList()
-        self.setReportCustomization(-1)  # initial settings
+        self.reportAdaptationList()
+        self.setReportAdaptation(-1)  # initial settings
         
     def setUserDefault(self) -> None:
         "Set current adaptation as default for current user"
-        if self.ui.comboBoxReportCustomizations.count() == 0:
+        if self.ui.comboBoxReportAdaptations.count() == 0:
             return
         if not self.reportClass:
             return
-        cid = int(self.ui.comboBoxReportCustomizations.currentData())
-        try:
+        adaptId = int(self.ui.comboBoxReportAdaptations.currentData())
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation user default')):
             set_adapt_user_default('R',
                                    self.reportClass,
                                    session['user'],
-                                   cid)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                               _tr("MessageDialog", "Critical"),
-                               f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Current adaptation set as default for current user"))
+                                   adaptId)
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Current adaptation set as default for current user"))
 
     def setClassDefault(self) -> None:
         "Set current adaptation as default for current class"
-        if self.ui.comboBoxReportCustomizations.count() == 0:
+        if self.ui.comboBoxReportAdaptations.count() == 0:
             return
-        cid = int(self.ui.comboBoxReportCustomizations.currentData())
-        try:
-            set_adapt_class_default(cid)
-        except PyAppDBError as er:
-            MessageBoxCritical(self,
-                            _tr("MessageDialog", "Critical"),
-                            f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr("Dialog", "Current adaptation set as default for class"))
+        adaptId = int(self.ui.comboBoxReportAdaptations.currentData())
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation class default')):
+            set_adapt_class_default(adaptId)
+            success = True
+        if not success:
+            return
+        QMessageBox.information(self,
+                                _tr("MessageDialog", "Information"),
+                                _tr("Dialog", "Current adaptation set as default for class"))
 
-
-    def condIndexChanged(self, index: int) -> None:
+    def fieldIndexChanged(self, index: int) -> None:
         "Set combobox items (operator) and operand QWidget"
         if index < 0:
             return
@@ -1581,12 +1619,13 @@ class PrintDialog(QDialog):
             return
         # set operator alternatives
         self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().clear()
-        for o, d, r, w in self.FILTERING[ftype]:
-            data = cast(Any, self.sender()).currentData()
-            if hasattr(self.report.conditions[data], 'reference') and w == 'LIST':
-                continue
-            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().addItem(d, o)
-        
+        data = cast(Any, self.sender()).currentData()
+        for item in self.FILTERING[ftype]:
+            o, d, r, w = item
+            if w == 'LIST' and self.report.conditions[data].referenceList is None:
+                continue # skip if no reference list available
+            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().addItem(d, item)
+
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
         if index < 0:
@@ -1608,9 +1647,12 @@ class PrintDialog(QDialog):
             return
         # get field type
         field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
-        ftype = self.report.conditions[field].ftype # type: ignore[attr-defined]
-        w = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
-        nwt = self.FILTERING[ftype][index][3]
+        w = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
+        op_tuple = s.currentData() 
+        if not op_tuple:
+            return
+        # Estraiamo il tipo di widget (quarto elemento della tupla, indice 3)
+        nwt = s.currentWidgetType()
         # insert new operand widget
         widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
         match nwt:
@@ -1646,28 +1688,27 @@ class PrintDialog(QDialog):
                 widget = LineEditInts(self)
             case 'LED': # line edit decimal list
                 widget = LineEditDecimals(self)
-            case 'SCB': # standard combo box
-                widget = QComboBox(self)
+            # case 'SCB': # standard combo box
+            #     widget = QComboBox(self)
                 # for k, v in get_list(self.model.columns[fi][6]):
                 #     widget.addItem(v, k)
-            case 'CCB': # chackable combo box
-                widget = CheckableComboBox(self)
+            # case 'CCB': # chackable combo box
+            #     widget = CheckableComboBox(self)
                 # for k, v in get_list(self.model.columns[fi][6]):
                 #     widget.addItem(v, k)
             case 'LIST':
-                # if hasattr(self.model, 'reference'):
-                #     widget = QComboBox(self)
-                #     for k, v in self.model.reference[field]():
-                #         widget.addItem(v, k)
-                # else:
-                #     widget = SpacerWidget(self)
-                widget = SpacerWidget(self)
+                if self.report.conditions[field].referenceList is not None:
+                    widget = QComboBox(self)
+                    for k, v in referenceList[self.report.conditions[field].referenceList]():
+                        widget.addItem(v, k)
+                else:
+                    widget = SpacerWidget(self)
             case _: # no widget required (is null/is not null)
                 widget = SpacerWidget(self)
         self.ui.layoutFilters.removeWidget(w)
         w.deleteLater()
         # new widget
-        self.ui.layoutFilters.addWidget(widget, row,ff.OPERAND)
+        self.ui.layoutFilters.addWidget(widget, row, ff.OPERAND)
         
     def generateReport(self) -> bool:
         "Generate sql query, where condition, order by expression and report"
@@ -1702,12 +1743,12 @@ class PrintDialog(QDialog):
             if (hasattr(self.ui.layoutFilters.itemAtPosition(r,ff.FIELD), 'widget') and  # can happended if no filters
                 (self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentIndex() != 0 and  # field
                  self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex() != 0)):  # operator
-                fl = self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentData()
-                ty = self.report.conditions[fl].ftype
+                fn = self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentData()
+                ty = self.report.conditions[fn].ftype
                 ng = self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentData()
-                oi = self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex()
-                wd = self.ui.layoutFilters.itemAtPosition(r,ff.OPERAND).widget()
+                op = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentOperator()
+                format = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentFormat()
+                wd = self.ui.layoutFilters.itemAtPosition(r, ff.OPERAND).widget()
                 match wd:
                     case CheckableComboBox():
                         v = wd.currentData() # list
@@ -1733,18 +1774,18 @@ class PrintDialog(QDialog):
                     case _:
                         v = None
                 arg: Any
-                match self.FILTERING[ty][oi][2]:
+                match format:
                     case 0:
-                        cond = f"{fl} {op} %s"
+                        cond = f"{fn} {op} %s"
                         arg = v
                     case 1:
-                        cond = f"{fl} {op}"
+                        cond = f"{fn} {op}"
                         arg = None
                     case 2:
-                        cond = f"{fl} {op}"
+                        cond = f"{fn} {op}"
                         arg = v.split() if isinstance(v, str) else v
                     case 3:
-                        cond = f"{fl} {op}"
+                        cond = f"{fn} {op}"
                         arg = v
                     case _:
                         pass
@@ -1756,20 +1797,12 @@ class PrintDialog(QDialog):
         #print("WHERE:", self.where)
         # create self.data
         if self.report.query:
-            try:
-                 # cursor wait
-                QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+            success = False
+            with gui_exception_context(self, _tr('ReportDialog', 'Generate report')):
                 self.report.data = report_query(self.report, self.where)
-            except PyAppDBError as er:
-                msg = _tr('PrintDialog', 'Error executing database query')
-                msg = f"{msg}\n{er}"
-                MessageBoxCritical(self,
-                                   _tr('PrintDialog', 'Database error'),
-                                   msg)
+                success = True
+            if not success:
                 return False
-            finally:
-                # cursor restore
-                QApplication.restoreOverrideCursor()
         if not self.report.data:
             QMessageBox.information(self,
                                     _tr('MessageDialog', "Information"),
@@ -1799,12 +1832,8 @@ class PrintDialog(QDialog):
             pp.setZoomMode(QPrintPreviewWidget.ZoomMode.FitToWidth)
         # start
         dialog.paintRequested.connect(self.report.print)
-        try:
+        with gui_exception_context(self, _tr('ReportDialog', 'Print preview')):
             dialog.exec()
-        except ReportException as er:
-            QMessageBox.critical(self,
-                                 _tr("Dialog", "Critical"),
-                                 str(er))
 
     def printReport(self) -> None:
         "Generate report, choose a printer and print"
@@ -1814,24 +1843,16 @@ class PrintDialog(QDialog):
         printer = QPrinter(QPrinterInfo.printerInfo(self.ui.comboBoxPrinters.currentText()))
         dlg = QPrintDialog(printer, self)
         if dlg.exec() == QDialog.DialogCode.Accepted:
-            try:
+            with gui_exception_context(self, _tr('ReportDialog', 'Print')):
                 self.report.print(printer)
-            except ReportException as er:
-                QMessageBox.critical(self,
-                                     _tr("Dialog", "Critical"),
-                                     str(er))
 
     def printDirect(self) -> None:
         "Generated report and print"
         if not self.generateReport():
             return
         printer = QPrinter(QPrinterInfo.printerInfo(self.ui.comboBoxPrinters.currentText()))
-        try:
+        with gui_exception_context(self, _tr('ReportDialog', 'Print direct')):
             self.report.print(printer)
-        except ReportException as er:
-            QMessageBox.critical(self,
-                                 _tr("Dialog", "Critical"),
-                                 str(er))
 
     def printPDF(self) -> None:
         "Generated report and a pdf file, optionally open it"
@@ -1859,12 +1880,11 @@ class PrintDialog(QDialog):
         paintDevice.setResolution(600) # platform independent, better to set it before setting pdf version
         paintDevice.setPdfVersion(self.ui.comboBoxPDFVersion.currentData())
         paintDevice.setResolution(self.ui.spinBoxResolution.value())
-        try:
+        success = False
+        with gui_exception_context(self, _tr('ReportDialog', 'Print PDF')):
             self.report.print(paintDevice)
-        except ReportException as er:
-            QMessageBox.critical(self,
-                                 _tr("Dialog", "Critical"),
-                                 str(er))
+            success = True
+        if not success:
             return
         # open file if requested
         if self.ui.checkBoxOpenPDF.isChecked():

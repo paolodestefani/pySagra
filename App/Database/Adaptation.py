@@ -162,7 +162,7 @@ ORDER BY class_sorting;"""
         return cur.fetchall()
     
 
-def export_adaptation(adapt_type: str) -> List[Tuple[Any, ...]]:
+def export_adaptation(adapt_type: str) -> list[dict[str, Any]]:
     """List all adaptation records for export"""
     # System objects query
     script = t""" 
@@ -196,9 +196,9 @@ SELECT
     size,
     element_type,
     layout_row,
-    combo1_index,
+    field_name,
     negate_state,
-    combo2_index,
+    operator_sql,
     widget_value
 FROM system.adaptation_setting
 WHERE adaptation_id = {adapt_id}
@@ -207,67 +207,6 @@ ORDER BY adaptation_setting_id;"""
     with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=dict_row) as cur:
         cur.execute(script)
         return cur.fetchall()
-
-
-# def import_adaptation(adaptations: List[Tuple[Any, ...]], 
-#                       adaptsettings: List[Tuple[Any, ...]]) -> None:
-#     """Import all records into adaptation and adaptation_setting tables"""
-#     # For executemany, traditional placeholder syntax (%s) is required
-#     script1 = """
-# DELETE FROM system.adaptation;"""  # Also deletes adaptation settings via cascade
-#     script2 = """
-# ALTER TABLE system.adaptation ALTER COLUMN adaptation_id RESTART WITH 1;"""
-#     script3 = """
-# ALTER TABLE system.adaptation_setting ALTER COLUMN adaptation_setting_id RESTART WITH 1;"""
-#     script4 = """
-# INSERT INTO system.adaptation (
-#     adaptation_id,
-#     type,
-#     class,
-#     description,
-#     class_sorting,
-#     is_default_for_class,
-#     report_id,
-#     row_count_limit,
-#     is_system_object)
-# VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-#     script5 = """
-# INSERT INTO system.adaptation_setting (
-#     adaptation_setting_id, 
-#     adaptation_id,
-#     column_number,
-#     sorting,
-#     is_visible,
-#     size,
-#     element_type,
-#     layout_row,
-#     combo1_index,
-#     negate_state,
-#     combo2_index,
-#     widget_value)
-# VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-#     script6 = """
-# SELECT setval(
-#     pg_get_serial_sequence('system.adaptation', 'adaptation_id'),
-#     COALESCE((SELECT max(adaptation_id) FROM system.adaptation), 1),
-#     (SELECT max(adaptation_id) IS NOT NULL FROM system.adaptation)
-# );"""
-#     script7 = """
-# SELECT setval(
-#     pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
-#     COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
-#     (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
-# );"""
-#     # Unified context managers ensure that if any batch insert or sequence reset fails,
-#     # the entire database import operation undergoes a clean rollback.
-#     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-#         cur.execute(script1)
-#         cur.execute(script2)
-#         cur.execute(script3)
-#         cur.executemany(script4, adaptations)
-#         cur.executemany(script5, adaptsettings)
-#         cur.execute(script6)
-#         cur.execute(script7)
 
 def import_adaptation(apt: dict) -> int|None:
     """Import a record into adaptation table and return assigned id"""
@@ -292,7 +231,6 @@ VALUES (
     {apt['is_system_object']})
 RETURNING adaptation_id;"""
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        print(script)
         cur.execute(script)
         result = cur.fetchone()
         if result is not None:
@@ -310,9 +248,9 @@ INSERT INTO system.adaptation_setting (
     size,
     element_type,
     layout_row,
-    combo1_index,
+    field_name,
     negate_state,
-    combo2_index,
+    operator_sql,
     widget_value)
 VALUES (
     {stg['adaptation_id']},
@@ -322,9 +260,9 @@ VALUES (
     {stg['size']},
     {stg['element_type']},
     {stg['layout_row']},
-    {stg['combo1_index']},
+    {stg['field_name']},
     {stg['negate_state']},
-    {stg['combo2_index']},
+    {stg['operator_sql']},
     {stg['widget_value']});"""
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
@@ -363,9 +301,9 @@ def get_adapt_setting(adapt_id: int) -> Tuple[List[Tuple[Any, ...]], List[Tuple[
 SELECT 
     element_type,
     layout_row,
-    combo1_index,
+    field_name,
     negate_state,
-    combo2_index,
+    operator_sql,
     widget_value
 FROM system.adaptation_setting
 WHERE adaptation_id = {adapt_id}
@@ -400,9 +338,9 @@ INSERT INTO system.adaptation_setting (
     size,
     element_type,
     layout_row,
-    combo1_index,
+    field_name,
     negate_state,
-    combo2_index,
+    operator_sql,
     widget_value)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
     # Unified context managers guarantee that the DELETE and the bulk INSERT

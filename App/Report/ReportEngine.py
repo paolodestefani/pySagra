@@ -1070,11 +1070,11 @@ class Parameter():
 
 
 class SqlField():
-    def __init__(self, code: str|None, description: str|None, ftype: str|None) -> None:
+    def __init__(self, code: str|None, description: str|None, ftype: str|None, reference: str|None = None) -> None:
         self.code = code
         self.description = description
         self.ftype = ftype
-
+        self.referenceList = reference # use in report dialog for reference list selection
 
 # Report
 
@@ -1242,7 +1242,8 @@ class Report():
                         for cond in child.findall("condition"):
                             self.conditions[cond.text] = SqlField(cond.attrib.get('code'),
                                                                   cond.attrib.get('description'),
-                                                                  cond.attrib.get('type'))
+                                                                  cond.attrib.get('type'),
+                                                                  cond.attrib.get('reference'))
                     case _:
                         pass
 

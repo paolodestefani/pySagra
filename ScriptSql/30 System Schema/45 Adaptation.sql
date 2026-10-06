@@ -102,9 +102,9 @@ CREATE TABLE adaptation_setting (
     -- for sortfilter and report adaptation
     element_type            char,
     layout_row              integer,
-    combo1_index            integer,
+    field_name              text,
 	negate_state            boolean,
-    combo2_index            integer,
+    operator_sql            text,
 	widget_value            text,
 	--
     CONSTRAINT adaptation_setting_pk 
