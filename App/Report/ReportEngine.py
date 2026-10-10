@@ -90,6 +90,7 @@ from PySide6.QtGui import QPageSize
 from PySide6.QtGui import QPageLayout
 from PySide6.QtGui import QPaintDevice
 from PySide6.QtGui import QPdfWriter
+
 from PySide6.QtWidgets import QApplication
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
@@ -1568,7 +1569,7 @@ class Report():
     #             if pn != toPage:
     #                 paintDevice.newPage() # type: ignore
     #     painter.end()
-    
+
     def print(self, paintDevice: QPaintDevice) -> None:
         "Print document from generated report in the actual paint device"
         if isinstance(paintDevice, QPrinter):
@@ -1576,34 +1577,35 @@ class Report():
         elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
             paintDevice.setTitle(self.options['documentName']) #type: ignore
             
-        # Applichiamo il layout (che internamente sarà FullPageMode o StandardMode)
+        dpr = QGuiApplication.primaryScreen().devicePixelRatio()
+        
+        # Su macOS il devicePixelRatio è già gestito nativamente da Qt e non serve scalare il painter
+        if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
+            dpr = 1.0 
+            
         paintDevice.setPageLayout(self.pageLayout) # type: ignore
         
-        # 1. Recuperiamo la dimensione logica dell'area di disegno del report (in Punti/Millimetri)
-        rect = self.pageLayout.paintRect(self.pageLayout.units()) 
+        # Sceglie dinamicamente l'area logica corretta impostata a monte nel report:
+        # - In FullPageMode (PDF, standard) prenderà la pagina intera (es. 80mm o A4 intero)
+        # - In StandardMode (POS termica) prenderà l'area utile decurtando i margini fisici
+        rect = self.pageLayout.paintRect(self.pageLayout.units())
         
-        # 2. Otteniamo la risoluzione in DPI del dispositivo di stampa (es. 203 per la Epson, 1200 per il PDF)
-        dpi_x = paintDevice.logicalDpiX()
-        dpi_y = paintDevice.logicalDpiY()
+        painter = QPainter(paintDevice)
         
-        # 3. Otteniamo l'esatta larghezza/altezza in pixel dell'area stampabile reale del dispositivo
-        # Questo sostituisce paintDevice.width() ed elimina totalmente il bisogno del dpr!
-        rect_pixel = self.pageLayout.paintRectPixels(dpi_x)
+        # Ritorniamo alle formule originali stabili usando width() e height() del device
+        scale_x = paintDevice.width() / rect.width() / dpr
         
-        # 4. Calcolo dello scaling puro (Pixel stampabili reali / Unità logiche stampabili)
-        scale_x = rect_pixel.width() / rect.width()
-        
-        # Per evitare che il testo venga deformato in altezza sulle stampanti termiche a rotolo,
-        # blocchiamo le proporzioni 1:1 basandoci sulla larghezza (valido solo per QPrinter fisiche)
+        # CONDIZIONE STRUMENTALE PER IL ROTOLO POS:
+        # Se il report NON è in FullPageMode (quindi è impostato in StandardMode specifico per la termica),
+        # blocchiamo le proporzioni 1:1 sulla larghezza per evitare distorsioni in lunghezza sul rotolo continuo.
         if isinstance(paintDevice, QPrinter) and not self.options.get('fullPage', True):
             scale_y = scale_x
         else:
-            scale_y = rect_pixel.height() / rect.height()
+            scale_y = paintDevice.height() / rect.height() / dpr
     
-        painter = QPainter(paintDevice)
         painter.scale(scale_x, scale_y)
         
-        # ... render hints ...
+        # ... render hints nativi PySide6 ...
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
