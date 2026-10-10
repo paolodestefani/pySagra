@@ -561,9 +561,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButtonCleanSettings">
+         <widget class="QPushButton" name="pushButtonClearSettings">
           <property name="text">
-           <string>Clean local stored settings</string>
+           <string>Clear local stored settings</string>
           </property>
          </widget>
         </item>

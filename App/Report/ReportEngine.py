@@ -211,6 +211,9 @@ PageSize = {'A0':           QPageSize.PageSizeId.A0,
             'Tabloid':      QPageSize.PageSizeId.Tabloid,
             'Custom':       QPageSize.PageSizeId.Custom}
 
+PageLayoutMode = {'Standard': QPageLayout.Mode.StandardMode,
+                  'FullPage': QPageLayout.Mode.FullPageMode}
+
 # standard font properties
 
 FontWeight = {'Thin':       QFont.Weight.Thin,
@@ -267,6 +270,7 @@ defaultOptions = {'documentName':           'pyReportEngine document',
                   'orientation':            'Portrait',
                   'unit':                   'Point',
                   'pageSize':               'A4',
+                  'pageLayoutMode':         'FullPage',
                   'ignoreWarningOnSetPageLayout': False,
                   'topMargin':              5.0,
                   'bottomMargin':           5.0,
@@ -1316,7 +1320,7 @@ class Report():
                                                 0.0,
                                                 0.0),
                                       Unit[self.options["unit"]]) # type: ignore
-        self.pageLayout.setMode(QPageLayout.Mode.FullPageMode) # set full page mode to use the entire page for rendering, margins are handled by bands
+        self.pageLayout.setMode(PageLayoutMode[self.options['pageLayoutMode']]) # set full page mode to use the entire page for rendering, margins are handled by bands
 
     def setData(self, dataSet: list[Any]|tuple[Any]|None = None) -> None:
         self.data = dataSet
@@ -1518,6 +1522,53 @@ class Report():
     def reportName(self) -> str:
         return self.options['documentName']  #type: ignore
 
+    # def print(self, paintDevice: QPaintDevice) -> None:
+    #     "Print document from generated report in the actual paint device"
+    #     if isinstance(paintDevice, QPrinter):
+    #         paintDevice.setDocName(self.options['documentName']) #type: ignore
+    #     elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
+    #         paintDevice.setTitle(self.options['documentName']) #type: ignore
+            
+    #     dpr = QGuiApplication.primaryScreen().devicePixelRatio()
+        
+    #     # on macOS the devicePixelRatio is already handled by Qt and is not required to scale the painter
+    #     # in fact it cause scaling problems on high DPI screens
+    #     if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
+    #         dpr = 1.0 
+            
+    #     paintDevice.setPageLayout(self.pageLayout) # type: ignore
+        
+    #     #rect = self.pageLayout.fullRect(self.pageLayout.units())
+    #     rect = self.pageLayout.paintRect(self.pageLayout.units()) # FullPageMode or StandardMode
+        
+    #     painter = QPainter(paintDevice)
+        
+    #     scale_x = paintDevice.width() / rect.width() / dpr
+    #     scale_y = paintDevice.height() / rect.height() / dpr
+       
+    #     painter.scale(scale_x, scale_y)
+        
+    #     # ... render hints ...
+    #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    #     painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+    #     painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+
+    #     if isinstance(paintDevice, QPrinter):
+    #         fromPage = paintDevice.fromPage() or 1
+    #         toPage = paintDevice.toPage() or len(self.pages)
+    #     elif isinstance(paintDevice, QPdfWriter): # for PDFWriter
+    #         fromPage = 1
+    #         toPage = len(self.pages)
+            
+    #     for pn, page in enumerate(self.pages, 1):
+    #         if fromPage <= pn <= toPage:
+    #             painter.save()
+    #             page.play(painter) 
+    #             painter.restore()
+    #             if pn != toPage:
+    #                 paintDevice.newPage() # type: ignore
+    #     painter.end()
+    
     def print(self, paintDevice: QPaintDevice) -> None:
         "Print document from generated report in the actual paint device"
         if isinstance(paintDevice, QPrinter):
@@ -1525,22 +1576,31 @@ class Report():
         elif isinstance(paintDevice, QPdfWriter ): # for PDFWriter
             paintDevice.setTitle(self.options['documentName']) #type: ignore
             
-        dpr = QGuiApplication.primaryScreen().devicePixelRatio()
-        
-        # on macOS the devicePixelRatio is already handled by Qt and is not required to scale the painter
-        # in fact it cause scaling problems on high DPI screens
-        if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-            dpr = 1.0 
-            
+        # Applichiamo il layout (che internamente sarà FullPageMode o StandardMode)
         paintDevice.setPageLayout(self.pageLayout) # type: ignore
         
-        rect = self.pageLayout.fullRect(self.pageLayout.units())
+        # 1. Recuperiamo la dimensione logica dell'area di disegno del report (in Punti/Millimetri)
+        rect = self.pageLayout.paintRect(self.pageLayout.units()) 
         
+        # 2. Otteniamo la risoluzione in DPI del dispositivo di stampa (es. 203 per la Epson, 1200 per il PDF)
+        dpi_x = paintDevice.logicalDpiX()
+        dpi_y = paintDevice.logicalDpiY()
+        
+        # 3. Otteniamo l'esatta larghezza/altezza in pixel dell'area stampabile reale del dispositivo
+        # Questo sostituisce paintDevice.width() ed elimina totalmente il bisogno del dpr!
+        rect_pixel = self.pageLayout.paintRectPixels(dpi_x)
+        
+        # 4. Calcolo dello scaling puro (Pixel stampabili reali / Unità logiche stampabili)
+        scale_x = rect_pixel.width() / rect.width()
+        
+        # Per evitare che il testo venga deformato in altezza sulle stampanti termiche a rotolo,
+        # blocchiamo le proporzioni 1:1 basandoci sulla larghezza (valido solo per QPrinter fisiche)
+        if isinstance(paintDevice, QPrinter) and not self.options.get('fullPage', True):
+            scale_y = scale_x
+        else:
+            scale_y = rect_pixel.height() / rect.height()
+    
         painter = QPainter(paintDevice)
-        
-        scale_x = paintDevice.width() / rect.width() / dpr
-        scale_y = paintDevice.height() / rect.height() / dpr
-       
         painter.scale(scale_x, scale_y)
         
         # ... render hints ...
@@ -1563,6 +1623,7 @@ class Report():
                 if pn != toPage:
                     paintDevice.newPage() # type: ignore
         painter.end()
+
 
    
 if __name__ == "__main__":

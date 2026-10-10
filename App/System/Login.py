@@ -125,13 +125,13 @@ class LoginDialog(QDialog):
         # help
         self.ui.buttonBox.helpRequested.connect(self.showHelp)
         # clean settings
-        self.ui.pushButtonCleanSettings.clicked.connect(self.cleanLocalSettings)
+        self.ui.pushButtonClearSettings.clicked.connect(self.clearLocalSettings)
         
-    def cleanLocalSettings(self):
+    def clearLocalSettings(self):
         "Clean QSettings in case of messy values"
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
-                                _tr('LogIn', "Clean all local settings ?"),
+                                _tr('LogIn', "Clear all local settings ?"),
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:

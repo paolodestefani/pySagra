@@ -224,10 +224,10 @@ class Ui_LoginDialog(object):
 
         self.verticalLayout.addWidget(self.labelVersion)
 
-        self.pushButtonCleanSettings = QPushButton(self.frameMore)
-        self.pushButtonCleanSettings.setObjectName(u"pushButtonCleanSettings")
+        self.pushButtonClearSettings = QPushButton(self.frameMore)
+        self.pushButtonClearSettings.setObjectName(u"pushButtonClearSettings")
 
-        self.verticalLayout.addWidget(self.pushButtonCleanSettings)
+        self.verticalLayout.addWidget(self.pushButtonClearSettings)
 
 
         self.verticalLayout_2.addWidget(self.frameMore)
@@ -325,6 +325,6 @@ class Ui_LoginDialog(object):
         self.label_2.setText(QCoreApplication.translate("LoginDialog", u"Server", None))
         self.label_3.setText(QCoreApplication.translate("LoginDialog", u"Port", None))
         self.labelVersion.setText(QCoreApplication.translate("LoginDialog", u"Current App Version", None))
-        self.pushButtonCleanSettings.setText(QCoreApplication.translate("LoginDialog", u"Clean local stored settings", None))
+        self.pushButtonClearSettings.setText(QCoreApplication.translate("LoginDialog", u"Clear local stored settings", None))
     # retranslateUi
 
