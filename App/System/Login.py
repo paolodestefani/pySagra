@@ -124,6 +124,20 @@ class LoginDialog(QDialog):
         self.ui.labelVersion.setText(f"Application Version: {APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}")
         # help
         self.ui.buttonBox.helpRequested.connect(self.showHelp)
+        # clean settings
+        self.ui.pushButtonCleanSettings.clicked.connect(self.cleanLocalSettings)
+        
+    def cleanLocalSettings(self):
+        "Clean QSettings in case of messy values"
+        if QMessageBox.question(self,
+                                _tr('MessageDialog', "Question"),
+                                _tr('LogIn', "Clean all local settings ?"),
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
+            return
+        st = QSettings()
+        st.clear()
         
     def showHelp(self) -> None:
         "Open help dialog for contextual help"

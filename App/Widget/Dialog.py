@@ -36,7 +36,7 @@ from typing import cast, Any
 # PySide6
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtCore import QSettings
-from PySide6.QtCore import QFile
+from PySide6.QtCore import QFileInfo
 from PySide6.QtCore import QUrl
 from PySide6.QtCore import QDir
 from PySide6.QtCore import Qt
@@ -59,6 +59,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtGui import QPdfWriter
 from PySide6.QtGui import QPagedPaintDevice
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QLabel
@@ -99,6 +100,7 @@ from App.Database.Adaptation import set_adapt_setting
 from App.Database.Adaptation import get_adapt_setting
 from App.Database.Adaptation import delete_adaptation
 from App.Database.Adaptation import create_adaptation
+from App.Database.Adaptation import update_adaptation
 from App.Database.Adaptation import get_adapt_sorting
 from App.Database.Adaptation import set_adapt_sorting
 from App.Database.Adaptation import is_system_object
@@ -457,8 +459,8 @@ class SortFilterDialog(QDialog):
                 ]
             }
 
-        self.ORDERING = (('ASC', _tr('Sort', 'Ascending')),
-                         ('DESC', _tr('Sort', 'Descending')))
+        self.ORDERING = [('ASC', _tr('Sort', 'Ascending')),
+                         ('DESC', _tr('Sort', 'Descending'))]
 
         self.sortfilterClass = sortfilterClass
         self.modelId = None
@@ -490,10 +492,12 @@ class SortFilterDialog(QDialog):
             field.currentIndexChanged.connect(self.fieldIndexChanged)
             # negate checkbox
             neg = RowCheckBox(self)
+            neg.setDisabled(True)
             neg.row = row
             neg.setToolTip(_tr('SoftFilterDialog','Not'))
             # operator combobox
             oper = RowComboBox(self)
+            oper.setDisabled(True)
             oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
             # operand widget placeholder
@@ -524,6 +528,10 @@ class SortFilterDialog(QDialog):
             field.currentIndexChanged.connect(self.sortIndexChanged)
             # order combobox
             order = RowComboBox(self)
+            for i, j in self.ORDERING:
+                order.addItem(j, i)
+            order.setCurrentIndex(-1)
+            order.setDisabled(True)
             self.ui.layoutSorting.addWidget(field, row, sf.SORTFIELD)
             self.ui.layoutSorting.addWidget(order, row, sf.SORTORDER)
         # set layout stretch
@@ -538,7 +546,7 @@ class SortFilterDialog(QDialog):
     def availableCustomizations(self) -> None:
         "Get available customization from DB and fill combobox"
         # disable signal
-        self.ui.comboBoxSetting.currentIndexChanged.disconnect()
+        self.ui.comboBoxSetting.blockSignals(True)
         self.ui.comboBoxSetting.clear()
         # adaptation list
         success = False
@@ -555,7 +563,7 @@ class SortFilterDialog(QDialog):
         cid = self.ui.comboBoxSetting.findData(daid)
         self.ui.comboBoxSetting.setCurrentIndex(cid)
         # ri-enable signal
-        self.ui.comboBoxSetting.currentIndexChanged.connect(self.fillCustomizations)
+        self.ui.comboBoxSetting.blockSignals(False)
         # disable unavailable options
         if self.ui.comboBoxSetting.count() == 0:
             self.ui.groupBoxCurrent.setDisabled(True)
@@ -583,8 +591,8 @@ class SortFilterDialog(QDialog):
             self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
         # sortings
         for row in range(len(self.model.columns)):
-            self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(0)
-            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(0)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(-1)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(-1)
         # get sort and filter params
         success = False
         with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation settings')):
@@ -676,7 +684,7 @@ class SortFilterDialog(QDialog):
                 columns.append((cid, None, None, None, None, 'F',row, fn, neg, op, str(wv)))
         # sorting
         for row in range(len(self.model.columns)):
-            if self.ui.layoutSorting.itemAtPosition(row, ff.FIELD).widget().currentIndex() != 0:
+            if self.ui.layoutSorting.itemAtPosition(row, ff.FIELD).widget().currentIndex() != -1:
                 fn = self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().currentData()
                 so = self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().currentData()
                 wv = None
@@ -709,19 +717,27 @@ class SortFilterDialog(QDialog):
         if not isinstance(s, RowComboBox):
             return
         row = s.row
-        # reset negate
-        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
         # if index is zero reset everythinga of the row
         if index == 0:
             # reset operator
             self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(0)
+            # reset negate
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setDisabled(True)
+            # reset operator combobox
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setDisabled(True)
             return
+        # index != 0 enable negate
+        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setEnabled(True)
+        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
         # get field type
         field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
         ftype = self.fieldType.get(field)
         if not ftype:
             return
         # set operator alternatives
+        self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setEnabled(True)
         self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().clear()
         for item in self.FILTERING[ftype]:
             o, d, r, w = item
@@ -824,18 +840,20 @@ class SortFilterDialog(QDialog):
         if not isinstance(s, RowComboBox):
             return
         row = s.row
-        # clear first
-        self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().clear()
-        if index != 0:
-            for i, j in self.ORDERING:
-                self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().addItem(j, i)
+        if index == 0:
+            # disable order combobox
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(-1)
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setDisabled(True)
+        else:
+            # enable order combobox
+            self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setEnabled(True)
 
     def newCustomization(self) -> None:
         "Create a new customization"
         name = self.ui.lineEditNewName.text()
         success = False
         with gui_exception_context(self, _tr('SoftFilterDialog', 'Create new adaptation')):
-            _ = create_adaptation('S', self.sortfilterClass, name, None)
+            adaptId = create_adaptation('S', self.sortfilterClass, name, None)
             success = True
         if not success:
             return
@@ -843,7 +861,11 @@ class SortFilterDialog(QDialog):
                                 _tr("MessageDialog", "Information"),
                                 _tr("Dialog", "New customization saved"))
         self.ui.lineEditNewName.clear()
-        self.availableCustomizations() # reload all customizations including new one
+        # reload all customizations including new one
+        self.availableCustomizations()
+        # set the new customization as current
+        cid = self.ui.comboBoxSetting.findData(adaptId)
+        self.ui.comboBoxSetting.setCurrentIndex(cid)
 
     def deleteCurrent(self) -> None:
         "Remove current customization from database"
@@ -999,6 +1021,8 @@ class SortFilterDialog(QDialog):
         sorting = []
         for r in range(len(self.model.columns)):
             if self.ui.layoutSorting.itemAtPosition(r, sf.SORTFIELD).widget().currentIndex() != 0:
+                if self.ui.layoutSorting.itemAtPosition(r, sf.SORTORDER).widget().currentIndex() == -1:
+                    continue
                 f = self.ui.layoutSorting.itemAtPosition(r, sf.SORTFIELD).widget().currentData()
                 s = self.ui.layoutSorting.itemAtPosition(r, sf.SORTORDER).widget().currentData()
                 sorting.append(f'{f} {s}')
@@ -1080,13 +1104,17 @@ class EventFilterDialog(QDialog):
 
 
 class PrintDialog(QDialog):
-    "Print dialog"
+    """Print dialog
+    2 steps:
+    - select report 
+    - select adaptation (if any)
+    """
     
     def __init__(self, 
                  parent: QWidget, 
                  reportClass: str|None = None,
                  l10n: str|None = None,
-                 reportId: int|None = None
+                 reportId: int|None = None # used on report management to select report by id
                  ) -> None:
         super().__init__(parent)
         self.ui = Ui_PrintDialog()
@@ -1183,16 +1211,15 @@ class PrintDialog(QDialog):
         self.ui.checkBoxOpenPDF.setChecked(st.value("PrintDialog/PDFOpenFileAfterCreate", 'false') == 'true')
         self.ui.comboBoxPDFVersion.setCurrentIndex(st.value("PrintDialog/PDFVersion", 1, type=int))
         self.ui.spinBoxResolution.setValue(st.value("PrintDialog/PDFResolution", 100, type=int))
-        # report list for customizations or given report code
-        if reportId:
-            self.ui.comboBoxReportList.addItem(report_description(reportId), reportId)
-        else:
-            if self.reportClass:
-                for i, c, d in get_report_list(self.reportClass, self.l10n):
-                    self.ui.comboBoxReportList.addItem(d, i)
-        # signal for change report adaptation
-        self.ui.comboBoxReportAdaptations.currentIndexChanged.connect(self.setReportAdaptation)
-        #self.ui.comboBoxReportList.currentIndexChanged.connect(self.setReportAdaptation)
+        # set report list
+        self.report: Report|None = None # report object instantiated in setReport()
+        self.ui.comboBoxReportList.blockSignals(True)
+        for i, c, d in get_report_list(self.reportClass, self.l10n, reportId):
+            self.ui.comboBoxReportList.addItem(d, i)
+        self.ui.comboBoxReportList.blockSignals(False)
+        # signal for change report and adaptation
+        self.ui.comboBoxReportAdaptations.currentIndexChanged.connect(self.setAdaptationSettings)
+        self.ui.comboBoxReportList.currentIndexChanged.connect(self.setReport)
         # signal/slot for buttonbox
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Reset).clicked.connect(self.reset)
         # signal/slot for toolbuttons
@@ -1202,7 +1229,7 @@ class PrintDialog(QDialog):
         self.ui.toolButtonPrintPDF.clicked.connect(self.printPDF)
         # signal/slot other
         self.ui.pushButtonDelete.clicked.connect(self.deleteReportAdaptation)
-        self.ui.pushButtonNewCustomization.clicked.connect(self.saveNewAdaptationAs)
+        self.ui.pushButtonNewCustomization.clicked.connect(self.newAdaptationAs)
         self.ui.pushButtonUpdate.clicked.connect(self.saveReportAdaptation)
         self.ui.pushButtonSelectDirectory.clicked.connect(self.selectDirectoryClicked)
         self.ui.pushButtonSetSorting.clicked.connect(self.setReportAdaptationSorting)
@@ -1219,10 +1246,12 @@ class PrintDialog(QDialog):
             field.currentIndexChanged.connect(self.fieldIndexChanged)
             # negate checkbox
             neg = RowCheckBox(self)
+            neg.setDisabled(True)
             neg.row = row
             neg.setToolTip(_tr('SoftFilterDialog','Not'))
             # operator combobox
             oper = RowComboBox(self)
+            oper.setDisabled(True)
             oper.row = row
             oper.currentIndexChanged.connect(self.operIndexChanged)
             self.ui.layoutFilters.addWidget(field, row, ff.FIELD)
@@ -1237,9 +1266,12 @@ class PrintDialog(QDialog):
         self.ui.layoutFilters.setColumnStretch(ff.OPERATOR, 1)
         self.ui.layoutFilters.setColumnStretch(ff.OPERAND, 1)
         self.ui.layoutFilters.setRowStretch(row + 1, 1)
-        # report adaptation list
+        # disable parameters tab
+        self.ui.tabWidget.setTabEnabled(pti.PARAMS, False)
+        ## initial settings ##
+        self.setReport(0)
         self.reportAdaptationList()
-        self.setReportAdaptation(-1)  # initial settings
+        self.setAdaptationSettings()
 
     def reset(self) -> None:
         "Clear all filters"
@@ -1256,33 +1288,111 @@ class PrintDialog(QDialog):
             MessageBoxCritical(self,
                                _tr('MessageDialog', 'Critical'),
                                _tr('Dialog', 'No report available'))
+            
+    def setReport(self, index: int) -> None:
+        "Set report and fill parameters"
+        if index < 0:
+            return
+        report_id = self.ui.comboBoxReportList.currentData()
+        self.report = Report(report_xml(report_id))
+        # clear parameters layout (Safe mode)
+        while self.ui.layoutParameters.count() > 0:
+            item = self.ui.layoutParameters.takeAt(0)
+            if item is not None:
+                wdg = item.widget()
+                if wdg is not None:
+                    wdg.deleteLater()
+        # create parameters
+        if not self.report.parameter:
+            self.ui.tabWidget.setTabEnabled(pti.PARAMS, False)
+        else:
+            self.ui.tabWidget.setTabEnabled(pti.PARAMS, True)
+            self.ui.tabWidget.setCurrentIndex(pti.PARAMS)
+        for row, par in enumerate(self.report.parameter):
+            label = QLabel(self.report.parameter[par].description, self)
+            widget: QWidget
+            match self.report.parameter[par].ptype:
+                case 'list':
+                    widget = QComboBox(self)
+                    for k, v in self.report.parameter[par].items.items():
+                        widget.addItem(v, k)
+                case 'bool':
+                    widget = QCheckBox(self)
+                    widget.setChecked(self.report.parameter[par].value)
+                case 'int':
+                    widget = QSpinBox(self)
+                    widget.setValue(self.report.parameter[par].value)
+                case 'float':
+                    widget = QDoubleSpinBox(self)
+                    widget.setDecimals(2)
+                    widget.setRange(-9999999.99, 9999999.99)
+                    widget.setValue(self.report.parameter[par].value)
+                case 'date':
+                    widget = QDateEdit(self.report.parameter[par].value)
+                    widget.setCalendarPopup(True)
+                case 'str':
+                    widget = QLineEdit(self)
+                    widget.setText(self.report.parameter[par].value)
+                case 'reference':
+                    widget = RelationalComboBox(self)
+                    widget.setFunction(referenceList[self.report.parameter[par].referenceList])
+                case _:
+                    raise ReportPrintError("Unable to identify parameter type")
+            cast(Any, widget).param = par
+            self.ui.layoutParameters.addWidget(label, row, 0)
+            self.ui.layoutParameters.addWidget(widget, row, 1)
+        if self.report.parameter:
+            self.ui.layoutParameters.setColumnStretch(1, 1)
+            self.ui.layoutParameters.setRowStretch(row + 1, 1)
+        # filters already created in init only fill the field comboboxes values
+        # initial reset
+        for row in range(FILTER_ROWS):
+            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
+            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
+        for row in range(FILTER_ROWS):
+            field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget()
+            field.currentIndexChanged.disconnect(self.fieldIndexChanged)
+            field.clear()
+            field.addItem('', None) # item 0 for clear/reset
+            for k, v in self.report.conditions.items():
+                    field.addItem(v.description, k)
+            field.currentIndexChanged.connect(self.fieldIndexChanged)
+        print()
+        # fill available adaptations
+        #self.reportAdaptationList()
 
     def reportAdaptationList(self) -> None:
         "Fill available adaptations"
-        # disable signal first
-        self.ui.comboBoxReportAdaptations.currentIndexChanged.disconnect(self.setReportAdaptation)
+        if not self.reportClass:
+            return
+        # block signal first
+        self.ui.comboBoxReportAdaptations.blockSignals(True)
         # report adaptation list for current class and l10n
         self.ui.comboBoxReportAdaptations.clear()
         success = False
         with gui_exception_context(self, _tr('ReportDialog', 'Get report adaptation list')):
-            if self.reportClass:
-                result = report_class_adapt_list(self.reportClass, session['l10n'])
-                for i, j, in result:
-                    self.ui.comboBoxReportAdaptations.addItem(j, i)
+            result = report_class_adapt_list(self.reportClass, session['l10n'])
+            for i, j, in result:
+                self.ui.comboBoxReportAdaptations.addItem(j, i)
             success = True
         if not success:
             return
         # set default for user or class
-        if self.reportClass:
-            adaptid = get_adapt_default('R', self.reportClass, session['user'])
-            cid = self.ui.comboBoxReportAdaptations.findData(adaptid)
+        adaptid = get_adapt_default('R', self.reportClass, session['user'])
+        cid = self.ui.comboBoxReportAdaptations.findData(adaptid)
+        self.ui.comboBoxReportAdaptations.blockSignals(False)
+        if cid != -1:
             self.ui.comboBoxReportAdaptations.setCurrentIndex(cid)
-        # reenable signal
-        self.ui.comboBoxReportAdaptations.currentIndexChanged.connect(self.setReportAdaptation)
-
+            
     def saveReportAdaptation(self) -> None:
         "Save current adaptation settings"
+        # save report id in case of change of report
+        report_id = self.ui.comboBoxReportList.currentData()
         cid = self.ui.comboBoxReportAdaptations.currentData()
+        with gui_exception_context(self, _tr('ReportDialog', 'Save adaptation settings')):
+            update_adaptation(cid, report_id)
+        # save parameters and filters
         columns: Any = []
         wv: int|str|float|QDate|QDateTime|bool|list[object]|None
         # parameters
@@ -1372,7 +1482,7 @@ class PrintDialog(QDialog):
         # update report adaptation list
         self.reportAdaptationList()
 
-    def saveNewAdaptationAs(self) -> None:
+    def newAdaptationAs(self) -> None:
         "Create a new adaptation"
         if not self.reportClass:
             return
@@ -1385,7 +1495,7 @@ class PrintDialog(QDialog):
             return
         success = False
         with gui_exception_context(self, _tr('ReportDialog', 'Save new adaptation as')):
-            create_adaptation('R', self.reportClass, description, report_id)
+            adaptId = create_adaptation('R', self.reportClass, description, report_id)
             success = True
         if not success:
             return
@@ -1395,13 +1505,30 @@ class PrintDialog(QDialog):
         self.ui.lineEditNewName.clear()
         # update report adaptation list
         self.reportAdaptationList()
+        # set the new adaptation as current
+        cid = self.ui.comboBoxReportAdaptations.findData(adaptId)
+        self.ui.comboBoxReportAdaptations.setCurrentIndex(cid)
 
     def setAdaptationSettings(self) -> None:
         "Restore saved adaptation settings"
-        cid = self.ui.comboBoxReportAdaptations.currentData()
+        adaptId = self.ui.comboBoxReportAdaptations.currentData()
+        if not adaptId or adaptId == 0:
+            return
+        # create a report instance for current report id and l10n calling setReport to create parameters and filters
+        report_id, cd, cl, report_desc, l10n = get_report_from_adapt(adaptId)
+        if not report_id:
+            return
+        r_idx = self.ui.comboBoxReportList.findData(report_id)
+        if r_idx != -1:
+            self.ui.comboBoxReportList.setCurrentIndex(r_idx)
+        else:
+            # Fallback se non trova l'id
+            self.ui.comboBoxReportList.setCurrentText(report_desc)
+        # report class sorting
+        self.ui.spinBoxClassSorting.setValue(get_adapt_sorting(adaptId))
         success = False
         with gui_exception_context(self, _tr('ReportDialog', 'Get adaptation settings')):
-            params, filters, _ = get_adapt_setting(cid)
+            params, filters, _ = get_adapt_setting(adaptId)
             success = True
         if not success:
             return
@@ -1459,90 +1586,8 @@ class PrintDialog(QDialog):
                 case _:
                     pass
         # set pdf file name if a report exists
-        if cid:
+        if adaptId and self.report:
             self.ui.lineEditFileName.setText(self.report.options.get('documentName'))
-
-    def setReportAdaptation(self, index: int) -> None:
-        "Set report definition from adaptation and create widgets"
-        adaptId = self.ui.comboBoxReportAdaptations.currentData()
-        if adaptId:
-            # create a report instance for current report id and l10n
-            report_id, cd, cl, report_desc, l10n = get_report_from_adapt(adaptId)
-            self.ui.comboBoxReportList.setCurrentText((report_desc))
-        else:
-            # no adaptation, use the current report
-            report_id =  self.ui.comboBoxReportList.currentData()    
-        if not report_id:
-            return
-        self.report = Report(report_xml(report_id))
-        # clear parameters layout
-        for row in range(self.ui.layoutParameters.rowCount()):
-            for c in range(3):
-                if self.ui.layoutParameters.itemAtPosition(row, c):
-                    wg = self.ui.layoutParameters.itemAtPosition(row, c).widget()
-                    self.ui.layoutParameters.removeWidget(wg)
-                    wg.deleteLater()
-                    wg = None
-        # create parameters
-        if not self.report.parameter:
-            self.ui.tabWidget.setTabEnabled(pti.PARAMS, False)
-        else:
-            self.ui.tabWidget.setTabEnabled(pti.PARAMS, True)
-            self.ui.tabWidget.setCurrentIndex(pti.PARAMS)
-        for row, par in enumerate(self.report.parameter):
-            label = QLabel(self.report.parameter[par].description, self)
-            widget: QWidget
-            match self.report.parameter[par].ptype:
-                case 'list':
-                    widget = QComboBox(self)
-                    for k, v in self.report.parameter[par].items.items():
-                        widget.addItem(v, k)
-                case 'bool':
-                    widget = QCheckBox(self)
-                    widget.setChecked(self.report.parameter[par].value)
-                case 'int':
-                    widget = QSpinBox(self)
-                    widget.setValue(self.report.parameter[par].value)
-                case 'float':
-                    widget = QDoubleSpinBox(self)
-                    widget.setDecimals(2)
-                    widget.setRange(-9999999.99, 9999999.99)
-                    widget.setValue(self.report.parameter[par].value)
-                case 'date':
-                    widget = QDateEdit(self.report.parameter[par].value)
-                    widget.setCalendarPopup(True)
-                case 'str':
-                    widget = QLineEdit(self)
-                    widget.setText(self.report.parameter[par].value)
-                case 'reference':
-                    widget = RelationalComboBox(self)
-                    widget.setFunction(referenceList[self.report.parameter[par].referenceList])
-                case _:
-                    raise ReportPrintError("Unable to identify parameter type")
-            cast(Any, widget).param = par
-            self.ui.layoutParameters.addWidget(label, row, 0)
-            self.ui.layoutParameters.addWidget(widget, row, 1)
-        if self.report.parameter:
-            self.ui.layoutParameters.setColumnStretch(1, 1)
-            self.ui.layoutParameters.setRowStretch(row + 1, 1)
-        # filters already created in init only fill the field comboboxes values
-        # initial reset
-        for row in range(FILTER_ROWS):
-            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentIndex(0)
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
-        for row in range(FILTER_ROWS):
-            field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget()
-            field.currentIndexChanged.disconnect(self.fieldIndexChanged)
-            field.clear()
-            field.addItem('', None) # item 0 for clear/reset
-            for k, v in self.report.conditions.items():
-                 field.addItem(v.description, k)
-            field.currentIndexChanged.connect(self.fieldIndexChanged)
-        # report class sorting
-        self.ui.spinBoxClassSorting.setValue(get_adapt_sorting(adaptId))
-        # restore customizations
-        self.setAdaptationSettings()
 
     def setReportAdaptationSorting(self) -> None:
         "Set current report sorting for report class"
@@ -1560,7 +1605,6 @@ class PrintDialog(QDialog):
                                 _tr("Dialog", "Current adaptation sorting updated"))
         # apply sorting
         self.reportAdaptationList()
-        self.setReportAdaptation(-1)  # initial settings
         
     def setUserDefault(self) -> None:
         "Set current adaptation as default for current user"
@@ -1601,23 +1645,31 @@ class PrintDialog(QDialog):
         "Set combobox items (operator) and operand QWidget"
         if index < 0:
             return
+        if not self.report:
+            return
         # get current row number
         s = self.sender()        
         if not isinstance(s, RowComboBox):
             return
         row = s.row
-        # reset negate
-        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
         # clear if index is zero
         if index == 0:
             # reset operator
             self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(0)
+            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setDisabled(True)
+            # reset negate
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
+            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setDisabled(True)
             return
+        # index != 0 enable negate
+        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setEnabled(True)
+        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
         # get field type
         ftype = self.report.conditions[self.sender().currentData()].ftype # type: ignore[attr-defined]
         if not ftype:
             return
         # set operator alternatives
+        self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setEnabled(True)
         self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().clear()
         data = cast(Any, self.sender()).currentData()
         for item in self.FILTERING[ftype]:
@@ -1629,6 +1681,8 @@ class PrintDialog(QDialog):
     def operIndexChanged(self, index: int) -> None:
         "Create a widget for field and operator"
         if index < 0:
+            return
+        if not self.report:
             return
         # get current row number
         s = self.sender()        
@@ -1712,6 +1766,9 @@ class PrintDialog(QDialog):
         
     def generateReport(self) -> bool:
         "Generate sql query, where condition, order by expression and report"
+        # sanity check
+        if not self.report:
+            return False
         # get parameters current value
         if self.ui.tabWidget.isTabEnabled(0):
             self.report.parameter.clear()
@@ -1808,35 +1865,48 @@ class PrintDialog(QDialog):
                                     _tr('MessageDialog', "Information"),
                                     _tr('Dialog', "No data to render"))
             return False
-        # cursor wait
-        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         # generate a report
-        self.report.generate()
-        # cursor restore
-        QApplication.restoreOverrideCursor()
+        with gui_exception_context(self, _tr('ReportDialog', 'Generate report')):
+            self.report.generate()
         return True
 
     def printPreview(self) -> None:
         "Generate report and show a print preview"
+        if not self.report:
+            return
         if not self.generateReport():
             return
-        # print preview
         dialog = QPrintPreviewDialog(self)
-        dialog.setWindowFlags(Qt.WindowType.Dialog|
-                              Qt.WindowType.WindowMinMaxButtonsHint|
-                              Qt.WindowType.WindowCloseButtonHint)
+        dialog.setWindowFlags(Qt.WindowType.Dialog |
+                            Qt.WindowType.WindowMinMaxButtonsHint |
+                            Qt.WindowType.WindowCloseButtonHint)
         dialog.setWindowTitle(_tr("Dialog", "Print preview"))
-        # open in fit width
+        # Imposta lo zoom FitToWidth
         pp = dialog.findChild(QPrintPreviewWidget)
         if pp:
             pp.setZoomMode(QPrintPreviewWidget.ZoomMode.FitToWidth)
-        # start
-        dialog.paintRequested.connect(self.report.print)
+
+        # Callback che esegue il rendering del report e ripristina subito il cursore
+        def on_paint_requested(printer):
+            try:
+                self.report.print(printer)
+            finally:
+                # Rimuove il WaitCursor appena le pagine del report sono state generate
+                if QGuiApplication.overrideCursor() is not None:
+                    QGuiApplication.restoreOverrideCursor()
+
+        # Collega il wrapper anziché direttamente self.report.print
+        dialog.paintRequested.connect(on_paint_requested)
+
+        # Nota: se il tuo context manager imposta già il WaitCursor all'ingresso,
+        # on_paint_requested lo rimuoverà non appena la stampa/anteprima è pronta.
         with gui_exception_context(self, _tr('ReportDialog', 'Print preview')):
             dialog.exec()
 
     def printReport(self) -> None:
         "Generate report, choose a printer and print"
+        if not self.report:
+            return
         if not self.generateReport():
             return
         # print with printer configuration
@@ -1848,6 +1918,8 @@ class PrintDialog(QDialog):
 
     def printDirect(self) -> None:
         "Generated report and print"
+        if not self.report:
+            return
         if not self.generateReport():
             return
         printer = QPrinter(QPrinterInfo.printerInfo(self.ui.comboBoxPrinters.currentText()))
@@ -1856,43 +1928,83 @@ class PrintDialog(QDialog):
 
     def printPDF(self) -> None:
         "Generated report and a pdf file, optionally open it"
+        if not self.report:
+            return
         if not self.generateReport():
             return
-        if self.ui.lineEditDirectory.text() == "":
-            MessageBoxCritical(self,
-                               _tr('MessageDialog', 'Critical'),
-                               _tr('Dialog', "Export directory not set"))
+
+        # 1. Recupero e pulizia dei dati di input
+        directory_str = self.ui.lineEditDirectory.text().strip()
+        filename_str = self.ui.lineEditFileName.text().strip()
+
+        if not directory_str:
+            MessageBoxCritical(self, _tr('MessageDialog', 'Critical'), _tr('Dialog', "Export directory not set"))
             return
-        if self.ui.lineEditFileName.text() == "":
-            MessageBoxCritical(self,
-                               _tr('MessageDialog', 'Critical'),
-                               _tr('Dialog', "File name not set"))
+
+        if not filename_str:
+            MessageBoxCritical(self, _tr('MessageDialog', 'Critical'), _tr('Dialog', "File name not set"))
             return
-        file_name = self.ui.lineEditDirectory.text() + "/" + self.ui.lineEditFileName.text() + ".pdf"
-        if QFile(file_name).exists():
-            if QMessageBox.question(self,
-                                    _tr('MessageDialog', 'Question'),
-                                    _tr('Dialog', "File {} exists, overwrite ?").format(file_name),
-                                    QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No
-                                    ) == QMessageBox.StandardButton.No:
+
+        # Verifico che la directory esista con QDir
+        export_dir = QDir(directory_str)
+        if not export_dir.exists():
+            MessageBoxCritical(self, _tr('MessageDialog', 'Critical'), _tr('Dialog', "Export directory does not exist"))
+            return
+
+        # Assicuro che l'estensione sia .pdf (case-insensitive)
+        if not filename_str.lower().endswith('.pdf'):
+            filename_str += '.pdf'
+
+        # Costruisco il percorso pulito usando QDir.filePath
+        file_path_str = export_dir.filePath(filename_str)
+        file_info = QFileInfo(file_path_str)
+
+        # 2. Controllo esistenza e sovrascrittura con QFileInfo
+        if file_info.exists():
+            reply = QMessageBox.question(
+                self,
+                _tr('MessageDialog', 'Question'),
+                _tr('Dialog', "File {} exists, overwrite ?").format(file_info.fileName()),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            if reply == QMessageBox.StandardButton.No:
                 return
-        paintDevice = QPdfWriter(file_name)
-        paintDevice.setResolution(600) # platform independent, better to set it before setting pdf version
-        paintDevice.setPdfVersion(self.ui.comboBoxPDFVersion.currentData())
+
+        # 3. Configurazione di QPdfWriter (solo DOPO la conferma)
+        paintDevice = QPdfWriter(file_path_str)
+        
+        # Imposta la versione del PDF
+        pdf_version = self.ui.comboBoxPDFVersion.currentData()
+        if pdf_version is not None:
+            paintDevice.setPdfVersion(pdf_version)
+            
+        # Risoluzione impostata una sola volta
         paintDevice.setResolution(self.ui.spinBoxResolution.value())
+
+        # 4. Generazione del report con context manager
         success = False
         with gui_exception_context(self, _tr('ReportDialog', 'Print PDF')):
             self.report.print(paintDevice)
             success = True
+
         if not success:
             return
-        # open file if requested
+
+        # 5. Apertura del file o notifica
         if self.ui.checkBoxOpenPDF.isChecked():
-            QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))
+            url = QUrl.fromLocalFile(file_path_str)
+            if not QDesktopServices.openUrl(url):
+                MessageBoxCritical(
+                    self, 
+                    _tr('MessageDialog', 'Critical'), 
+                    _tr('Dialog', "Unable to open default PDF viewer")
+                )
         else:
-            QMessageBox.information(self,
-                                    _tr("MessageDialog", "Information"),
-                                    _tr('Dialog', "PDF file created"))
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr('Dialog', "PDF file created successfully")
+            )
 
     def selectDirectoryClicked(self) -> None:
         "Select export directory"

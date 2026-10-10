@@ -75,6 +75,18 @@ RETURNING adaptation_id;"""
             raise PyAppDBError('00000', 'Failed to create adaptation')
 
 
+def update_adaptation(adapt_id: int,
+                      report_id: int | None = None
+                      ) -> None:
+    """Update an existing adaptation"""
+    script = t"""
+UPDATE system.adaptation
+SET report_id = {report_id}
+WHERE adaptation_id = {adapt_id};"""
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+
+
 def is_system_object(adapt_id: int) -> bool:
     """Check if the adaptation id is a system object"""
     script = t"""

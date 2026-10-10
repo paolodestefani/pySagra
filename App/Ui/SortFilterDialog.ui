@@ -6,402 +6,492 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>667</width>
-    <height>475</height>
+    <width>640</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Sort &amp; Filter</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
+   </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
      <item>
       <widget class="QComboBox" name="comboBoxSetting"/>
      </item>
      <item>
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="enabled">
-        <bool>true</bool>
+      <widget class="QPushButton" name="pushButtonUserDefault">
+       <property name="text">
+        <string>Set as user default</string>
        </property>
-       <property name="tabPosition">
-        <enum>QTabWidget::TabPosition::North</enum>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="tabPosition">
+      <enum>QTabWidget::TabPosition::North</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::TabShape::Rounded</enum>
+     </property>
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <property name="documentMode">
+      <bool>false</bool>
+     </property>
+     <property name="movable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="tabFilters">
+      <attribute name="title">
+       <string>Filters</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="leftMargin">
+        <number>6</number>
        </property>
-       <property name="tabShape">
-        <enum>QTabWidget::TabShape::Rounded</enum>
+       <property name="topMargin">
+        <number>6</number>
        </property>
-       <property name="currentIndex">
-        <number>0</number>
+       <property name="rightMargin">
+        <number>6</number>
        </property>
-       <property name="documentMode">
-        <bool>false</bool>
+       <property name="bottomMargin">
+        <number>6</number>
        </property>
-       <property name="movable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="tabFilters">
-        <attribute name="title">
-         <string>Filters</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="QScrollArea" name="scrollAreaFilters">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContentsFilters">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>608</width>
+            <height>301</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QGridLayout" name="layoutFilters" columnminimumwidth="0">
+             <property name="leftMargin">
+              <number>6</number>
+             </property>
+             <property name="topMargin">
+              <number>6</number>
+             </property>
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <property name="spacing">
+              <number>6</number>
+             </property>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QScrollArea" name="scrollAreaFilters">
-           <property name="widgetResizable">
+          <widget class="QCheckBox" name="checkBoxMaxRows">
+           <property name="text">
+            <string>Max rows</string>
+           </property>
+           <property name="checked">
             <bool>true</bool>
            </property>
-           <widget class="QWidget" name="scrollAreaWidgetContentsFilters">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>589</width>
-              <height>265</height>
-             </rect>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_7">
-             <item>
-              <layout class="QGridLayout" name="layoutFilters" columnminimumwidth="0">
-               <property name="leftMargin">
-                <number>6</number>
-               </property>
-               <property name="topMargin">
-                <number>6</number>
-               </property>
-               <property name="rightMargin">
-                <number>6</number>
-               </property>
-               <property name="bottomMargin">
-                <number>6</number>
-               </property>
-               <property name="horizontalSpacing">
-                <number>12</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>6</number>
-               </property>
-              </layout>
-             </item>
-            </layout>
-           </widget>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <widget class="QSpinBox" name="spinBoxMaxRows">
+           <property name="maximum">
+            <number>99999</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabSorting">
+      <attribute name="title">
+       <string>Sorting</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QScrollArea" name="scrollAreaSorting">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContentsSorting">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>608</width>
+            <height>339</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QCheckBox" name="checkBoxMaxRows">
-             <property name="text">
-              <string>Max rows</string>
+            <layout class="QGridLayout" name="layoutSorting">
+             <property name="leftMargin">
+              <number>6</number>
              </property>
-             <property name="checked">
-              <bool>true</bool>
+             <property name="topMargin">
+              <number>6</number>
              </property>
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <property name="spacing">
+              <number>6</number>
+             </property>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabCustomize">
+      <attribute name="title">
+       <string>Customize</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QScrollArea" name="scrollAreaPrintOptions">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>608</width>
+            <height>339</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>6</number>
+           </property>
+           <property name="bottomMargin">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupBoxCurrent">
+             <property name="title">
+              <string>Current customization</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="topMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QPushButton" name="pushButtonUpdate">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Update</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButtonDelete">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Delete</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButtonClassDefault">
+                  <property name="text">
+                   <string>Set as class default</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButtonSetSorting">
+                  <property name="text">
+                   <string>Set sorting to</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBoxClassSorting"/>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spinBoxMaxRows">
-             <property name="maximum">
-              <number>99999</number>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>New customization</string>
              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="topMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
+              <item>
+               <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>Name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="lineEditNewName"/>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QPushButton" name="pushButtonNewCustomization">
+                  <property name="text">
+                   <string>Create</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_4">
+            <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>40</width>
-               <height>20</height>
+               <width>20</width>
+               <height>86</height>
               </size>
              </property>
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButtonUserDefault">
-             <property name="text">
-              <string>Set as user default</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tabSorting">
-        <attribute name="title">
-         <string>Sorting</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <widget class="QScrollArea" name="scrollAreaSorting">
-           <property name="widgetResizable">
-            <bool>true</bool>
-           </property>
-           <widget class="QWidget" name="scrollAreaWidgetContentsSorting">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>589</width>
-              <height>308</height>
-             </rect>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_4">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <layout class="QGridLayout" name="layoutSorting">
-               <property name="leftMargin">
-                <number>6</number>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Class</string>
                </property>
-               <property name="topMargin">
-                <number>6</number>
-               </property>
-               <property name="rightMargin">
-                <number>6</number>
-               </property>
-               <property name="bottomMargin">
-                <number>6</number>
-               </property>
-               <property name="horizontalSpacing">
-                <number>12</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>6</number>
-               </property>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tabCustomize">
-        <attribute name="title">
-         <string>Customize</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_9">
-         <item>
-          <widget class="QScrollArea" name="scrollAreaPrintOptions">
-           <property name="widgetResizable">
-            <bool>true</bool>
-           </property>
-           <widget class="QWidget" name="scrollAreaWidgetContents">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>589</width>
-              <height>308</height>
-             </rect>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QGroupBox" name="groupBoxCurrent">
-               <property name="title">
-                <string>Current customization</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout">
-                  <item>
-                   <widget class="QPushButton" name="pushButtonUpdate">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="text">
-                     <string>Update</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButtonDelete">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="text">
-                     <string>Delete</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Orientation::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButtonClassDefault">
-                    <property name="text">
-                     <string>Set as class default</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_5">
-                    <property name="orientation">
-                     <enum>Qt::Orientation::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButtonSetSorting">
-                    <property name="text">
-                     <string>Set sorting to</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="spinBoxClassSorting"/>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer">
-                    <property name="orientation">
-                     <enum>Qt::Orientation::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox">
-               <property name="title">
-                <string>New customization</string>
+              <widget class="QLineEdit" name="lineEditSortFilterClass">
+               <property name="focusPolicy">
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_2">
-                <item>
-                 <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_2">
-                    <property name="text">
-                     <string>Name</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLineEdit" name="lineEditNewName"/>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QPushButton" name="pushButtonNewCustomization">
-                    <property name="text">
-                     <string>Create</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
-              <spacer name="verticalSpacer">
+              <spacer name="horizontalSpacer_2">
                <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
+                <enum>Qt::Orientation::Horizontal</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>20</width>
-                 <height>86</height>
+                 <width>40</width>
+                 <height>20</height>
                 </size>
                </property>
               </spacer>
              </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <item>
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Class</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="lineEditSortFilterClass">
-                 <property name="focusPolicy">
-                  <enum>Qt::FocusPolicy::NoFocus</enum>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Orientation::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </item>
             </layout>
-           </widget>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDialogButtonBox" name="buttonBox">
-       <property name="standardButtons">
-        <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::Reset</set>
-       </property>
-       <property name="centerButtons">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::Reset</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

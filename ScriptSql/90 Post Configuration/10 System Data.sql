@@ -126,8 +126,9 @@ INSERT INTO menu_toolbar (type, code, description, is_system_object)
 VALUES
 -- EN menu
 ('M', 'm_full_en', 'Full menu', true),
-('M', 'm_full_it', 'Menu completo', true),
+('M', 'm_default_en', 'Default menu', true),
 -- IT menu
+('M', 'm_full_it', 'Menu completo', true),
 ('M', 'm_default_it', 'Menu predefinito', true);
 
 -- MENU ITEMS
@@ -188,10 +189,15 @@ VALUES
 ('fh', 'fhs2', Null, 5, 'S', Null),
 ('fh', 'fha', Null, 6, 'A', 'about_program'),
 ('fh', 'fhqt', Null, 7, 'A', 'about_qt'),
--- menu default IT
+-- menu default
+('m_default_en', 'ds', 'System', 1, 'M', Null),
+('m_default_en', 'ae', 'Edit', 15, 'M', Null),
+('m_default_en', 'dh', 'Help', 99, 'M', Null),
+
 ('m_default_it', 'ds', 'Sistema', 1, 'M', Null),
 ('m_default_it', 'ae', 'Modifica', 15, 'M', Null),
 ('m_default_it', 'dh', 'Aiuto', 99, 'M', Null),
+
 ('ds', 'dscc', Null, 1, 'A', 'sys_change_company'),
 ('ds', 'dss1', Null, 2, 'S', Null),
 ('ds', 'dscp', Null, 3, 'A', 'sys_change_password'),
@@ -212,16 +218,21 @@ INSERT INTO menu_toolbar (type, code, description, is_system_object)
 VALUES
 -- EN
 ('T', 't_full_en', 'Full', True),
+('T', 't_default_en', 'Default', True),
 -- IT
+('T', 't_full_it', 'Completa', True),
 ('T', 't_default_it', 'Predefinita', True);
 
 -- TOOLBAR ITEMS
 INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
--- EN toolbars
 -- full toolbars
 ('t_full_en', 'tae', 'Edit', 2, 'T', Null),
 ('t_full_en', 'tfqa', 'Quick access', 4, 'T', Null),
+
+('t_full_it', 'tae', 'Modifica', 2, 'T', Null),
+('t_full_it', 'tfqa', 'Accesso rapido', 4, 'T', Null),
+
 ('tae', 'taene', Null, 1, 'A', 'edit_new'),
 ('tae', 'taesa', Null, 2, 'A', 'edit_save'),
 ('tae', 'taede', Null, 3, 'A', 'edit_delete'),
@@ -238,16 +249,10 @@ VALUES
 ('tae', 'taes3', Null, 14, 'S', Null),
 ('tae', 'taept', Null, 15, 'A', 'edit_print'),
 ('tae', 'taeex', Null, 16, 'A', 'edit_export'),
--- IT toolbars
+
 -- default toolbars
+('t_default_en', 'tae', 'Edit', 2, 'T', Null),
+('t_default_en', 'tdqa', 'Quick access', 4, 'T', Null),
 ('t_default_it', 'tae', 'Modifica', 2, 'T', Null),
 ('t_default_it', 'tdqa', 'Accesso rapido', 4, 'T', Null);
-
--- app users
-INSERT INTO app_user (user_code, description, user_password, is_admin, is_system_object, can_edit_views, can_edit_sortfilters, can_edit_reports, l10n, icon_theme) 
-VALUES 
-('system', '{pyAppName} system administrator', system.crypt('G@str0n0m1c', system.gen_salt('bf')), True, True, True, True, True, 'en_US', 'oxygen'),
-('sistema', 'Amministratore del sistema {pyAppName}', system.crypt('G@str0n0m1c0', system.gen_salt('bf')), True, True, True, True, True, 'it_IT', 'flatwoken'),
-('pySagraWeb', '{pyAppName} web system user', system.crypt('pySagraWeb', system.gen_salt('bf')), False, True, False, False, False, 'en_US', Null);
-
 

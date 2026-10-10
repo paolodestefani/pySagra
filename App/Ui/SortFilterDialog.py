@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'SortFilterDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.12.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,15 +26,25 @@ class Ui_SortFilterDialog(object):
     def setupUi(self, SortFilterDialog):
         if not SortFilterDialog.objectName():
             SortFilterDialog.setObjectName(u"SortFilterDialog")
-        SortFilterDialog.resize(667, 475)
+        SortFilterDialog.resize(640, 480)
         self.verticalLayout_5 = QVBoxLayout(SortFilterDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_5.setContentsMargins(6, 6, 6, 6)
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.comboBoxSetting = QComboBox(SortFilterDialog)
         self.comboBoxSetting.setObjectName(u"comboBoxSetting")
 
-        self.verticalLayout_3.addWidget(self.comboBoxSetting)
+        self.horizontalLayout_3.addWidget(self.comboBoxSetting)
+
+        self.pushButtonUserDefault = QPushButton(SortFilterDialog)
+        self.pushButtonUserDefault.setObjectName(u"pushButtonUserDefault")
+
+        self.horizontalLayout_3.addWidget(self.pushButtonUserDefault)
+
+        self.horizontalLayout_3.setStretch(0, 1)
+
+        self.verticalLayout_5.addLayout(self.horizontalLayout_3)
 
         self.tabWidget = QTabWidget(SortFilterDialog)
         self.tabWidget.setObjectName(u"tabWidget")
@@ -45,73 +55,69 @@ class Ui_SortFilterDialog(object):
         self.tabWidget.setMovable(True)
         self.tabFilters = QWidget()
         self.tabFilters.setObjectName(u"tabFilters")
-        self.verticalLayout_10 = QVBoxLayout(self.tabFilters)
-        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.verticalLayout_3 = QVBoxLayout(self.tabFilters)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(6, 6, 6, 6)
         self.scrollAreaFilters = QScrollArea(self.tabFilters)
         self.scrollAreaFilters.setObjectName(u"scrollAreaFilters")
         self.scrollAreaFilters.setWidgetResizable(True)
         self.scrollAreaWidgetContentsFilters = QWidget()
         self.scrollAreaWidgetContentsFilters.setObjectName(u"scrollAreaWidgetContentsFilters")
-        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 589, 265))
+        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 608, 301))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContentsFilters)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.layoutFilters = QGridLayout()
+        self.layoutFilters.setSpacing(6)
         self.layoutFilters.setObjectName(u"layoutFilters")
-        self.layoutFilters.setHorizontalSpacing(12)
-        self.layoutFilters.setVerticalSpacing(6)
         self.layoutFilters.setContentsMargins(6, 6, 6, 6)
 
         self.verticalLayout_7.addLayout(self.layoutFilters)
 
         self.scrollAreaFilters.setWidget(self.scrollAreaWidgetContentsFilters)
 
-        self.verticalLayout_10.addWidget(self.scrollAreaFilters)
+        self.verticalLayout_3.addWidget(self.scrollAreaFilters)
 
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.checkBoxMaxRows = QCheckBox(self.tabFilters)
         self.checkBoxMaxRows.setObjectName(u"checkBoxMaxRows")
         self.checkBoxMaxRows.setChecked(True)
 
-        self.horizontalLayout_3.addWidget(self.checkBoxMaxRows)
+        self.horizontalLayout_4.addWidget(self.checkBoxMaxRows)
 
         self.spinBoxMaxRows = QSpinBox(self.tabFilters)
         self.spinBoxMaxRows.setObjectName(u"spinBoxMaxRows")
         self.spinBoxMaxRows.setMaximum(99999)
 
-        self.horizontalLayout_3.addWidget(self.spinBoxMaxRows)
+        self.horizontalLayout_4.addWidget(self.spinBoxMaxRows)
 
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout_3.addItem(self.horizontalSpacer_4)
-
-        self.pushButtonUserDefault = QPushButton(self.tabFilters)
-        self.pushButtonUserDefault.setObjectName(u"pushButtonUserDefault")
-
-        self.horizontalLayout_3.addWidget(self.pushButtonUserDefault)
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
 
-        self.verticalLayout_10.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
 
         self.tabWidget.addTab(self.tabFilters, "")
         self.tabSorting = QWidget()
         self.tabSorting.setObjectName(u"tabSorting")
         self.verticalLayout_8 = QVBoxLayout(self.tabSorting)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(6, 6, 6, 6)
         self.scrollAreaSorting = QScrollArea(self.tabSorting)
         self.scrollAreaSorting.setObjectName(u"scrollAreaSorting")
         self.scrollAreaSorting.setWidgetResizable(True)
         self.scrollAreaWidgetContentsSorting = QWidget()
         self.scrollAreaWidgetContentsSorting.setObjectName(u"scrollAreaWidgetContentsSorting")
-        self.scrollAreaWidgetContentsSorting.setGeometry(QRect(0, 0, 589, 308))
+        self.scrollAreaWidgetContentsSorting.setGeometry(QRect(0, 0, 608, 339))
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContentsSorting)
         self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.layoutSorting = QGridLayout()
+        self.layoutSorting.setSpacing(6)
         self.layoutSorting.setObjectName(u"layoutSorting")
-        self.layoutSorting.setHorizontalSpacing(12)
-        self.layoutSorting.setVerticalSpacing(6)
         self.layoutSorting.setContentsMargins(6, 6, 6, 6)
 
         self.verticalLayout_4.addLayout(self.layoutSorting)
@@ -125,18 +131,21 @@ class Ui_SortFilterDialog(object):
         self.tabCustomize.setObjectName(u"tabCustomize")
         self.verticalLayout_9 = QVBoxLayout(self.tabCustomize)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.verticalLayout_9.setContentsMargins(6, 6, 6, 6)
         self.scrollAreaPrintOptions = QScrollArea(self.tabCustomize)
         self.scrollAreaPrintOptions.setObjectName(u"scrollAreaPrintOptions")
         self.scrollAreaPrintOptions.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 589, 308))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 608, 339))
         self.verticalLayout_6 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayout_6.setContentsMargins(6, 6, 6, 6)
         self.groupBoxCurrent = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBoxCurrent.setObjectName(u"groupBoxCurrent")
         self.verticalLayout = QVBoxLayout(self.groupBoxCurrent)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(6, 6, 6, 6)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.pushButtonUpdate = QPushButton(self.groupBoxCurrent)
@@ -193,6 +202,7 @@ class Ui_SortFilterDialog(object):
         self.groupBox.setObjectName(u"groupBox")
         self.verticalLayout_2 = QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(6, 6, 6, 6)
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.label_2 = QLabel(self.groupBox)
@@ -247,17 +257,14 @@ class Ui_SortFilterDialog(object):
 
         self.tabWidget.addTab(self.tabCustomize, "")
 
-        self.verticalLayout_3.addWidget(self.tabWidget)
+        self.verticalLayout_5.addWidget(self.tabWidget)
 
         self.buttonBox = QDialogButtonBox(SortFilterDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok|QDialogButtonBox.StandardButton.Reset)
         self.buttonBox.setCenterButtons(True)
 
-        self.verticalLayout_3.addWidget(self.buttonBox)
-
-
-        self.verticalLayout_5.addLayout(self.verticalLayout_3)
+        self.verticalLayout_5.addWidget(self.buttonBox)
 
         QWidget.setTabOrder(self.comboBoxSetting, self.tabWidget)
         QWidget.setTabOrder(self.tabWidget, self.scrollAreaFilters)
@@ -279,7 +286,7 @@ class Ui_SortFilterDialog(object):
         self.buttonBox.rejected.connect(SortFilterDialog.reject)
         self.checkBoxMaxRows.clicked["bool"].connect(self.spinBoxMaxRows.setEnabled)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(SortFilterDialog)
@@ -287,8 +294,8 @@ class Ui_SortFilterDialog(object):
 
     def retranslateUi(self, SortFilterDialog):
         SortFilterDialog.setWindowTitle(QCoreApplication.translate("SortFilterDialog", u"Sort & Filter", None))
-        self.checkBoxMaxRows.setText(QCoreApplication.translate("SortFilterDialog", u"Max rows", None))
         self.pushButtonUserDefault.setText(QCoreApplication.translate("SortFilterDialog", u"Set as user default", None))
+        self.checkBoxMaxRows.setText(QCoreApplication.translate("SortFilterDialog", u"Max rows", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabFilters), QCoreApplication.translate("SortFilterDialog", u"Filters", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabSorting), QCoreApplication.translate("SortFilterDialog", u"Sorting", None))
         self.groupBoxCurrent.setTitle(QCoreApplication.translate("SortFilterDialog", u"Current customization", None))

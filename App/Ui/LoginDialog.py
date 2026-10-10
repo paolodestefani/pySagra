@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'LoginDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.12.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,8 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
     QDialogButtonBox, QFrame, QGridLayout, QLabel,
-    QLayout, QLineEdit, QSizePolicy, QSpinBox,
-    QVBoxLayout, QWidget)
+    QLayout, QLineEdit, QPushButton, QSizePolicy,
+    QSpinBox, QVBoxLayout, QWidget)
 
 from App.Widget.Control import PasswordLineEdit
 import resources_rc
@@ -224,6 +224,11 @@ class Ui_LoginDialog(object):
 
         self.verticalLayout.addWidget(self.labelVersion)
 
+        self.pushButtonCleanSettings = QPushButton(self.frameMore)
+        self.pushButtonCleanSettings.setObjectName(u"pushButtonCleanSettings")
+
+        self.verticalLayout.addWidget(self.pushButtonCleanSettings)
+
 
         self.verticalLayout_2.addWidget(self.frameMore)
 
@@ -320,5 +325,6 @@ class Ui_LoginDialog(object):
         self.label_2.setText(QCoreApplication.translate("LoginDialog", u"Server", None))
         self.label_3.setText(QCoreApplication.translate("LoginDialog", u"Port", None))
         self.labelVersion.setText(QCoreApplication.translate("LoginDialog", u"Current App Version", None))
+        self.pushButtonCleanSettings.setText(QCoreApplication.translate("LoginDialog", u"Clean local stored settings", None))
     # retranslateUi
 

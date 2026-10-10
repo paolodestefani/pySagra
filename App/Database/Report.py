@@ -129,25 +129,33 @@ ORDER BY ra.class_sorting;"""
         return cur.fetchall()
 
 
-def get_report_list(report_class: str,
-                    l10n: str, 
-                    null: bool=False
+def get_report_list(report_class: str|None = None,
+                    l10n: str|None = None, 
+                    report_id: int|None = None
                     ) -> list:
     "Return code and description of all reports of l10n localization or en_US"
-    script = t"""
+    if report_id is not None:
+        script = t"""
 SELECT 
     report_id,
     report_code, 
     description
 FROM system.report
-WHERE 
-        report_class = {report_class} 
-    AND l10n = {l10n};"""
+WHERE report_id = {report_id};"""
+    else:
+        script = t"""
+SELECT 
+    report_id,
+    report_code, 
+    description
+FROM system.report
+WHERE report_class = {report_class} AND l10n = {l10n};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         records = cur.fetchall()
-        return [(None, '')] + records if null else records
+        return records
+        #return [(None, '')] + records if null else records
 
 
 def report_description(report_id: int) -> str | None:

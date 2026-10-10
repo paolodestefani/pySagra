@@ -101,13 +101,19 @@ VALUES
 
 -- APPLICATION MENU
 
--- FULL MENU EN
+-- FULL MENU
 INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
 ('m_full_en', 'ffi', 'File', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
 ('m_full_en', 'fac', 'Activity', 20, 'M', Null),
 ('m_full_en', 'fst', 'Statistics', 30, 'M', Null),
 ('m_full_en', 'ftl', 'Tools', 40, 'M', Null),
+
+('m_full_it', 'ffi', 'Archivi', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
+('m_full_it', 'fac', 'Attività', 20, 'M', Null),
+('m_full_it', 'fst', 'Statistiche', 30, 'M', Null),
+('m_full_it', 'ftl', 'Strumenti', 40, 'M', Null),
+
 -- file menu
 ('ffi', 'fficdk', Null, 1, 'A', 'app_file_cash_desk'),
 ('ffi', 'ffiprn', Null, 2, 'A', 'app_file_printer'),
@@ -139,17 +145,18 @@ VALUES
 ('ftl', 'ftlebt', Null, 1, 'A', 'app_tool_event_based'),
 ('ftl', 'ftldel', Null, 2, 'A', 'app_tool_delete'),
 ('ftl', 'ftlcpy', Null, 3, 'A', 'app_tool_copy'),
--- FULL MENU IT
-('m_full_it', 'ffi', 'Archivi', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
-('m_full_it', 'fac', 'Attività', 20, 'M', Null),
-('m_full_it', 'fst', 'Statistiche', 30, 'M', Null),
-('m_full_it', 'ftl', 'Strumenti', 40, 'M', Null),
 
 -- DEFAULT MENU
+('m_default_en', 'dfi', 'File', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
+('m_default_en', 'dac', 'Activity', 20, 'M', Null),
+('m_default_en', 'dst', 'Statistics', 30, 'M', Null),
+('m_default_en', 'dtl', 'Tools', 40, 'M', Null),
+
 ('m_default_it', 'dfi', 'Archivi', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
 ('m_default_it', 'dac', 'Attività', 20, 'M', Null),
 ('m_default_it', 'dst', 'Statistiche', 30, 'M', Null),
 ('m_default_it', 'dtl', 'Strumenti', 40, 'M', Null),
+
 -- file menu
 ('dfi', 'dficdk', Null, 1, 'A', 'app_file_cash_desk'),
 ('dfi', 'dfiprn', Null, 2, 'A', 'app_file_printer'),
@@ -185,9 +192,7 @@ VALUES
 -- TOOLBAR ITEMS
 INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
 VALUES
--- EN toolbars
 -- full toolbars
 ('tfqa', 'tfqaord', Null, 1, 'T', 'app_activity_order_entry'),
--- IT toolbars
 -- default toolbars
 ('tdqa', 'tdqaord', Null, 1, 'T', 'app_activity_order_entry');

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'CompanyWidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.12.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -29,7 +29,7 @@ class Ui_CompanyWidget(object):
             CompanyWidget.setObjectName(u"CompanyWidget")
         CompanyWidget.resize(799, 592)
         self.verticalLayout_7 = QVBoxLayout(CompanyWidget)
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
         self.verticalLayout_7.setSpacing(-1)
 #endif
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")

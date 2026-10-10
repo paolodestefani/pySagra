@@ -28,7 +28,7 @@ pyside6-lupdate	\
     App/System/Action.py \
     App/System/Company.py \
     App/System/Connection.py \
-	App/System/Customization.py \
+	App/System/Adaptation.py \
 	App/System/Help.py \
 	App/System/Login.py \
 	App/System/Mainwindow.py \

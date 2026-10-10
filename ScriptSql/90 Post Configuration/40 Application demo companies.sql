@@ -48,6 +48,7 @@
 
 SET search_path = system;
 
+/*
 
 -- *** PROFILE/MENU/TOOLBAR FOR CASHIER ONLY *** --
 
@@ -259,5 +260,6 @@ VALUES
 ('avanza', 10, 'progress', 'm_progress_it', 't_progress_it'),
 ('avanza', 20, 'progress', 'm_progress_it', 't_progress_it');
 
+*/
 
 

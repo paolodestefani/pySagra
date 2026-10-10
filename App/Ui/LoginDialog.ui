@@ -560,6 +560,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonCleanSettings">
+          <property name="text">
+           <string>Clean local stored settings</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>

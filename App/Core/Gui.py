@@ -159,11 +159,10 @@ def setIconTheme(theme: str|None) -> None: # used in login, currentIcon created 
         theme = 'oxygen'
     # application icon
     currentIcon[APPNAME] = QIcon(f":/{APPNAME}")
-    it = QDirIterator(f":/Icon/{theme}", QDir.Filter.Files, QDirIterator.IteratorFlag.NoIteratorFlags)
+    it = QDirIterator(f":/icon/{theme}", QDir.Filter.Files, QDirIterator.IteratorFlag.NoIteratorFlags)
     # in resource.qrc an alias is mandatory, the it.fileName() is the alias
     while it.hasNext():
         it.next()
-        #if it.fileInfo().isFile(): # QDirIterator returns 'icons' directory too (probably current directory) that i don't use
         pix = QPixmap(it.filePath())
         currentIcon[it.fileName()] = QIcon(pix)
 

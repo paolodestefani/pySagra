@@ -420,7 +420,8 @@ class ReportForm(FormIndexManager):
 
     def print(self) -> None:
         "Print current report"
+        #rcl: str = self.model.data(self.model.index(self.mapper.currentIndex(), rpt.CLASS))
         rid: int = self.model.data(self.model.index(self.mapper.currentIndex(), rpt.ID))
-        lcn: str = self.model.data(self.model.index(self.mapper.currentIndex(), rpt.L10N))
-        dialog = PrintDialog(self, reportId=rid, l10n=lcn)
+        #lcn: str = self.model.data(self.model.index(self.mapper.currentIndex(), rpt.L10N))
+        dialog = PrintDialog(self, reportClass=None, l10n=None, reportId=rid)
         dialog.show()

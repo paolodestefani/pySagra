@@ -22,7 +22,7 @@
 	<file alias="flag_russia">Icon/flags/flag_russia.png</file>
 	<file alias="flag_thailand">Icon/flags/flag_thailand.png</file>
   </qresource>
-  <qresource prefix="/Icon/oxygen">
+  <qresource prefix="/icon/oxygen">
     <file alias="qt_logo">Icon/oxygen/Qt-logo-neon.png</file>
     <file alias="python_logo">Icon/oxygen/python-logo.png</file>
     <file alias="print_preview">Icon/oxygen/document-print-preview.png</file>
@@ -87,7 +87,7 @@
     <file alias="help_faq">Icon/oxygen/ktip.png</file>
     <file alias="help_system_info">Icon/oxygen/computer-laptop.png</file>
   </qresource>
-  <qresource prefix="/Icon/crystal_clear">
+  <qresource prefix="/icon/crystal_clear">
     <file alias="qt_logo">Icon/crystal_clear/Qt-logo-neon.png</file>
     <file alias="python_logo">Icon/crystal_clear/python-logo.png</file>
     <file alias="print_preview">Icon/crystal_clear/mime-postscript.png</file>
@@ -152,7 +152,7 @@
     <file alias="help_faq">Icon/crystal_clear/tip.png</file>
     <file alias="help_system_info">Icon/crystal_clear/laptop.png</file>
   </qresource>
-  <qresource prefix="/Icon/fluentui">
+  <qresource prefix="/icon/fluentui">
     <file alias="qt_logo">Icon/fluentui/Qt-logo-neon.png</file>
     <file alias="python_logo">Icon/fluentui/python-logo.png</file>
     <file alias="print_preview">Icon/fluentui/Eye.png</file>
@@ -217,7 +217,7 @@
     <file alias="help_faq">Icon/fluentui/Light-Bulb.png</file>
     <file alias="help_system_info">Icon/fluentui/Laptop.png</file>
   </qresource>
-  <qresource prefix="/Icon/flatwoken">
+  <qresource prefix="/icon/flatwoken">
     <file alias="qt_logo">Icon/flatwoken/Qt-logo-neon.png</file>
     <file alias="python_logo">Icon/flatwoken/python-logo.png</file>
     <file alias="print_preview">Icon/flatwoken/Preview.png</file>
