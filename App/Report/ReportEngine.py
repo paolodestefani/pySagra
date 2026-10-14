@@ -1598,7 +1598,7 @@ class Report():
         # CONDIZIONE STRUMENTALE PER IL ROTOLO POS:
         # Se il report NON è in FullPageMode (quindi è impostato in StandardMode specifico per la termica),
         # blocchiamo le proporzioni 1:1 sulla larghezza per evitare distorsioni in lunghezza sul rotolo continuo.
-        if isinstance(paintDevice, QPrinter) and not self.options.get('fullPage', True):
+        if isinstance(paintDevice, QPrinter) and self.options['pageLayoutMode'] == 'Standard':
             scale_y = scale_x
         else:
             scale_y = paintDevice.height() / rect.height() / dpr
@@ -1638,6 +1638,7 @@ if __name__ == "__main__":
         <documentName type="str">Font properties and graphics</documentName>
         <orientation type="str">Portrait</orientation>
         <pageSize type="str">A4</pageSize>
+        <pageLayoutMode type="str">Standard</pageLayoutMode>
         <topMargin type="float">10.0</topMargin>
         <bottomMargin type="float">10.0</bottomMargin>
         <leftMargin type="float">10.0</leftMargin>

@@ -61,6 +61,7 @@ from App.Core.Gui import get_colors
 logger = logging.getLogger(__name__)
 
 
+
 def settings(action: QAction, checked: bool = False) -> None:
     "Application settings"
     logger.info('Starting settings dialog')
@@ -151,9 +152,17 @@ class SettingsDialog(QDialog):
         self.ui.colorComboBoxDT.setColorList(get_colors())
         self.ui.colorComboBoxDT.setCurrentColor(self.setting['disabled_text_color'])
         # print
+        for i, j in [('D', _tr('Settings', 'Driver')),
+                     ('E', _tr('Settings', 'ESC/POS'))]:
+                    self.ui.comboBoxCustomerMethod.addItem(j, i)
+                    self.ui.comboBoxDepartmentMethod.addItem(j, i)
+                    self.ui.comboBoxCoverMethod.addItem(j, i)
         self.ui.checkBoxCustomerCopy.setChecked(self.setting['print_customer_copy'])
+        self.ui.comboBoxCustomerMethod.setCurrentIndex(self.ui.comboBoxCustomerMethod.findData(self.setting['customer_print_method']))
         self.ui.checkBoxDepartmentCopy.setChecked(self.setting['print_department_copy'])
+        self.ui.comboBoxDepartmentMethod.setCurrentIndex(self.ui.comboBoxDepartmentMethod.findData(self.setting['department_print_method']))
         self.ui.checkBoxCoverCopy.setChecked(self.setting['print_cover_copy'])
+        self.ui.comboBoxCoverMethod.setCurrentIndex(self.ui.comboBoxCoverMethod.findData(self.setting['cover_print_method']))
         self.ui.spinBoxCustomerCopies.setValue(self.setting['customer_copies'] or 1)
         self.ui.spinBoxDepartmentCopies.setValue(self.setting['department_copies'] or 1)
         self.ui.spinBoxCoverCopies.setValue(self.setting['cover_copies'] or 1)
@@ -199,13 +208,16 @@ class SettingsDialog(QDialog):
         
         # set initial default for linked params
         if self.ui.checkBoxCustomerCopy.isChecked():
+            self.ui.comboBoxCustomerMethod.setEnabled(True)
             self.ui.spinBoxCustomerCopies.setEnabled(True)
             self.ui.comboBoxCustomerReport.setEnabled(True)
             self.ui.comboBoxCustomerPrinter.setEnabled(True)
         if self.ui.checkBoxDepartmentCopy.isChecked():
+            self.ui.comboBoxDepartmentMethod.setEnabled(True)
             self.ui.spinBoxDepartmentCopies.setEnabled(True)
             self.ui.comboBoxDepartmentReport.setEnabled(True)
         if self.ui.checkBoxCoverCopy.isChecked():
+            self.ui.comboBoxCoverMethod.setEnabled(True)
             self.ui.spinBoxCoverCopies.setEnabled(True)
             self.ui.comboBoxCoverReport.setEnabled(True)
             self.ui.comboBoxCoverPrinter.setEnabled(True)
@@ -317,16 +329,22 @@ class SettingsDialog(QDialog):
         self.setting['disabled_text_color'] = self.ui.colorComboBoxDT.modelDataStr
         # reports
         self.setting['print_customer_copy'] = self.ui.checkBoxCustomerCopy.isChecked()
-        self.setting['print_department_copy'] = self.ui.checkBoxDepartmentCopy.isChecked()
-        self.setting['print_cover_copy'] = self.ui.checkBoxCoverCopy.isChecked()
+        self.setting['customer_print_method'] = self.ui.comboBoxCustomerMethod.currentData() #if self.ui.comboBoxCustomerMethod.isEnabled() else None
         self.setting['customer_copies'] = self.ui.spinBoxCustomerCopies.value() if self.ui.spinBoxCustomerCopies.isEnabled() else None
-        self.setting['department_copies'] = self.ui.spinBoxDepartmentCopies.value() if self.ui.spinBoxDepartmentCopies.isEnabled else None
-        self.setting['cover_copies'] = self.ui.spinBoxCoverCopies.value() if self.ui.spinBoxCoverCopies.isEnabled() else None
         self.setting['customer_report'] = self.ui.comboBoxCustomerReport.currentData() if self.ui.comboBoxCustomerReport.isEnabled() else None
-        self.setting['department_report'] = self.ui.comboBoxDepartmentReport.currentData() if self.ui.comboBoxDepartmentReport.isEnabled() else None
-        self.setting['cover_report'] = self.ui.comboBoxCoverReport.currentData() if self.ui.comboBoxCoverReport.isEnabled() else None
         self.setting['customer_printer_class'] = self.ui.comboBoxCustomerPrinter.currentData() if self.ui.comboBoxCustomerPrinter.isEnabled() else None
+                             
+        self.setting['print_department_copy'] = self.ui.checkBoxDepartmentCopy.isChecked()
+        self.setting['department_print_method'] = self.ui.comboBoxDepartmentMethod.currentData() #if self.ui.comboBoxDepartmentMethod.isEnabled() else None
+        self.setting['department_copies'] = self.ui.spinBoxDepartmentCopies.value() if self.ui.spinBoxDepartmentCopies.isEnabled else None
+        self.setting['department_report'] = self.ui.comboBoxDepartmentReport.currentData() if self.ui.comboBoxDepartmentReport.isEnabled() else None
+        
+        self.setting['print_cover_copy'] = self.ui.checkBoxCoverCopy.isChecked()
+        self.setting['cover_print_method'] = self.ui.comboBoxCoverMethod.currentData() #if self.ui.comboBoxCoverMethod.isEnabled() else None
+        self.setting['cover_copies'] = self.ui.spinBoxCoverCopies.value() if self.ui.spinBoxCoverCopies.isEnabled() else None
+        self.setting['cover_report'] = self.ui.comboBoxCoverReport.currentData() if self.ui.comboBoxCoverReport.isEnabled() else None
         self.setting['cover_printer_class'] = self.ui.comboBoxCoverPrinter.currentData() if self.ui.comboBoxCoverPrinter.isEnabled() else None
+
         self.setting['max_covers'] = self.ui.spinBoxMaxCovers.value()
         self.setting['automatic_show_variants'] = self.ui.checkBoxAutoVariants.isChecked()
         self.setting['manage_order_progress'] = self.ui.checkBoxOrderProgress.isChecked()

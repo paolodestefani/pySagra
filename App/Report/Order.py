@@ -38,6 +38,10 @@ from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrinterInfo
 
+# other imported
+from escpos.printer import Dummy
+from escpos.printer import Network
+
 # application modules
 from App import session
 from App.Database.Setting import Setting
@@ -76,6 +80,24 @@ def printOrderReport(order_id: int, printer: str|None = None) -> None:
         dialog.paintRequested.connect(report.print)
         dialog.exec()
         
+def printOrderEscPos(order_id: int, printer: str|None = None) -> None:
+    setting = Setting()
+    p = Dummy()
+    p.is_usable()
+    #p.charcode('') 
+    p.set(align='center', font='a')
+    p.text("RICEVUTA CON ACCENTI\n\n")
+    p.set(align='left', bold=False)
+    # Ora puoi usare lettere accentate ed Euro direttamente come stringhe Python normali!
+    p.text("Caffè Espresso                  1,20 €\n")
+    p.text("Attività promozionale           0,50 €\n")
+    p.text("------------------------------------------\n")
+    # Esempio con altre accentate e caratteri particolari
+    p.text("Nota: L'importo è comprensivo di IVA.\n")
+    p.text("Menù del giorno ordinato il venerdì.\n\n")
+    p.cut()
+    print(p.output)
+
         
 def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
     setting = Setting()

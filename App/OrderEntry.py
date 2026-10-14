@@ -78,6 +78,7 @@ from App.Database.Printer import get_printer_name
 from App.Database.Item import get_variants
 from App.Database.Order import Order
 from App.Report.Order import printOrderReport
+from App.Report.Order import printOrderEscPos
 from App.Report.Order import printOrderCoverReport
 from App.Report.Order import printOrderDepartmentReport
 from App.Report.Order import printStockUnloadReport
@@ -1374,9 +1375,17 @@ class BaseOrderDialog(QDialog):
         # ---------------------------------------------------------------------
         # print customer receipt copy
         if self.setting['print_customer_copy']:
-            with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy")):
-                printer = get_printer_name(self.setting['customer_printer_class'], session['hostname'])
-                printOrderReport(ti, printer)
+            if self.setting['customer_print_method'] == 'D':
+                with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy")):
+                    printer = get_printer_name(self.setting['customer_printer_class'], session['hostname'])
+                    printOrderReport(ti, printer)
+            elif self.setting['customer_print_method'] == 'E':
+                # ESC/POS printing
+                with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy ESCPOS")):
+                    printer = get_printer_name(self.setting['customer_printer_class'], session['hostname'])
+                    printOrderEscPos(ti, printer)
+            else:
+                pass
         # covers copy
         if self.setting['print_cover_copy'] and order.header['delivery'] == 'T' and order.header['covers']:
             with gui_exception_context(self, _tr('OrderEntry', "Printing order cover copy")):

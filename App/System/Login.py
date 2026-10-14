@@ -95,7 +95,8 @@ class LoginDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_LoginDialog()
         self.ui.setupUi(self)
-        self.setWindowTitle(_tr("Login", f"{APPNAME} - Login"))
+        txt = _tr("Login", "Login")
+        self.setWindowTitle(f"{APPNAME} - {txt}")
         # hide connection details
         self.ui.frameMore.hide()
         # restore settings
@@ -121,7 +122,8 @@ class LoginDialog(QDialog):
             self.ui.lineEditDBPassword.setText("")
         self.ui.lineEditUser.setFocus()
         self.ui.checkBoxMore.clicked.connect(self.expand) # error if i set this in QtDesigner
-        self.ui.labelVersion.setText(f"Application Version: {APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}")
+        txt = _tr('Login', f"Application Version:")
+        self.ui.labelVersion.setText(f"{txt} {APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}")
         # help
         self.ui.buttonBox.helpRequested.connect(self.showHelp)
         # clean settings
@@ -131,7 +133,7 @@ class LoginDialog(QDialog):
         "Clean QSettings in case of messy values"
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
-                                _tr('LogIn', "Clear all local settings ?"),
+                                _tr('Login', "Clear all local settings ?"),
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:

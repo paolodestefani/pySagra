@@ -11,6 +11,11 @@
     <h2 id="login">
       Procedura di login
     </h2>
+    <p>Per utilizzare <i>pySagra</i> &egrave; necessario far connettere 
+    il programma ad un database server PostgreSQL dove sia gi&agrave; 
+    presente una database applicativo di <i>pySagra</i>. Si vedano 
+    le istruzioni specifiche per l'installazione del server e del
+    database applicativo.</p>
     <p>
      Al primo avvio dell'applicazione vengono richiesti i parametri di connessione
 	 al server e la finestra si presenta come in figura:
@@ -51,25 +56,42 @@
         <b>Database:</b> indicare il nome del database al quale
         collegarsi
       </li>
+      <li>
+        <b>Utente DB:</b> indicare il nome dell'utente di database
+        per la login al database server e l'accesso al database applicativo.
+        Questo &egrave; un utente del server PostgreSQL e non a 
+        nulla a che fare con l'utente applicativo richiesto sopra.
+      </li>
+      <li>
+        <b>Password DB:</b> indicare la password dell'utente di database
+        indicato sopra.
+      </li>
     </ul>
-    <p>Ci sono 2 utenti di sistema predefiniti e
+    <p>Tramite il tasto <b>Cancella le impostazioni locali</b> &egrave;
+	  possibile azzerare eventuali impostazioni dell'applicazione 
+	  memorizzate in locale nel PC, non nel database,
+	  che hanno generato problemi. Gli esempi tipici sono: 
+	  nescoste per errore tutte le toolbar, 
+	  modificata la dimensione della finestra che la rende invisibile, ecc.</p>
+    <p>Ci sono 2 utenti applicativi di sistema predefiniti e
 		 non modificabili:
 		<ul>
-			<li><i>system</i></li>
-			<li><i>sistema</i></li>
+			<li><b>system</b> con password <i>system</i></li>
+			<li><b>sistema</b> con password <i>sistema</i></li>
 		</ul>
 		<p>Questi utenti sono amministratori ed hanno assegnato 
 		un menu ed un profilo che permette loro un accesso completo
-		 a tutte le funzionalit&agrave; del programma</p>
-		<p>Inoltre sono precaricati altri altri 3 utenti:</p>
+		 a tutte le funzionalit&agrave; del programma. Si consiglia
+		 di modificarne la password al primo accesso ma non &egrave;
+		 obbligatorio farlo</p>
+		<p>Inoltre sono precaricati altri 2 utenti:</p>
 		<ul>
-			<li><i>utente</i> con password <b>utente</b></li>
-			<li><i>cassa</i> con password <b>cassa</b></li>
-			<li><i>avanza</i> con password <b>avanza</b></li>
+			<li><b>user</b> con password <i>user</i></li>
+			<li><b>utente</b> con password <i>utente</i></li>
 		</ul>
 		<p>Essendo utenti normali si possono modificare ed anche cancellare. 
-		Sono utenti variamente limitati a parte <b>utente</b> ma un 
-		qualunque amministratore può modificarne i permessi, profili e menu</p>
+		Sono utenti variamente limitati ma un qualunque 
+		amministratore può modificarne i permessi, profili e menu</p>
     <p>
       La prima volta che si accede ad un server <b>TUTTI</b> questi
       parametri devono essere valorizzati. Le volte successive
@@ -77,8 +99,8 @@
       con successo in precedenza ad esclusione del nome utente e
       della password:
 	  <p><img src="img/login2.png" width="463" height="511" /></p>
-	  Per modificare i parametri inseriti cliccare sulla casella <i>Dettagli della connessione</i>
-    </p>
+	  Per modificare i parametri inseriti cliccare sulla casella 
+	  <i>Dettagli della connessione</i></p>
     <p><a class="top" href="#top" title="top">Inizio pagina</a></p>
   </body>
 </html>

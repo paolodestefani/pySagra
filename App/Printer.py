@@ -55,6 +55,8 @@ from App.Widget.Dialog import PrintDialog
 from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import ReadOnlyDelegate
 from App.Widget.Delegate import PrintersDelegate
+from App.Widget.Delegate import RelationDelegate
+from App.Widget.Delegate import GenericDelegate
 from App.Ui.DepartmentPrinterWidget import Ui_DepartmentPrinterWidget
 
 
@@ -74,11 +76,18 @@ class pndt(IntEnum):
     ID          = 0
     CLASS_ID    = 1
     COMPUTER    = 2
-    PRINTER     = 3
-    USER_INS    = 4
-    DATE_INS    = 5
-    USER_UPD    = 6
-    DATE_UPD    = 7
+    METHOD      = 3
+    PRINTER     = 4
+    PARAMETERS  = 5
+    USER_INS    = 6
+    DATE_INS    = 7
+    USER_UPD    = 8
+    DATE_UPD    = 9
+    
+    
+def printMethods() -> list:
+    return [('D', _tr('Printer', 'Driver')),
+            ('E', _tr('Printer', 'ESC/POS'))]
 
 
 def printer(action: QAction, checked: bool = False) -> None:
@@ -128,8 +137,11 @@ class PrinterForm(FormIndexManager):
         self.ui.printersTableView.setModel(pdModel)
         self.ui.printersTableView.setLayoutName('Printer')
         self.ui.printersTableView.setItemDelegateForColumn(pndt.COMPUTER, ReadOnlyDelegate(self))
+        self.ui.printersTableView.setItemDelegateForColumn(pndt.PARAMETERS, GenericDelegate(self))
         # get host name
         self.hostName = QHostInfo.localHostName()
+        # print method
+        self.ui.printersTableView.setItemDelegateForColumn(pndt.METHOD, RelationDelegate(self, printMethods))
         # get printers list
         self.availablePrinters = [i.printerName() for i in QPrinterInfo.availablePrinters()]
         # printer item delegate
@@ -171,15 +183,16 @@ class PrinterForm(FormIndexManager):
     @scriptMethod
     def add(self) -> None:
         "Add a new printer"
-        # check if a record for current computer name already exists
+        # check if a record for current computer name and method already exists
         model = self.ui.printersTableView.model()
-        for i in range(model.rowCount()):
-            index = model.index(i, pndt.COMPUTER)
-            if index.data() == self.hostName:
-                QMessageBox.information(self,
-                                        _tr("MessageDialog", "Information"),
-                                        _tr("Printer", "There is already a record with current computer name"))
-                return
+        # for i in range(model.rowCount()):
+        #     computer = model.index(i, pndt.COMPUTER).data()
+        #     method = model.index(i, pndt.METHOD).data()
+        #     if index.data() == self.hostName:
+        #         QMessageBox.information(self,
+        #                                 _tr("MessageDialog", "Information"),
+        #                                 _tr("Printer", "There is already a record with current computer name"))
+        #         return
         cr = self.ui.printersTableView.model().rowCount() # must be before add, with add model have already a new row
         self.ui.printersTableView.add()
         index = self.ui.printersTableView.model().index(cr, pndt.COMPUTER)

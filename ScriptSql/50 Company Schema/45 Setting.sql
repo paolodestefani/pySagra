@@ -98,15 +98,18 @@ CREATE TABLE setting (
     inactivity_time                     integer NOT NULL DEFAULT 180,
     -- order printing
     print_customer_copy                 boolean NOT NULL DEFAULT False,
-    print_department_copy               boolean NOT NULL DEFAULT False,
-    print_cover_copy                    boolean NOT NULL DEFAULT False,
+    customer_print_method               char(1), -- D or E
     customer_copies                     integer DEFAULT 1,
-    department_copies                   integer DEFAULT 1,
-    cover_copies                        integer DEFAULT 1,
     customer_report                     varchar(48),
-    department_report                   varchar(48),
-    cover_report                        varchar(48),
     customer_printer_class              integer,
+    print_department_copy               boolean NOT NULL DEFAULT False,
+    department_print_method             char(1), -- D or E
+    department_copies                   integer DEFAULT 1,
+    department_report                   varchar(48),
+    print_cover_copy                    boolean NOT NULL DEFAULT False,
+    cover_print_method                  char(1), -- D or E
+    cover_copies                        integer DEFAULT 1,
+    cover_report                        varchar(48),
     cover_printer_class                 integer,
     -- order progress management
 	manage_order_progress               boolean NOT NULL DEFAULT False,
@@ -137,6 +140,12 @@ CREATE TABLE setting (
         CHECK (order_number_based_on IN ('E', 'D', 'P')),
     CONSTRAINT setting_tab_position_check 
         CHECK (order_list_tab_position IN ('N', 'S', 'E', 'W')),
+    CONSTRAINT setting_customer_print_method_check 
+        CHECK (customer_print_method IN ('D', 'E')),
+    CONSTRAINT setting_department_print_method_check 
+        CHECK (department_print_method IN ('D', 'E')),
+    CONSTRAINT setting_cover_print_method_check 
+        CHECK (cover_print_method IN ('D', 'E')),
     CONSTRAINT setting_customer_printer_class_fk 
         FOREIGN KEY (customer_printer_class) 
         REFERENCES printer_class (printer_class_id)

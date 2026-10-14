@@ -53,8 +53,8 @@ SET search_path = system;
 -- app users
 INSERT INTO app_user (user_code, description, user_password, is_admin, is_system_object, can_edit_views, can_edit_sortfilters, can_edit_reports, l10n, icon_theme) 
 VALUES 
-('system', '{pyAppName} system administrator', system.crypt('G@str0n0m1c', system.gen_salt('bf')), True, True, True, True, True, 'en_US', 'oxygen'),
-('sistema', 'Amministratore del sistema {pyAppName}', system.crypt('G@str0n0m1c0', system.gen_salt('bf')), True, True, True, True, True, 'it_IT', 'flatwoken'),
+('system', '{pyAppName} system administrator', system.crypt('system', system.gen_salt('bf')), True, True, True, True, True, 'en_US', 'oxygen'),
+('sistema', 'Amministratore del sistema {pyAppName}', system.crypt('sistema', system.gen_salt('bf')), True, True, True, True, True, 'it_IT', 'flatwoken'),
 ('user', 'Default user', system.crypt('user', system.gen_salt('bf')), False, False, False, False, False, 'en_US', 'oxygen'),
 ('utente', 'Utente predefinito', system.crypt('utente', system.gen_salt('bf')), False, False, False, False, False, 'it_IT', 'flatwoken'),
 ('pySagraWeb', '{pyAppName} web system user', system.crypt('pySagraWeb', system.gen_salt('bf')), False, True, False, False, False, 'en_US', Null);

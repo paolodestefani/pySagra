@@ -31,6 +31,7 @@ This module contains custom general delegates
 from decimal import Decimal
 from typing import Any
 from typing import cast
+from typing import Sequence
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -562,7 +563,7 @@ class ItemsDelegate(QStyledItemDelegate):
 class PrintersDelegate(ItemsDelegate):
     "A delegate (combo box) for choose a printer of the current computer"
 
-    def __init__(self, parent: QWidget, printers: list[str], hostName: str) -> None:
+    def __init__(self, parent: QWidget, printers: Sequence[str|None], hostName: str) -> None:
         super().__init__(parent, printers)
         self.hostName = hostName
 
@@ -573,7 +574,7 @@ class PrintersDelegate(ItemsDelegate):
                      ) -> QComboBox:
         # prevent editing printers on another computer.
         # the computer name must appear in the previous column of the same line.
-        row_host = index.model().index(index.row(), index.column() - 1).data()
+        row_host = index.model().index(index.row(), index.column() - 2).data()
         
         if row_host != self.hostName:
             # create a dummy widget and hide it immediately.
@@ -583,7 +584,7 @@ class PrintersDelegate(ItemsDelegate):
             return dummy
             
         cb = QComboBox(parent)
-        cb.addItems(self.data)
+        cb.addItems([None] + self.data)
         return cb
 
 
@@ -1026,3 +1027,114 @@ class TimeDelegate(QStyledItemDelegate):
         option.displayAlignment = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
         
+class JasonDelegate(QStyledItemDelegate):
+    """A Delegate for view that use a  """
+
+    def initStyleOption(self, option: QStyleOptionViewItem, index: QModelIndex | QPersistentModelIndex) -> None:
+        # let Qt load the basic model data (including fonts, colors, and selection)
+        super().initStyleOption(option, index)
+        
+        # retrieves the value to display
+        value = index.data(Qt.ItemDataRole.DisplayRole)
+        
+        # format text, alignment, and native checkboxes based on data type
+        match value:
+            case bool():  # boolean check must precede int (bool is a subclass of int)
+                option.text = ""
+                option.features |= QStyleOptionViewItem.ViewItemFeature.HasCheckIndicator
+                option.checkState = Qt.CheckState.Checked if value else Qt.CheckState.Unchecked
+                option.displayAlignment = Qt.AlignmentFlag.AlignCenter
+            case int():
+                option.text = str(value)
+                option.displayAlignment = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+            case QDate() | QDateTime() | QTime():
+                option.text = session['qlocale'].toString(value, QLocale.FormatType.ShortFormat)
+                option.displayAlignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+            case Decimal():
+                q_locale = session['qlocale']
+                thousand_sep = q_locale.groupSeparator()
+                decimal_sep = q_locale.decimalPoint()
+                raw_formatted = f"{float(value or 0.0):,.2f}"
+                option.text = raw_formatted.replace(",", "X").replace(".", decimal_sep).replace("X", thousand_sep)
+                option.displayAlignment = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+            case _:
+                option.text = str(value) if value is not None else ""
+                option.displayAlignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+
+    def createEditor(self, 
+                     parent: QWidget,
+                     option: QStyleOptionViewItem,
+                     index: QModelIndex | QPersistentModelIndex
+                     ) -> QWidget:
+        abstract_model = index.model()
+        model = cast(QueryModel | TableModel, abstract_model)
+        fieldType = cast(str, model.columns[index.column()][3])
+        widget: QWidget | QSpinBox | QDateEdit | QDateTimeEdit|QDoubleSpinBox
+        match fieldType:
+            case 'bool':  
+                # empty QWidget as placeholder: actual toggling is done on click
+                return QWidget(parent)
+            case 'int':
+                widget = QSpinBox(parent)
+                widget.setRange(0, 999999999)
+                return widget
+            case 'date':
+                return QDateEdit(parent)
+            case 'datetime':
+                return QDateTimeEdit(parent)
+            case 'decimal':
+                widget = QDoubleSpinBox(parent)
+                widget.setDecimals(2)
+                widget.setRange(-999999999.0, 999999999.0) # Gestisce anche i negativi
+                return widget
+            case _: 
+                return QLineEdit(parent)
+
+    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+        val = index.data(Qt.ItemDataRole.EditRole)
+        if val is None:
+            val = index.data(Qt.ItemDataRole.DisplayRole)
+            
+        if val is None:
+            return
+            
+        match editor:
+            case QCheckBox() as cb:
+                cb.setChecked(bool(val))
+            case QSpinBox() as sb:
+                sb.setValue(int(val))
+            case QDateEdit() as de:
+                de.setDate(val)
+            case QDateTimeEdit() as dte:
+                dte.setDateTime(val)
+            case QDoubleSpinBox() as dsb:
+                dsb.setValue(float(val))
+            case QLineEdit() as le:
+                le.setText(str(val))
+            case QWidget():  
+                pass
+            case _:
+                raise TypeError(f"Unsupported editor type: {type(editor)}")
+
+    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+        match editor:
+            case QCheckBox():
+                model.setData(index, editor.isChecked(), Qt.ItemDataRole.EditRole)
+            case QSpinBox():
+                model.setData(index, editor.value(), Qt.ItemDataRole.EditRole)
+            case QDateEdit():
+                model.setData(index, editor.date(), Qt.ItemDataRole.EditRole)
+            case QDateTimeEdit():
+                model.setData(index, editor.dateTime(), Qt.ItemDataRole.EditRole)
+            case QDoubleSpinBox():
+                model.setData(index, editor.value(), Qt.ItemDataRole.EditRole)
+            case QLineEdit():
+                model.setData(index, editor.text(), Qt.ItemDataRole.EditRole)
+            case QWidget():  
+                # fixed getting the current value for the boolean toggle
+                current_val = index.data(Qt.ItemDataRole.EditRole)
+                if current_val is None:
+                    current_val = index.data(Qt.ItemDataRole.DisplayRole)
+                model.setData(index, not bool(current_val), Qt.ItemDataRole.EditRole)
+            case _:
+                raise TypeError(f"Unsupported editor type: {type(editor)}")

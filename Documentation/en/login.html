@@ -6,73 +6,99 @@
   </head>
   <body style="font-family: Arial, Sans-Serif;">
     <h1>
-      pySagra Documentation
+      pySagra documentation
     </h1>
     <h2 id="login">
       Login procedure
     </h2>
+    <p>To use <i>pySagra</i> it is necessary to connect 
+    the program to a PostgreSQL database server where a 
+    <i>pySagra</i> application database is already present. Please 
+    see the specific instructions for installing the server and the
+    application database.</p>
     <p>
-     At the first launch of the application, the connection parameters to the
-	 server are requested and the window appears as shown in the figure:
+     At the first launch of the application, the connection parameters to 
+     the server are requested and the window appears as shown in the figure:
 	 <p><img src="img/login1.png" width="463" height="722" /></p>
     </p>
     <p>
-      The parameters required to establish the connection to the
+      The parameters required to connect to the 
       database server are:
     </p>
     <ul>
       <li>
-        <b>User:</b> enter the application user code. The text entered
-        is case-sensitive, meaning "Paolo" and "paolo" are interpreted as
-         two different users.
+        <b>User:</b> enter the application user code. The entered text
+        is case-sensitive, meaning "Paolo" and "paolo" are 
+        interpreted as 2 different users.
       </li>
       <li>
         <b>Password:</b> enter the password associated with the selected
-        user. It may not be mandatory depending on how the user
-        authentication mechanism is configured.
+        user. It may be optional depending on 
+        how the user authentication mechanism is configured.
       </li>
       <li>
-        <b>Server:</b> enter the name of the computer acting as the
-        database server. It is also possible to enter the server's IP
-        address (e.g., 192.168.1.1). If the program is executed on the
-        same computer where the database server is running, you can
-        enter the computer name 'localhost' or the IP 127.0.0.1
+        <b>Server:</b> enter the name of the computer acting as the 
+        database server. It is also possible to enter 
+        the server's IP address (e.g., 192.168.1.1). If the 
+        program is running on the same computer where 
+        the database server is running, you can enter 
+        the computer name 'localhost' or the IP 127.0.0.1
       </li>
       <li>
-        <b>Port:</b> indicate the TCP port to use for the
-        connection. Typically, PostgreSQL installations use port 5432;
-        ask the network administrator if a different port is being used
+        <b>Port:</b> indicate the TCP port to use for the 
+        connection. Typically, PostgreSQL installations 
+        use port 5432; ask your network administrator 
+        if a different port is used
       </li>
       <li>
-        <b>Database:</b> indicate the name of the database to
+        <b>Database:</b> indicate the name of the database to 
         connect to
       </li>
+      <li>
+        <b>DB User:</b> indicate the name of the database user 
+        to log in to the database server and access the application database. 
+        This is a PostgreSQL server user and has 
+        nothing to do with the application user requested above.
+      </li>
+      <li>
+        <b>DB Password:</b> indicate the password of the database user 
+        specified above.
+      </li>
     </ul>
-    <p>There are 2 predefined and unmodifiable system users:
+    <p>Using the <b>Clear local settings</b> button, it is 
+	  possible to reset any application settings stored locally 
+	  on the PC (not in the database) 
+	  that have caused problems. Typical examples include: 
+	  accidentally hiding all toolbars, 
+	  changing the window size making it invisible, etc.</p>
+    <p>There are 2 default and non-modifiable 
+         system application users:
 		<ul>
-			<li><i>system</i></li>
-			<li><i>sistema</i></li>
+			<li><b>system</b> with password <i>system</i></li>
+			<li><b>sistema</b> with password <i>sistema</i></li>
 		</ul>
-		<p>These users are administrators and have been assigned 
-		a menu and a profile that allows them full access
-		 to all program features</p>
-		<p>In addition, 3 other users are preloaded:</p>
+		<p>These users are administrators and are assigned 
+		a menu and a profile that allows them full access 
+		to all program features. It is recommended 
+		to change their password upon first access, but it is not 
+		mandatory</p>
+		<p>Additionally, 2 other users are preloaded:</p>
 		<ul>
-			<li><i>utente</i> with password <b>utente</b></li>
-			<li><i>cassa</i> with password <b>cassa</b></li>
-			<li><i>avanza</i> with password <b>avanza</b></li>
+			<li><b>user</b> with password <i>user</i></li>
+			<li><b>utente</b> with password <i>utente</i></li>
 		</ul>
-		<p>Being normal users, they can be modified and also deleted. 
-		They are users with various limitations, except for <b>utente</b>, but any 
+		<p>Since they are normal users, they can be modified and even deleted. 
+		They are restricted in various ways, but any 
 		administrator can modify their permissions, profiles, and menus</p>
     <p>
-      The first time you access a server, <b>ALL</b> these
-      parameters must be filled in. On subsequent occasions,
-      the same parameters previously used with success are proposed again,
-      with the exception of the username and password:
+      The first time you access a server, <b>ALL</b> these 
+      parameters must be filled in. On subsequent occasions, 
+      the same parameters previously used successfully 
+      are proposed again, excluding the username and 
+      password:
 	  <p><img src="img/login2.png" width="463" height="511" /></p>
-	  To modify the entered parameters, click on the <i>Connection details</i> checkbox
-    </p>
+	  To change the entered parameters, click on the box 
+	  <i>Connection details</i></p>
+    <p><a class="top" href="#top" title="top">Top of page</a></p>
   </body>
 </html>
-

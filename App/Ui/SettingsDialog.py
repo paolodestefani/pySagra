@@ -29,7 +29,7 @@ class Ui_SettingsDialog(object):
         if not SettingsDialog.objectName():
             SettingsDialog.setObjectName(u"SettingsDialog")
         SettingsDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        SettingsDialog.resize(760, 588)
+        SettingsDialog.resize(760, 590)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -946,51 +946,32 @@ class Ui_SettingsDialog(object):
         self.groupBox_4.setObjectName(u"groupBox_4")
         self.verticalLayout = QVBoxLayout(self.groupBox_4)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(5, 5, 5, 5)
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.labelCopy_4 = QLabel(self.groupBox_4)
-        self.labelCopy_4.setObjectName(u"labelCopy_4")
-
-        self.gridLayout.addWidget(self.labelCopy_4, 0, 2, 1, 1)
-
-        self.labelCopy = QLabel(self.groupBox_4)
-        self.labelCopy.setObjectName(u"labelCopy")
-
-        self.gridLayout.addWidget(self.labelCopy, 0, 1, 1, 1)
-
-        self.labelCopy_3 = QLabel(self.groupBox_4)
-        self.labelCopy_3.setObjectName(u"labelCopy_3")
-
-        self.gridLayout.addWidget(self.labelCopy_3, 0, 3, 1, 1)
-
         self.labelCopy_2 = QLabel(self.groupBox_4)
         self.labelCopy_2.setObjectName(u"labelCopy_2")
 
         self.gridLayout.addWidget(self.labelCopy_2, 0, 0, 1, 1)
 
-        self.comboBoxCustomerPrinter = RelationalComboBox(self.groupBox_4)
-        self.comboBoxCustomerPrinter.setObjectName(u"comboBoxCustomerPrinter")
-        self.comboBoxCustomerPrinter.setEnabled(False)
-        sizePolicy1.setHeightForWidth(self.comboBoxCustomerPrinter.sizePolicy().hasHeightForWidth())
-        self.comboBoxCustomerPrinter.setSizePolicy(sizePolicy1)
+        self.labelCopy_6 = QLabel(self.groupBox_4)
+        self.labelCopy_6.setObjectName(u"labelCopy_6")
 
-        self.gridLayout.addWidget(self.comboBoxCustomerPrinter, 1, 3, 1, 1)
+        self.gridLayout.addWidget(self.labelCopy_6, 0, 1, 1, 1)
 
-        self.spinBoxCustomerCopies = QSpinBox(self.groupBox_4)
-        self.spinBoxCustomerCopies.setObjectName(u"spinBoxCustomerCopies")
-        self.spinBoxCustomerCopies.setEnabled(False)
-        self.spinBoxCustomerCopies.setMinimum(1)
+        self.labelCopy = QLabel(self.groupBox_4)
+        self.labelCopy.setObjectName(u"labelCopy")
 
-        self.gridLayout.addWidget(self.spinBoxCustomerCopies, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.labelCopy, 0, 2, 1, 1)
 
-        self.comboBoxCustomerReport = RelationalComboBox(self.groupBox_4)
-        self.comboBoxCustomerReport.setObjectName(u"comboBoxCustomerReport")
-        self.comboBoxCustomerReport.setEnabled(False)
-        sizePolicy1.setHeightForWidth(self.comboBoxCustomerReport.sizePolicy().hasHeightForWidth())
-        self.comboBoxCustomerReport.setSizePolicy(sizePolicy1)
+        self.labelCopy_4 = QLabel(self.groupBox_4)
+        self.labelCopy_4.setObjectName(u"labelCopy_4")
 
-        self.gridLayout.addWidget(self.comboBoxCustomerReport, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.labelCopy_4, 0, 3, 1, 1)
+
+        self.labelCopy_3 = QLabel(self.groupBox_4)
+        self.labelCopy_3.setObjectName(u"labelCopy_3")
+
+        self.gridLayout.addWidget(self.labelCopy_3, 0, 4, 1, 1)
 
         self.checkBoxCustomerCopy = QCheckBox(self.groupBox_4)
         self.checkBoxCustomerCopy.setObjectName(u"checkBoxCustomerCopy")
@@ -998,20 +979,53 @@ class Ui_SettingsDialog(object):
 
         self.gridLayout.addWidget(self.checkBoxCustomerCopy, 1, 0, 1, 1)
 
-        self.spinBoxCoverCopies = QSpinBox(self.groupBox_4)
-        self.spinBoxCoverCopies.setObjectName(u"spinBoxCoverCopies")
-        self.spinBoxCoverCopies.setEnabled(False)
-        self.spinBoxCoverCopies.setMinimum(1)
+        self.comboBoxCustomerMethod = RelationalComboBox(self.groupBox_4)
+        self.comboBoxCustomerMethod.setObjectName(u"comboBoxCustomerMethod")
+        self.comboBoxCustomerMethod.setEnabled(False)
 
-        self.gridLayout.addWidget(self.spinBoxCoverCopies, 7, 1, 1, 1)
+        self.gridLayout.addWidget(self.comboBoxCustomerMethod, 1, 1, 1, 1)
 
-        self.comboBoxCoverReport = RelationalComboBox(self.groupBox_4)
-        self.comboBoxCoverReport.setObjectName(u"comboBoxCoverReport")
-        self.comboBoxCoverReport.setEnabled(False)
-        sizePolicy1.setHeightForWidth(self.comboBoxCoverReport.sizePolicy().hasHeightForWidth())
-        self.comboBoxCoverReport.setSizePolicy(sizePolicy1)
+        self.spinBoxCustomerCopies = QSpinBox(self.groupBox_4)
+        self.spinBoxCustomerCopies.setObjectName(u"spinBoxCustomerCopies")
+        self.spinBoxCustomerCopies.setEnabled(False)
+        self.spinBoxCustomerCopies.setMinimum(1)
 
-        self.gridLayout.addWidget(self.comboBoxCoverReport, 7, 2, 1, 1)
+        self.gridLayout.addWidget(self.spinBoxCustomerCopies, 1, 2, 1, 1)
+
+        self.comboBoxCustomerReport = RelationalComboBox(self.groupBox_4)
+        self.comboBoxCustomerReport.setObjectName(u"comboBoxCustomerReport")
+        self.comboBoxCustomerReport.setEnabled(False)
+        sizePolicy1.setHeightForWidth(self.comboBoxCustomerReport.sizePolicy().hasHeightForWidth())
+        self.comboBoxCustomerReport.setSizePolicy(sizePolicy1)
+
+        self.gridLayout.addWidget(self.comboBoxCustomerReport, 1, 3, 1, 1)
+
+        self.comboBoxCustomerPrinter = RelationalComboBox(self.groupBox_4)
+        self.comboBoxCustomerPrinter.setObjectName(u"comboBoxCustomerPrinter")
+        self.comboBoxCustomerPrinter.setEnabled(False)
+        sizePolicy1.setHeightForWidth(self.comboBoxCustomerPrinter.sizePolicy().hasHeightForWidth())
+        self.comboBoxCustomerPrinter.setSizePolicy(sizePolicy1)
+
+        self.gridLayout.addWidget(self.comboBoxCustomerPrinter, 1, 4, 1, 1)
+
+        self.checkBoxDepartmentCopy = QCheckBox(self.groupBox_4)
+        self.checkBoxDepartmentCopy.setObjectName(u"checkBoxDepartmentCopy")
+        self.checkBoxDepartmentCopy.setChecked(False)
+
+        self.gridLayout.addWidget(self.checkBoxDepartmentCopy, 2, 0, 1, 1)
+
+        self.comboBoxDepartmentMethod = RelationalComboBox(self.groupBox_4)
+        self.comboBoxDepartmentMethod.setObjectName(u"comboBoxDepartmentMethod")
+        self.comboBoxDepartmentMethod.setEnabled(False)
+
+        self.gridLayout.addWidget(self.comboBoxDepartmentMethod, 2, 1, 1, 1)
+
+        self.spinBoxDepartmentCopies = QSpinBox(self.groupBox_4)
+        self.spinBoxDepartmentCopies.setObjectName(u"spinBoxDepartmentCopies")
+        self.spinBoxDepartmentCopies.setEnabled(False)
+        self.spinBoxDepartmentCopies.setMinimum(1)
+
+        self.gridLayout.addWidget(self.spinBoxDepartmentCopies, 2, 2, 1, 1)
 
         self.comboBoxDepartmentReport = RelationalComboBox(self.groupBox_4)
         self.comboBoxDepartmentReport.setObjectName(u"comboBoxDepartmentReport")
@@ -1019,26 +1033,34 @@ class Ui_SettingsDialog(object):
         sizePolicy1.setHeightForWidth(self.comboBoxDepartmentReport.sizePolicy().hasHeightForWidth())
         self.comboBoxDepartmentReport.setSizePolicy(sizePolicy1)
 
-        self.gridLayout.addWidget(self.comboBoxDepartmentReport, 3, 2, 1, 1)
-
-        self.checkBoxDepartmentCopy = QCheckBox(self.groupBox_4)
-        self.checkBoxDepartmentCopy.setObjectName(u"checkBoxDepartmentCopy")
-        self.checkBoxDepartmentCopy.setChecked(False)
-
-        self.gridLayout.addWidget(self.checkBoxDepartmentCopy, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.comboBoxDepartmentReport, 2, 3, 1, 1)
 
         self.checkBoxCoverCopy = QCheckBox(self.groupBox_4)
         self.checkBoxCoverCopy.setObjectName(u"checkBoxCoverCopy")
         self.checkBoxCoverCopy.setChecked(False)
 
-        self.gridLayout.addWidget(self.checkBoxCoverCopy, 7, 0, 1, 1)
+        self.gridLayout.addWidget(self.checkBoxCoverCopy, 3, 0, 1, 1)
 
-        self.spinBoxDepartmentCopies = QSpinBox(self.groupBox_4)
-        self.spinBoxDepartmentCopies.setObjectName(u"spinBoxDepartmentCopies")
-        self.spinBoxDepartmentCopies.setEnabled(False)
-        self.spinBoxDepartmentCopies.setMinimum(1)
+        self.comboBoxCoverMethod = RelationalComboBox(self.groupBox_4)
+        self.comboBoxCoverMethod.setObjectName(u"comboBoxCoverMethod")
+        self.comboBoxCoverMethod.setEnabled(False)
 
-        self.gridLayout.addWidget(self.spinBoxDepartmentCopies, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.comboBoxCoverMethod, 3, 1, 1, 1)
+
+        self.spinBoxCoverCopies = QSpinBox(self.groupBox_4)
+        self.spinBoxCoverCopies.setObjectName(u"spinBoxCoverCopies")
+        self.spinBoxCoverCopies.setEnabled(False)
+        self.spinBoxCoverCopies.setMinimum(1)
+
+        self.gridLayout.addWidget(self.spinBoxCoverCopies, 3, 2, 1, 1)
+
+        self.comboBoxCoverReport = RelationalComboBox(self.groupBox_4)
+        self.comboBoxCoverReport.setObjectName(u"comboBoxCoverReport")
+        self.comboBoxCoverReport.setEnabled(False)
+        sizePolicy1.setHeightForWidth(self.comboBoxCoverReport.sizePolicy().hasHeightForWidth())
+        self.comboBoxCoverReport.setSizePolicy(sizePolicy1)
+
+        self.gridLayout.addWidget(self.comboBoxCoverReport, 3, 3, 1, 1)
 
         self.comboBoxCoverPrinter = RelationalComboBox(self.groupBox_4)
         self.comboBoxCoverPrinter.setObjectName(u"comboBoxCoverPrinter")
@@ -1046,10 +1068,8 @@ class Ui_SettingsDialog(object):
         sizePolicy1.setHeightForWidth(self.comboBoxCoverPrinter.sizePolicy().hasHeightForWidth())
         self.comboBoxCoverPrinter.setSizePolicy(sizePolicy1)
 
-        self.gridLayout.addWidget(self.comboBoxCoverPrinter, 7, 3, 1, 1)
+        self.gridLayout.addWidget(self.comboBoxCoverPrinter, 3, 4, 1, 1)
 
-        self.gridLayout.setColumnStretch(2, 1)
-        self.gridLayout.setColumnStretch(3, 1)
 
         self.verticalLayout.addLayout(self.gridLayout)
 
@@ -1191,10 +1211,11 @@ class Ui_SettingsDialog(object):
 #if QT_CONFIG(shortcut)
         self.label_24.setBuddy(self.spinBoxQuantityDecimals)
         self.label_25.setBuddy(self.lineEditCurrencySymbol)
-        self.labelCopy_4.setBuddy(self.spinBoxCustomerCopies)
-        self.labelCopy.setBuddy(self.spinBoxCustomerCopies)
-        self.labelCopy_3.setBuddy(self.spinBoxCustomerCopies)
         self.labelCopy_2.setBuddy(self.spinBoxCustomerCopies)
+        self.labelCopy_6.setBuddy(self.spinBoxCustomerCopies)
+        self.labelCopy.setBuddy(self.spinBoxCustomerCopies)
+        self.labelCopy_4.setBuddy(self.spinBoxCustomerCopies)
+        self.labelCopy_3.setBuddy(self.spinBoxCustomerCopies)
         self.labelCopy_5.setBuddy(self.spinBoxCustomerCopies)
 #endif // QT_CONFIG(shortcut)
 
@@ -1213,6 +1234,9 @@ class Ui_SettingsDialog(object):
         self.horizontalSliderDinner.valueChanged.connect(self.spinBoxDinner.setValue)
         self.checkBoxInactivity.clicked["bool"].connect(self.spinBoxInactivityTime.setEnabled)
         self.checkBoxInactivity.clicked["bool"].connect(self.labelInactivity.setEnabled)
+        self.checkBoxCustomerCopy.clicked["bool"].connect(self.comboBoxCustomerMethod.setEnabled)
+        self.checkBoxDepartmentCopy.clicked["bool"].connect(self.comboBoxDepartmentMethod.setEnabled)
+        self.checkBoxCoverCopy.clicked["bool"].connect(self.comboBoxCoverMethod.setEnabled)
 
         self.tabWidget.setCurrentIndex(0)
 
@@ -1306,10 +1330,11 @@ class Ui_SettingsDialog(object):
         self.labelInactivity.setText(QCoreApplication.translate("SettingsDialog", u"Seconds", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), QCoreApplication.translate("SettingsDialog", u"Order entry control", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("SettingsDialog", u"Order printing settings", None))
-        self.labelCopy_4.setText(QCoreApplication.translate("SettingsDialog", u"Report", None))
-        self.labelCopy.setText(QCoreApplication.translate("SettingsDialog", u"# Copies", None))
-        self.labelCopy_3.setText(QCoreApplication.translate("SettingsDialog", u"Printer class", None))
         self.labelCopy_2.setText(QCoreApplication.translate("SettingsDialog", u"Print", None))
+        self.labelCopy_6.setText(QCoreApplication.translate("SettingsDialog", u"Method", None))
+        self.labelCopy.setText(QCoreApplication.translate("SettingsDialog", u"# Copies", None))
+        self.labelCopy_4.setText(QCoreApplication.translate("SettingsDialog", u"Report", None))
+        self.labelCopy_3.setText(QCoreApplication.translate("SettingsDialog", u"Printer class", None))
         self.checkBoxCustomerCopy.setText(QCoreApplication.translate("SettingsDialog", u"Customer", None))
         self.checkBoxDepartmentCopy.setText(QCoreApplication.translate("SettingsDialog", u"Department", None))
         self.checkBoxCoverCopy.setText(QCoreApplication.translate("SettingsDialog", u"Cover", None))
