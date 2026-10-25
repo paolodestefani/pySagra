@@ -116,9 +116,9 @@ SELECT setval(
 );"""
     script3 = """
 SELECT setval(
-    pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
-    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
-    (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
+    pg_get_serial_sequence('system.adaptation_settings', 'adaptation_settings_id'),
+    COALESCE((SELECT max(adaptation_settings_id) FROM system.adaptation_settings), 1),
+    (SELECT max(adaptation_settings_id) IS NOT NULL FROM system.adaptation_settings)
 );"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
@@ -140,9 +140,9 @@ SELECT setval(
 );"""
     script3 = """
 SELECT setval(
-    pg_get_serial_sequence('system.adaptation_setting', 'adaptation_setting_id'),
-    COALESCE((SELECT max(adaptation_setting_id) FROM system.adaptation_setting), 1),
-    (SELECT max(adaptation_setting_id) IS NOT NULL FROM system.adaptation_setting)
+    pg_get_serial_sequence('system.adaptation_settings', 'adaptation_settings_id'),
+    COALESCE((SELECT max(adaptation_settings_id) FROM system.adaptation_settings), 1),
+    (SELECT max(adaptation_settings_id) IS NOT NULL FROM system.adaptation_settings)
 );"""
     script4 = """
 SELECT setval(
@@ -212,9 +212,9 @@ SELECT
     negate_state,
     operator_sql,
     widget_value
-FROM system.adaptation_setting
+FROM system.adaptation_settings
 WHERE adaptation_id = {adapt_id}
-ORDER BY adaptation_setting_id;"""
+ORDER BY adaptation_settings_id;"""
     # Unified context managers handling error trapping, transaction lifecycle, and cursor
     with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=dict_row) as cur:
         cur.execute(script)
@@ -252,7 +252,7 @@ RETURNING adaptation_id;"""
 def import_adaptation_settings(stg: dict) -> None:
     """Import a record into adaptation_setting table"""
     script = t"""
-INSERT INTO system.adaptation_setting (
+INSERT INTO system.adaptation_settings (
     adaptation_id,
     column_number,
     sorting,
@@ -317,7 +317,7 @@ SELECT
     negate_state,
     operator_sql,
     widget_value
-FROM system.adaptation_setting
+FROM system.adaptation_settings
 WHERE adaptation_id = {adapt_id}
 ORDER BY layout_row;"""
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
@@ -338,11 +338,11 @@ def set_adapt_setting(adapt_id: int, columns: List[Tuple[Any, ...]]) -> None:
     # For executemany operations, traditional placeholder syntax (%s) is required
     # First, delete all existing settings associated with this adapt_id
     script1 = t"""
-DELETE FROM system.adaptation_setting
+DELETE FROM system.adaptation_settings
 WHERE adaptation_id = {adapt_id};"""
     # Then, insert the new bulk configuration settings
     script2 = """
-INSERT INTO system.adaptation_setting (
+INSERT INTO system.adaptation_settings (
     adaptation_id,
     column_number,
     sorting,
@@ -512,7 +512,7 @@ SELECT
     sorting,
     is_visible,
     size
-FROM system.adaptation_setting
+FROM system.adaptation_settings
 WHERE adaptation_id = {adapt_id}
 ORDER BY sorting;"""
     # Unified context managers including the transaction block for structural consistency
@@ -526,11 +526,11 @@ def set_view_columns(adapt_id: int, columns: List[Tuple[Any, ...]]) -> None:
     # For executemany operations, traditional placeholder syntax (%s) is required
     # First, clear any pre-existing column settings for this specific adapt_id
     script1 = t"""
-DELETE FROM system.adaptation_setting
+DELETE FROM system.adaptation_settings
 WHERE adaptation_id = {adapt_id};"""
     # Then, insert the new block of column configuration definitions
     script2 = """
-INSERT INTO system.adaptation_setting (
+INSERT INTO system.adaptation_settings (
     adaptation_id,
     column_number,
     sorting,

@@ -43,11 +43,7 @@ from PySide6.QtWidgets import QPushButton
 
 # application modules
 from App import session
-from App.Database.Setting import Setting
-from App.Database.Lookup import printer_class_lookup
-from App.Database.Lookup import customer_order_report_lookup
-from App.Database.Lookup import department_order_report_lookup
-from App.Database.Lookup import cover_order_report_lookup
+from App.Database.Settings import Settings
 from App.Database.Lookup import stock_unload_report_lookup
 from App.Ui.SettingsDialog import Ui_SettingsDialog
 from App.Core.L10n import _tr
@@ -91,7 +87,7 @@ class SettingsDialog(QDialog):
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         success = False
         with gui_exception_context(self, _tr("Settings", "Load settings")):
-            self.setting = Setting()
+            self.setting = Settings()
             success = True
         if not success:
             return
@@ -152,31 +148,11 @@ class SettingsDialog(QDialog):
         self.ui.colorComboBoxDT.setColorList(get_colors())
         self.ui.colorComboBoxDT.setCurrentColor(self.setting['disabled_text_color'])
         # print
-        for i, j in [('D', _tr('Settings', 'Driver')),
-                     ('E', _tr('Settings', 'ESC/POS'))]:
-                    self.ui.comboBoxCustomerMethod.addItem(j, i)
-                    self.ui.comboBoxDepartmentMethod.addItem(j, i)
-                    self.ui.comboBoxCoverMethod.addItem(j, i)
         self.ui.checkBoxCustomerCopy.setChecked(self.setting['print_customer_copy'])
-        self.ui.comboBoxCustomerMethod.setCurrentIndex(self.ui.comboBoxCustomerMethod.findData(self.setting['customer_print_method']))
         self.ui.checkBoxDepartmentCopy.setChecked(self.setting['print_department_copy'])
-        self.ui.comboBoxDepartmentMethod.setCurrentIndex(self.ui.comboBoxDepartmentMethod.findData(self.setting['department_print_method']))
         self.ui.checkBoxCoverCopy.setChecked(self.setting['print_cover_copy'])
-        self.ui.comboBoxCoverMethod.setCurrentIndex(self.ui.comboBoxCoverMethod.findData(self.setting['cover_print_method']))
-        self.ui.spinBoxCustomerCopies.setValue(self.setting['customer_copies'] or 1)
-        self.ui.spinBoxDepartmentCopies.setValue(self.setting['department_copies'] or 1)
-        self.ui.spinBoxCoverCopies.setValue(self.setting['cover_copies'] or 1)
-        self.ui.comboBoxCustomerReport.setFunction(customer_order_report_lookup)
-        self.ui.comboBoxCustomerReport.setCurrentIndex(self.ui.comboBoxCustomerReport.findData(self.setting['customer_report']))
-        self.ui.comboBoxDepartmentReport.setFunction(department_order_report_lookup)
-        self.ui.comboBoxDepartmentReport.setCurrentIndex(self.ui.comboBoxDepartmentReport.findData(self.setting['department_report']))
-        self.ui.comboBoxCoverReport.setFunction(cover_order_report_lookup)
-        self.ui.comboBoxCoverReport.setCurrentIndex(self.ui.comboBoxCoverReport.findData(self.setting['cover_report']))
-        self.ui.comboBoxCustomerPrinter.setFunction(printer_class_lookup)
-        self.ui.comboBoxCustomerPrinter.setCurrentIndex(self.ui.comboBoxCustomerPrinter.findData(self.setting['customer_printer_class']))
-        self.ui.comboBoxCoverPrinter.setFunction(printer_class_lookup)
-        self.ui.comboBoxCoverPrinter.setCurrentIndex(self.ui.comboBoxCoverPrinter.findData(self.setting['cover_printer_class']))
         self.ui.spinBoxMaxCovers.setValue(self.setting['max_covers'])
+        
         self.ui.checkBoxOrderProgress.setChecked(self.setting['manage_order_progress'])
         self.ui.checkBoxAutoVariants.setChecked(self.setting['automatic_show_variants'])
         self.ui.checkBoxShowInventory.setChecked(self.setting['always_show_stock_inventory'])
@@ -189,9 +165,7 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxOrderedDeliveredCopies.setValue(self.setting['ordered_delivered_copies'] or 1)
         self.ui.comboBoxOrderedDeliveredReport.setFunction(stock_unload_report_lookup)
         self.ui.comboBoxOrderedDeliveredReport.setCurrentIndex(self.ui.comboBoxOrderedDeliveredReport.findData(self.setting['ordered_delivered_report']))
-        self.ui.comboBoxOrderedDeliveredPrinterClass.setFunction(printer_class_lookup)
-        self.ui.comboBoxOrderedDeliveredPrinterClass.setCurrentIndex(self.ui.comboBoxOrderedDeliveredPrinterClass.findData(self.setting['ordered_delivered_printer_class']))
-        # items inventory
+        # # items inventory
         self.ui.spinBoxInventoryWarningLevel.setDecimals(self.setting['quantity_decimal_places'])
         self.ui.spinBoxInventoryWarningLevel.setValue(self.setting['inventory_warning_stock_level'])
         self.ui.spinBoxInventoryCriticalLevel.setDecimals(self.setting['quantity_decimal_places'])
@@ -206,24 +180,6 @@ class SettingsDialog(QDialog):
         self.ui.colorComboBoxText.setColorList(get_colors())
         self.ui.colorComboBoxText.setCurrentColor(self.setting['normal_text_color'])
         
-        # set initial default for linked params
-        if self.ui.checkBoxCustomerCopy.isChecked():
-            self.ui.comboBoxCustomerMethod.setEnabled(True)
-            self.ui.spinBoxCustomerCopies.setEnabled(True)
-            self.ui.comboBoxCustomerReport.setEnabled(True)
-            self.ui.comboBoxCustomerPrinter.setEnabled(True)
-        if self.ui.checkBoxDepartmentCopy.isChecked():
-            self.ui.comboBoxDepartmentMethod.setEnabled(True)
-            self.ui.spinBoxDepartmentCopies.setEnabled(True)
-            self.ui.comboBoxDepartmentReport.setEnabled(True)
-        if self.ui.checkBoxCoverCopy.isChecked():
-            self.ui.comboBoxCoverMethod.setEnabled(True)
-            self.ui.spinBoxCoverCopies.setEnabled(True)
-            self.ui.comboBoxCoverReport.setEnabled(True)
-            self.ui.comboBoxCoverPrinter.setEnabled(True)
-        if self.ui.checkBoxInactivity.isChecked():
-            self.ui.labelInactivity.setEnabled(True)
-            self.ui.spinBoxInactivityTime.setEnabled(True)
         # restore settings
         st = QSettings()
         if st.value("Settings/Geometry"):
@@ -328,23 +284,10 @@ class SettingsDialog(QDialog):
         self.setting['disabled_background_color'] = self.ui.colorComboBoxDB.modelDataStr
         self.setting['disabled_text_color'] = self.ui.colorComboBoxDT.modelDataStr
         # reports
-        self.setting['print_customer_copy'] = self.ui.checkBoxCustomerCopy.isChecked()
-        self.setting['customer_print_method'] = self.ui.comboBoxCustomerMethod.currentData() #if self.ui.comboBoxCustomerMethod.isEnabled() else None
-        self.setting['customer_copies'] = self.ui.spinBoxCustomerCopies.value() if self.ui.spinBoxCustomerCopies.isEnabled() else None
-        self.setting['customer_report'] = self.ui.comboBoxCustomerReport.currentData() if self.ui.comboBoxCustomerReport.isEnabled() else None
-        self.setting['customer_printer_class'] = self.ui.comboBoxCustomerPrinter.currentData() if self.ui.comboBoxCustomerPrinter.isEnabled() else None
-                             
+        self.setting['print_customer_copy'] = self.ui.checkBoxCustomerCopy.isChecked()                     
         self.setting['print_department_copy'] = self.ui.checkBoxDepartmentCopy.isChecked()
-        self.setting['department_print_method'] = self.ui.comboBoxDepartmentMethod.currentData() #if self.ui.comboBoxDepartmentMethod.isEnabled() else None
-        self.setting['department_copies'] = self.ui.spinBoxDepartmentCopies.value() if self.ui.spinBoxDepartmentCopies.isEnabled else None
-        self.setting['department_report'] = self.ui.comboBoxDepartmentReport.currentData() if self.ui.comboBoxDepartmentReport.isEnabled() else None
-        
         self.setting['print_cover_copy'] = self.ui.checkBoxCoverCopy.isChecked()
-        self.setting['cover_print_method'] = self.ui.comboBoxCoverMethod.currentData() #if self.ui.comboBoxCoverMethod.isEnabled() else None
-        self.setting['cover_copies'] = self.ui.spinBoxCoverCopies.value() if self.ui.spinBoxCoverCopies.isEnabled() else None
-        self.setting['cover_report'] = self.ui.comboBoxCoverReport.currentData() if self.ui.comboBoxCoverReport.isEnabled() else None
-        self.setting['cover_printer_class'] = self.ui.comboBoxCoverPrinter.currentData() if self.ui.comboBoxCoverPrinter.isEnabled() else None
-
+        
         self.setting['max_covers'] = self.ui.spinBoxMaxCovers.value()
         self.setting['automatic_show_variants'] = self.ui.checkBoxAutoVariants.isChecked()
         self.setting['manage_order_progress'] = self.ui.checkBoxOrderProgress.isChecked()
@@ -359,32 +302,13 @@ class SettingsDialog(QDialog):
         self.setting['print_ordered_delivered_report'] = self.ui.groupBoxOrderedDeliveredReport.isChecked()
         self.setting['ordered_delivered_copies'] = self.ui.spinBoxOrderedDeliveredCopies.value() if self.ui.spinBoxOrderedDeliveredCopies.isEnabled() else None
         self.setting['ordered_delivered_report'] = self.ui.comboBoxOrderedDeliveredReport.currentData() if self.ui.comboBoxOrderedDeliveredReport.isEnabled() else None
-        self.setting['ordered_delivered_printer_class'] = self.ui.comboBoxOrderedDeliveredPrinterClass.currentData() if self.ui.comboBoxOrderedDeliveredPrinterClass.isEnabled() else None
         self.setting['inventory_warning_stock_level'] = self.ui.spinBoxInventoryWarningLevel.value()
         self.setting['inventory_critical_stock_level'] = self.ui.spinBoxInventoryCriticalLevel.value()
         self.setting['quantity_decimal_places'] = self.ui.spinBoxQuantityDecimals.value()
         self.setting['price_decimal_places'] = self.ui.spinBoxPriceDecimals.value()
         self.setting['amount_decimal_places'] = self.ui.spinBoxAmountDecimals.value()
         self.setting['currency_symbol'] = self.ui.lineEditCurrencySymbol.text()
-        # sanity checks
-        if self.setting['print_customer_copy']:
-            if not self.setting['customer_report'] or not self.setting['customer_printer_class']:
-                title = _tr("MessageDialog", "Critical")
-                msg = _tr("Settings", "If print customer copy is selected you must provide a customer report and printer class")
-                QMessageBox.critical(self, title, msg)
-                return
-        if self.setting['print_department_copy']:
-            if not self.setting['department_report']:
-                title = _tr("MessageDialog", "Critical")
-                msg = _tr("Settings", "If print department copy is selected you must provide a department report")
-                QMessageBox.critical(self, title, msg)
-                return
-        if self.setting['print_cover_copy']:
-            if not self.setting['cover_report'] or not self.setting['cover_printer_class']:
-                title = _tr("MessageDialog", "Critical")
-                msg = _tr("Settings", "If print cover copy is selected you must provide a cover report and printer class")
-                QMessageBox.critical(self, title, msg)
-                return
+        
         success = False
         with gui_exception_context(self, _tr("Settings", "Save settings")):
             self.setting.save()

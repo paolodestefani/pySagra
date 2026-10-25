@@ -77,16 +77,21 @@ logger = logging.getLogger(__name__)
 
 class rpt(IntEnum):
     ID          = 0
-    CODE        = 1
-    L10N        = 2
-    CLASS       = 3
-    DESCRIPTION = 4
-    XML         = 5
-    SYSTEM      = 6
-    USER_INS    = 7
-    DATE_INS    = 8
-    USER_UPD    = 9
-    DATE_UPD    = 10
+    METHOD      = 1
+    CODE        = 2
+    L10N        = 3
+    CLASS       = 4
+    DESCRIPTION = 5
+    XML         = 6
+    SYSTEM      = 7
+    USER_INS    = 8
+    DATE_INS    = 9
+    USER_UPD    = 10
+    DATE_UPD    = 11
+    
+def printMethods() -> list:
+    return [('D', _tr('Printer', 'Driver')),
+            ('E', _tr('Printer', 'ESC/POS'))]
 
 
 def report(action: QAction, checked: bool = False) -> None:
@@ -129,6 +134,8 @@ class ReportForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('ReportIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        self.ui.comboBoxPrintMethod.setFunction(printMethods)
+        self.mapper.addMapping(self.ui.comboBoxPrintMethod, rpt.METHOD)
         self.mapper.addMapping(self.ui.lineEditCode, rpt.CODE)
         self.ui.comboBoxL10n.setItemList(langCountryFlags())
         self.mapper.addMapping(self.ui.comboBoxL10n, rpt.L10N) # don't need b"modelDataStr" because is the default
@@ -177,12 +184,14 @@ class ReportForm(FormIndexManager):
         "Change form settings on change record"
         super().mapperIndexChanged(index)
         if self.ui.checkBoxSystem.isChecked():
+            self.ui.comboBoxPrintMethod.setDisabled(True)
             self.ui.lineEditCode.setDisabled(True)
             self.ui.comboBoxL10n.setDisabled(True)
             self.ui.comboBoxClass.setDisabled(True)
             self.ui.lineEditDescription.setDisabled(True)
             self.ui.textEditXML.setReadOnly(True)
         else:
+            self.ui.comboBoxPrintMethod.setEnabled(True)
             self.ui.lineEditCode.setDisabled(False)
             self.ui.comboBoxL10n.setDisabled(False)
             self.ui.comboBoxClass.setDisabled(False)
@@ -192,7 +201,7 @@ class ReportForm(FormIndexManager):
     def new(self) -> None:
         "New report"
         super().new()
-        self.ui.lineEditCode.setFocus()
+        self.ui.comboBoxPrintMethod.setFocus()
 
     def save(self) -> None:
         "Save report edited"
@@ -300,6 +309,7 @@ class ReportForm(FormIndexManager):
                     f".rpt.zip")
         with gui_exception_context(self, _tr('Report', "Download current report")):
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
+                zf.writestr('method', self.model.data(self.model.index(row, rpt.METHOD)))
                 zf.writestr('code', self.model.data(self.model.index(row, rpt.CODE)))
                 zf.writestr('l10n', self.model.data(self.model.index(row, rpt.L10N)))
                 zf.writestr('class', self.model.data(self.model.index(row, rpt.CLASS)))
@@ -328,13 +338,14 @@ class ReportForm(FormIndexManager):
         if directory == "":
             return
         with gui_exception_context(self, _tr('Report', "Download all reports")):
-            for i, (cod, lcn, cls, sys, dsc, xml) in enumerate(list_all_reports(), 1):
+            for i, (met, cod, lcn, cls, sys, dsc, xml) in enumerate(list_all_reports(), 1):
                 fileName = (f"{directory}"
                             f"/{i:02d}"
                             f"_{cod}"
                             f"_{lcn}"
                             f".rpt.zip")
                 with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
+                    zf.writestr('method', met)
                     zf.writestr('code', cod)
                     zf.writestr('l10n', lcn)
                     zf.writestr('class', cls)
@@ -365,6 +376,7 @@ class ReportForm(FormIndexManager):
             return
         with gui_exception_context(self, _tr('Report', "Upload current report")):
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
+                met = zf.read('method').decode('utf-8')
                 cod = zf.read('code').decode('utf-8')
                 lcn = zf.read('l10n').decode('utf-8')
                 cls = zf.read('class').decode('utf-8')
@@ -374,7 +386,7 @@ class ReportForm(FormIndexManager):
         
             sysb: bool = sys == 'True'
             with gui_exception_context(self, _tr('Report', "Upload current report")):
-                load_report(cod, lcn, cls, sysb, dsc, xml)
+                load_report(met, cod, lcn, cls, sysb, dsc, xml)
             
             self.reload()
             QMessageBox.information(
@@ -400,6 +412,10 @@ class ReportForm(FormIndexManager):
                 fileName = f.absoluteFilePath()
                 with gui_exception_context(self, _tr('Report', "Upload all reports")):
                     with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
+                        try:
+                            met = zf.read('method').decode('utf-8')
+                        except Exception:
+                            met = 'D'
                         cod = zf.read('code').decode('utf-8')
                         lcn = zf.read('l10n').decode('utf-8')
                         cls = zf.read('class').decode('utf-8')
@@ -409,7 +425,7 @@ class ReportForm(FormIndexManager):
 
                     sysb: bool = sys == 'True'
                     with gui_exception_context(self, _tr('Report', "Upload all reports")):
-                        load_report(cod, lcn, cls, sysb, dsc, xml)
+                        load_report(met, cod, lcn, cls, sysb, dsc, xml)
         
         self.reload()
         QMessageBox.information(

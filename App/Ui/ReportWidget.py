@@ -28,7 +28,7 @@ class Ui_ReportWidget(object):
     def setupUi(self, ReportWidget):
         if not ReportWidget.objectName():
             ReportWidget.setObjectName(u"ReportWidget")
-        ReportWidget.resize(1098, 666)
+        ReportWidget.resize(918, 501)
         self.verticalLayout_6 = QVBoxLayout(ReportWidget)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_5 = QVBoxLayout()
@@ -42,6 +42,16 @@ class Ui_ReportWidget(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label_6 = QLabel(self.form)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_2.addWidget(self.label_6)
+
+        self.comboBoxPrintMethod = RelationalComboBox(self.form)
+        self.comboBoxPrintMethod.setObjectName(u"comboBoxPrintMethod")
+
+        self.horizontalLayout_2.addWidget(self.comboBoxPrintMethod)
+
         self.label = QLabel(self.form)
         self.label.setObjectName(u"label")
 
@@ -240,6 +250,7 @@ class Ui_ReportWidget(object):
 
     def retranslateUi(self, ReportWidget):
         ReportWidget.setWindowTitle(QCoreApplication.translate("ReportWidget", u"Report", None))
+        self.label_6.setText(QCoreApplication.translate("ReportWidget", u"Print Method", None))
         self.label.setText(QCoreApplication.translate("ReportWidget", u"Code", None))
         self.label_3.setText(QCoreApplication.translate("ReportWidget", u"Language/Country", None))
         self.label_2.setText(QCoreApplication.translate("ReportWidget", u"Class", None))

@@ -209,12 +209,12 @@ def copy_cash_desk(from_company_id: int) -> None:
     script = t"""
 INSERT INTO cash_desk (
     company_id,
-    computer,
+    hostname,
     cash_desk_description,
     note)
 SElECT
     system.pa_current_company(),
-    computer,
+    hostname,
     cash_desk_description,
     note
 FROM cash_desk

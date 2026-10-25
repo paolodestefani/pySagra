@@ -54,7 +54,6 @@ from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrintPreviewWidget
 from PySide6.QtPrintSupport import QPrinterInfo
 from PySide6.QtPrintSupport import QPrintDialog
-from PySide6.QtGui import QCursor
 from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtGui import QPdfWriter
@@ -119,16 +118,16 @@ from App.Database.Adaptation import set_adapt_setting
 from App.Database.Adaptation import get_adapt_sorting
 from App.Database.Adaptation import set_adapt_sorting
 from App.Database.Adaptation import get_adapt_default
-#from App.Database.Adaptation import get_adapt_class_default
 from App.Database.Adaptation import set_adapt_class_default
-#from App.Database.Adaptation import get_adapt_user_default
 from App.Database.Adaptation import set_adapt_user_default
 from App.Database.Event import get_event_data
-from App.Database.Exceptions import PyAppDBError
 from App.Report.ReportEngine import Report
 from App.Report.ReportEngine import ReportException, ReportPrintError
 from App.Widget.Control import RelationalComboBox
 from App.Widget.Control import CheckableComboBox
+
+from App.Ui.PlainTextPreviewDialog import Ui_PlainTextPreviewDialog
+
 
 
 # filter rows
@@ -1214,7 +1213,7 @@ class PrintDialog(QDialog):
         # set report list
         self.report: Report|None = None # report object instantiated in setReport()
         self.ui.comboBoxReportList.blockSignals(True)
-        for i, c, d in get_report_list(self.reportClass, self.l10n, reportId):
+        for i, c, d in get_report_list('D', self.reportClass, self.l10n, reportId):
             self.ui.comboBoxReportList.addItem(d, i)
         self.ui.comboBoxReportList.blockSignals(False)
         # signal for change report and adaptation
@@ -1705,7 +1704,6 @@ class PrintDialog(QDialog):
         op_tuple = s.currentData() 
         if not op_tuple:
             return
-        # Estraiamo il tipo di widget (quarto elemento della tupla, indice 3)
         nwt = s.currentWidgetType()
         # insert new operand widget
         widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
@@ -2048,3 +2046,13 @@ def DateTimeInputDialog(text: str) -> tuple[QDateTime | None, bool] :
         return dialog.ui.dateTimeEdit.dateTime(), True
     else:
         return None, False
+    
+
+class PlainTextPreviewDialog(QDialog):
+    
+     def __init__(self, parent: None, text: str) -> None:
+        super().__init__(parent)
+        self.ui = Ui_PlainTextPreviewDialog()
+        self.ui.setupUi(self)
+        self.ui.plainTextEdit.setPlainText(text)
+        

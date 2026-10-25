@@ -42,12 +42,11 @@ from App import session
 from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
-from App.Database.Lookup import printer_class_lookup
 from App.Database.Models import DepartmentModel
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormViewManager
-from App.Ui.DepartmentWidget import Ui_DepartmentWidget
+from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
 
 
 # logger
@@ -58,14 +57,13 @@ class dep(IntEnum):
     ID          = 0
     DESCRIPTION = 1
     SORTING     = 2
-    PRINTER     = 3
-    OBSOLETE    = 4
-    NOMANAGE    = 5
-    TAKEAWAY    = 6
-    USER_INS    = 7
-    DATE_INS    = 8
-    USER_UPD    = 9
-    DATE_UPD    = 10
+    OBSOLETE    = 3
+    NOMANAGE    = 4
+    TAKEAWAY    = 5
+    USER_INS    = 6
+    DATE_INS    = 7
+    USER_UPD    = 8
+    DATE_UPD    = 9
 
 
 def department(action: QAction, checked: bool = False) -> None:
@@ -85,7 +83,7 @@ def department(action: QAction, checked: bool = False) -> None:
     logger.info('Departments Form added to main window')
 
 
-class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
+class DepartmentForm(FormViewManager[Ui_GenericFormViewWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
@@ -98,12 +96,11 @@ class DepartmentForm(FormViewManager[Ui_DepartmentWidget]):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, False, False, False, False,
                                 False, False, False, False)
-        self.ui = Ui_DepartmentWidget()
+        self.ui = Ui_GenericFormViewWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('Department')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(dep.PRINTER, RelationDelegate(self, printer_class_lookup))
         # scripting init
         self.script = scriptInit(self)
 

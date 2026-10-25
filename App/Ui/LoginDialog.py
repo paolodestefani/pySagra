@@ -30,12 +30,13 @@ class Ui_LoginDialog(object):
         LoginDialog.resize(335, 552)
         LoginDialog.setSizeGripEnabled(True)
         LoginDialog.setModal(False)
-        self.verticalLayout_3 = QVBoxLayout(LoginDialog)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.verticalLayoutDialog = QVBoxLayout(LoginDialog)
+        self.verticalLayoutDialog.setObjectName(u"verticalLayoutDialog")
+        self.verticalLayoutDialog.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.verticalLayoutDialog.setContentsMargins(12, 12, 12, 12)
+        self.verticalLayoutInsideDialog = QVBoxLayout()
+        self.verticalLayoutInsideDialog.setObjectName(u"verticalLayoutInsideDialog")
+        self.verticalLayoutInsideDialog.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.labelMain = QLabel(LoginDialog)
         self.labelMain.setObjectName(u"labelMain")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
@@ -101,7 +102,7 @@ class Ui_LoginDialog(object):
         self.labelMain.setFrameShadow(QFrame.Shadow.Plain)
         self.labelMain.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout_2.addWidget(self.labelMain)
+        self.verticalLayoutInsideDialog.addWidget(self.labelMain)
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
@@ -110,11 +111,11 @@ class Ui_LoginDialog(object):
 
         self.gridLayout.addWidget(self.lineEditPassword, 1, 1, 1, 1)
 
-        self.label_5 = QLabel(LoginDialog)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setLineWidth(0)
+        self.labelUser = QLabel(LoginDialog)
+        self.labelUser.setObjectName(u"labelUser")
+        self.labelUser.setLineWidth(0)
 
-        self.gridLayout.addWidget(self.label_5, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.labelUser, 0, 0, 1, 1)
 
         self.lineEditUser = QLineEdit(LoginDialog)
         self.lineEditUser.setObjectName(u"lineEditUser")
@@ -123,13 +124,13 @@ class Ui_LoginDialog(object):
 
         self.gridLayout.addWidget(self.lineEditUser, 0, 1, 1, 1)
 
-        self.label_6 = QLabel(LoginDialog)
-        self.label_6.setObjectName(u"label_6")
+        self.labelPassword = QLabel(LoginDialog)
+        self.labelPassword.setObjectName(u"labelPassword")
 
-        self.gridLayout.addWidget(self.label_6, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.labelPassword, 1, 0, 1, 1)
 
 
-        self.verticalLayout_2.addLayout(self.gridLayout)
+        self.verticalLayoutInsideDialog.addLayout(self.gridLayout)
 
         self.buttonBox = QDialogButtonBox(LoginDialog)
         self.buttonBox.setObjectName(u"buttonBox")
@@ -137,60 +138,61 @@ class Ui_LoginDialog(object):
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(False)
 
-        self.verticalLayout_2.addWidget(self.buttonBox)
+        self.verticalLayoutInsideDialog.addWidget(self.buttonBox)
 
         self.checkBoxMore = QCheckBox(LoginDialog)
         self.checkBoxMore.setObjectName(u"checkBoxMore")
 
-        self.verticalLayout_2.addWidget(self.checkBoxMore)
+        self.verticalLayoutInsideDialog.addWidget(self.checkBoxMore)
 
         self.frameMore = QFrame(LoginDialog)
         self.frameMore.setObjectName(u"frameMore")
         self.frameMore.setFrameShape(QFrame.Shape.NoFrame)
         self.frameMore.setFrameShadow(QFrame.Shadow.Plain)
         self.frameMore.setLineWidth(0)
-        self.verticalLayout = QVBoxLayout(self.frameMore)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.gridLayout_2 = QGridLayout()
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.verticalLayoutFrameMore = QVBoxLayout(self.frameMore)
+        self.verticalLayoutFrameMore.setObjectName(u"verticalLayoutFrameMore")
+        self.verticalLayoutFrameMore.setContentsMargins(6, 6, 6, 6)
+        self.gridLayoutFrameMore = QGridLayout()
+        self.gridLayoutFrameMore.setObjectName(u"gridLayoutFrameMore")
         self.spinBoxPort = QSpinBox(self.frameMore)
         self.spinBoxPort.setObjectName(u"spinBoxPort")
         self.spinBoxPort.setMaximum(65535)
         self.spinBoxPort.setValue(5432)
         self.spinBoxPort.setProperty(u"mandatoryFieldFlag", True)
 
-        self.gridLayout_2.addWidget(self.spinBoxPort, 3, 1, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.spinBoxPort, 3, 1, 1, 1)
 
-        self.label_4 = QLabel(self.frameMore)
-        self.label_4.setObjectName(u"label_4")
+        self.labelDatabase = QLabel(self.frameMore)
+        self.labelDatabase.setObjectName(u"labelDatabase")
 
-        self.gridLayout_2.addWidget(self.label_4, 4, 0, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.labelDatabase, 4, 0, 1, 1)
 
         self.lineEditDatabase = QLineEdit(self.frameMore)
         self.lineEditDatabase.setObjectName(u"lineEditDatabase")
         self.lineEditDatabase.setMaxLength(64)
         self.lineEditDatabase.setProperty(u"mandatoryFieldFlag", True)
 
-        self.gridLayout_2.addWidget(self.lineEditDatabase, 4, 1, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.lineEditDatabase, 4, 1, 1, 1)
 
         self.lineEditServer = QLineEdit(self.frameMore)
         self.lineEditServer.setObjectName(u"lineEditServer")
         self.lineEditServer.setMaxLength(64)
         self.lineEditServer.setProperty(u"mandatoryFieldFlag", True)
 
-        self.gridLayout_2.addWidget(self.lineEditServer, 2, 1, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.lineEditServer, 2, 1, 1, 1)
 
         self.lineEditDBUser = QLineEdit(self.frameMore)
         self.lineEditDBUser.setObjectName(u"lineEditDBUser")
         self.lineEditDBUser.setMaxLength(48)
         self.lineEditDBUser.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
 
-        self.gridLayout_2.addWidget(self.lineEditDBUser, 5, 1, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.lineEditDBUser, 5, 1, 1, 1)
 
-        self.label_8 = QLabel(self.frameMore)
-        self.label_8.setObjectName(u"label_8")
+        self.labelDbUser = QLabel(self.frameMore)
+        self.labelDbUser.setObjectName(u"labelDbUser")
 
-        self.gridLayout_2.addWidget(self.label_8, 5, 0, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.labelDbUser, 5, 0, 1, 1)
 
         self.lineEditDBPassword = QLineEdit(self.frameMore)
         self.lineEditDBPassword.setObjectName(u"lineEditDBPassword")
@@ -198,51 +200,51 @@ class Ui_LoginDialog(object):
         self.lineEditDBPassword.setEchoMode(QLineEdit.EchoMode.Password)
         self.lineEditDBPassword.setProperty(u"mandatoryFieldFlag", True)
 
-        self.gridLayout_2.addWidget(self.lineEditDBPassword, 6, 1, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.lineEditDBPassword, 6, 1, 1, 1)
 
-        self.label_9 = QLabel(self.frameMore)
-        self.label_9.setObjectName(u"label_9")
+        self.labelDbPassword = QLabel(self.frameMore)
+        self.labelDbPassword.setObjectName(u"labelDbPassword")
 
-        self.gridLayout_2.addWidget(self.label_9, 6, 0, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.labelDbPassword, 6, 0, 1, 1)
 
-        self.label_2 = QLabel(self.frameMore)
-        self.label_2.setObjectName(u"label_2")
+        self.labelServer = QLabel(self.frameMore)
+        self.labelServer.setObjectName(u"labelServer")
 
-        self.gridLayout_2.addWidget(self.label_2, 2, 0, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.labelServer, 2, 0, 1, 1)
 
-        self.label_3 = QLabel(self.frameMore)
-        self.label_3.setObjectName(u"label_3")
+        self.labelPort = QLabel(self.frameMore)
+        self.labelPort.setObjectName(u"labelPort")
 
-        self.gridLayout_2.addWidget(self.label_3, 3, 0, 1, 1)
+        self.gridLayoutFrameMore.addWidget(self.labelPort, 3, 0, 1, 1)
 
 
-        self.verticalLayout.addLayout(self.gridLayout_2)
+        self.verticalLayoutFrameMore.addLayout(self.gridLayoutFrameMore)
 
         self.labelVersion = QLabel(self.frameMore)
         self.labelVersion.setObjectName(u"labelVersion")
         self.labelVersion.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout.addWidget(self.labelVersion)
+        self.verticalLayoutFrameMore.addWidget(self.labelVersion)
 
         self.pushButtonClearSettings = QPushButton(self.frameMore)
         self.pushButtonClearSettings.setObjectName(u"pushButtonClearSettings")
 
-        self.verticalLayout.addWidget(self.pushButtonClearSettings)
+        self.verticalLayoutFrameMore.addWidget(self.pushButtonClearSettings)
 
 
-        self.verticalLayout_2.addWidget(self.frameMore)
+        self.verticalLayoutInsideDialog.addWidget(self.frameMore)
 
 
-        self.verticalLayout_3.addLayout(self.verticalLayout_2)
+        self.verticalLayoutDialog.addLayout(self.verticalLayoutInsideDialog)
 
 #if QT_CONFIG(shortcut)
-        self.label_5.setBuddy(self.lineEditUser)
-        self.label_6.setBuddy(self.lineEditPassword)
-        self.label_4.setBuddy(self.lineEditDatabase)
-        self.label_8.setBuddy(self.lineEditDBUser)
-        self.label_9.setBuddy(self.lineEditDBPassword)
-        self.label_2.setBuddy(self.lineEditServer)
-        self.label_3.setBuddy(self.spinBoxPort)
+        self.labelUser.setBuddy(self.lineEditUser)
+        self.labelPassword.setBuddy(self.lineEditPassword)
+        self.labelDatabase.setBuddy(self.lineEditDatabase)
+        self.labelDbUser.setBuddy(self.lineEditDBUser)
+        self.labelDbPassword.setBuddy(self.lineEditDBPassword)
+        self.labelServer.setBuddy(self.lineEditServer)
+        self.labelPort.setBuddy(self.spinBoxPort)
 #endif // QT_CONFIG(shortcut)
         QWidget.setTabOrder(self.lineEditUser, self.lineEditPassword)
         QWidget.setTabOrder(self.lineEditPassword, self.checkBoxMore)
@@ -271,7 +273,7 @@ class Ui_LoginDialog(object):
 #if QT_CONFIG(whatsthis)
         self.lineEditPassword.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Insert the password for application user", None))
 #endif // QT_CONFIG(whatsthis)
-        self.label_5.setText(QCoreApplication.translate("LoginDialog", u"User", None))
+        self.labelUser.setText(QCoreApplication.translate("LoginDialog", u"User", None))
 #if QT_CONFIG(tooltip)
         self.lineEditUser.setToolTip(QCoreApplication.translate("LoginDialog", u"Insert the application user name", None))
 #endif // QT_CONFIG(tooltip)
@@ -281,7 +283,7 @@ class Ui_LoginDialog(object):
 #if QT_CONFIG(whatsthis)
         self.lineEditUser.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Insert the application user name", None))
 #endif // QT_CONFIG(whatsthis)
-        self.label_6.setText(QCoreApplication.translate("LoginDialog", u"Password", None))
+        self.labelPassword.setText(QCoreApplication.translate("LoginDialog", u"Password", None))
 #if QT_CONFIG(tooltip)
         self.checkBoxMore.setToolTip(QCoreApplication.translate("LoginDialog", u"Show/hide the connection parameters", None))
 #endif // QT_CONFIG(tooltip)
@@ -295,7 +297,7 @@ class Ui_LoginDialog(object):
 #if QT_CONFIG(whatsthis)
         self.spinBoxPort.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Insert the db server IP port", None))
 #endif // QT_CONFIG(whatsthis)
-        self.label_4.setText(QCoreApplication.translate("LoginDialog", u"Database", None))
+        self.labelDatabase.setText(QCoreApplication.translate("LoginDialog", u"Database", None))
 #if QT_CONFIG(tooltip)
         self.lineEditDatabase.setToolTip(QCoreApplication.translate("LoginDialog", u"Insert the database name", None))
 #endif // QT_CONFIG(tooltip)
@@ -314,16 +316,16 @@ class Ui_LoginDialog(object):
 #if QT_CONFIG(whatsthis)
         self.lineEditDBUser.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Insert the database user name", None))
 #endif // QT_CONFIG(whatsthis)
-        self.label_8.setText(QCoreApplication.translate("LoginDialog", u"DB User", None))
+        self.labelDbUser.setText(QCoreApplication.translate("LoginDialog", u"DB User", None))
 #if QT_CONFIG(tooltip)
         self.lineEditDBPassword.setToolTip(QCoreApplication.translate("LoginDialog", u"Insert the database user password", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(whatsthis)
         self.lineEditDBPassword.setWhatsThis(QCoreApplication.translate("LoginDialog", u"Insert the database user password", None))
 #endif // QT_CONFIG(whatsthis)
-        self.label_9.setText(QCoreApplication.translate("LoginDialog", u"DB Password", None))
-        self.label_2.setText(QCoreApplication.translate("LoginDialog", u"Server", None))
-        self.label_3.setText(QCoreApplication.translate("LoginDialog", u"Port", None))
+        self.labelDbPassword.setText(QCoreApplication.translate("LoginDialog", u"DB Password", None))
+        self.labelServer.setText(QCoreApplication.translate("LoginDialog", u"Server", None))
+        self.labelPort.setText(QCoreApplication.translate("LoginDialog", u"Port", None))
         self.labelVersion.setText(QCoreApplication.translate("LoginDialog", u"Current App Version", None))
         self.pushButtonClearSettings.setText(QCoreApplication.translate("LoginDialog", u"Clear local stored settings", None))
     # retranslateUi

@@ -43,7 +43,6 @@ from PySide6.QtWidgets import QMessageBox
 # application modules
 from App import session
 from App.Core.Scripting import scriptInit
-from App.Core.Scripting import scriptMethod
 from App.Database.Models import ItemsOrderedDeliveredModel
 from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import QuantityDelegate

@@ -128,7 +128,7 @@ SELECT EXISTS(SELECT 1
         logging.info("appversion = %s.%s", APPVERSIONMAJOR, APPVERSIONMINOR)
         logging.info("user = ********")
         logging.info("password = ********")
-        logging.info("hostname = %(hostname)s", par)
+        logging.info("hostname = %(hostname)s", session['hostname'])
         try:
             with self._conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
                 script = t"""
@@ -139,7 +139,7 @@ SELECT EXISTS(SELECT 1
                     {APPVERSIONMINOR},
                     {par['user']},
                     {par['password']},
-                    {par['hostname']});"""
+                    {session['hostname']});"""
                 cur.execute(script)
                 # postgres search path is set to system, common, company by pa_connect
                 # update session parameters

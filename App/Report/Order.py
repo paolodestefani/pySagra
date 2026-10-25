@@ -44,124 +44,87 @@ from escpos.printer import Network
 
 # application modules
 from App import session
-from App.Database.Setting import Setting
-from App.Database.Report import get_report_id
+from App.Core.Escpos import escpos_printer
+from App.Database.Settings import Settings
+from App.Database.OrderPrintSettings import order_print_settings
+from App.Database.Report import get_report_xml
 from App.Database.Report import report_xml
 from App.Database.Report import report_query
 from App.Report.ReportEngine import Report
+from App.Report.ReportEngineEscPos import ReportEscpos
+from App.Report.ReportEngineEscPos import PreviewDevice
+from App.Widget.Dialog import PlainTextPreviewDialog
 
 
-def printOrderReport(order_id: int, printer: str|None = None) -> None:
-    setting = Setting()
-    report_id = get_report_id(setting['customer_report'], session['l10n'])
-    if not report_id:
-        raise Exception("No customer report defined")
-    report = Report(report_xml(report_id))
-    # report definition on condition fields must have code for Order Id
-    where = []
-    for i in report.conditions:
-        if report.conditions[i].code == 'order_id':
-            where.append((f"{i} = %s", order_id))
-    report.data = report_query(report, where)
-    report.generate()
-    if printer:
-        prnt = QPrinter(QPrinterInfo.printerInfo(printer))
-        prnt.setCopyCount(setting['customer_copies'])
-        report.print(prnt)
+class OrderReportException(Exception):
+    pass
+
+class NoOrderReportParameters(OrderReportException):
+    pass
+
+
+
+def printOrderReport(print_type: str, department_id: int | None, order_id: int | None) -> None:
+    "Generate a print report (driver or escpos) for the provided order_id"
+    # get all print parameters
+    if  (pars := order_print_settings(print_type, department_id)): 
+        print_copy, print_method, copies, drv_report, drv_printer, esc_report, esc_printer = pars # for current computer name
     else:
-        # print preview
-        # restore cursor if necessary
-        if QGuiApplication.overrideCursor() is not None:
-            if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                QGuiApplication.restoreOverrideCursor()
-        # create the preview
-        dialog = QPrintPreviewDialog(session['mainwin'])
-        # start
-        dialog.paintRequested.connect(report.print)
-        dialog.exec()
-        
-def printOrderEscPos(order_id: int, printer: str|None = None) -> None:
-    setting = Setting()
-    p = Dummy()
-    p.is_usable()
-    #p.charcode('') 
-    p.set(align='center', font='a')
-    p.text("RICEVUTA CON ACCENTI\n\n")
-    p.set(align='left', bold=False)
-    # Ora puoi usare lettere accentate ed Euro direttamente come stringhe Python normali!
-    p.text("Caffè Espresso                  1,20 €\n")
-    p.text("Attività promozionale           0,50 €\n")
-    p.text("------------------------------------------\n")
-    # Esempio con altre accentate e caratteri particolari
-    p.text("Nota: L'importo è comprensivo di IVA.\n")
-    p.text("Menù del giorno ordinato il venerdì.\n\n")
-    p.cut()
-    print(p.output)
-
-        
-def printOrderCoverReport(order_id: int, printer: str|None = None) -> None:
-    setting = Setting()
-    report_id = get_report_id(setting['cover_report'], session['l10n'])
-    if not report_id:
-        raise Exception("No customer report defined")
-    report = Report(report_xml(report_id))
-    # report definition on condition fields must have code for Order Id
-    where = []
-    for i in report.conditions:
-        if report.conditions[i].code == 'order_id':
-            where.append((f"{i} = %s", order_id))
-    report.data = report_query(report, where)
-    report.generate()
-    if printer:
-        prnt = QPrinter(QPrinterInfo.printerInfo(printer))
-        prnt.setCopyCount(setting['cover_copies'])
-        report.print(prnt)
-    else:
-        # print preview
-        # restore cursor if necessary
-        if QGuiApplication.overrideCursor() is not None:
-            if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                QGuiApplication.restoreOverrideCursor()
-        dialog = QPrintPreviewDialog(session['mainwin'])
-        # start
-        dialog.paintRequested.connect(report.print)
-        dialog.exec()
-
-
-def printOrderDepartmentReport(order_id: int, 
-                               department: int|None = None,
-                               printer: str|None = None) -> None:
-    setting = Setting()
-    report_id = get_report_id(setting['department_report'], session['l10n'])
-    if not report_id:
-        raise Exception("No customer report defined")
-    report = Report(report_xml(report_id))
-    # create condition
-    # report definition on condition fields must have a code for Order Id and Order Department Id
-    where = []
-    for i in report.conditions:
-        if report.conditions[i].code == 'order_id':
-            where.append((f"{i} = %s", order_id))
-        if report.conditions[i].code == 'department_id' and department is not None:
-            where.append((f"{i} = %s", department))
-    report.data = report_query(report, where)
-    report.generate()
-    if printer:
-        prnt = QPrinter(QPrinterInfo.printerInfo(printer))
-        #prnt.setFullPage(True)
-        prnt.setCopyCount(setting['department_copies'])
-        report.print(prnt)
-    else:
-        # print preview
-        # restore cursor if necessary
-        if QGuiApplication.overrideCursor() is not None:
-            if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                QGuiApplication.restoreOverrideCursor()
-        dialog = QPrintPreviewDialog(session['mainwin'])
-        # start
-        dialog.paintRequested.connect(report.print)
-        dialog.exec()
-
+        raise NoOrderReportParameters(f"No parameters available for computer {session['hostname']}")
+    if not print_copy:
+        return
+    match print_method:
+        case 'D': # DRIVER
+            # driver report and printer
+            report_drv = Report(get_report_xml(print_method, drv_report, session['l10n']))
+            # report definition on condition fields must have code for order_id and department_id
+            where = []
+            for i in report_drv.conditions:
+                if report_drv.conditions[i].code == 'order_id':
+                    where.append((f"{i} = %s", order_id))
+                if report_drv.conditions[i].code == 'department_id':
+                    where.append((f"{i} = %s", department_id))
+            report_drv.data = report_query(report_drv, where)
+            report_drv.generate()
+            if drv_printer:
+                # print
+                printer = QPrinter(QPrinterInfo.printerInfo(drv_printer))
+                printer.setCopyCount(copies)
+                report_drv.print(printer)
+            else:
+                # print preview
+                # restore cursor if necessary
+                if QGuiApplication.overrideCursor() is not None:
+                    if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                        QGuiApplication.restoreOverrideCursor()
+                # create the preview
+                dialog = QPrintPreviewDialog(session['mainwin'])
+                # start
+                dialog.paintRequested.connect(report_drv.print)
+                dialog.exec()
+        case 'E': # ESC/POS
+            # escpos report and printer
+            report_esc = ReportEscpos(get_report_xml(print_method, esc_report, session['l10n']))
+            # report definition on condition fields must have code for order_id and department_id
+            where = []
+            for i in report_esc.conditions:
+                if report_esc.conditions[i].code == 'order_id':
+                    where.append((f"{i} = %s", order_id))
+                if report_esc.conditions[i].code == 'department_id':
+                    where.append((f"{i} = %s", department_id))
+            report_esc.data = report_query(report_esc, where)
+            report_esc.generate()
+            if esc_printer:
+                # print
+                printer = escpos_printer(esc_printer)
+                report_esc.print(printer)
+            else:
+                # print preview
+                preview = PreviewDevice()
+                report_esc.print(preview)
+                dlg = PlainTextPreviewDialog(session['mainwin'], preview.get_preview())
+                dlg.exec()
+    
 
 def printStockUnloadReport(report_id: int,
                            printer: str|None = None,

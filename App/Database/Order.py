@@ -40,7 +40,7 @@ from App.Database.Exceptions import PyAppDBError
 from App.Core.ExceptionHandler import db_exception_context
 from App.Database.Utility import Record, RecordSet
 from App.Database.Connect import appconn
-from App.Database.Setting import Setting
+from App.Database.Settings import Settings
 from App.Database.Item import is_menu
 from App.Database.Item import is_composite
 from App.Database.Item import get_item_parts
@@ -65,7 +65,7 @@ def get_order_number(event_id: int,
     script = t"""
 SELECT
     order_number_based_on
-FROM setting
+FROM settings
 WHERE company_id = system.pa_current_company();"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
@@ -114,21 +114,21 @@ WHERE company_id = system.pa_current_company()
     return number
 
 
-def get_orders_issued(event_id: int, date: QDate, day_part: str) -> int:
-    "Returns the issued number of orders for event, day and day part"
-     # actually we don't need to filter company_id as event_id is unique across companies
-    script = t"""
-SELECT count(*)
-FROM order_header
-WHERE 
-    company_id = system.pa_current_company()
-    AND event_id = {event_id} 
-    AND stat_order_date = {date}
-    AND stat_order_day_part = {day_part};"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-        return next(cur, (0,))[0]
+# def get_orders_issued(event_id: int, date: QDate, day_part: str) -> int:
+#     "Returns the issued number of orders for event, day and day part"
+#      # actually we don't need to filter company_id as event_id is unique across companies
+#     script = t"""
+# SELECT count(*)
+# FROM order_header
+# WHERE 
+#     company_id = system.pa_current_company()
+#     AND event_id = {event_id} 
+#     AND stat_order_date = {date}
+#     AND stat_order_day_part = {day_part};"""
+#     # Unified context managers in the recommended evaluation order
+#     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+#         cur.execute(script)
+#         return next(cur, (0,))[0]
 
 
 def get_order_header_department_details(barcode: str) -> tuple | None:
@@ -282,7 +282,7 @@ class Order():
         self.header['order_date'] = self.header['order_date_time'].date()
         self.header['order_time'] = self.header['order_date_time'].time()
         # set date, statistical date and date part
-        setting = Setting()
+        setting = Settings()
         # if time between 0.0.0 and lunch start time stat date is the day before date part is dinner
         if QTime(0, 0) <= self.header['order_time'] < QTime(setting['lunch_start_time'], 0):
             # dinner of the day before

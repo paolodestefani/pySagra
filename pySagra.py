@@ -187,8 +187,8 @@ if __name__ == "__main__":
     logger.info('Setting up QApplication')
     app = QApplication(sys.argv)
     # host name
-    session['computer_name'] = QHostInfo.localHostName()
-    logger.info('Computer name has been set to %s', session['computer_name'])
+    session['hostname'] = QHostInfo.localHostName()
+    logger.info('Computer hostname has been set to %s', session['hostname'])
     # l10n
     logger.info('Setting up QLocale to system locale')
     # set system language

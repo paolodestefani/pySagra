@@ -48,7 +48,7 @@ SET search_path = company;
 
 
 -- company settings
-CREATE TABLE setting (
+CREATE TABLE settings (
     created_at                          timestamptz(3) NOT NULL,
 	created_by                          text NOT NULL,
     updated_at                          timestamptz(3) NOT NULL,
@@ -96,21 +96,21 @@ CREATE TABLE setting (
     table_list_font_size                integer NOT NULL DEFAULT 12,
     check_inactivity                    boolean NOT NULL DEFAULT True,
     inactivity_time                     integer NOT NULL DEFAULT 180,
-    -- order printing
-    print_customer_copy                 boolean NOT NULL DEFAULT False,
-    customer_print_method               char(1), -- D or E
-    customer_copies                     integer DEFAULT 1,
-    customer_report                     varchar(48),
-    customer_printer_class              integer,
-    print_department_copy               boolean NOT NULL DEFAULT False,
-    department_print_method             char(1), -- D or E
-    department_copies                   integer DEFAULT 1,
-    department_report                   varchar(48),
-    print_cover_copy                    boolean NOT NULL DEFAULT False,
-    cover_print_method                  char(1), -- D or E
-    cover_copies                        integer DEFAULT 1,
-    cover_report                        varchar(48),
-    cover_printer_class                 integer,
+    -- order printing globals
+    print_customer_copy                 boolean NOT NULL DEFAULT true,
+    --customer_print_method               char(1), -- D or E
+    --customer_copies                     integer DEFAULT 1,
+    --customer_report                     varchar(48),
+    --customer_printer_class              integer,
+    print_department_copy               boolean NOT NULL DEFAULT true,
+    --department_print_method             char(1), -- D or E
+    --department_copies                   integer DEFAULT 1,
+    --department_report                   varchar(48),
+    print_cover_copy                    boolean NOT NULL DEFAULT true,
+    --cover_print_method                  char(1), -- D or E
+    --cover_copies                        integer DEFAULT 1,
+    --cover_report                        varchar(48),
+    --cover_printer_class                 integer,
     -- order progress management
 	manage_order_progress               boolean NOT NULL DEFAULT False,
     -- ordered delivered report and view
@@ -119,7 +119,7 @@ CREATE TABLE setting (
     print_ordered_delivered_report      boolean NOT NULL DEFAULT False,
 	ordered_delivered_copies            integer DEFAULT 1,
     ordered_delivered_report            varchar(48),
-    ordered_delivered_printer_class     integer,
+    -- ordered_delivered_printer_class     integer,
     -- items inventory
     inventory_warning_stock_level       numeric(12, 2) NOT NULL DEFAULT 12,
     inventory_critical_stock_level      numeric(12, 2) NOT NULL DEFAULT 4,
@@ -129,48 +129,40 @@ CREATE TABLE setting (
     amount_decimal_places               integer NOT NULL DEFAULT 2,
 	currency_symbol                     varchar(3) NOT NULL DEFAULT '€',
     --
-    CONSTRAINT setting_pk 
+    CONSTRAINT settings_pk 
         PRIMARY KEY (company_id) 
         USING INDEX TABLESPACE {pyAppPgIndexesTS},
-    CONSTRAINT setting_company_fk 
+    CONSTRAINT settings_company_fk 
         FOREIGN KEY (company_id)
         REFERENCES system.company (company_id) 
         MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
-    CONSTRAINT setting_order_number_based_on_check 
+    CONSTRAINT settings_order_number_based_on_check 
         CHECK (order_number_based_on IN ('E', 'D', 'P')),
-    CONSTRAINT setting_tab_position_check 
+    CONSTRAINT settings_tab_position_check 
         CHECK (order_list_tab_position IN ('N', 'S', 'E', 'W')),
-    CONSTRAINT setting_customer_print_method_check 
-        CHECK (customer_print_method IN ('D', 'E')),
-    CONSTRAINT setting_department_print_method_check 
-        CHECK (department_print_method IN ('D', 'E')),
-    CONSTRAINT setting_cover_print_method_check 
-        CHECK (cover_print_method IN ('D', 'E')),
-    CONSTRAINT setting_customer_printer_class_fk 
-        FOREIGN KEY (customer_printer_class) 
-        REFERENCES printer_class (printer_class_id)
-        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    CONSTRAINT setting_covers_printer_class_fk 
-        FOREIGN KEY (cover_printer_class) 
-        REFERENCES printer_class (printer_class_id)
-        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    CONSTRAINT setting_ordered_delivered_printer_class_fk 
-        FOREIGN KEY (ordered_delivered_printer_class) 
-        REFERENCES printer_class (printer_class_id)
-        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    CONSTRAINT setting_default_delivery_type_check 
+    -- CONSTRAINT settings_customer_printer_class_fk 
+    --    FOREIGN KEY (customer_printer_class) 
+    --    REFERENCES printer_class (printer_class_id)
+    --    MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    --CONSTRAINT settings_covers_printer_class_fk 
+    --    FOREIGN KEY (cover_printer_class) 
+    --    REFERENCES printer_class (printer_class_id)
+    --    MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    --CONSTRAINT settings_ordered_delivered_printer_class_fk 
+    --    FOREIGN KEY (ordered_delivered_printer_class) 
+    --    REFERENCES printer_class (printer_class_id)
+    --    MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT settings_default_delivery_type_check 
         CHECK (default_delivery_type IN ('T', 'A')), -- (T)able, take-(A)way
-    CONSTRAINT setting_default_payment_type_check 
+    CONSTRAINT settings_default_payment_type_check 
         CHECK (default_payment_type IN ('C', 'E')) -- (C)ache, (E)lectronic
 
 ) TABLESPACE {pyAppPgTablesTS};
-COMMENT ON TABLE setting IS 
+COMMENT ON TABLE settings IS 
     'Company specific application settings';
-ALTER TABLE setting 
+ALTER TABLE settings 
     OWNER TO {pyAppPgOwnerRole};
 
--- CREATE INDEX setting_keys_idx ON setting (company_id);
-
 CREATE TRIGGER t99_update_company_user_date 
-    BEFORE INSERT OR UPDATE ON company.setting 
+    BEFORE INSERT OR UPDATE ON company.settings 
     FOR EACH ROW EXECUTE PROCEDURE system.update_company_user_date();

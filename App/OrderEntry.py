@@ -28,7 +28,7 @@ This module provides order entry dialog and required subcalsses/funtions
 """
 
 # standard library
-from enum import IntEnum
+from enum import IntEnum, StrEnum
 import logging
 import warnings 
 from decimal import Decimal 
@@ -61,11 +61,10 @@ from App import session
 from App import currentIcon
 from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Gui import get_tab_positions
-from App.Database.Setting import Setting
+from App.Database.Settings import Settings
 from App.Database.Event import get_event_from_date
 from App.Database.CashDesk import get_cash_desk_description
 from App.Database.Department import department_list
-from App.Database.Department import get_department_printer_class
 from App.Database.Department import department_takeaway_list
 from App.Database.Department import get_department_desc
 from App.Database.SeatMap import table_list
@@ -74,13 +73,9 @@ from App.Database.Item import item_list
 from App.Database.Item import is_for_takeaway
 from App.Database.Item import get_item_desc
 from App.Database.Item import get_item_parts
-from App.Database.Printer import get_printer_name
 from App.Database.Item import get_variants
 from App.Database.Order import Order
 from App.Report.Order import printOrderReport
-from App.Report.Order import printOrderEscPos
-from App.Report.Order import printOrderCoverReport
-from App.Report.Order import printOrderDepartmentReport
 from App.Report.Order import printStockUnloadReport
 from App.Core.L10n import _tr
 from App.Widget.Dialog import DateTimeInputDialog
@@ -103,6 +98,12 @@ class two(IntEnum):
     QUANTITY = 3
     PRICE = 4
     AMOUNT = 5
+    
+# print copy
+class pc(StrEnum):
+    CUSTOMER        = 'C'
+    COVER           = 'V'
+    DEPARTMENT      = 'D'
 
 
 # launch main order entry dialog
@@ -124,7 +125,7 @@ def orderEntry(action: QAction, checked: bool = False) -> None:
                             _tr('OrderEntry', 'No event available, for order entry '
                                 'is necessary to setup an event for the current date'))
         return
-    setting = Setting()
+    setting = Settings()
     Ui_OrderDialog: Callable
     if setting['order_entry_ui'] == 0:
         from App.Ui.OrderDialog0 import Ui_OrderDialog0 as Ui_OrderDialog
@@ -217,7 +218,7 @@ class BaseOrderDialog(QDialog):
         super().__init__(parent)
         self.ui = uidialog()
         self.ui.setupUi(self)
-        self.setting = Setting()
+        self.setting = Settings()
         
         # restore window geometry
         st = QSettings()
@@ -313,7 +314,7 @@ class BaseOrderDialog(QDialog):
         self.ui.lineEditBarCode.editingFinished.connect(self.processWebOrder)
         self.ui.doubleSpinBoxDiscount.valueChanged.connect(self.onDiscountChanged)
 
-        # system Actions and Keyboard Shortcuts
+        # system actions and keyboard shortcuts
         ced = QAction(_tr('OrderEntry', 'Change Event and date'), self)
         ced.setShortcut('Ctrl+F12')
         ced.triggered.connect(self.changeEventDate)
@@ -706,7 +707,6 @@ class BaseOrderDialog(QDialog):
             self.idleTimer.start()
         # establish window focus context on the primary table entry field
         self.ui.lineEditTable.setFocus()
-        #print(self._inventory)
         
     def _explode_to_parts(self, item_id: int, multiplier: int = 1, flat_recipe: dict | None = None) -> dict:
         """
@@ -736,17 +736,17 @@ class BaseOrderDialog(QDialog):
         Recursive function to calculate real available quantity.
         Since self._inventory ONLY contains tracked items, missing IDs are skipped.
         """
-        # If the main item isn't in the inventory, it's unmanaged (infinite)
+        # if the main item isn't in the inventory, it's unmanaged (infinite)
         if item_id not in self._inventory:
             return 99999
             
         item = self._inventory[item_id]
         
-        # CASE 1: Raw Ingredient ('I')
+        # case 1: raw ingredient ('I')
         if item['type'] == 'I':
             return int(item['qty'])
             
-        # CASE 2: Kit ('K') or Menu ('M')
+        # case 2: kit ('K') or menu ('M')
         if 'part' not in item or not item['part']:
             return 0
             
@@ -793,7 +793,7 @@ class BaseOrderDialog(QDialog):
             item_id = line_data["item_id"]
             qty_int = line_data["qty_int"]
             
-            # Explode this specific order line into raw 'I' ingredients
+            # explode this specific order line into raw 'I' ingredients
             line_consumption = self._explode_to_parts(item_id, qty_int)
             for ing_id, needed_qty in line_consumption.items():
                 total_order_consumption[ing_id] = total_order_consumption.get(ing_id, 0) + needed_qty
@@ -803,7 +803,7 @@ class BaseOrderDialog(QDialog):
             if ing_id in self._inventory:
                 self._inventory[ing_id]['qty'] -= total_to_deduct
 
-        # recalculate Kit ('K') and Menu ('M') availability in the working inventory
+        # recalculate kit ('K') and menu ('M') availability in the working inventory
         for item_id in list(self._inventory.keys()):
             self.calculate_and_update_qty(item_id)
             
@@ -1001,10 +1001,10 @@ class BaseOrderDialog(QDialog):
         self.order_lines[dict_key]["qty_int"] -= actual_returned_qty_int
         
         # RESTORE STOCK LEVEL ON THE CORRESPONDING COUNTER BUTTON
-        # explode the removed item to find which Raw Ingredients (Type 'I') it actually returns
+        # explode the removed item to find which raw ingredients (type 'I') it actually returns
         returned_ingredients = self._explode_to_parts(item_id, actual_returned_qty_int)
         
-        # add quantities back ONLY to the Raw Ingredients inside the inventory
+        # add quantities back ONLY to the raw ingredients inside the inventory
         for ing_id, total_qty_to_restore in returned_ingredients.items():
             if ing_id in self._inventory:
                 self._inventory[ing_id]['qty'] += total_qty_to_restore
@@ -1326,7 +1326,7 @@ class BaseOrderDialog(QDialog):
         order.header['cash'] = Decimal(self.current_cash_int) / Decimal(self._amount_factor)
         order.header['change'] = Decimal(self.current_change_int) / Decimal(self._amount_factor)
 
-        # We safely map integers back to Decimals dynamically based on settings factors
+        # safely map integers back to decimals dynamically based on settings factors
         for item in self.order_lines.values():
             line: dict[str, Any] = dict()
             line['item_id'] = item['item_id']
@@ -1374,42 +1374,26 @@ class BaseOrderDialog(QDialog):
         # ASYNC ORDER PRINT REPORTS DISPATCH
         # ---------------------------------------------------------------------
         # print customer receipt copy
-        if self.setting['print_customer_copy']:
-            if self.setting['customer_print_method'] == 'D':
-                with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy")):
-                    printer = get_printer_name(self.setting['customer_printer_class'], session['hostname'])
-                    printOrderReport(ti, printer)
-            elif self.setting['customer_print_method'] == 'E':
-                # ESC/POS printing
-                with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy ESCPOS")):
-                    printer = get_printer_name(self.setting['customer_printer_class'], session['hostname'])
-                    printOrderEscPos(ti, printer)
-            else:
-                pass
+        with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy")):
+            printOrderReport(pc.CUSTOMER, None, ti)
         # covers copy
-        if self.setting['print_cover_copy'] and order.header['delivery'] == 'T' and order.header['covers']:
+        if order.header['delivery'] == 'T' and order.header['covers']:
             with gui_exception_context(self, _tr('OrderEntry', "Printing order cover copy")):
-                printer = get_printer_name(self.setting['cover_printer_class'], session['hostname'])
-                printOrderCoverReport(ti, printer)
+                printOrderReport(pc.COVER, None, ti)
         # ---------------------------------------------------------------------
         # SEPARATE DEPARTMENT COPIES PRINT DISPATCH
         # ---------------------------------------------------------------------
-        if self.setting['print_department_copy']:
-            with gui_exception_context(self, _tr('OrderEntry', "Printing order department copies")):
-                for dept_id in used_dep:
-                    if dept_id is None:
-                        continue  # skip if department ID is not valid
-                    prncls = get_department_printer_class(dept_id)
-                    if not prncls:
-                        continue
-                    printer = get_printer_name(prncls, session['hostname'])
-                    printOrderDepartmentReport(ti, dept_id, printer)
+        with gui_exception_context(self, _tr('OrderEntry', "Printing order department copies")):
+            for dept_id in used_dep:
+                if dept_id is None:
+                    continue  # skip if department ID is not valid
+                printOrderReport(pc.DEPARTMENT, dept_id, ti)
         # ---------------------------------------------------------------------
         # STOCK UNLOAD / ORDERED DELIVERED REPORT SYSTEM
         # ---------------------------------------------------------------------
         if self.setting['print_ordered_delivered_report']:
             with gui_exception_context(self, _tr('OrderDialog', "Printing ordered delivered report")):
-                printer = get_printer_name(self.setting['ordered_delivered_printer_class'], session['hostname'])
+                #printer = get_printer_name(self.setting['ordered_delivered_printer_class'], session['hostname'])
                 printStockUnloadReport(self.setting['ordered_delivered_report'],
                                        printer,
                                        self.setting['ordered_delivered_copies'],

@@ -32,9 +32,9 @@ import logging
 
 
 # pySide6
-from PySide6.QtNetwork import QHostInfo
 
 # application modules
+from App import session
 from App.Core.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
@@ -51,7 +51,7 @@ SELECT
 FROM cash_desk
 WHERE
     company_id = system.pa_current_company()
-    AND computer = {QHostInfo.localHostName()};"""
+    AND hostname = {session['hostname']};"""
     # Unified context managers handling error trapping, transaction lifecycle, and cursor
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)

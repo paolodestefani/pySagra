@@ -107,7 +107,7 @@ if __name__ != "__main__":
     from App import ORGANIZATION
     from App import WEBSITE
     from App import session
-    from App.Database.Setting import Setting
+    from App.Database.Settings import Settings
     from App.Core.ExceptionHandler import wait_cursor_context
 
 else:
@@ -1117,8 +1117,8 @@ class Report():
         self.parameter: collections.OrderedDict = collections.OrderedDict()
         self.summaries: list = []  # each summary init update this list, must be set before calling setReportDefinition
         self.last_printed_values: dict = {} # for suppressRepeated fields
-        if 'App.Database.Setting' in sys.modules:
-            setting = Setting()
+        if 'App.Database.Settings' in sys.modules:
+            setting = Settings()
             defaultOptions['quantityDecimals'] = setting['quantity_decimal_places']
             defaultOptions['priceDecimals'] = setting['price_decimal_places']
             defaultOptions['amountDecimals'] = setting['amount_decimal_places']

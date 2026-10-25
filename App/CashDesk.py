@@ -45,7 +45,7 @@ from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Database.Models import CashDeskModel
 from App.Widget.Form import FormViewManager
-from App.Ui.CashDeskWidget import Ui_CashDeskWidget
+from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
 
 
 # logger
@@ -81,7 +81,7 @@ def cashDesk(action: QAction, checked: bool = False) -> None:
     logger.info('Cash Desk Form added to main window')
 
 
-class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
+class CashDeskForm(FormViewManager[Ui_GenericFormViewWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
@@ -94,7 +94,7 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, False, False, False, False,
                                 False, False, False, False)
-        self.ui = Ui_CashDeskWidget()
+        self.ui = Ui_GenericFormViewWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('CashDesk')
@@ -110,7 +110,7 @@ class CashDeskForm(FormViewManager[Ui_CashDeskWidget]):
         row = model.rowCount() - 1
         index = model.index(row, cd.COMPUTER)
         # set the computer name
-        model.setData(index, session['computer_name'])
+        model.setData(index, session['hostname'])
         # force cell editing
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)

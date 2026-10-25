@@ -28,7 +28,7 @@ This module provides form and related classes for manage order archive
 """
 
 # standard library
-from enum import IntEnum
+from enum import IntEnum, StrEnum
 import logging
 
 # PySide6
@@ -40,11 +40,8 @@ from PySide6.QtWidgets import QCheckBox
 
 # application modules
 from App import session
-from App.Database.Setting import Setting
-from App.Database.Printer import get_printer_name
-from App.Database.Department import get_department_printer_class
+from App.Database.Settings import Settings
 from App.Database.Department import department_list
-from App.Database.Department import get_department_desc
 from App.Database.Models import OrderHeaderIndexModel
 from App.Database.Models import OrderHeaderModel
 from App.Database.Models import OrderHeaderDepartmentModel
@@ -68,8 +65,7 @@ from App.Core.Scripting import scriptMethod
 from App.Report.ReportEngine import ReportException
 from App.Report.ReportEngine import ReportNoDataError
 from App.Report.Order import printOrderReport
-from App.Report.Order import printOrderCoverReport
-from App.Report.Order import printOrderDepartmentReport
+from App.Report.Order import OrderReportException
 
 
 # logger
@@ -166,7 +162,12 @@ class orddd(IntEnum):
     PARENT          = 4
     CHILD           = 5
 
-
+# print copy
+class pc(StrEnum):
+    CUSTOMER        = 'C'
+    COVER           = 'V'
+    DEPARTMENT      = 'D'
+    
 
 def deliveryType():
     return [('T', _tr('OrderArchive', 'Table')),
@@ -235,8 +236,6 @@ class OrderForm(FormIndexManager):
         self.mapper.addMapping(self.ui.spinBoxNumber, ordh.NUMBER)
         self.mapper.addMapping(self.ui.dateEditDate, ordh.DATE)
         self.mapper.addMapping(self.ui.timeEditTime, ordh.TIME)
-        #self.ui.comboBoxDelivery.setItemList((('T', _tr('OrderArchive', 'Table')),
-        #                                      ('A', _tr('OrderArchive', 'Take-away'))))
         self.ui.comboBoxDelivery.setItemList(deliveryType())
         self.mapper.addMapping(self.ui.checkBoxElectronicPayment, ordh.EP)
         self.mapper.addMapping(self.ui.checkBoxWebOrder, ordh.WO)
@@ -273,7 +272,7 @@ class OrderForm(FormIndexManager):
         self.ui.tableViewDepartmentHeader.setLayoutName('OrderArchiveDepartment')
         self.ui.tableViewDepartmentHeader.setItemDelegateForColumn(ordhd.DEPARTMENT, RelationDelegate(self, department_lookup))
         # store setting on form creation
-        self.setting = Setting()
+        self.setting = Settings()
         # decimals on amount
         decs = self.setting['amount_decimal_places']
         self.ui.doubleSpinBoxTotalAmount.setDecimals(decs)
@@ -347,14 +346,17 @@ class OrderForm(FormIndexManager):
             return
         no_print = True
         # PRINT ORDER
-        setting = Setting()
+        setting = Settings()
         # get order id
         ti = self.model.data(self.model.index(self.mapper.currentIndex(), ordh.ID))
         # customer copy
         if self.ui.checkBoxPrintCustomerCopy.isChecked():
-            printer = get_printer_name(setting['customer_printer_class'], session['hostname'])
             try:
-                printOrderReport(ti, printer)
+                printOrderReport(pc.CUSTOMER, None, ti)
+            except OrderReportException as er:
+                QMessageBox.critical(self,
+                                    _tr('MessageDialog', "Error"),
+                                    _tr('OrderArchive', f"{er}"))
             except ReportNoDataError:
                 QMessageBox.information(self,
                                         _tr('MessageDialog', "Information"),
@@ -368,10 +370,9 @@ class OrderForm(FormIndexManager):
                                         _tr('MessageDialog', "Information"),
                                         _tr('OrderArchive', "No covers, not print required"))
                 return
-            printer = get_printer_name(setting['cover_printer_class'], session['hostname'])
             try:
-                printOrderCoverReport(ti, printer)
-            except ReportNoDataError:
+                printOrderReport(pc.COVER, None, ti)
+            except OrderReportException:
                 QMessageBox.information(self,
                                         _tr('MessageDialog', "Information"),
                                         _tr('OrderArchive', "No data to render"))
@@ -381,19 +382,9 @@ class OrderForm(FormIndexManager):
         if setting['print_department_copy']:
             for i in self.depCopy:
                 if self.depCopy[i].isChecked():
-                    prncls = get_department_printer_class(i)
-                    if not prncls:
-                        msg = _tr('OrderArchive',
-                                  "No printer class set for this department, skipping")
-                        QMessageBox.warning(self,
-                                            _tr('MessageDialog', "Warning"),
-                                            msg)
-                        self.depCopy[i].setChecked(False)
-                        continue
-                    printer = get_printer_name(prncls, session['hostname'])
                     try:
-                        printOrderDepartmentReport(ti, i, printer)
-                    except ReportNoDataError:
+                        printOrderReport(pc.DEPARTMENT, i, ti)
+                    except OrderReportException:
                         QMessageBox.information(self,
                                                 _tr('MessageDialog', "Information"),
                                                 _tr('OrderArchive', "No data to render"))
@@ -401,7 +392,7 @@ class OrderForm(FormIndexManager):
                         MessageBoxCritical(self,
                                            _tr('MessageDialog', "Critical"),
                                            _tr('OrderArchive', "Error printing department copy"),
-                                           str(er),
+                                           str(er)
                                            )
                     self.depCopy[i].setChecked(False)
                     no_print = False

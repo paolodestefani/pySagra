@@ -51,7 +51,6 @@ from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ColorComboDelegate
 from App.Widget.Delegate import QuantityDelegate
 from App.Widget.Delegate import PriceDelegate
-from App.Widget.Delegate import AmountDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
@@ -61,7 +60,7 @@ from App.Database.Models import ItemVariantModel
 from App.Database.Models import KitPartModel
 from App.Database.Models import MenuPartModel
 from App.Database.Models import PriceListItemModel
-from App.Database.Setting import Setting
+from App.Database.Settings import Settings
 from App.Database.Lookup import item_with_variant_lookup
 from App.Database.Lookup import kit_part_lookup
 from App.Database.Lookup import menu_part_lookup
@@ -234,7 +233,7 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonAddPri.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemovePri.setIcon(currentIcon['edit_remove'])
         # setting
-        self.setting = Setting()
+        self.setting = Settings()
         # signal slot connections
         self.ui.checkBoxVariants.toggled[bool].connect(self.ui.tabVariants.setEnabled)
         self.ui.comboBoxType.currentIndexChanged.connect(self.itemTypeChanged)
@@ -310,7 +309,7 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonRemoveMen.clicked.connect(self.ui.tableViewMenuItems.remove)
         self.ui.pushButtonAddPri.clicked.connect(self.ui.tableViewPrices.add)
         self.ui.pushButtonRemovePri.clicked.connect(self.ui.tableViewPrices.remove)
-         # scripting init
+        # scripting init
         self.script = scriptInit(self)
         # scripting init
         

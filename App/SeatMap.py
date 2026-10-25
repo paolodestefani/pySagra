@@ -45,7 +45,7 @@ from PySide6.QtWidgets import QSizePolicy
 from App import session
 from App.Database.SeatMap import table_delete
 from App.Database.Models import SeatMapModel
-from App.Database.Setting import Setting
+from App.Database.Settings import Settings
 from App.Core.L10n import _tr
 from App.Core.ExceptionHandler import gui_exception_context
 from App.Core.Scripting import scriptInit
@@ -56,7 +56,6 @@ from App.Widget.Control import ButtonSeat
 from App.Widget.Control import ButtonColor
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ColorDelegate
-from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Dialog import PrintDialog
 
 
@@ -119,21 +118,17 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.view = self.ui.tableView  # required for formviewmanager
         self.ui.tableView.setModel(model)
         self.ui.tableView.setLayoutName('SeatMap')
-        # self.ui.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ui.tableView.activateWindow()
         self.ui.tableView.setSortingEnabled(True)
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
         # custom delegates
-        self.ui.tableView.setItemDelegateForColumn(sm.TABLE_CODE, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(sm.ROW, GenericDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(sm.COLUMN, GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(sm.TXT_COLOR, ColorDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(sm.BKG_COLOR, ColorDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(sm.OBSOLETE, BooleanDelegate(self))
         # map view to mapper and mapper to view
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
         self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
-        self.setting = Setting()
+        self.setting = Settings()
         # generate tables
         self.bgcolor = '#007f00' # default background color for generated tables
         self.txcolor = '#FFFFFF' # default text color for generated tables

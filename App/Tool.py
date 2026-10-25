@@ -33,7 +33,6 @@ archives
 import logging
 
 # PySide6
-from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QDialogButtonBox
@@ -315,16 +314,10 @@ class CopyToolDialog(QDialog):
                 copy_printer_class(company_id)
             if self.ui.checkBoxTable.isChecked():
                 copy_table(company_id)
-            # if self.ui.checkBoxSettings.isChecked():
-            #     copy_settings(company_id)
             if self.ui.checkBoxDepartment.isChecked():
                 copy_department(company_id)
             if self.ui.checkBoxItem.isChecked():
                 copy_item(company_id)
-            # if self.ui.checkBoxInventory.isChecked():
-            #     copy_inventory(company_id)
-            # if self.ui.checkBoxPriceList.isChecked():
-            #     copy_price_lists(company_id)
         except PyAppDBError as er:
             QMessageBox.critical(self,
                                 _tr('MessageDialog', 'Critical'),

@@ -45,7 +45,7 @@ from App.Core.L10n import _tr
 from App.Core.Scripting import scriptInit
 from App.Core.Scripting import scriptMethod
 from App.Database.Lookup import event_lookup
-from App.Database.Setting import Setting
+from App.Database.Settings import Settings
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import QuantityDelegate
 from App.Widget.Delegate import NewStockDelegate
@@ -96,7 +96,7 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
-        setting = Setting()
+        setting = Settings()
         model = InventoryModel(self)
         self.setModel(model)
         self.tabName = title

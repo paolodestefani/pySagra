@@ -57,19 +57,19 @@ SET search_path = system;
 -- txt -> date (universal date format: YYYYMMDD)
 -- etc.
 
-CREATE TABLE setting (
+CREATE TABLE settings (
     setting                 varchar(48),
     setting_value           text,
     description             text,
     --
-    CONSTRAINT setting_pk 
+    CONSTRAINT settings_pk 
         PRIMARY KEY (setting) 
         USING INDEX TABLESPACE {pyAppPgIndexesTS}
 )
 TABLESPACE {pyAppPgTablesTS};
-COMMENT ON TABLE setting IS 
+COMMENT ON TABLE settings IS 
     '{pyAppName} system settings table, whole application system parameters';
-ALTER TABLE setting 
+ALTER TABLE settings 
     OWNER TO {pyAppPgOwnerRole};
 
 
@@ -80,12 +80,12 @@ $$
 BEGIN
     IF EXISTS(  
         SELECT setting 
-        FROM system.setting 
+        FROM system.settings 
         WHERE setting = in_setting
         ) THEN
         RAISE EXCEPTION 'Cannot create ''%s'' setting because it already exists ', in_name;
     END IF;
-    INSERT INTO system.setting (
+    INSERT INTO system.settings (
         setting,
         setting_value, 
         description
@@ -111,12 +111,12 @@ $$
 BEGIN
     IF NOT EXISTS(  
         SELECT setting 
-        FROM system.setting 
+        FROM system.settings 
         WHERE setting = in_setting
         ) THEN
         RAISE EXCEPTION 'Unknown setting parameter ''%''', in_setting;
     END IF;
-    UPDATE system.setting 
+    UPDATE system.settings 
     SET setting_value = in_value 
     WHERE setting = in_setting;
 END;
@@ -137,13 +137,13 @@ DECLARE
 BEGIN
     IF NOT EXISTS(  
         SELECT setting 
-        FROM system.setting 
+        FROM system.settings 
         WHERE setting = in_setting
         ) THEN
         RAISE EXCEPTION 'Unknown setting parameter ''%''', in_setting;
     END IF;
     SELECT setting_value INTO out_value 
-    FROM system.setting 
+    FROM system.settings 
     WHERE setting = in_setting;
     RETURN out_value;
 END;

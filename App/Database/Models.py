@@ -573,6 +573,7 @@ class ReportIndexModel(QueryModel):
         self.selectQuery = """
 SELECT
     report_id,
+    print_method,
     report_code,
     l10n,
     report_class,
@@ -587,6 +588,7 @@ FROM system.report;"""
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (
             ("report_id", _tr('Models', 'ID'), True, 'int'),
+            ("print_method", _tr('Models', 'Print method'), False, 'str'),
             ("report_code", _tr('Models', 'Report code'), False, 'str'),
             ("l10n", _tr('Models', 'Localization'), False, 'str'),
             ("report_class", _tr('Models', 'Report class'), False, 'str'),
@@ -600,7 +602,7 @@ FROM system.report;"""
         self.isCompanyTable = False
         self.repr = 'Report index query model'
         # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("report_id, report_code, l10n")
+        self.addOrderBy("print_method, report_id, report_code, l10n")
         
 
 class ReportModel(TableModel):
@@ -612,6 +614,7 @@ class ReportModel(TableModel):
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (
             ("report_id", _tr('Models', 'ID'), True, 'int'),
+            ("print_method", _tr('Models', 'Print method'), False, 'str'),
             ("report_code", _tr('Models', 'Report code'), False, 'str'),
             ("l10n", _tr('Models', 'Localization'), False, 'str'),
             ("report_class", _tr('Models', 'Report class'), False, 'str'),
@@ -625,7 +628,7 @@ class ReportModel(TableModel):
         # True if is a company table
         self.isCompanyTable = False
         # is_system column
-        self.isSystemColumn = 6
+        self.isSystemColumn = 7
         self.primaryKey = ("report_id",)
         self.automaticPKey = True
         # sql order by clause, plain sql string without ORDER BY
@@ -708,70 +711,9 @@ class ScriptingModel(TableModel):
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("class_name, method_name, trigger")
         self.repr = 'Scripting table model'
-        
-
-class EventIndexModel(QueryModel):
-
-    def __init__(self, parent: QObject | None = None) -> None:
-        super().__init__(parent)
-        self.selectQuery = """
-SELECT 
-    event_id,
-    description,
-    start_date,
-    end_date,
-    price_list_id,
-    image,
-    created_by,
-    created_at,
-    updated_by,
-    updated_at
-FROM company.event;"""
-        # available types: int, bool, decimal2, str, date, datetime, None"""
-        # model columns: (field, description, readonly, type), tuple of tuples
-        self.columns = (("event_id", _tr('Models', 'ID'), True, 'int'),
-                        ("description", _tr('Models', 'Event description'), False, 'str'),
-                        ("start_date", _tr('Models', 'Start date'), False, 'datetime'),
-                        ("end_date", _tr('Models', 'End date'), False, 'datetime'),
-                        ("price_list_id", _tr('Models', 'Price list'), False, 'int'),
-                        ("image", _tr('Models', 'Event image'), False, None),
-                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
-                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
-                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
-        # True if is a company table
-        self.isCompanyTable = True
-        self.repr = 'Event index query model'
-        # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("event_id")
-
-
-class EventModel(TableModel):
-
-    def __init__(self, parent: QObject | None = None) -> None:
-        super().__init__(parent)
-        self.table = "company.event"
-        # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
-        self.columns = (("event_id", _tr('Models', 'ID'), True, 'int'),
-                        ("description", _tr('Models', 'Event description'), False, 'str'),
-                        ("start_date", _tr('Models', 'Start date'), False, 'datetime'),
-                        ("end_date", _tr('Models', 'End date'), False, 'datetime'),
-                        ("price_list_id", _tr('Models', 'Price list'), False, 'int'),
-                        ("image", _tr('Models', 'Event image'), False, None),
-                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
-                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
-                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
-        # True if is a company table
-        self.isCompanyTable = True
-        # primary key fields, tuple or list
-        self.primaryKey = ("event_id",)
-        self.automaticPKey = True
-        # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("start_date DESC")
-        self.repr = 'Event table model'
-
+   
+   
+### application specific models ###     
 
 class CashDeskModel(TableModel):
 
@@ -781,7 +723,7 @@ class CashDeskModel(TableModel):
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal2, str, date, datetime, None = no filter
         self.columns = (("cash_desk_id", _tr('Models', 'ID'), True, 'int'),
-                        ("computer", _tr('Models', 'Computer name'), False, 'str'),
+                        ("hostname", _tr('Models', 'Computer name'), False, 'str'),
                         ("cash_desk_description", _tr('Models', 'Cash desk description'), False, 'str'),
                         ("note", _tr('Models', 'Note'), False, 'int'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -801,43 +743,32 @@ class CashDeskModel(TableModel):
         #                         'is_not_managed': False,
         #                         'is_for_takeaway': True}
         self.repr = 'Cash desk table model'
-        
 
-class PrinterIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject | None = None) -> None:
-        super().__init__(parent)
-        self.selectQuery = """
-SELECT 
-    printer_class_id,
-    description,
-    created_by,
-    created_at,
-    updated_by,
-    updated_at
-FROM company.printer_class;"""
-        # model columns: (field, description, readonly, type), tuple of tuples
-        self.columns = (("printer_class_id", _tr('Models', 'ID'), True, 'int'),
-                        ("description", _tr('Models', 'Class description'), False, 'str'),
-                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
-                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
-                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
-        # True if is a company table
-        self.isCompanyTable = True
-        self.repr = 'Printer index query model'
-        # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("printer_class_id")
-        
-
-class PrinterModel(TableModel):
+class EscposPrinterModel(TableModel):
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
-        self.table = "company.printer_class"
+        self.table = "escpos_printer"
         # model columns: (field, description, readonly, type), tuple of tuples
-        self.columns = (("printer_class_id", _tr('Models', 'ID'), True, 'int'),
-                        ("description", _tr('Models', 'Class description'), False, 'str'),
+        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        self.columns = (("escpos_printer_id", _tr('Models', 'ID'), True, 'int'),
+                        ("hostname", _tr('Models', 'Computer name'), False, 'str'),
+                        ("name", _tr('Models', 'Printer name'), False, 'str'),
+                        ("type", _tr('Models', 'Printer type'), False, 'str'),
+                        # network printer
+                        ("host", _tr('Models', 'Host address'), False, 'str'),
+                        ("port", _tr('Models', 'Port'), False, 'int'),
+                        ("connection_timeout", _tr('Models', 'Connection timeout'), False, 'int'),
+                        # usb printer
+                        ("id_vendor", _tr('Models', 'Id Vendor'), False, 'int'),
+                        ("id_product", _tr('Models', 'Id Product'), False, 'int'),
+                        ("usb_timeout", _tr('Models', 'USB timeout'), False, 'int'),
+                        ("in_endpoint", _tr('Models', 'Input endpoint'), False, 'int'),
+                        ("out_endpoint", _tr('Models', 'Output endpoint'), False, 'int'),
+                        ###
+                        ("note", _tr('Models', 'Note'), False, 'str'),
+                        ###
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -845,39 +776,19 @@ class PrinterModel(TableModel):
         # True if is a company table
         self.isCompanyTable = True
         # primary key fields, tuple or list
-        self.primaryKey = ("printer_class_id",)
+        self.primaryKey = ("escpos_printer_id",)
         self.automaticPKey = True
+        # master/detail relation {table field: reference field}
+        #self.foreignKey = {'class_id': 'id'}
         # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("printer_class_id")
-        self.repr = 'Printer table model'
-        
+        self.addOrderBy("escpos_printer_id")
+        self.newRecordDefault = {'port': 9100,
+                                 'connection_timeout': 30,
+                                 'usb_timeout': 10,
+                                 'in_endpoint': 130,
+                                 'out_endpoint': 1}
+        self.repr = 'Esc/pos printers table model'
 
-class PrinterDetailModel(TableModel):
-
-    def __init__(self, parent: QObject | None = None) -> None:
-        super().__init__(parent)
-        self.table = "company.printer_class_printer"
-        self.columns = (("printer_class_printer_id", _tr('Models', 'ID'), True, 'int'),
-                        ("printer_class_id", _tr('Models', 'Printer class ID'), False, 'int'),
-                        ("computer", _tr('Models', 'Computer'), False, 'str'),
-                        ("print_method", _tr('Models', 'Method'), False, 'str'),
-                        ("printer", _tr('Models', 'Printer'), False, 'str'),
-                        ("parameters", _tr('Models', 'Parameters'), False, 'str'),
-                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
-                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
-                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
-        # True if is a company table
-        self.isCompanyTable = True
-        # primary key fields, tuple or list
-        self.primaryKey = ("printer_class_printer_id",)
-        self.automaticPKey = True
-        # master/detail relation {this table field: reference field}
-        self.foreignKey = {'printer_class_id': 'printer_class_id'}
-        # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("printer_class_printer_id")
-        self.repr = 'Printer detail table model'
-        
 
 class DepartmentModel(TableModel):
 
@@ -889,7 +800,7 @@ class DepartmentModel(TableModel):
         self.columns = (("department_id", _tr('Models', 'ID'), True, 'int'),
                         ("description", _tr('Models', 'Department description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
-                        ("printer_class_id", _tr('Models', 'Printer class'), False, 'str'),
+                        #("printer_class_id", _tr('Models', 'Printer class'), False, 'str'),
                         ("is_obsolete", _tr('Models', 'Obsolete'), False, 'bool'),
                         ("is_menu_container", _tr('Models', 'Menu'), False, 'bool'),
                         ("is_for_takeaway", _tr('Models', 'For takeaway'), False, 'bool'),
@@ -910,6 +821,106 @@ class DepartmentModel(TableModel):
                                  'is_menu_container': False,
                                  'is_for_takeaway': True}
         self.repr = 'Department table model'
+        
+
+class OrderPrintSettingsIndexModel(QueryModel):
+
+    def __init__(self, parent: QObject | None = None) -> None:
+        super().__init__(parent)
+        self.selectQuery = """
+SELECT 
+    order_print_settings_id,
+    hostname,
+    print_customer_copy,
+	customer_print_method,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at
+FROM order_print_settings;"""
+        # model columns: (field, description, readonly, type), tuple of tuples
+        self.columns = (("order_print_settings_id,", _tr('Models', 'ID'), True, 'int'),
+                        ("hostname", _tr('Models', 'Computer name'), False, 'str'),
+                        ("print_customer_copy", _tr('Models', 'Print customer copy'), False, 'bool'),
+                        ("customer_print_method", _tr('Models', 'Customer print method'), False, 'str'),
+                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
+                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
+                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
+                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+        # True if is a company table
+        self.isCompanyTable = True
+        self.repr = 'Order print index query model'
+        # sql order by clause, plain sql string without ORDER BY
+        self.addOrderBy("order_print_settings_id")
+        
+
+class OrderPrintSettingsModel(TableModel):
+
+    def __init__(self, parent: QObject | None = None) -> None:
+        super().__init__(parent)
+        self.table = "order_print_settings"
+        # model columns: (field, description, readonly, type), tuple of tuples
+        self.columns = (("order_print_settings_id", _tr('Models', 'ID'), True, 'int'),
+                        ("hostname", _tr('Models', 'Computer name'), False, 'str'),
+                        ("print_type", _tr('Models', 'Print type'), False, 'str'),
+                        ("department_id", _tr('Models', 'Department ID'), False, 'int'),
+                        ("print_copy", _tr('Models', 'Print copy'), False, 'bool'),
+                        ("print_method", _tr('Models', 'Print method'), False, 'str'),
+                        ("number_of_copies", _tr('Models', 'Copies'), False, 'int'),
+                        ("driver_report", _tr('Models', 'Driver report'), False, 'str'),
+                        ("driver_printer", _tr('Models', 'Driver printer'), False, 'str'),
+                        ("escpos_report", _tr('Models', 'Esc/Pos report'), False, 'str'),
+                        ("escpos_printer", _tr('Models', 'Esc/Pos printer'), False, 'str'),
+                        #("print_cover_copy", _tr('Models', 'Print covers copy'), False, 'bool'),
+                        #("cover_print_method", _tr('Models', 'Covers print method'), False, 'str'),
+                        #("cover_copies", _tr('Models', 'Covers copies'), False, 'int'),
+                        #("cover_driver_report", _tr('Models', 'Covers driver report'), False, 'str'),
+                        #("cover_driver_printer", _tr('Models', 'Covers driver printer'), False, 'str'),
+                        #("cover_escpos_report", _tr('Models', 'Covers esc/pos report'), False, 'str'),
+                        #("cover_escpos_printer", _tr('Models', 'Covers esc/pos printer'), False, 'str'),
+                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
+                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
+                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
+                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+        # True if is a company table
+        self.isCompanyTable = True
+        # primary key fields, tuple or list
+        self.primaryKey = ("order_print_settings_id",)
+        self.automaticPKey = True
+        # sql order by clause, plain sql string without ORDER BY
+        self.addOrderBy("order_print_settings_id")
+        self.repr = 'Order print settings table model'
+        
+
+# class OrderPrintDepartmentSettingstModel(TableModel):
+
+#     def __init__(self, parent: QObject | None = None) -> None:
+#         super().__init__(parent)
+#         self.table = "order_print_department_settings"
+#         self.columns = (("order_print_department_settings_id", _tr('Models', 'ID'), True, 'int'),
+#                         ("order_print_settings_id", _tr('Models', 'Order print ID'), False, 'int'),
+#                         ("department_id", _tr('Models', 'Department ID'), False, 'int'),
+#                         ("print_department_copy", _tr('Models', 'Print department copy'), False, 'bool'),
+#                         ("print_method", _tr('Models', 'Print method'), False, 'str'),
+#                         ("department_copies", _tr('Models', 'Department copies'), False, 'int'),
+#                         ("driver_report", _tr('Models', 'Driver report'), False, 'str'),
+#                         ("driver_printer", _tr('Models', 'Driver printer'), False, 'str'),
+#                         ("escpos_report", _tr('Models', 'Esc/pos report'), False, 'str'),
+#                         ("escpos_printer", _tr('Models', 'Esc/pos printer'), False, 'str'),
+#                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
+#                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
+#                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
+#                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+#         # True if is a company table
+#         self.isCompanyTable = True
+#         # primary key fields, tuple or list
+#         self.primaryKey = ("order_print_department_settings_id",)
+#         self.automaticPKey = True
+#         # master/detail relation {this table field: reference field}
+#         self.foreignKey = {'order_print_settings_id': 'order_print_settings_id'}
+#         # sql order by clause, plain sql string without ORDER BY
+#         self.addOrderBy("order_print_department_settings_id")
+#         self.repr = 'Order print department settings table model'
         
 
 class SeatMapModel(TableModel):
@@ -1222,6 +1233,69 @@ class PriceListItemModel(TableModel):
         # notify about changes
         self.dataChanged.emit(self.index(0, 0), self.index(self.rowCount(), self.columnCount()))
         
+
+class EventIndexModel(QueryModel):
+
+    def __init__(self, parent: QObject | None = None) -> None:
+        super().__init__(parent)
+        self.selectQuery = """
+SELECT 
+    event_id,
+    description,
+    start_date,
+    end_date,
+    price_list_id,
+    image,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at
+FROM company.event;"""
+        # available types: int, bool, decimal2, str, date, datetime, None"""
+        # model columns: (field, description, readonly, type), tuple of tuples
+        self.columns = (("event_id", _tr('Models', 'ID'), True, 'int'),
+                        ("description", _tr('Models', 'Event description'), False, 'str'),
+                        ("start_date", _tr('Models', 'Start date'), False, 'datetime'),
+                        ("end_date", _tr('Models', 'End date'), False, 'datetime'),
+                        ("price_list_id", _tr('Models', 'Price list'), False, 'int'),
+                        ("image", _tr('Models', 'Event image'), False, None),
+                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
+                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
+                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
+                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+        # True if is a company table
+        self.isCompanyTable = True
+        self.repr = 'Event index query model'
+        # sql order by clause, plain sql string without ORDER BY
+        self.addOrderBy("event_id")
+
+
+class EventModel(TableModel):
+
+    def __init__(self, parent: QObject | None = None) -> None:
+        super().__init__(parent)
+        self.table = "company.event"
+        # model columns: (field, description, readonly, type), tuple of tuples
+        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        self.columns = (("event_id", _tr('Models', 'ID'), True, 'int'),
+                        ("description", _tr('Models', 'Event description'), False, 'str'),
+                        ("start_date", _tr('Models', 'Start date'), False, 'datetime'),
+                        ("end_date", _tr('Models', 'End date'), False, 'datetime'),
+                        ("price_list_id", _tr('Models', 'Price list'), False, 'int'),
+                        ("image", _tr('Models', 'Event image'), False, None),
+                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
+                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
+                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
+                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+        # True if is a company table
+        self.isCompanyTable = True
+        # primary key fields, tuple or list
+        self.primaryKey = ("event_id",)
+        self.automaticPKey = True
+        # sql order by clause, plain sql string without ORDER BY
+        self.addOrderBy("start_date DESC")
+        self.repr = 'Event table model'
+
         
 class OrderNumberingModel(TableModel):
 

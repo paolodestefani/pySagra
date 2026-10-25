@@ -54,7 +54,7 @@ class SettingClass():
         # t-strings don't work as of psycopg 3.3.4
         script = t"""
 SELECT {key:i}
-FROM company.setting 
+FROM company.settings 
 WHERE company_id = system.pa_current_company();"""
         # Unified context managers in the recommended evaluation order
         with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
@@ -67,7 +67,7 @@ WHERE company_id = system.pa_current_company();"""
     def __setitem__(self, key: str, value: str) -> None:
         "Set value for key in setting table"
         script = t"""
-UPDATE company.setting
+UPDATE company.settings
 SET {key:i} = {value}
 WHERE company_id = system.pa_current_company();"""
         # Unified context managers in the recommended evaluation order
@@ -80,11 +80,11 @@ WHERE company_id = system.pa_current_company();"""
 #Setting = SettingClass()
 
 
-class Setting(Record):
+class Settings(Record):
     "A Record (dict) subclass for load/seve settings from database"
 
     def __init__(self) -> None:
-        super().__init__('company.setting', ('company_id',))
+        super().__init__('company.settings', ('company_id',))
         self['company_id'] = session['current_company']
         self.reload()
 

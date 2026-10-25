@@ -39,15 +39,15 @@ from App.Database.Connect import appconn
 logger = logging.getLogger(__name__)
 
 
-def get_printer_name(class_id: int, computer: str) -> str | None:
-    "Return the printer name of class_id"
-    script = t"""
-SELECT printer
-FROM printer_class_printer
-WHERE 
-        printer_class_id = {class_id} 
-    AND computer = {computer};"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-        return next(cur, (None,))[0]
+# def get_printer_name(class_id: int, hostname: str) -> str | None:
+#     "Return the printer name of class_id"
+#     script = t"""
+# SELECT printer
+# FROM printer_class_printer
+# WHERE 
+#         printer_class_id = {class_id} 
+#     AND computer = {computer};"""
+#     # Unified context managers in the recommended evaluation order
+#     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+#         cur.execute(script)
+#         return next(cur, (None,))[0]

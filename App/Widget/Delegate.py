@@ -29,9 +29,10 @@ This module contains custom general delegates
 
 # standard library
 from decimal import Decimal
+from collections import OrderedDict
 from typing import Any
 from typing import cast
-from typing import Sequence
+from typing import Callable
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -75,6 +76,7 @@ from PySide6.QtWidgets import QStyleOptionButton
 from PySide6.QtWidgets import QStyleOptionViewItem
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QColorDialog
+from PySide6.QtPrintSupport import QPrinterInfo
 
 # application modules
 from App import session
@@ -82,8 +84,9 @@ from App import actionDefinition
 from App.Core.L10n import _tr
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
-from App.Database.Setting import Setting
+from App.Database.Settings import Settings
 from App.Widget.Control import ColorComboBox
+from App.Widget.Control import HostNameLineEdit
 from App.Widget.Dialog import SelectImageDialog
  
 
@@ -563,43 +566,36 @@ class ItemsDelegate(QStyledItemDelegate):
 class PrintersDelegate(ItemsDelegate):
     "A delegate (combo box) for choose a printer of the current computer"
 
-    def __init__(self, parent: QWidget, printers: Sequence[str|None], hostName: str) -> None:
-        super().__init__(parent, printers)
-        self.hostName = hostName
+    def __init__(self, parent: QWidget) -> None:
+        self.printers = [i.printerName() for i in QPrinterInfo.availablePrinters()]
+        super().__init__(parent, self.printers)
 
     def createEditor(self, 
                      parent: QWidget,
                      option: QStyleOptionViewItem,
                      index: QModelIndex | QPersistentModelIndex
                      ) -> QComboBox:
-        # prevent editing printers on another computer.
-        # the computer name must appear in the previous column of the same line.
-        row_host = index.model().index(index.row(), index.column() - 2).data()
-        
-        if row_host != self.hostName:
-            # create a dummy widget and hide it immediately.
-            # this stops editing in its tracks and leaves the data untouched.
-            dummy = QComboBox(parent)
-            dummy.hide()
-            return dummy
-            
         cb = QComboBox(parent)
-        cb.addItems([None] + self.data)
+        cb.addItems([None] + self.data) # type: ignore
         return cb
 
 
 class RelationDelegate(QStyledItemDelegate):
     "A delegate (combo box) for referenced table fields"
 
-    def __init__(self, parent: QWidget, function) -> None:
+    def __init__(self, parent: QWidget, function: Callable, null: bool = False ) -> None:
         super().__init__(parent)
+        self.null = null
         self.function = function
-        self.data: dict[Any, Any] = {}
+        self.data: dict[Any, Any] = OrderedDict()
         self.updateItems()
 
     def updateItems(self) -> None:
-        self.data = dict(self.function())
-
+        if self.null:
+            self.data = OrderedDict([(None, '')]) | OrderedDict(self.function())
+        else:
+            self.data = OrderedDict(self.function())
+            
     def initStyleOption(self, option: QStyleOptionViewItem, index: QModelIndex | QPersistentModelIndex) -> None:
         # let Qt load the basic data from the model
         super().initStyleOption(option, index)
@@ -773,7 +769,7 @@ class QuantityDelegate(DecimalDelegate):
     "Delegate for quantity values"
 
     def __init__(self, parent: QWidget, bold: bool = False):
-        setting = Setting()
+        setting = Settings()
         prec: int = setting['quantity_decimal_places']
         super().__init__(parent,
                          prec,
@@ -786,7 +782,7 @@ class PriceDelegate(DecimalDelegate):
     "Delegate for price values"
 
     def __init__(self, parent: QWidget):
-        setting = Setting()
+        setting = Settings()
         prec: int = setting['price_decimal_places']
         super().__init__(parent,
                          prec,
@@ -798,7 +794,7 @@ class AmountDelegate(DecimalDelegate):
     "Delegate for currency values"
 
     def __init__(self, parent: QWidget):
-        setting = Setting()
+        setting = Settings()
         prec: int = setting['amount_decimal_places']
         super().__init__(parent,
                          prec,
@@ -1138,3 +1134,28 @@ class JasonDelegate(QStyledItemDelegate):
                 model.setData(index, not bool(current_val), Qt.ItemDataRole.EditRole)
             case _:
                 raise TypeError(f"Unsupported editor type: {type(editor)}")
+
+
+class HostNameDelegate(QStyledItemDelegate):
+    "A delegate that optionally set the host name in a text edit"
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+
+    def createEditor(self, 
+                     parent: QWidget,
+                     option: QStyleOptionViewItem,
+                     index: QModelIndex|QPersistentModelIndex
+                     ) -> QWidget:
+        le = HostNameLineEdit(parent)
+        return le
+        
+    def setModelData(self, 
+                     editor: QWidget,
+                     model: QAbstractItemModel,
+                     index: QModelIndex|QPersistentModelIndex
+                     ) -> None:
+        editor = cast(HostNameLineEdit, editor)
+        model.setData(index, editor.text(), Qt.ItemDataRole.EditRole)
+
+   

@@ -41,16 +41,10 @@ from PySide6.QtCore import QLocale
 from PySide6.QtCore import QTranslator
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QMovie
-from PySide6.QtGui import QAction
-from PySide6.QtGui import QIcon
-from PySide6.QtGui import QKeySequence
-from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtNetwork import QHostInfo
-from PySide6.QtWidgets import QLineEdit
 
 # application definitions
 from App import APPNAME
@@ -160,7 +154,6 @@ class LoginDialog(QDialog):
         par['database'] = self.ui.lineEditDatabase.text()
         par['db_user'] = self.ui.lineEditDBUser.text()
         par['db_password'] = self.ui.lineEditDBPassword.text()
-        par['hostname'] = QHostInfo.localHostName()
         # connect
         success = False
         with gui_exception_context(self, _tr("Login", "Database connection")):

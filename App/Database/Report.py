@@ -35,6 +35,7 @@ from App.Report import REPORT_CLASSES
 from App.Core.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 from App.Report.ReportEngine import Report
+from App.Report.ReportEngineEscPos import ReportEscpos
 
 
 # logger
@@ -51,7 +52,8 @@ ALTER TABLE system.report ALTER COLUMN report_id RESTART WITH 1;"""
         cur.execute(script)
 
 
-def load_report(report_code: str,
+def load_report(method: str,
+                report_code: str,
                 l10n: str,
                 report_class: str, 
                 system: bool, 
@@ -61,6 +63,7 @@ def load_report(report_code: str,
     "Load a report filling system.report"
     script = t"""
 INSERT INTO system.report (
+    print_method,
     report_code,
     l10n,
     report_class,
@@ -68,6 +71,7 @@ INSERT INTO system.report (
     xml_data,
     is_system_object)
 VALUES (
+    {method},
     {report_code}, 
     {l10n},
     {report_class},
@@ -76,7 +80,8 @@ VALUES (
     {system})
 ON CONFLICT ON CONSTRAINT report_unique DO
 UPDATE 
-SET report_class = {report_class}, 
+SET print_method = {method},
+    report_class = {report_class},
     description = {description},
     xml_data = {xml_data},
     is_system_object = {system};
@@ -90,6 +95,7 @@ def list_all_reports() -> list:
     "List all reports from system.report for exporting purposes"
     script = f"""
 SELECT
+    r.print_method,
     r.report_code,
     r.l10n,
     r.report_class,
@@ -104,7 +110,7 @@ LEFT JOIN (
 {", \n".join([f"({i}, '{j}')" for i, j in enumerate(REPORT_CLASSES, start=1)])}
 	    ) v(i, c)) v 
 	ON r.report_class = v.c 
-ORDER BY v.i, report_code, l10n;"""
+ORDER BY r.print_method, v.i, r.report_code, r.l10n;"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
@@ -129,14 +135,15 @@ ORDER BY ra.class_sorting;"""
         return cur.fetchall()
 
 
-def get_report_list(report_class: str|None = None,
+def get_report_list(print_method: str|None = None,
+                    report_class: str|None = None,
                     l10n: str|None = None, 
                     report_id: int|None = None
                     ) -> list:
     "Return code and description of all reports of l10n localization or en_US"
     if report_id is not None:
         script = t"""
-SELECT 
+SELECT
     report_id,
     report_code, 
     description
@@ -144,18 +151,41 @@ FROM system.report
 WHERE report_id = {report_id};"""
     else:
         script = t"""
-SELECT 
+SELECT
     report_id,
     report_code, 
     description
 FROM system.report
-WHERE report_class = {report_class} AND l10n = {l10n};"""
+WHERE print_method={print_method} AND report_class = {report_class} AND l10n = {l10n};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         records = cur.fetchall()
         return records
         #return [(None, '')] + records if null else records
+        
+
+def get_report_driver_list(l10n: str) -> list:
+    "Return code and description of all reports of l10n localization or en_US"
+    script = t"""
+SELECT
+    report_id,
+    report_code, 
+    description
+FROM system.report r
+-- set a specifit sorting
+LEFT JOIN (
+	SELECT v.i, v.c
+	FROM (VALUES 
+{", \n".join([f"({i}, '{j}')" for i, j in enumerate(REPORT_CLASSES, start=1)])}
+	    ) v(i, c)) v 
+	ON r.report_class = v.c 
+WHERE r.print_method = 'D' AND r.l10n = {l10n}
+ORDER BY v.i, r.report_code;"""
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchall()
 
 
 def report_description(report_id: int) -> str | None:
@@ -171,17 +201,23 @@ WHERE report_id = {report_id};"""
         return next(cur, (None,))[0]
  
     
-def get_report_id(report_code: str, l10n: str) -> int:
-    "Return the report ID of report code and l10n localization or en_US"
+def get_report_xml(print_method: str, report_code: str, l10n: str) -> str | None:
+    "Return the report ID of priont method, report code and l10n localization (or en_US)"
     script = t"""
-SELECT coalesce(a.report_id, b.report_id)
+SELECT coalesce(a.xml_data, b.xml_data)
 FROM system.report a
-JOIN system.report b ON a.report_code = b.report_code AND b.l10n = 'en_US'
-WHERE a.report_code = {report_code} AND a.l10n = {l10n};"""
+JOIN system.report b ON 
+        a.print_method = b.print_method 
+    AND a.report_code = b.report_code 
+    AND b.l10n = 'en_US'
+WHERE 
+        a.print_method = {print_method}
+    AND a.report_code = {report_code} 
+    AND a.l10n = {l10n};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
-        return next(cur, (0,))[0]
+        return next(cur, (None,))[0]
 
 
 def report_xml(report_id: int) -> str | None:
@@ -214,7 +250,7 @@ WHERE ra.adaptation_id = {adapt_id};"""
         return next(cur, (None, None, None, None, None))
 
 
-def report_query(report: Report, 
+def report_query(report: Report | ReportEscpos, 
                  condition: list | None = None,
                  sorting: list | None = None
                  ) -> list | None:

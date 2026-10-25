@@ -89,8 +89,8 @@ BEGIN
 	-- create company reference on system.company
 	INSERT INTO system.company (company_id, description, is_system_object, company_image) 
 	VALUES (new_id, new_description, new_system_object, new_company_image);
-    -- create company settings for th new company
-	INSERT INTO company.setting (company_id) 
+    -- create company settings for the new company
+	INSERT INTO company.settings (company_id) 
 	VALUES (new_id);
 END;
 $$

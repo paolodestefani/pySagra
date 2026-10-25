@@ -99,20 +99,20 @@ ORDER BY d.sorting;""")
         return cur.fetchall()
 
 
-def get_department(desc: str) -> int | None:
-    "Returns department id of given department description"
-    script = t"""
-SELECT department_id 
-FROM department 
-WHERE 
-        company_id = system.pa_current_company()
-    AND description = {desc};"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        result = cur.execute(script).fetchone()
-        if result:
-            return result[0]
-        return None
+# def get_department(desc: str) -> int | None:
+#     "Returns department id of given department description"
+#     script = t"""
+# SELECT department_id 
+# FROM department 
+# WHERE 
+#         company_id = system.pa_current_company()
+#     AND description = {desc};"""
+#     # Unified context managers in the recommended evaluation order
+#     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+#         result = cur.execute(script).fetchone()
+#         if result:
+#             return result[0]
+#         return None
 
 
 def get_department_desc(dep: int) -> str | None:
@@ -145,21 +145,21 @@ WHERE
         return None
 
 
-def get_department_printer_class(dep: int) -> int | None:
-    "Returns the printer class for dep department"
-    script = t"""
-SELECT printer_class_id
-FROM department
-WHERE 
-        department_id = {dep} 
-    AND is_obsolete IS false 
-    AND is_menu_container IS false;"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        result = cur.execute(script).fetchone()
-        if result:
-            return result[0]
-        return None
+# def get_department_printer_class(dep: int) -> int | None:
+#     "Returns the printer class for dep department"
+#     script = t"""
+# SELECT printer_class_id
+# FROM department
+# WHERE 
+#         department_id = {dep} 
+#     AND is_obsolete IS false 
+#     AND is_menu_container IS false;"""
+#     # Unified context managers in the recommended evaluation order
+#     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+#         result = cur.execute(script).fetchone()
+#         if result:
+#             return result[0]
+#         return None
     
 
 def department_takeaway_list()-> list[str]:

@@ -45,7 +45,6 @@ pyside6-lupdate	\
 	App/Widget/View.py \
     App/Ui/AboutDialog.ui \
     App/Ui/AdaptationsDialog.ui \
-    App/Ui/CashDeskWidget.ui \
     App/Ui/ChangeCompanyDialog.ui \
     App/Ui/ChangePasswordDialog.ui \
     App/Ui/ChooseItemDialog.ui \
@@ -56,7 +55,6 @@ pyside6-lupdate	\
     App/Ui/CopyToolDialog.ui \
     App/Ui/DateTimeInputDialog.ui \
     App/Ui/DeleteToolDialog.ui \
-    App/Ui/DepartmentPrinterWidget.ui \
     App/Ui/DepartmentWidget.ui \
     App/Ui/DuplicateDialog.ui \
     App/Ui/EventFilterDialog.ui \
@@ -75,6 +73,7 @@ pyside6-lupdate	\
     App/Ui/OrderDialog2.ui \
     App/Ui/OrderedDeliveredWidget.ui \
     App/Ui/OrderProgressWidget.ui \
+    App/Ui/OrderPrintSettingsWidget.ui \
     App/Ui/OrderWidget.ui \
     App/Ui/PreferencesDialog.ui \
     App/Ui/PriceListWidget.ui \
@@ -94,7 +93,9 @@ pyside6-lupdate	\
     App/Ui/UserWidget.ui \
     App/Ui/ViewSettingsDialog.ui \
     App/CashDesk.py \
+    App/EscposPrinter.py \
     App/Department.py \
+    App/OrderPrintSettings.py \
     App/Event.py \
     App/Inventory.py \
     App/Item.py \
@@ -104,7 +105,6 @@ pyside6-lupdate	\
     App/OrderNumbering.py \
     App/OrderProgress.py \
     App/PriceList.py \
-    App/Printer.py \
     App/SalesSummary.py \
     App/SeatMap.py \
     App/Settings.py \

@@ -39,7 +39,7 @@ from App import APPNAME
 from App import actionDefinition
 from App.Core.L10n import _tr
 
-# application slots
+# system slots
 from App.System.User import changePassword
 from App.System.Help import help
 from App.System.Help import faq
@@ -57,8 +57,12 @@ from App.System.Toolbar import toolbar
 from App.System.Report import report
 from App.System.Scripting import scripting
 from App.System.Adaptation import adaptation
+
+# application specific slots
+
 from App.CashDesk import cashDesk
-from App.Printer import printer
+from App.EscposPrinter import escposPrinter
+from App.OrderPrintSettings import orderPrintSettings
 from App.Department import department
 from App.SeatMap import seatMap
 from App.Item import item
@@ -452,9 +456,12 @@ def createActionDictionary(mw) -> None:
         _tr("Action", 'System information'),
         _tr("Action", 'System information'),
         QAction.MenuRole.NoRole)
-
-    # APPLICATION SPECIFIC ACTIONS
-
+    
+    
+    ################################
+    # APPLICATION SPECIFIC ACTIONS #
+    ################################
+    
     # file actions
     
     actionDefinition['app_file_cash_desk'] = (
@@ -467,40 +474,18 @@ def createActionDictionary(mw) -> None:
         _tr("Action", 'Manage cash desk names and parameters'),
         _tr("Action", 'Cash desk'),
         QAction.MenuRole.TextHeuristicRole)
-    
-    actionDefinition['app_file_printer'] = (
-        _tr("Action", 'Printers'),
-        printer,
-        False,
-        'file_printer',
-        None,
-        _tr("Action", 'Printer classes'),
-        _tr("Action", 'Manage printer classes'),
-        _tr("Action", 'Printer classes'),
-        QAction.MenuRole.TextHeuristicRole)
 
-    actionDefinition['app_file_event'] = (
-        _tr("Action", 'Events'),
-        event,
+    actionDefinition['app_file_escpos_printer'] = (
+        _tr("Action", 'ESC/POS Printers'),
+        escposPrinter,
         False,
-        'file_event',
+        'file_escpos',
         None,
-        _tr("Action", 'Events'),
-        _tr("Action", 'Events'),
-        _tr("Action", 'Events'),
+        _tr("Action", 'ESC/POS Printers'),
+        _tr("Action", 'Manage ESC/POS Printers names and parameters'),
+        _tr("Action", 'ESC/POS Printers'),
         QAction.MenuRole.TextHeuristicRole)
     
-    actionDefinition['app_file_update_wo_server'] = (
-        _tr("Action", 'Update WOS'),
-        updateWOS,
-        False,
-        'file_update_web_order',
-        None,
-        _tr("Action", 'Update Web Order Server'),
-        _tr("Action", 'Update Web Order Server'),
-        _tr("Action", 'Update Web Order Server'),
-        QAction.MenuRole.TextHeuristicRole)
-
     actionDefinition['app_file_department'] = (
         _tr("Action", 'Departments'),
         department,
@@ -511,7 +496,18 @@ def createActionDictionary(mw) -> None:
         _tr("Action", 'Departments'),
         _tr("Action", 'Departments'),
         QAction.MenuRole.TextHeuristicRole)
-
+    
+    actionDefinition['app_file_order_print_settings'] = (
+        _tr("Action", 'Order print settings'),
+        orderPrintSettings,
+        False,
+        'file_printer',
+        None,
+        _tr("Action", 'Order print settings'),
+        _tr("Action", 'Manage order print settings'),
+        _tr("Action", 'Order print settings'),
+        QAction.MenuRole.TextHeuristicRole)
+    
     actionDefinition['app_file_seat_map'] = (
         _tr("Action", 'Seat map'),
         seatMap,
@@ -545,6 +541,28 @@ def createActionDictionary(mw) -> None:
         _tr("Action", 'Price list'),
         QAction.MenuRole.TextHeuristicRole)
 
+    actionDefinition['app_file_event'] = (
+        _tr("Action", 'Events'),
+        event,
+        False,
+        'file_event',
+        None,
+        _tr("Action", 'Events'),
+        _tr("Action", 'Events'),
+        _tr("Action", 'Events'),
+        QAction.MenuRole.TextHeuristicRole)
+    
+    actionDefinition['app_file_update_wo_server'] = (
+        _tr("Action", 'Update WOS'),
+        updateWOS,
+        False,
+        'file_update_web_order',
+        None,
+        _tr("Action", 'Update Web Order Server'),
+        _tr("Action", 'Update Web Order Server'),
+        _tr("Action", 'Update Web Order Server'),
+        QAction.MenuRole.TextHeuristicRole)
+
     actionDefinition['app_file_order'] = (
         _tr("Action", 'Orders'),
         orderArchive,
@@ -567,7 +585,7 @@ def createActionDictionary(mw) -> None:
         _tr("Action", 'Order numbers'),
         QAction.MenuRole.TextHeuristicRole)
     
-    actionDefinition['app_file_setting'] = (
+    actionDefinition['app_file_settings'] = (
         _tr("Action", 'Settings'),
         settings,
         False,

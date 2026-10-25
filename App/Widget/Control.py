@@ -63,7 +63,7 @@ from PySide6.QtGui import QFontMetrics
 from PySide6.QtGui import QStandardItemModel
 from PySide6.QtGui import QStandardItem
 from PySide6.QtGui import QAction
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QStyledItemDelegate
 from PySide6.QtWidgets import QStyleOptionViewItem
 from PySide6.QtWidgets import QLabel
@@ -82,12 +82,11 @@ from PySide6.QtWidgets import QStyle
 from PySide6.QtGui import QPen
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QLinearGradient
+from PySide6.QtNetwork import QHostInfo
 
 # application modules
 from App import currentIcon
 from App.Core.L10n import _tr
-#from App.Core.Cryptography import string_encode
-#from App.Core.Cryptography import string_decode
 
 
 class LabelImage(QLabel):
@@ -775,8 +774,6 @@ class ButtonItem(QPushButton):
         self.hasVariants: bool = False
         self._showLevel: bool = False
         
-        # OPTIMIZATION: Cache decimal configurations and compute factors once 
-        # to eliminate redundant exponentiation (**) operations at runtime
         self._quantityDecs = self.setting.get('quantity_decimal_places', 0)
         self._priceDecs = self.setting.get('price_decimal_places', 0)
         self._qty_factor = 10 ** self._quantityDecs
@@ -852,7 +849,6 @@ class ButtonItem(QPushButton):
 
         current_level = self._stockLevel
         
-        # OPTIMIZATION: Fast integer calculations using pre-cached math factors
         warning_limit = self.setting.get('warning_stock_level', 10) * self._qty_factor
         critical_limit = self.setting.get('critical_stock_level', 5) * self._qty_factor
         
@@ -877,15 +873,15 @@ class ButtonItem(QPushButton):
     def update_button_text(self):
         """Formats the label string completely outside the paint loop to prevent recursion"""
         if self.hasInventory and self.showLevel:
-            # OPTIMIZATION: Extract integer and fractional strings directly.
-            # Avoids floating-point precision loss and messy string stripping (.rstrip).
+            # extract integer and fractional strings directly.
+            # avoids floating-point precision loss and messy string stripping (.rstrip).
             int_part = self._stockLevel // self._qty_factor
             dec_part = self._stockLevel % self._qty_factor
             
             if dec_part == 0:
                 level_str = str(int_part)
             else:
-                # Handle zero padding safely based on dynamic configurations (e.g., 5 with 2 decs -> "05")
+                # handle zero padding safely based on dynamic configurations (e.g., 5 with 2 decs -> "05")
                 level_str = f"{int_part},{str(dec_part).zfill(self._quantityDecs)}".rstrip('0')
                 
             self.setText(f"{self.caption}\n({level_str})")
@@ -896,7 +892,6 @@ class ButtonItem(QPushButton):
 
     def paintEvent(self, event):
         """Renders the component using custom styling, 3D gradients, and conditional icon layers"""
-        # OPTIMIZATION: Modern Context Manager setup.
         # This handles the lifecycle of QPainter implicitly, avoiding any 'painter.end()' commands.
         with QPainter(self) as painter:
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -1048,7 +1043,7 @@ class ButtonColor(QPushButton):
 
 
 class PasswordLineEdit(QLineEdit):
-    "A custom lineedit with show/hide password feature"
+    "A custom lineEdit with show/hide password feature"
     
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -1071,7 +1066,7 @@ class PasswordLineEdit(QLineEdit):
     def update_icon(self):
         """Choose the correct preloaded icon by crossing Theme and EchoMode"""
         # dark mode or light mode
-        is_dark = QGuiApplication.instance().styleHints().colorScheme() == Qt.ColorScheme.Dark
+        is_dark = QApplication.instance().styleHints().colorScheme() == Qt.ColorScheme.Dark
         is_password = self.echoMode() == QLineEdit.EchoMode.Password
         if is_dark:
             icon = self.show_dark if is_password else self.hide_dark
@@ -1090,6 +1085,40 @@ class PasswordLineEdit(QLineEdit):
             
     def changeEvent(self, event):
         # If the operating system changes theme at runtime, update the icon on the fly
+        if event.type() == event.Type.PaletteChange:
+            self.update_icon()
+        super().changeEvent(event)
+
+
+class HostNameLineEdit(QLineEdit):
+    """A custom lineEdit that sets hostname on request with dynamic theme icons"""
+    
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.setEchoMode(QLineEdit.EchoMode.Normal)
+        # icons
+        self.arrow_light = QIcon(":/arrow_circle_left_light")
+        self.arrow_dark = QIcon(":/arrow_circle_left_dark")
+        # action
+        self.hostname_action = QAction(self)
+        self.hostname_action.setToolTip("Press to set the current host name")
+        self.addAction(self.hostname_action, QLineEdit.ActionPosition.TrailingPosition)
+        
+        self.update_icon()
+        
+        self.hostname_action.triggered.connect(self.set_hostname)
+
+    def update_icon(self):
+        """Selects the correct preloaded icon based on the active system theme"""
+        is_dark = QApplication.instance().styleHints().colorScheme() == Qt.ColorScheme.Dark
+        icon = self.arrow_dark if is_dark else self.arrow_light
+        self.hostname_action.setIcon(icon)
+
+    def set_hostname(self):
+        self.setText(QHostInfo.localHostName())
+            
+    def changeEvent(self, event):
+        # if the operating system changes its theme at runtime while the cell is open, update it on the fly.
         if event.type() == event.Type.PaletteChange:
             self.update_icon()
         super().changeEvent(event)

@@ -758,11 +758,11 @@ class FormIndexManager[T](QWidget):
             for i in (es.SAVE, es.DELETE):
                 status[i] = False
         # disable write option if is_system is set on the main model
-        if hasattr(self.model, 'isSystemColumn'):
-            system_index = self.model.index(0, self.model.isSystemColumn)
-            if system_index.isValid() and bool(system_index.data(Qt.ItemDataRole.EditRole)):
-                for i in (es.SAVE, es.DELETE):
-                    status[i] = False
+        # if hasattr(self.model, 'isSystemColumn'):
+        #     system_index = self.model.index(0, self.model.isSystemColumn)
+        #     if system_index.isValid() and bool(system_index.data(Qt.ItemDataRole.EditRole)):
+        #         for i in (es.SAVE, es.DELETE):
+        #             status[i] = False
         session['mainwin'].updateEditStatus(status, current, total, self.indexModel.limitCondition)
 
     def toFirst(self) -> None:

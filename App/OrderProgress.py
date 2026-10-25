@@ -46,7 +46,6 @@ from PySide6.QtWidgets import QTableWidgetItem
 
 # application modules
 from App import session
-from App.Database.Exceptions import PyAppDBError
 from App.Database.Order import get_order_header_department_details
 from App.Database.Order import update_order_header_department_status
 from App.Database.Order import set_order_as_processed

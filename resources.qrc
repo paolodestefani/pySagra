@@ -6,6 +6,8 @@
     <file alias="eye_off_light">Icon/eye_off_light.png</file>
     <file alias="eye_dark">Icon/eye_dark.png</file>
     <file alias="eye_off_dark">Icon/eye_off_dark.png</file>
+    <file alias="arrow_circle_left_dark">Icon/arrow_circle_left_dark.png</file>
+    <file alias="arrow_circle_left_light">Icon/arrow_circle_left_light.png</file>
   </qresource>
   <qresource>
     <file alias="qtbase_it.qm">Translation/qtbase_it.qm</file>
@@ -44,6 +46,7 @@
 	<file alias="system_customization">Icon/oxygen/preferences-web-browser-cache.png</file>
     <file alias="system_quit">Icon/oxygen/system-shutdown.png</file>
     <file alias="file_cash_desk">Icon/oxygen/accessories-calculator.png</file>
+    <file alias="file_escpos">Icon/oxygen/printer-laser.png</file>
 	<file alias="file_printer">Icon/oxygen/printer.png</file>
     <file alias="file_department">Icon/oxygen/folder-yellow.png</file>
     <file alias="file_seat_map">Icon/oxygen/folder-violet.png</file>
@@ -109,6 +112,7 @@
 	<file alias="system_customization">Icon/crystal_clear/warehause.png</file>
     <file alias="system_quit">Icon/crystal_clear/shutdown.png</file>
     <file alias="file_cash_desk">Icon/crystal_clear/wordprocessing.png</file>
+    <file alias="file_escpos">Icon/crystal_clear/kjobviewer-printer.png</file>
 	<file alias="file_printer">Icon/crystal_clear/file-print.png</file>
     <file alias="file_department">Icon/crystal_clear/folder-yellow.png</file>
     <file alias="file_seat_map">Icon/crystal_clear/folder-green.png</file>
@@ -174,6 +178,7 @@
 	<file alias="system_customization">Icon/fluentui/Fire.png</file>
     <file alias="system_quit">Icon/fluentui/Hand-With-Fingers-Splayed.png</file>
     <file alias="file_cash_desk">Icon/fluentui/Keyboard.png</file>
+    <file alias="file_escpos">Icon/fluentui/Ballot-Box-With-Ballot-3d.png</file>
 	<file alias="file_printer">Icon/fluentui/Printer.png</file>
     <file alias="file_department">Icon/fluentui/Yellow-Circle.png</file>
     <file alias="file_seat_map">Icon/fluentui/Purple-Circle.png</file>
@@ -239,7 +244,8 @@
 	<file alias="system_customization">Icon/flatwoken/Aim.png</file>
     <file alias="system_quit">Icon/flatwoken/Dialog-Shutdown.png</file>
     <file alias="file_cash_desk">Icon/flatwoken/Calc.png</file>
-	<file alias="file_printer">Icon/flatwoken/Printer.png</file>
+    <file alias="file_escpos">Icon/flatwoken/Printer.png</file>
+	<file alias="file_printer">Icon/flatwoken/Application-Default.png</file>
     <file alias="file_department">Icon/flatwoken/Vlc-B.png</file>
     <file alias="file_seat_map">Icon/flatwoken/Genymotion.png</file>
     <file alias="file_item">Icon/flatwoken/Adobe-Air.png</file>
