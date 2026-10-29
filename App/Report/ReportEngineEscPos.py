@@ -24,18 +24,18 @@
 """Report Engine - generate reports from XML string definition and list of
 items/tuples or SQL query for ESC/POS printers
 
-This module is a pure python simple report engine for printing to EscPos printers.
+This module is a pure python simple report engine for printing to Esc/Pos printers.
 The report definition is an XML document string. The dataset are a python list or
 tuple or the result set of an SQL query.
 
 Architecture:
 Printing objects are defined of 2 types:
-- inline objects (print a string)
-- block objects (prints a line)
+- inline objects (print a list of objects in one line)
+- block objects (each object takes up a full line)
 A report definition is made of bands. Every band is a collection of printing
-block objects (line, barcode, images, row). A row is a container of inline objects.
-A row con grow in multiple lines and generates the line printing form the included objects
-Every band have a fixed height (but can grow). Every object has position relative to the including band.
+block objects (line, barcode, images, row). A row is a container of inline objects printed in one line.
+A row con grow in multiple lines and generates the line printing form the included objects.
+Every band have a fixed height (but can grow).
 In every report we can have this sections:
 - a header printed at the beginning of every print job
 - group header printed at the beginning of the
@@ -109,7 +109,12 @@ if __name__ != "__main__":
     from App import WEBSITE
     from App import session
     from App.Database.Settings import Settings
-    from App.Core.ExceptionHandler import wait_cursor_context
+    from App.Common.ExceptionHandler import wait_cursor_context
+    from App.Report import ReportException
+    from App.Report import ReportCreationError
+    from App.Report import ReportXMLParseError
+    from App.Report import ReportNoDataError
+    from App.Report import ReportPrintError
 
 else:
     APPNAME = "Report ESC/POS Engine"
@@ -123,9 +128,9 @@ else:
     WEBSITE = "https://www.paolodestefani.it"
     session = dict()
     session['qlocale'] = QLocale()
-    session['event_description'] = "Sagra Dimostrativa 2026"
+    session['event_description'] = "The over-the-top party in 2026"
     session['event_image'] = QByteArray()
-    session['company_description'] = "Comitato Festeggiamenti Dimostrativo"
+    session['company_description'] = "Local festivities committee"
     session['company_image'] = QByteArray()
     
     @contextmanager
@@ -139,25 +144,26 @@ else:
             yield
         finally:
             QGuiApplication.restoreOverrideCursor()
+            
+    class ReportException(Exception):               # type: ignore[no-redef]
+        pass
+
+    class ReportCreationError(ReportException):     # type: ignore[no-redef]
+        pass
+
+    class ReportXMLParseError(ReportException):     # type: ignore[no-redef]
+        pass
+
+    class ReportNoDataError(ReportException):       # type: ignore[no-redef]
+        pass
+
+    class ReportPrintError(ReportException):        # type: ignore[no-redef]
+        pass
 
    
 # report engine version
 VERSION = '1.0'
 
-class ReportException(Exception):
-    pass
-
-class ReportCreationError(ReportException):
-    pass
-
-class ReportXMLParseError(ReportException):
-    pass
-
-class ReportNoDataError(ReportException):
-    pass
-
-class ReportPrintError(ReportException):
-    pass
 
 
 # Default global options
@@ -191,19 +197,19 @@ class BaseInlineRenderer():
     "Base class for all inline tex renderer elements"
 
     def __init__(self, options: dict, paramdict: dict) -> None:
-        self.is_visible = 'true' == paramdict.get("is_visible", "true")
+        self.is_visible = paramdict.get("is_visible", "true") == 'true'
         self.report = options['report_instance']
         # text properties
         self.font = paramdict.get("font", options['font'])
-        self.bold = 'true' == paramdict.get("bold", "false")
+        self.bold = paramdict.get("bold", "false") == 'true'
         self.underline = int(paramdict.get("underline", "0")) # 0..2
-        self.normal_textsize = 'true' == paramdict.get("normal_textsize", "true")
-        self.double_height = 'true' == paramdict.get("double_height", "false")
-        self.double_width = 'true' == paramdict.get("double_width", "false")
+        self.normal_textsize = paramdict.get("normal_textsize", "true") == 'true'
+        self.double_height = paramdict.get("double_height", "false") == 'true'
+        self.double_width = paramdict.get("double_width", "false") == 'true'
         self.density = int(paramdict.get("density", "0")) # 0..8
-        self.invert = 'true' == paramdict.get("invert", "false")
-        self.flip = 'true' == paramdict.get("flip", "false")
-        self.smooth = 'true' == paramdict.get("smooth", "false")
+        self.invert = paramdict.get("invert", "false") == 'true'
+        self.flip = paramdict.get("flip", "false") == 'true'
+        self.smooth = paramdict.get("smooth", "false") == 'true'
         # other
         self.width = int(paramdict.get("width", "5"))
         self.align = paramdict.get("align", options['align'])
@@ -222,50 +228,68 @@ class BaseInlineRenderer():
         self.report.update_text_properties(
             self.font, self.bold, self.underline, self.normal_textsize, self.double_height,
             self.double_width, self.density, self.invert, self.flip, self.smooth)
+        
         # create the output string
-        out_text: str = ''
-        match self.value:
-            case int()|float()|decimal.Decimal():
-                match self.field_format:
-                    case 'currency':
-                        raw_formatted = f"{float(self.value or 0.0):,.2f}"
-                        integer_part, decimal_part = raw_formatted.split('.')
-                        out_text = f"{self.currency_symbol} {integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                    case 'amount':
-                        raw_formatted = f"{float(self.value or 0.0):,.{self.amount_decimals}f}"
-                        if self.amount_decimals > 0:
-                            integer_part, decimal_part = raw_formatted.split('.')
-                            out_text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                        else:
-                            out_text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"
-                    case 'price':
-                        raw_formatted = f"{float(self.value or 0.0):,.{self.price_decimals}f}"
-                        if self.price_decimals > 0:
-                            integer_part, decimal_part = raw_formatted.split('.')
-                            out_text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                        else:
-                            out_text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"
-                    case 'quantity':
-                        raw_formatted = f"{float(self.value or 0.0):,.{self.quantity_decimals}f}"
-                        if self.quantity_decimals > 0:
-                            integer_part, decimal_part = raw_formatted.split('.')
-                            out_text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                        else:
-                            out_text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"                   
-                    case _:
-                        if isinstance(self.value, decimal.Decimal): # decimal without format
-                            out_text = session['qlocale'].toString(float(self.value), 'f', 2)
-                        else: # qlocale format for numbers
-                            out_text = session['qlocale'].toString(self.value)                                             
-            case bool():
-                out_text = 'X' if self.value else 'O'
-            case str():
-                out_text = self.value
-            case QDate() | QDateTime() | QTime():
-                out_text = session['qlocale'].toString(self.value, QLocale.FormatType.ShortFormat)
+        text: str = ''
+        match (self.value, self.field_format):
+            # --- BOOLEAN ---
+            case (bool(), _):
+                text = 'X' if self.value else 'O'
+
+            # --- NUMBERS WITH SPECIFIC FORMAT ---
+            case (int() | float() | decimal.Decimal(), 'currency'):
+                raw_formatted = f"{float(self.value or 0.0):,.2f}"
+                integer_part, decimal_part = raw_formatted.split('.')
+                text = f"{self.currency_symbol} {integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+
+            case (int() | float() | decimal.Decimal(), 'amount'):
+                raw_formatted = f"{float(self.value or 0.0):,.{self.amount_decimals}f}"
+                if self.amount_decimals > 0:
+                    integer_part, decimal_part = raw_formatted.split('.')
+                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                else:
+                    text = raw_formatted.replace(',', self.report.thousand_sep)
+
+            case (int() | float() | decimal.Decimal(), 'price'):
+                raw_formatted = f"{float(self.value or 0.0):,.{self.price_decimals}f}"
+                if self.price_decimals > 0:
+                    integer_part, decimal_part = raw_formatted.split('.')
+                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                else:
+                    text = raw_formatted.replace(',', self.report.thousand_sep)
+
+            case (int() | float() | decimal.Decimal(), 'quantity'):
+                raw_formatted = f"{float(self.value or 0.0):,.{self.quantity_decimals}f}"
+                if self.quantity_decimals > 0:
+                    integer_part, decimal_part = raw_formatted.split('.')
+                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                else:
+                    text = raw_formatted.replace(',', self.report.thousand_sep)
+
+            # --- NUMBERS WITH PYTHON STRING FORMAT (ex. '{0:.2f}') ---
+            case (int() | float() | decimal.Decimal(), str() as fmt) if fmt:
+                text = fmt.format(self.value)
+
+            # --- NUMBERS WITHOUT FORMAT (Fallback QLocale) ---
+            case (decimal.Decimal(), _):
+                text = session['qlocale'].toString(float(self.value), 'f', 2)
+                
+            case (int() | float(), _):
+                text = session['qlocale'].toString(self.value)
+
+            # --- DATE AND TIME WITH QT FORMAT ---
+            case (QDate() | QDateTime() | QTime(), str() as fmt) if fmt:
+                text = session['qlocale'].toString(self.value, fmt)
+
+            # --- DATE AND TIME WITHOUT FORMAT ---
+            case (QDate() | QDateTime() | QTime(), _):
+                text = session['qlocale'].toString(self.value, QLocale.FormatType.ShortFormat)
+
+            # --- GENERAL FALLBACK ---
             case _:
-                oou_text = str(self.value) if self.value is not None else ""
-        return out_text
+                text = str(self.value or '')
+
+        return text
 
 
 class Label(BaseInlineRenderer):
@@ -389,14 +413,14 @@ class Special(BaseInlineRenderer):
                 self.value = WEBSITE
             case 'company_description':
                 self.value = session['company_description']
-            case 'company_image':
-                self.value = QImage()
-                self.value.loadFromData(session['company_image'])
+            # case 'company_image':
+            #     self.value = QImage()
+            #     self.value.loadFromData(session['company_image'])
             case 'event_description':
                 self.value = session['event_description']
-            case 'event_image':
-                self.value = QImage()
-                self.value.loadFromData(session['event_image'])
+            # case 'event_image':
+            #     self.value = QImage()
+            #     self.value.loadFromData(session['event_image'])
             case _:
                 self.value = ''
         return super().render()
@@ -409,7 +433,7 @@ class BaseBlockRenderer():
     "Base class for all block renderer elements"
 
     def __init__(self, options: dict, paramdict: dict) -> None:
-        self.is_visible = 'true' == paramdict.get("is_visible", "true")
+        self.is_visible = paramdict.get("is_visible", "true") == 'true'
         self.report = options['report_instance']
    
         
@@ -418,7 +442,7 @@ class Line(BaseBlockRenderer):
 
     def __init__(self, options:dict, paramdict: dict, text:str) -> None:
         super().__init__(options, paramdict)
-        self._max = 'max' == paramdict.get("width", 'not max')
+        self._max = paramdict.get("width", 'not max') == 'max'
         if self._max:
             self.width = 0
         else:
@@ -450,19 +474,18 @@ class Line(BaseBlockRenderer):
         self.report.buffer.text(text + "\n")
         
         
-class NewLine(BaseBlockRenderer):
-    "New empty line CR-LF"
+class Feed(BaseBlockRenderer):
+    "Print buffer and feed lines"
 
     def __init__(self, options:dict, paramdict: dict, text:str) -> None:
         super().__init__(options, paramdict)
         self.count = int(paramdict.get("count", "1"))
         
     def __repr__(self) -> str:
-        return f"New line block object of count {self.count}"
+        return f"Feed block object of count {self.count}"
         
     def render(self, record) -> None:
-        text = "\n" * self.count
-        self.report.buffer.text(text)
+        self.report.buffer.print_and_feed(self.count)
 
 
 class Image(BaseBlockRenderer):
@@ -474,11 +497,11 @@ class Image(BaseBlockRenderer):
         if not self.type:
             raise ReportCreationError("Image type not specified")
         self.img_source = paramdict.get("file_name", None)
-        self.high_density_vertical = 'true' == paramdict.get("high_density_vertical", "true")
-        self.high_density_horizontal = 'true' == paramdict.get("high_density_horizontal", "true")
+        self.high_density_vertical = paramdict.get("high_density_vertical", "true") == 'true'
+        self.high_density_horizontal = paramdict.get("high_density_horizontal", "true") == 'true'
         self.impl = paramdict.get("impl", "bitImageRaster")
         self.fragment_height = paramdict.get("fragment_height", 960) # Images larger than this will be split into multiple fragments
-        self.center = 'true' == paramdict.get("center", "true")
+        self.center = paramdict.get("center", "true") == 'true'
         # create image for in report defined image
         self.image = None
         self.field_name = None
@@ -554,8 +577,8 @@ class QRCode(BaseBlockRenderer):
         self.model = {'QR_MODEL_1':QR_MODEL_1,
                       'QR_MODEL_2': QR_MODEL_2,
                       'QR_MICRO': QR_MICRO}.get(paramdict.get("model", 'QR_MODEL_2'))
-        self.native = "true" == paramdict.get("native", "true")
-        self.center = 'true' == paramdict.get("center", "false") # for hw qrc center is unavailable
+        self.native = paramdict.get("native", "true") == 'true'
+        self.center = paramdict.get("center", "false") == 'true' # for hw qrc center is unavailable
         self.impl = paramdict.get("impl", "bitImageRaster") # bitImageRaster | graphics | bitImageColumn
         
         self.content = None
@@ -604,7 +627,7 @@ class Barcode(BaseBlockRenderer):
         self.width = int(paramdict.get("width", '3')) # 2..6
         self.text_position = paramdict.get("text_position", 'BELOW') # ABOVE, BELOW, BOTH, OFF)
         self.font = paramdict.get("font", 'A') # A | B
-        self.center = 'true' == paramdict.get("center", "true")
+        self.center = paramdict.get("center", "true") == 'true'
         
         self.code = None
         self.field_name = None
@@ -642,6 +665,20 @@ class Barcode(BaseBlockRenderer):
                                    check=True,
                                    force_software=False)
     
+    
+class Cut(BaseBlockRenderer):
+    "Cut the paper with a full or partial cut"
+
+    def __init__(self, options:dict, paramdict: dict, text: str) -> None:
+        super().__init__(options, paramdict)
+        self.mode: str = paramdict.get("mode", "FULL") # "FULL" or "PART" (str)
+        self.feed: bool = paramdict.get("feed", "true") == "true" # print and feed before cutting
+        
+    def __repr__(self) -> str:
+        return f"Cut the paper with a {self.mode} cut, feed is {self.feed}"
+        
+    def render(self, record) -> None:
+        self.report.buffer.cut(self.mode, self.feed)
 
 # Render object dictionaries
 
@@ -651,10 +688,11 @@ inlineobj = {"label": Label,
              "special": Special}
 
 blockobj = {"line": Line,
-            "newline": NewLine,
+            "feed": Feed,
             "image": Image,
             "qrcode": QRCode,
-            "barcode": Barcode}
+            "barcode": Barcode,
+            "cut": Cut}
 
 
 # CONTAINER OBJECTS
@@ -662,14 +700,23 @@ blockobj = {"line": Line,
 # ROW - Inline objects container
 
 class Row(list):
-    """Row class, inline element container that print a line (or more) on print_device
-    
+    """
+    Row class, inline element container that print a line (or more) on print_device
     This container of inline objects print a line of text generated by inline objects
     """
 
     def __init__(self, options:dict, paramdict: dict) -> None:
-        self.is_visible = 'true' == paramdict.get("is_visible", "true")
+        self.is_visible = paramdict.get("is_visible", "true") == 'true'
         self.report = options['report_instance']
+        raw_param = paramdict.get("is_visible_parameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameter_negated = raw_param.startswith("not ") or raw_param.startswith("not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.is_visible_parameter = raw_param[4:].lstrip() if self.parameter_negated else raw_param
+        else:
+            self.is_visible_parameter = None
+            self.parameter_negated = None
         
     def __repr__(self) -> str:
         return f"Row object with {len(self)} elements"
@@ -726,27 +773,60 @@ class Band(list):
     def __init__(self, options: dict, paramdict: dict) -> None:
         "Every band must have a height"
         self.report = options['report_instance']
-        self.is_visible = 'true' == paramdict.get("is_visible", "true")
+        self.is_visible = paramdict.get("is_visible", "true") == 'true'
         self.is_page_footer = False
         self.execute_before: str|None = None
         self.execute_after: str|None = None
+        raw_param = paramdict.get("is_visible_parameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameter_negated = raw_param.startswith("not ") or raw_param.startswith("not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.is_visible_parameter = raw_param[4:].lstrip() if self.parameter_negated else raw_param
+        else:
+            self.is_visible_parameter = None
+            self.parameter_negated = None
         
     def __repr__(self) -> str:
         return f"Band object with {len(self)} elements"
 
     def render(self, record: dict) -> None:
         "Render the contained objects after setting record value"
-        # python scripting
-        global_parameters = {'report': self.report,
-                             'band': self,
-                             'record': record}
-        # execute python code before rendering
+        # # python scripting
+        # global_parameters = {'report': self.report,
+        #                      'band': self,
+        #                      'record': record}
+        # # execute python code before rendering
+        # if self.execute_before:
+        #     exec(self.execute_before, global_parameters)
         if self.execute_before:
-            exec(self.execute_before, global_parameters)
+            # 1. Definiamo il contesto globale (in sola lettura per lo script)
+            exec_globals = {
+                '__builtins__': __builtins__ # Mantiene le funzioni standard di Python (len, str, ecc.)
+            }
+            
+            # 2. Definiamo le variabili locali su cui lo script può operare direttamente
+            exec_locals = {
+                'report': self.report,
+                'band': self,
+                'record': record
+            }
+            # 3. Eseguiamo isolando i contesti
+            exec(self.execute_before, exec_globals, exec_locals)
         # do nothing (but execute before) if not visible
+        # if self.is_visible_parameter:
+        #     self.is_visible = (not self.report.parameter.get(self.is_visible_parameter) if self.parameter_negated 
+        #                         else self.report.parameter.get(self.is_visible_parameter))
+        # 2. Se c'è un parametro dell'operatore, valuta il suo stato attuale a runtime
         if not self.is_visible:
-            return
-
+                    return
+                
+        if self.is_visible_parameter:
+            param_value = bool(self.report.parameter.get(self.is_visible_parameter))
+            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            if not (param_value ^ self.parameter_negated):
+                return
+            
         # call band's row elements
         for element in self:
             if element.is_visible:
@@ -754,7 +834,7 @@ class Band(list):
                 
         # execute python code after rendering
         if self.execute_after:
-            exec(self.execute_after, global_parameters)
+            exec(self.execute_after, exec_globals, exec_locals)
             
 
 class Sort(str):
@@ -879,18 +959,29 @@ class DummyDevice(Dummy):
         
     def image(self, *args, **kwargs) -> None:
         "Intercepts the image method and stores a text tag"
-        self._preview_accumulator.append("<IMG>\n")
+        self._preview_accumulator.append("<< IMAGE >>\n")
         super().image(*args, **kwargs)
         
     def qr(self, content, *args, **kwargs) -> None:
         "Intercepts the qr method and stores a text tag"
-        self._preview_accumulator.append(f'<QRCODE: {content}>\n')
+        self._preview_accumulator.append(f'<< QRCODE: {content} >>\n')
         super().qr(content, *args, **kwargs)
         
     def barcode(self, code, bc, *args, **kwargs) -> None:
         "Intercepts the barcode method and stores a text tag"
-        self._preview_accumulator.append(f"<BARCODE {bc}: {code}>\n")
+        self._preview_accumulator.append(f"<< BARCODE {bc}: {code} >>\n")
         super().barcode(code, bc, *args, **kwargs)
+        
+    def print_and_feed(self, n: int = 1, *args, **kwargs) -> None:
+        "Intercepts the print_and_feed method and send a LF for preview"
+        self._preview_accumulator.append("\n" * n)
+        super().print_and_feed(n, *args, **kwargs)
+        
+    def cut(self, mode: str = 'FULL', feed: bool = True, *args, **kwargs) -> None:
+        "Intercepts the cut method and stores a text tag"
+        super().cut(mode, feed, *args, **kwargs)
+        # cut calls print_and_feed BEFORE cutting the paper for preview is better do after super()
+        self._preview_accumulator.append(f"<< CUT PAPER - MODE: {mode} FEED: {feed} >>\n\n")
         
     def preview_text(self) -> str:
         "Returns all the text accumulated for the preview"
@@ -1337,8 +1428,8 @@ class ReportEscpos():
             for b in self.footer:
                 b.render(last_record)
 
-        # final cut
-        self.buffer.cut() 
+        # final cut managed by report
+        #self.buffer.cut() 
         
         #print(self.buffer.output)
 
@@ -1479,11 +1570,11 @@ if __name__ == "__main__":
                         <label width="38" align="right">TOTAL:</label>
                         <summary function="sum" width="10" align="right">amount</summary>
                     </row>
-                    <newline count="1"/>
+                    <feed count="1"/>
                     <row>
                         <label width="48" align="center" font="b">THANKS AND GOODBYE</label>
                     </row>
-                    <newline count="1"/>
+                    <feed count="1"/>
                     <row>
                         <label width="6" align="left" font="b">Date:</label>
                         <special width="15" align="left" font="b">print_date_time</special>
@@ -1491,7 +1582,8 @@ if __name__ == "__main__":
                         <special width="30" align="left" font="b">app_email</special>
                     </row>
                     <qrcode type="embedded">ABCDCBA</qrcode>
-                    <newline count="1"/>
+                    <feed count="1"/>
+                    <cut mode="PART" feed="true"/>
                 </band>
             </group_footer>
         </group>

@@ -47,15 +47,15 @@ from PySide6.QtWidgets import QPushButton
 # application modules
 from App import APPNAME
 from App import session
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import get_color_scheme
-from App.Core.Gui import get_icon_themes
-from App.Core.Gui import get_toolbutton_styles
-from App.Core.Gui import get_tab_positions
-from App.Core.Gui import setTheme
-from App.Core.Gui import setColorScheme
-from App.Core.Gui import setIcon
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Gui import get_color_scheme
+from App.Common.Gui import get_icon_themes
+from App.Common.Gui import get_toolbutton_styles
+from App.Common.Gui import get_tab_positions
+from App.Common.Gui import setTheme
+from App.Common.Gui import setColorScheme
+from App.Common.Gui import setIcon
 from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences
 from App.System.Help import HelpDialog

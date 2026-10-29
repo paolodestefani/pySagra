@@ -46,9 +46,9 @@ from PySide6.QtNetwork import QHostInfo
 # application modules
 from App import session
 from App import currentIcon
-from App.Core.L10n import _tr
-from App.Core.Scripting import scriptInit
-from App.Core.Scripting import scriptMethod
+from App.Common.L10n import _tr
+from App.Common.Scripting import scriptInit
+from App.Common.Scripting import scriptMethod
 from App.Database.Models import OrderPrintSettingsIndexModel
 from App.Database.Models import OrderPrintSettingsModel
 #from App.Database.Models import OrderPrintDepartmentSettingstModel

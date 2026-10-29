@@ -246,8 +246,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>575</width>
-            <height>259</height>
+            <width>608</width>
+            <height>305</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -318,8 +318,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>585</width>
-            <height>259</height>
+            <width>608</width>
+            <height>305</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -684,7 +684,7 @@
              <item>
               <widget class="QGroupBox" name="groupBox">
                <property name="title">
-                <string>Report class / Report</string>
+                <string>Print method / Report class / Report</string>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout">
                 <property name="leftMargin">
@@ -713,6 +713,18 @@
                   <property name="bottomMargin">
                    <number>6</number>
                   </property>
+                  <item>
+                   <widget class="QLabel" name="labelPrintMethod">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Method</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QLabel" name="labelReportClass">
                     <property name="font">

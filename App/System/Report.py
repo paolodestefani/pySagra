@@ -55,7 +55,7 @@ from PySide6.QtWidgets import QFileDialog
 
 # application modules
 from App import session
-from App.Core.ExceptionHandler import wait_cursor_context
+from App.Common.ExceptionHandler import wait_cursor_context
 from App.Database.Report import delete_all_reports
 from App.Database.Report import load_report
 from App.Database.Report import list_all_reports
@@ -66,10 +66,10 @@ from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Dialog import PrintDialog
 from App.Ui.ReportWidget import Ui_ReportWidget
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.L10n import langCountryFlags
-from App.Core.SyntaxHighlighter import XMLHighlighter
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.L10n import langCountryFlags
+from App.Common.SyntaxHighlighter import XMLHighlighter
 
 
 # logger

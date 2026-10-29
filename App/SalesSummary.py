@@ -44,7 +44,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App.Database.Models import SalesSummaryModel
 from App.Ui.SalesSummaryWidget import Ui_SalesSummaryWidget
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import PrintDialog

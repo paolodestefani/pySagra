@@ -44,3 +44,31 @@ REPORT_CLASSES = ["COMPANY",
                   "ORDERED_DELIVERED",
                   "SALES_SUMMARY",
                   "STATISTICS"]
+
+# exceptions
+
+
+class ReportException(Exception):
+    pass
+
+class ReportCreationError(ReportException):
+    pass
+
+class ReportXMLParseError(ReportException):
+    pass
+
+class ReportNoDataError(ReportException):
+    pass
+
+class ReportPrintError(ReportException):
+    pass
+
+
+class OrderReportException(ReportException):
+    pass
+
+class NoOrderReportParameters(OrderReportException):
+    pass
+
+class NotEnoughtReportParameters(OrderReportException):
+    pass

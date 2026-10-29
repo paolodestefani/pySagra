@@ -32,7 +32,7 @@ import logging
 
 # application modules
 from App.Report import REPORT_CLASSES
-from App.Core.ExceptionHandler import db_exception_context
+from App.Common.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 from App.Report.ReportEngine import Report
 from App.Report.ReportEngineEscPos import ReportEscpos

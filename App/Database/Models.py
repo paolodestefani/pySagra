@@ -47,7 +47,7 @@ from App.Database.Lookup import department_lookup
 from App.Database.Lookup import event_lookup
 from App.Database.Lookup import item_salable_lookup
 from App.Database.Lookup import item_all_lookup
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 
 
 UPDATED, INSERTED, DELETED = range(3)

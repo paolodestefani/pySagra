@@ -53,8 +53,8 @@ from App.Database.Item import get_variants
 from App.Database.SeatMap import table_list
 from App.Database.WebOrderServer import get_web_order_server_params
 from App.Database.WebOrderServer import set_web_order_server_params 
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Ui.UpdateWebOrderServerDialog import Ui_UpdateWebOrderServerDialog
 
 

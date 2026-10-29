@@ -42,7 +42,7 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-from App.Core.Scripting import scriptInit
+from App.Common.Scripting import scriptInit
 from App.Database.Models import ItemsOrderedDeliveredModel
 from App.Database.Lookup import event_lookup
 from App.Widget.Delegate import QuantityDelegate
@@ -51,7 +51,7 @@ from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import PrintDialog
 from App.Widget.Dialog import EventFilterDialog
 from App.Ui.OrderedDeliveredWidget import Ui_OrderedDeliveredWidget
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 
 
 # logger

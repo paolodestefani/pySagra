@@ -42,7 +42,7 @@ from PySide6.QtWidgets import QMessageBox
 # application modules
 from App import session
 from App import currentIcon
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 from App.Database.Models import ToolbarIndexModel
 from App.Database.Models import ToolbarModel
 from App.Database.Models import ToolbarItemTreeModel

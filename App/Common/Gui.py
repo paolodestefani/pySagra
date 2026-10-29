@@ -50,7 +50,7 @@ from App import currentIcon
 from App import session
 from App import currentAction
 from App import actionDefinition
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 
 
 # functions are required for the correct work of _tr() wich need

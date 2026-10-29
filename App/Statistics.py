@@ -67,7 +67,7 @@ from App.Ui.StatisticsExportDialog import Ui_StatisticsExportDialog
 from App.Widget.Dialog import PrintDialog
 #from App.Widget.Delegate import PandasDelegate
 from App.Database.Statistics import load_statistic_bi_data
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 
 
 # logger

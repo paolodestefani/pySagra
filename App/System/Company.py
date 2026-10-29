@@ -69,8 +69,8 @@ from App.Widget.Delegate import RelationDelegate
 from App.Widget.Dialog import PrintDialog
 from App.Ui.CompanyWidget import Ui_CompanyWidget
 from App.Ui.NewCompanyDialog import Ui_NewCompanyDialog
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
 
 
 # logger

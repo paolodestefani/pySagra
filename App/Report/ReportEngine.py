@@ -30,10 +30,10 @@ tuple or the result set of an SQL query.
 
 Architecture:
 A report definition is made of bands. Every band is a collection of painting
-objects (label, fields, lines, images, etc.). Every band have a fixed
+objects (labels, fields, lines, images, etc.). Every band have a fixed
 height (but can grow). Every object has position relative to the including band.
 In every report we can have this sections:
-- a page background printed as a background of every page
+- a page background printed as a background on every page
 - a page header printed at the beginning of every page
 - a report header printed at the beginning of the
   report in the first page after the page header
@@ -49,17 +49,16 @@ In every report we can have this sections:
 Any section can have one or more band.
 All sections are optional but a report need at least one detail band.
 
-
 """
 
 # standard library
 import sys
+import os
 import collections
 import decimal
 import itertools
 import xml.etree.ElementTree as ET
 import operator
-import logging
 from typing import Any
 from contextlib import contextmanager
 
@@ -108,7 +107,12 @@ if __name__ != "__main__":
     from App import WEBSITE
     from App import session
     from App.Database.Settings import Settings
-    from App.Core.ExceptionHandler import wait_cursor_context
+    from App.Common.ExceptionHandler import wait_cursor_context
+    from App.Report import ReportException
+    from App.Report import ReportCreationError
+    from App.Report import ReportXMLParseError
+    from App.Report import ReportNoDataError
+    from App.Report import ReportPrintError
 
 else:
     APPNAME = "Report Engine"
@@ -122,9 +126,9 @@ else:
     WEBSITE = "https://www.paolodestefani.it"
     session = dict()
     session['qlocale'] = QLocale()
-    session['event_description'] = "Sagra Dimostrativa 2026"
+    session['event_description'] = "The over-the-top party in 2026"
     session['event_image'] = QByteArray()
-    session['company_description'] = "Comitato Festeggiamenti Dimostrativo"
+    session['company_description'] = "Local festivities committee"
     session['company_image'] = QByteArray()
     
     @contextmanager
@@ -139,28 +143,27 @@ else:
         finally:
             QGuiApplication.restoreOverrideCursor()
 
+    class ReportException(Exception):               # type: ignore[no-redef]
+        pass
+
+    class ReportCreationError(ReportException):     # type: ignore[no-redef]
+        pass
+
+    class ReportXMLParseError(ReportException):     # type: ignore[no-redef]
+        pass
+
+    class ReportNoDataError(ReportException):       # type: ignore[no-redef]
+        pass
+
+    class ReportPrintError(ReportException):        # type: ignore[no-redef]
+        pass
+
    
 # report engine version
 VERSION = '1.0'
 
 # DPI standard Qt/Windows (96 DPI)
 STANDARD_DPI = 96.0
-
-
-class ReportException(Exception):
-    pass
-
-class ReportCreationError(ReportException):
-    pass
-
-class ReportXMLParseError(ReportException):
-    pass
-
-class ReportNoDataError(ReportException):
-    pass
-
-class ReportPrintError(ReportException):
-    pass
 
 
 Orientation = {'Portrait':  QPageLayout.Orientation.Portrait, # Default
@@ -212,8 +215,8 @@ PageSize = {'A0':           QPageSize.PageSizeId.A0,
             'Tabloid':      QPageSize.PageSizeId.Tabloid,
             'Custom':       QPageSize.PageSizeId.Custom}
 
-PageLayoutMode = {'Standard': QPageLayout.Mode.StandardMode,
-                  'FullPage': QPageLayout.Mode.FullPageMode}
+PageLayoutMode = {'Standard': QPageLayout.Mode.StandardMode, 
+                  'FullPage': QPageLayout.Mode.FullPageMode} # default
 
 # standard font properties
 
@@ -237,7 +240,7 @@ TextAlign = {'AlignLeft':       Qt.AlignmentFlag.AlignLeft, # Default
 # line styles
 
 PenStyle = {'NoPen':            Qt.PenStyle.NoPen, # for filled without boundary lines
-            'SolidLine':        Qt.PenStyle.SolidLine,
+            'SolidLine':        Qt.PenStyle.SolidLine, # default
             'DashLine':         Qt.PenStyle.DashLine,
             'DotLine':          Qt.PenStyle.DotLine,
             'DashDotLine':      Qt.PenStyle.DashDotLine,
@@ -245,7 +248,7 @@ PenStyle = {'NoPen':            Qt.PenStyle.NoPen, # for filled without boundary
 
 # brush styles
 
-BrushStyle = {'NoBrush':            Qt.BrushStyle.NoBrush,
+BrushStyle = {'NoBrush':            Qt.BrushStyle.NoBrush, # default
               'SolidPattern':       Qt.BrushStyle.SolidPattern,
               'Dense1Pattern':      Qt.BrushStyle.Dense1Pattern,
               'Dense2Pattern':      Qt.BrushStyle.Dense2Pattern,
@@ -262,42 +265,42 @@ BrushStyle = {'NoBrush':            Qt.BrushStyle.NoBrush,
               'DiagCrossPattern':   Qt.BrushStyle.DiagCrossPattern}
 
 AspectRatio = {'IgnoreAspectRatio':             Qt.AspectRatioMode.IgnoreAspectRatio,
-               'KeepAspectRatio':               Qt.AspectRatioMode.KeepAspectRatio,
+               'KeepAspectRatio':               Qt.AspectRatioMode.KeepAspectRatio, # default
                'KeepAspectRatioByExpanding':    Qt.AspectRatioMode.KeepAspectRatioByExpanding}
 
 # Default global options
 
-defaultOptions = {'documentName':           'pyReportEngine document',
-                  'orientation':            'Portrait',
-                  'unit':                   'Point',
-                  'pageSize':               'A4',
-                  'pageLayoutMode':         'FullPage',
-                  'ignoreWarningOnSetPageLayout': False,
-                  'topMargin':              5.0,
-                  'bottomMargin':           5.0,
-                  'leftMargin':             5.0,
-                  'rightMargin':            5.0,
-                  'barcodeType':            None,
-                  'fontFamily':             'Arial',
-                  'fontSize':               8.0,
-                  'fontItalic':             False,
-                  'fontUnderline':          False,
-                  'fontStrikeOut':          False,
-                  'fontWeight':             'Normal',
-                  'textAlign':              'AlignLeft',
-                  'color':                  'black',
-                  'lineWidth':              1.0,
-                  'lineStyle':              'SolidLine',
-                  'brushStyle':             'NoBrush',
-                  'brushColor':             'Black',
-                  'aspectRatio':            'KeepAspectRatio',
-                  'opacity':                1.0,
-                  'quantityDecimals':       2,
-                  'priceDecimals':          2,
-                  'amountDecimals':         2,
-                  'currencySymbol':         '€',
-                  'trueSymbol':             '\u25CF',
-                  'falseSymbol':            '\u25CB'
+defaultOptions = {'documentName':                   'pyReportEngine document',
+                  'orientation':                    'Portrait',
+                  'unit':                           'Point',
+                  'pageSize':                       'A4',
+                  'pageLayoutMode':                 'FullPage',
+                  'ignoreWarningOnSetPageLayout':   False,
+                  'topMargin':                      5.0,
+                  'bottomMargin':                   5.0,
+                  'leftMargin':                     5.0,
+                  'rightMargin':                    5.0,
+                  'barcodeType':                    None,
+                  'fontFamily':                     'Arial',
+                  'fontSize':                       8.0,
+                  'fontItalic':                     False,
+                  'fontUnderline':                  False,
+                  'fontStrikeOut':                  False,
+                  'fontWeight':                     'Normal',
+                  'textAlign':                      'AlignLeft',
+                  'color':                          'black',
+                  'lineWidth':                      1.0,
+                  'lineStyle':                      'SolidLine',
+                  'brushStyle':                     'NoBrush',
+                  'brushColor':                     'Black',
+                  'aspectRatio':                    'KeepAspectRatio',
+                  'opacity':                        1.0,
+                  'quantityDecimals':               2,
+                  'priceDecimals':                  2,
+                  'amountDecimals':                 2,
+                  'currencySymbol':                 '€',
+                  'trueSymbol':                     '\u25CF',
+                  'falseSymbol':                    '\u25CB'
                   }
 
 
@@ -374,7 +377,7 @@ class BaseRenderer():
     "Base class for all tex renderer elements"
 
     def __init__(self, options: dict, paramdict: dict) -> None:
-        self.isVisible = 'True' == paramdict.get("isVisible", "True")
+        self.isVisible = paramdict.get("isVisible", "True") == 'True'
         self.isVisibleParameter = None
         self.parameterNegated = False
         self.report = options['reportInstance']
@@ -386,9 +389,9 @@ class BaseRenderer():
         self.barcode = paramdict.get("barcodeType", options['barcodeType'])
         self.fontFamily = paramdict.get("fontFamily", options['fontFamily'])
         self.fontSize = float(paramdict.get("fontSize", options['fontSize']))
-        self.fontItalic = 'True' == paramdict.get("fontItalic", options['fontItalic'])
-        self.fontUnderline = 'True' == paramdict.get("fontUnderline", options['fontUnderline'])
-        self.fontStrikeOut = 'True' == paramdict.get("fontStrikeOut", options['fontStrikeOut'])
+        self.fontItalic = paramdict.get("fontItalic", options['fontItalic']) == 'True'
+        self.fontUnderline = paramdict.get("fontUnderline", options['fontUnderline']) == 'True'
+        self.fontStrikeOut = paramdict.get("fontStrikeOut", options['fontStrikeOut']) == 'True'
         self.fontWeight = FontWeight[paramdict.get("fontWeight", options['fontWeight'])]
         self.textAlign = TextAlign[paramdict.get("textAlign", options['textAlign'])]
         self.color = paramdict.get("color", options['color'])
@@ -397,7 +400,7 @@ class BaseRenderer():
         # macOS dark mode and color scheme conflicts workaround
         if self.color in ('black', '#000000'):
             self.color = '???' # an invalid color that Qt interpret as black on any platforms
-        self.canGrow = 'True' == paramdict.get("canGrow", "False")
+        self.canGrow = paramdict.get("canGrow", "False") == 'True'
         self.quantityDecimals = int(paramdict.get("quantityDecimals", options['quantityDecimals']))
         self.priceDecimals = int(paramdict.get("priceDecimals", options['priceDecimals']))
         self.amountDecimals = int(paramdict.get("amountDecimals", options['amountDecimals']))
@@ -405,83 +408,88 @@ class BaseRenderer():
         self.trueSymbol = paramdict.get("trueSymbol", options['trueSymbol'])
         self.falseSymbol = paramdict.get("falseSymbol", options['falseSymbol'])
         self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # current value
-        if paramdict.get("isVisibleParameter"):
-            t = paramdict.get("isVisibleParameter", "").split(' ')
-            if t[0] == "Not":
-                self.parameterNegated = True
-                self.isVisibleParameter = t[1]
-            else:
-                self.parameterNegated = False
-                self.isVisibleParameter = t[0]
+        raw_param = paramdict.get("isVisibleParameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameterNegated = raw_param.startswith("Not ") or raw_param.startswith("Not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.isVisibleParameter = raw_param[4:].lstrip() if self.parameterNegated else raw_param
+        else:
+            self.isVisibleParameter = None
+            self.parameterNegated = False
 
-    def textFormat(self) -> str|None:
+    
+    def textFormat(self) -> str | None:
         "Format text for check height and painting"
         text = None
-        match self.value:
-            case bool():
+        
+        match (self.value, self.fieldFormat):
+            # --- BOOLEAN ---
+            case (bool(), _):
                 text = self.trueSymbol if self.value else self.falseSymbol
-            case int()|float()|decimal.Decimal():
-                if self.fieldFormat:
-                    if self.fieldFormat == 'currency': # bypass qlocale.toCurrencyString() that dont't show thousand separator for float with small < 10_000 values
-                        raw_formatted = f"{float(self.value or 0.0):,.2f}"
-                        integer_part, decimal_part = raw_formatted.split('.')
-                        text = f"{self.currencySymbol} {integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                        #text = session['qlocale'].toCurrencyString(float(self.value),
-                        #                                           self.currencySymbol)
-                    elif self.fieldFormat == 'amount': # bypass qlocale.toString() that dont't show thousand separator for float with small < 10_000 values
-                        raw_formatted = f"{float(self.value or 0.0):,.{self.amountDecimals}f}"
-                        if self.amountDecimals > 0:
-                            integer_part, decimal_part = raw_formatted.split('.')
-                            text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                        else:
-                            text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"
-                        
-                        # text = session['qlocale'].toString(float(self.value),
-                        #                                    'f',
-                        #                                    self.amountDecimals)
-                    elif self.fieldFormat == 'price':
-                        raw_formatted = f"{float(self.value or 0.0):,.{self.priceDecimals}f}"
-                        if self.priceDecimals > 0:
-                            integer_part, decimal_part = raw_formatted.split('.')
-                            text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                        else:
-                            text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"
-                        
-                        # text = session['qlocale'].toString(float(self.value),
-                        #                                    'f',
-                        #                                    self.priceDecimals)
-                    elif self.fieldFormat == 'quantity':
-                        raw_formatted = f"{float(self.value or 0.0):,.{self.quantityDecimals}f}"
-                        if self.quantityDecimals > 0:
-                            integer_part, decimal_part = raw_formatted.split('.')
-                            text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                        else:
-                            text = f"{raw_formatted.replace(',', self.report.thousand_sep)}"                   
-                          
-                        # text = session['qlocale'].toString(float(self.value),
-                        #                                    'f',
-                        #                                    self.quantityDecimals)
-                    else:
-                        # python string format for numbers f.e. '{0:.2f}'
-                        text = self.fieldFormat.format(self.value)
+
+            # --- NUMBERS WITH SPECIFIC FORMAT ---
+            case (int() | float() | decimal.Decimal(), 'currency'):
+                raw_formatted = f"{float(self.value or 0.0):,.2f}"
+                integer_part, decimal_part = raw_formatted.split('.')
+                text = f"{self.currencySymbol} {integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+
+            case (int() | float() | decimal.Decimal(), 'amount'):
+                raw_formatted = f"{float(self.value or 0.0):,.{self.amountDecimals}f}"
+                if self.amountDecimals > 0:
+                    integer_part, decimal_part = raw_formatted.split('.')
+                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
                 else:
-                    if isinstance(self.value, decimal.Decimal): # decimal without format
-                        text = session['qlocale'].toString(float(self.value), 'f', 2)
-                    else: # qlocale format for numbers
-                        text = session['qlocale'].toString(self.value)
-            case QDate()|QDateTime()|QTime():
-                if self.fieldFormat: # qt string format f.e. 'dd.MM.yyyy'
-                    text = session['qlocale'].toString(self.value, self.fieldFormat)
+                    text = raw_formatted.replace(',', self.report.thousand_sep)
+
+            case (int() | float() | decimal.Decimal(), 'price'):
+                raw_formatted = f"{float(self.value or 0.0):,.{self.priceDecimals}f}"
+                if self.priceDecimals > 0:
+                    integer_part, decimal_part = raw_formatted.split('.')
+                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
                 else:
-                    text = session['qlocale'].toString(self.value, QLocale.FormatType.ShortFormat)
-            case str() if self.barcode == 'Code39':
-                text = code39encode(self.value) # None value, not an empty string, for barcode for print nothing 
-            case str() if self.barcode == 'Code128':
-                text = code128encode(self.value) # None value, not an empty string, for barcode for print nothing               
+                    text = raw_formatted.replace(',', self.report.thousand_sep)
+
+            case (int() | float() | decimal.Decimal(), 'quantity'):
+                raw_formatted = f"{float(self.value or 0.0):,.{self.quantityDecimals}f}"
+                if self.quantityDecimals > 0:
+                    integer_part, decimal_part = raw_formatted.split('.')
+                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                else:
+                    text = raw_formatted.replace(',', self.report.thousand_sep)
+
+            # --- NUMBERS WITH PYTHON STRING FORMAT (ex. '{0:.2f}') ---
+            case (int() | float() | decimal.Decimal(), str() as fmt) if fmt:
+                text = fmt.format(self.value)
+
+            # --- NUMBERS WITHOUT FORMAT (Fallback QLocale) ---
+            case (decimal.Decimal(), _):
+                text = session['qlocale'].toString(float(self.value), 'f', 2)
+                
+            case (int() | float(), _):
+                text = session['qlocale'].toString(self.value)
+
+            # --- DATE AND TIME WITH QT FORMAT ---
+            case (QDate() | QDateTime() | QTime(), str() as fmt) if fmt:
+                text = session['qlocale'].toString(self.value, fmt)
+
+            # --- DATE AND TIME WITHOUT FORMAT ---
+            case (QDate() | QDateTime() | QTime(), _):
+                text = session['qlocale'].toString(self.value, QLocale.FormatType.ShortFormat)
+
+            # --- BARCODE STRING ---
+            case (str(), _) if self.barcode == 'Code39':
+                text = code39encode(self.value)
+                
+            case (str(), _) if self.barcode == 'Code128':
+                text = code128encode(self.value)
+
+            # --- GENERAL FALLBACK ---
             case _:
-                text = str(self.value or '') # None for string print empty string   
+                text = str(self.value or '')
+
         return text
-    
+
     def checkHeight(self, bandHeight: float) -> float:
         "Returns the new band height if band can grow"
         # do nothing (but script) if not visible
@@ -524,11 +532,14 @@ class BaseRenderer():
     def render(self, bandHeight:float) -> None:
         "Paint an image or text"
         # do nothing (but script) if not visible
-        if self.isVisibleParameter:
-            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
-                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
+        if self.isVisibleParameter:
+            param_value = bool(self.report.parameter.get(self.isVisibleParameter))
+            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            if not (param_value ^ self.parameterNegated):
+                return
+            
         painter = self.report.painter
         painter.save()
         
@@ -584,10 +595,9 @@ class Field(BaseRenderer):
     def __init__(self, options: dict, paramdict: dict, fieldName: str) -> None:
         super().__init__(options, paramdict)
         self.value = None
-        #self.prev_value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # previous value
         self.fieldName = fieldName
         self.aspectRatio = AspectRatio[paramdict.get("aspectRatio", options['aspectRatio'])]
-        self.suppressRepeated = 'True' == paramdict.get("suppressRepeated", "False") 
+        self.suppressRepeated = paramdict.get("suppressRepeated", "False") == 'True'
 
     def setValue(self, value: str|int|float|decimal.Decimal|QByteArray) -> None:
         # if self.value is not None and self.value != '':
@@ -729,22 +739,25 @@ class Line():
         self.opacity = float(paramdict.get("opacity", options['opacity']))
         self.lineWidth = float(paramdict.get("lineWidth", options['lineWidth']))
         self.style = PenStyle[paramdict.get("style", options['lineStyle'])]
-        if paramdict.get("isVisibleParameter"):
-            t = paramdict.get("isVisibleParameter", "").split(' ')
-            if t[0] == "Not":
-                self.parameterNegated = True
-                self.isVisibleParameter = t[1]
-            else:
-                self.parameterNegated = False
-                self.isVisibleParameter = t[0]
+        raw_param = paramdict.get("isVisibleParameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameterNegated = raw_param.startswith("Not ") or raw_param.startswith("Not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.isVisibleParameter = raw_param[4:].lstrip() if self.parameterNegated else raw_param
+        else:
+            self.isVisibleParameter = None
+            self.parameterNegated = False
 
     def render(self, bandHeight: float) -> None:
         # do nothing (but script) if not visible
-        if self.isVisibleParameter:
-            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
-                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
+        if self.isVisibleParameter:
+            param_value = bool(self.report.parameter.get(self.isVisibleParameter))
+            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            if not (param_value ^ self.parameterNegated):
+                return
         painter = self.report.painter
         painter.save()
         pen = QPen()
@@ -782,22 +795,25 @@ class Ellipse():
         self.brushColor = QColor(paramdict.get("brushColor", options['color']))
         self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
         self.opacity = float(paramdict.get("opacity", options['opacity']))
-        if paramdict.get("isVisibleParameter"):
-            t = paramdict.get("isVisibleParameter", "").split(' ')
-            if t[0] == "Not":
-                self.parameterNegated = True
-                self.isVisibleParameter = t[1]
-            else:
-                self.parameterNegated = False
-                self.isVisibleParameter = t[0]
+        raw_param = paramdict.get("isVisibleParameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameterNegated = raw_param.startswith("Not ") or raw_param.startswith("Not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.isVisibleParameter = raw_param[4:].lstrip() if self.parameterNegated else raw_param
+        else:
+            self.isVisibleParameter = None
+            self.parameterNegated = False
 
     def render(self, bandHeight: float) -> None:
         # do nothing (but script) if not visible
-        if self.isVisibleParameter:
-            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
-                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
+        if self.isVisibleParameter:
+            param_value = bool(self.report.parameter.get(self.isVisibleParameter))
+            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            if not (param_value ^ self.parameterNegated):
+                return
         painter = self.report.painter
         painter.save()
         # pen for outline, brush for fill
@@ -845,22 +861,26 @@ class Rectangle():
         self.brushColor = QColor(paramdict.get("brushColor", options['color']))
         self.brushStyle = BrushStyle[paramdict.get("brushStyle", 'NoBrush')]
         self.opacity = float(paramdict.get("opacity", options['opacity']))
-        if paramdict.get("isVisibleParameter"):
-            t = paramdict.get("isVisibleParameter", "").split(' ')
-            if t[0] == "Not":
-                self.parameterNegated = True
-                self.isVisibleParameter = t[1]
-            else:
-                self.parameterNegated = False
-                self.isVisibleParameter = t[0]
+        raw_param = paramdict.get("isVisibleParameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameterNegated = raw_param.startswith("Not ") or raw_param.startswith("Not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.isVisibleParameter = raw_param[4:].lstrip() if self.parameterNegated else raw_param
+        else:
+            self.isVisibleParameter = None
+            self.parameterNegated = False
 
     def render(self, bandHeight: float) -> None:
         # do nothing (but script) if not visible
-        if self.isVisibleParameter:
-            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
-                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
+        if self.isVisibleParameter:
+            param_value = bool(self.report.parameter.get(self.isVisibleParameter))
+            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            if not (param_value ^ self.parameterNegated):
+                return
+            
         painter = self.report.painter
         painter.save()
         # pen for outline, brush for fill
@@ -921,23 +941,27 @@ class Image():
             self.image = image.scaled(int(self.width), int(self.height), self.aspectRatio, Qt.TransformationMode.SmoothTransformation)
         else:
             self.image = QImage()
-        if paramdict.get("isVisibleParameter"):
-            t = paramdict.get("isVisibleParameter", "").split(' ')
-            if t[0] == "Not":
-                self.parameterNegated = True
-                self.isVisibleParameter = t[1]
-            else:
-                self.parameterNegated = False
-                self.isVisibleParameter = t[0]
+        raw_param = paramdict.get("isVisibleParameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameterNegated = raw_param.startswith("Not ") or raw_param.startswith("Not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.isVisibleParameter = raw_param[4:].lstrip() if self.parameterNegated else raw_param
+        else:
+            self.isVisibleParameter = None
+            self.parameterNegated = False
                 
     def render(self, bandHeight: float) -> None:
         "Draw image if necessary"
         # do nothing (but script) if not visible
-        if self.isVisibleParameter:
-            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
-                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
+        if self.isVisibleParameter:
+            param_value = bool(self.report.parameter.get(self.isVisibleParameter))
+            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            if not (param_value ^ self.parameterNegated):
+                return
+            
         painter = self.report.painter
         painter.save()
         painter.setOpacity(self.opacity)
@@ -971,24 +995,25 @@ class Band(list):
     def __init__(self, options: dict, paramdict: dict) -> None:
         "Every band must have a height"
         self.report = options['reportInstance']
-        self.isVisible = 'True' == paramdict.get("isVisible", "True")
+        self.isVisible = paramdict.get("isVisible", "True") == 'True'
         self.isVisibleParameter = None
         self.parameterNegated = False
         self.isPageFooter = False
         self.height = float(paramdict.get("height", 0.0))
-        self.canGrow = 'True' == paramdict.get("canGrow", "False")
-        self.newPageAfter = 'True' == paramdict.get("newPageAfter", "False")
-        self.restartPageNumber = 'True' == paramdict.get("restartPageNumber", "False") # only on new page
+        self.canGrow = paramdict.get("canGrow", "False") == 'True'
+        self.newPageAfter = paramdict.get("newPageAfter", "False") == 'True'
+        self.restartPageNumber = paramdict.get("restartPageNumber", "False") == 'True' # only on new page
         self.executeBefore: str|None = None
         self.executeAfter: str|None = None
-        if paramdict.get("isVisibleParameter"):
-            t = paramdict.get("isVisibleParameter", "").split(' ')
-            if t[0] == "Not":
-                self.parameterNegated = True
-                self.isVisibleParameter = t[1]
-            else:
-                self.parameterNegated = False
-                self.isVisibleParameter = t[0]
+        raw_param = paramdict.get("isVisibleParameter", "").strip()
+        if raw_param:
+            # it recognizes "not" only if it is a standalone word at the beginning
+            self.parameterNegated = raw_param.startswith("Not ") or raw_param.startswith("Not\t")
+            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+            self.isVisibleParameter = raw_param[4:].lstrip() if self.parameterNegated else raw_param
+        else:
+            self.isVisibleParameter = None
+            self.parameterNegated = False
 
     def render(self, record: dict, prev_record: dict|None = None) -> None:
         "Render the contained objects after setting record value"
@@ -1006,11 +1031,13 @@ class Band(list):
         if self.executeBefore:
             exec(self.executeBefore, globalsParameters)
         # do nothing (but script) if not visible
-        if self.isVisibleParameter:
-            self.isVisible = (not self.report.parameter.get(self.isVisibleParameter) if self.parameterNegated 
-                              else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return
+        if self.isVisibleParameter:
+            param_value = bool(self.report.parameter.get(self.isVisibleParameter))
+            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            if not (param_value ^ self.parameterNegated):
+                return
 
         newHeight = self.height
         if self.canGrow:
@@ -1080,6 +1107,7 @@ class SqlField():
         self.description = description
         self.ftype = ftype
         self.referenceList = reference # use in report dialog for reference list selection
+
 
 # Report
 
@@ -1380,7 +1408,6 @@ class Report():
     def groupGenerate(self, data: list[Any]|tuple[Any], group_index: int = 0) -> None:
         "Resolve groups recursively"
         grp = self.groups[group_index] if self.groups else None
-        #data = sorted(data, key = lambda x: x[self.column[grp]] if grp else None) # type: ignore
         for key, group in itertools.groupby(data, lambda x: x[self.column[grp]] if grp else None):  # if no group returns all the dataset
             sub_data = list(group)
             header_record = {k: sub_data[0][v] for k, v in self.column.items()} # first record of the group
@@ -1579,25 +1606,21 @@ class Report():
             
         dpr = QGuiApplication.primaryScreen().devicePixelRatio()
         
-        # Su macOS il devicePixelRatio è già gestito nativamente da Qt e non serve scalare il painter
+        # On macOS, `devicePixelRatio` is already handled natively by Qt, so there is no need to scale the painter.
         if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
             dpr = 1.0 
             
         paintDevice.setPageLayout(self.pageLayout) # type: ignore
         
-        # Sceglie dinamicamente l'area logica corretta impostata a monte nel report:
-        # - In FullPageMode (PDF, standard) prenderà la pagina intera (es. 80mm o A4 intero)
-        # - In StandardMode (POS termica) prenderà l'area utile decurtando i margini fisici
+        # Dynamically chooses the correct logical area set upstream in the report: 
+        # - In FullPageMode (PDF, standard) it will take the full page (e.g. 80mm or full A4) 
+        # - In StandardMode (thermal POS) it will take the useful area deducting the physical margins
         rect = self.pageLayout.paintRect(self.pageLayout.units())
         
         painter = QPainter(paintDevice)
         
-        # Ritorniamo alle formule originali stabili usando width() e height() del device
         scale_x = paintDevice.width() / rect.width() / dpr
         
-        # CONDIZIONE STRUMENTALE PER IL ROTOLO POS:
-        # Se il report NON è in FullPageMode (quindi è impostato in StandardMode specifico per la termica),
-        # blocchiamo le proporzioni 1:1 sulla larghezza per evitare distorsioni in lunghezza sul rotolo continuo.
         if isinstance(paintDevice, QPrinter) and self.options['pageLayoutMode'] == 'Standard':
             scale_y = scale_x
         else:
@@ -1605,7 +1628,7 @@ class Report():
     
         painter.scale(scale_x, scale_y)
         
-        # ... render hints nativi PySide6 ...
+        # ... native PySide6 render hints nativi ...
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)

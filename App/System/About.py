@@ -60,8 +60,8 @@ from App import WEBSITE
 from App import session
 #from App import currentAction
 from App.Database.Connect import database_information
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Ui.AboutDialog import Ui_AboutDialog
 from App.Ui.SystemInfoDialog import Ui_SystemInfoDialog
 

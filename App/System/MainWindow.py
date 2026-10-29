@@ -67,10 +67,10 @@ from App import actionDefinition
 from App import currentAction
 from App import currentIcon
 from App import APPNAME
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import get_toolbutton_styles
-from App.Core.Gui import get_tab_positions
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Gui import get_toolbutton_styles
+from App.Common.Gui import get_tab_positions
 from App.System.Login import ChangeCompanyDialog
 from App.System.Action import createActionDictionary
 from App.Database.Connect import appconn

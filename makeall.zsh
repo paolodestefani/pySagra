@@ -55,7 +55,6 @@ pyside6-lupdate	\
     App/Ui/CopyToolDialog.ui \
     App/Ui/DateTimeInputDialog.ui \
     App/Ui/DeleteToolDialog.ui \
-    App/Ui/DepartmentWidget.ui \
     App/Ui/DuplicateDialog.ui \
     App/Ui/EventFilterDialog.ui \
     App/Ui/EventToolDialog.ui \

@@ -41,9 +41,9 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-from App.Core.L10n import _tr
-from App.Core.Scripting import scriptInit
-from App.Core.Scripting import scriptMethod
+from App.Common.L10n import _tr
+from App.Common.Scripting import scriptInit
+from App.Common.Scripting import scriptMethod
 from App.Database.Lookup import event_lookup
 from App.Database.Settings import Settings
 from App.Widget.Delegate import RelationDelegate

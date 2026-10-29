@@ -59,8 +59,8 @@ from PySide6.QtWidgets import QDialog
 
 # application modules
 from App import session
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Database.Adaptation import list_adaptation
 from App.Database.Adaptation import create_adaptation
 from App.Database.Adaptation import get_view_columns

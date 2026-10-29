@@ -48,9 +48,9 @@ from App.Database.Models import ConnectionModel
 from App.Database.Models import ConnectionHistoryModel
 from App.Ui.ConnectionWidget import Ui_ConnectionWidget
 from App.Ui.ConnectionHistoryWidget import Ui_ConnectionHistoryWidget
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 from App.Widget.Form import FormViewManager
-from App.Core.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 
 
 # logger

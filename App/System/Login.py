@@ -56,14 +56,14 @@ from App import session
 from App import currentIcon
 
 # application modules
-from App.Core.Cryptography import string_encode
-from App.Core.Cryptography import string_decode
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import setTheme
-from App.Core.Gui import setColorScheme
-from App.Core.Gui import setFont
-from App.Core.Gui import setIconTheme
+from App.Common.Cryptography import string_encode
+from App.Common.Cryptography import string_decode
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Gui import setTheme
+from App.Common.Gui import setColorScheme
+from App.Common.Gui import setFont
+from App.Common.Gui import setIconTheme
 from App.Database.Connect import appconn
 from App.Database.Connect import has_companies_available
 from App.Database.Connect import get_companies_list

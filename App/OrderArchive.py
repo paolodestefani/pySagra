@@ -59,13 +59,12 @@ from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import TimeDelegate
 from App.Widget.Form import FormIndexManager
 from App.Ui.OrderWidget import Ui_OrderWidget
-from App.Core.L10n import _tr
-from App.Core.Scripting import scriptInit
-from App.Core.Scripting import scriptMethod
-from App.Report.ReportEngine import ReportException
-from App.Report.ReportEngine import ReportNoDataError
+from App.Common.L10n import _tr
+from App.Common.Scripting import scriptInit
+from App.Common.Scripting import scriptMethod
+from App.Common.ExceptionHandler import report_exception_context
 from App.Report.Order import printOrderReport
-from App.Report.Order import OrderReportException
+
 
 
 # logger
@@ -351,18 +350,10 @@ class OrderForm(FormIndexManager):
         ti = self.model.data(self.model.index(self.mapper.currentIndex(), ordh.ID))
         # customer copy
         if self.ui.checkBoxPrintCustomerCopy.isChecked():
-            try:
+            with report_exception_context(self):
                 printOrderReport(pc.CUSTOMER, None, ti)
-            except OrderReportException as er:
-                QMessageBox.critical(self,
-                                    _tr('MessageDialog', "Error"),
-                                    _tr('OrderArchive', f"{er}"))
-            except ReportNoDataError:
-                QMessageBox.information(self,
-                                        _tr('MessageDialog', "Information"),
-                                        _tr('OrderArchive', "No data to render"))
-            self.ui.checkBoxPrintCustomerCopy.setChecked(False)
-            no_print = False
+        self.ui.checkBoxPrintCustomerCopy.setChecked(False)
+        no_print = False
         # covers copy
         if self.ui.checkBoxPrintCoverCopy.isChecked():
             if self.ui.spinBoxCovers.value() == 0:
@@ -370,30 +361,16 @@ class OrderForm(FormIndexManager):
                                         _tr('MessageDialog', "Information"),
                                         _tr('OrderArchive', "No covers, not print required"))
                 return
-            try:
+            with report_exception_context(self):
                 printOrderReport(pc.COVER, None, ti)
-            except OrderReportException:
-                QMessageBox.information(self,
-                                        _tr('MessageDialog', "Information"),
-                                        _tr('OrderArchive', "No data to render"))
             self.ui.checkBoxPrintCoverCopy.setChecked(False)
             no_print = False
         # departments copies
         if setting['print_department_copy']:
             for i in self.depCopy:
                 if self.depCopy[i].isChecked():
-                    try:
+                    with report_exception_context(self):
                         printOrderReport(pc.DEPARTMENT, i, ti)
-                    except OrderReportException:
-                        QMessageBox.information(self,
-                                                _tr('MessageDialog', "Information"),
-                                                _tr('OrderArchive', "No data to render"))
-                    except ReportException as er:
-                        MessageBoxCritical(self,
-                                           _tr('MessageDialog', "Critical"),
-                                           _tr('OrderArchive', "Error printing department copy"),
-                                           str(er)
-                                           )
                     self.depCopy[i].setChecked(False)
                     no_print = False
         # nothing selected

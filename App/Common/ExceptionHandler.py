@@ -44,10 +44,14 @@ from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
+from App import session
 from App.Database.Exceptions import PyAppDBConnectionError
 from App.Database.Exceptions import PyAppDBError
+from App.Report import ReportException, ReportPrintError, ReportNoDataError, ReportCreationError, ReportXMLParseError
+from App.Report import OrderReportException, NoOrderReportParameters, NotEnoughtReportParameters
+
 from App.Database.Connect import appconn
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 
 
 # main application and postgres error codes and messages mapping
@@ -176,6 +180,61 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
     except Exception as ex:
         # Handle any other unexpected exceptions gracefully
         MessageBoxCritical(parent_widget, operation_title, _tr("Error", "Unexpected error"), str(ex))
+
+
+@contextmanager
+def report_exception_context(parent_widget: Any) -> Generator[None, None, None]:
+    """
+    Gestisce le eccezioni legate alla generazione dei report, 
+    gestisce il WaitCursor e mostra i messaggi localizzati corretti.
+    """
+    QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+    try:
+        try:
+            yield
+            
+            # Ripristino del cursore in caso di successo
+            if QGuiApplication.overrideCursor() is not None:
+                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                    QGuiApplication.restoreOverrideCursor()
+                    
+        except Exception:
+            # Ripristino del cursore in caso di qualsiasi eccezione prima del re-raise
+            if QGuiApplication.overrideCursor() is not None:
+                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                    QGuiApplication.restoreOverrideCursor()
+            raise
+            
+    except NoOrderReportParameters:
+        msg = f"{_tr('ReportException', 'No print parameters available for computer name')}: {session['hostname']}"
+        QMessageBox.information(parent_widget,
+                                _tr('MessageDialog', "Error"),
+                                msg)
+        
+    except NotEnoughtReportParameters:
+        msg = _tr('ReportException', 'Not enought print parameters available')
+        QMessageBox.information(parent_widget, 
+                                _tr('MessageDialog', "Error"),
+                                msg)
+        
+    except ReportNoDataError:
+        QMessageBox.information(parent_widget, 
+                                _tr('MessageDialog', "Information"), 
+                                _tr('ReportException', "No data to render"))
+        
+    except ReportException as er:
+        msg = f"{_tr('ReportException', 'Unhandled report exception')}: {er}"
+        QMessageBox.critical(parent_widget, 
+                             _tr('MessageDialog', "Critical"),
+                             msg)
+        
+    except Exception as ex:
+        # Import locale se usi una MessageBox personalizzata anche qui
+        from App.Widget.Dialog import MessageBoxCritical
+        MessageBoxCritical(parent_widget, 
+                           _tr("Error", "Report Error"), 
+                           _tr("Error", "Unexpected error"), 
+                           str(ex))
 
 
 @contextmanager

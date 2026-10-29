@@ -81,7 +81,7 @@ from PySide6.QtPrintSupport import QPrinterInfo
 # application modules
 from App import session
 from App import actionDefinition
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Settings import Settings

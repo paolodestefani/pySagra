@@ -37,7 +37,7 @@ from PySide6.QtGui import QKeySequence
 # application modules
 from App import APPNAME
 from App import actionDefinition
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 
 # system slots
 from App.System.User import changePassword

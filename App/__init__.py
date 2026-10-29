@@ -48,7 +48,7 @@ WEBSITE         = 'paolodestefani.it'
 MRV_PYTHON  = 3, 14, 0 
 MRV_PYSIDE  = 6, 11, 0
 MRV_QT      = 6, 11, 0
-MRV_PSYCOPG = 3, 3, 5
+MRV_PSYCOPG = 3, 3, 6
 
 # key for encoding/decoding stored database user and password
 ENCKEY = "WgqvuDSWuW909HX9Cb0tNpo0IaINHRdsRkqxfImxYGQ="

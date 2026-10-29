@@ -29,6 +29,7 @@ This module contains functions to generate and print order-related reports.
 
 # standard library
 from typing import Any
+from enum import StrEnum
 
 # PySide6
 from PySide6.QtCore import QDate
@@ -44,35 +45,46 @@ from escpos.printer import Network
 
 # application modules
 from App import session
-from App.Core.Escpos import escpos_printer
+from App.Common.Escpos import escpos_printer
 from App.Database.Settings import Settings
 from App.Database.OrderPrintSettings import order_print_settings
 from App.Database.Report import get_report_xml
 from App.Database.Report import report_xml
 from App.Database.Report import report_query
+from App.Report import OrderReportException, NoOrderReportParameters, NotEnoughtReportParameters
 from App.Report.ReportEngine import Report
 from App.Report.ReportEngineEscPos import ReportEscpos
 from App.Report.ReportEngineEscPos import PreviewDevice
 from App.Widget.Dialog import PlainTextPreviewDialog
 
 
-class OrderReportException(Exception):
-    pass
-
-class NoOrderReportParameters(OrderReportException):
-    pass
 
 
+# print copy
+class pc(StrEnum):
+    CUSTOMER        = 'C'
+    COVER           = 'V'
+    DEPARTMENT      = 'D'
 
-def printOrderReport(print_type: str, department_id: int | None, order_id: int | None) -> None:
+def printOrderReport(print_type: pc, department_id: int | None, order_id: int | None) -> None:
     "Generate a print report (driver or escpos) for the provided order_id"
+    # check settings first, hostname parameters are not required if setting don't allow printing
+    setting = Settings()
+    if print_type == pc.CUSTOMER and  not setting['print_customer_copy']:
+        return
+    if print_type == pc.COVER and  not setting['print_cover_copy']:
+        return
+    if print_type == pc.DEPARTMENT and  not setting['print_department_copy']:
+        return
     # get all print parameters
     if  (pars := order_print_settings(print_type, department_id)): 
         print_copy, print_method, copies, drv_report, drv_printer, esc_report, esc_printer = pars # for current computer name
     else:
-        raise NoOrderReportParameters(f"No parameters available for computer {session['hostname']}")
+        raise NoOrderReportParameters()
     if not print_copy:
         return
+    if (not print_method) or not (print_method == 'D' and drv_report is not None):
+        raise NotEnoughtReportParameters()
     match print_method:
         case 'D': # DRIVER
             # driver report and printer

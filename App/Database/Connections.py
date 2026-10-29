@@ -31,7 +31,7 @@ This module provides all the facilities to manage connections
 import logging
 
 # apllication modules
-from App.Core.ExceptionHandler import db_exception_context
+from App.Common.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
 

@@ -110,7 +110,7 @@ class Ui_SortFilterDialog(object):
         self.scrollAreaSorting.setWidgetResizable(True)
         self.scrollAreaWidgetContentsSorting = QWidget()
         self.scrollAreaWidgetContentsSorting.setObjectName(u"scrollAreaWidgetContentsSorting")
-        self.scrollAreaWidgetContentsSorting.setGeometry(QRect(0, 0, 608, 339))
+        self.scrollAreaWidgetContentsSorting.setGeometry(QRect(0, 0, 98, 28))
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContentsSorting)
         self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -286,7 +286,7 @@ class Ui_SortFilterDialog(object):
         self.buttonBox.rejected.connect(SortFilterDialog.reject)
         self.checkBoxMaxRows.clicked["bool"].connect(self.spinBoxMaxRows.setEnabled)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(SortFilterDialog)

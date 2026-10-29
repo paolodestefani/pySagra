@@ -31,7 +31,7 @@ This module provides classes and functions for application profiles database man
 import logging
 
 # application modules
-from App.Core.ExceptionHandler import db_exception_context
+from App.Common.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
 

@@ -31,7 +31,7 @@ Database fubctions for GUI management
 import logging
 
 # application modules
-from App.Core.ExceptionHandler import db_exception_context
+from App.Common.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
 

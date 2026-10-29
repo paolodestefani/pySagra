@@ -33,7 +33,7 @@ from typing import Any
 
 # application modules
 from App import session
-from App.Core.ExceptionHandler import db_exception_context
+from App.Common.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
 

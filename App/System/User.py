@@ -72,10 +72,10 @@ from App.Widget.Delegate import GenericDelegate
 from App.System.Help import HelpDialog
 from App.Ui.UserWidget import Ui_UserWidget
 from App.Ui.ChangePasswordDialog import Ui_ChangePasswordDialog
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.L10n import langCountry
-from App.Core.L10n import langCountryFlags
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.L10n import langCountry
+from App.Common.L10n import langCountryFlags
 
 
 # logger

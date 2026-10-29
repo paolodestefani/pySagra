@@ -59,8 +59,9 @@ from PySide6.QtWidgets import QSizePolicy
 # application modules
 from App import session
 from App import currentIcon
-from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Gui import get_tab_positions
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import report_exception_context
+from App.Common.Gui import get_tab_positions
 from App.Database.Settings import Settings
 from App.Database.Event import get_event_from_date
 from App.Database.CashDesk import get_cash_desk_description
@@ -77,11 +78,12 @@ from App.Database.Item import get_variants
 from App.Database.Order import Order
 from App.Report.Order import printOrderReport
 from App.Report.Order import printStockUnloadReport
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 from App.Widget.Dialog import DateTimeInputDialog
 from App.Widget.Control import ButtonSeat
 from App.Widget.Control import ButtonItem
 from App.Ui.ChooseVariantsDialog import Ui_ChooseVariantsDialog
+from App.Report.Order import pc
 
 
 # logger
@@ -100,10 +102,10 @@ class two(IntEnum):
     AMOUNT = 5
     
 # print copy
-class pc(StrEnum):
-    CUSTOMER        = 'C'
-    COVER           = 'V'
-    DEPARTMENT      = 'D'
+# class pc(StrEnum):
+#     CUSTOMER        = 'C'
+#     COVER           = 'V'
+#     DEPARTMENT      = 'D'
 
 
 # launch main order entry dialog
@@ -1374,16 +1376,16 @@ class BaseOrderDialog(QDialog):
         # ASYNC ORDER PRINT REPORTS DISPATCH
         # ---------------------------------------------------------------------
         # print customer receipt copy
-        with gui_exception_context(self, _tr('OrderEntry', "Printing order customer copy")):
+        with report_exception_context(self):
             printOrderReport(pc.CUSTOMER, None, ti)
         # covers copy
         if order.header['delivery'] == 'T' and order.header['covers']:
-            with gui_exception_context(self, _tr('OrderEntry', "Printing order cover copy")):
+            with report_exception_context(self):
                 printOrderReport(pc.COVER, None, ti)
         # ---------------------------------------------------------------------
         # SEPARATE DEPARTMENT COPIES PRINT DISPATCH
         # ---------------------------------------------------------------------
-        with gui_exception_context(self, _tr('OrderEntry', "Printing order department copies")):
+        with report_exception_context(self):
             for dept_id in used_dep:
                 if dept_id is None:
                     continue  # skip if department ID is not valid

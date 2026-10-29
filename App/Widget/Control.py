@@ -86,7 +86,7 @@ from PySide6.QtNetwork import QHostInfo
 
 # application modules
 from App import currentIcon
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 
 
 class LabelImage(QLabel):

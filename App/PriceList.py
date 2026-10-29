@@ -50,10 +50,10 @@ from App.Widget.Delegate import PriceDelegate
 from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.PriceListWidget import Ui_PriceListWidget
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import gui_exception_context
-from App.Core.Scripting import scriptInit
-from App.Core.Scripting import scriptMethod
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Scripting import scriptInit
+from App.Common.Scripting import scriptMethod
 
 
 # logger

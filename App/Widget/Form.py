@@ -47,9 +47,9 @@ from PySide6.QtWidgets import QApplication
 
 # application modules
 from App import session
-from App.Core.L10n import _tr
-from App.Core.ExceptionHandler import wait_cursor_context
-from App.Core.ExceptionHandler import gui_exception_context
+from App.Common.L10n import _tr
+from App.Common.ExceptionHandler import wait_cursor_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Database.Connect import appconn
 #from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import QueryModel

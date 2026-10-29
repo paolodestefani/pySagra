@@ -64,7 +64,7 @@ CREATE TABLE settings (
     lunch_start_time                    integer NOT NULL DEFAULT 11,
     dinner_start_time                   integer NOT NULL DEFAULT 18,
     order_number_based_on               char(1) NOT NULL DEFAULT 'E', -- (E)vent, (D)ay, Day (P)art  
-    menu_description_on_menu_items      boolean NOT NULL DEFAULT False,
+    menu_description_on_menu_items      boolean NOT NULL DEFAULT false,
     -- order entry ui
 	order_entry_ui                      integer NOT NULL DEFAULT 0,
     warning_background_color            char(7) DEFAULT '#FFFF00',
@@ -84,42 +84,30 @@ CREATE TABLE settings (
     order_list_font_family              varchar(100) NOT NULL DEFAULT 'Arial',
     order_list_font_size                integer NOT NULL DEFAULT 12,
     max_covers                          integer NOT NULL DEFAULT 12,
-    automatic_show_variants             boolean NOT NULL DEFAULT False,
-    always_show_stock_inventory         boolean NOT NULL DEFAULT False,
-    mandatory_table_number              boolean NOT NULL DEFAULT True,
-    mandatory_name_for_takeaway         boolean NOT NULL DEFAULT True,
-    use_table_list                      boolean NOT NULL DEFAULT True,
+    automatic_show_variants             boolean NOT NULL DEFAULT false,
+    always_show_stock_inventory         boolean NOT NULL DEFAULT false,
+    mandatory_table_number              boolean NOT NULL DEFAULT true,
+    mandatory_name_for_takeaway         boolean NOT NULL DEFAULT true,
+    use_table_list                      boolean NOT NULL DEFAULT true,
     table_list_rows                     integer NOT NULL DEFAULT 8,
     table_list_columns                  integer NOT NULL DEFAULT 8,
     table_list_spacing                  integer NOT NULL DEFAULT 8,
     table_list_font_family              varchar(60) NOT NULL DEFAULT 'Arial',
     table_list_font_size                integer NOT NULL DEFAULT 12,
-    check_inactivity                    boolean NOT NULL DEFAULT True,
+    check_inactivity                    boolean NOT NULL DEFAULT false,
     inactivity_time                     integer NOT NULL DEFAULT 180,
     -- order printing globals
     print_customer_copy                 boolean NOT NULL DEFAULT true,
-    --customer_print_method               char(1), -- D or E
-    --customer_copies                     integer DEFAULT 1,
-    --customer_report                     varchar(48),
-    --customer_printer_class              integer,
     print_department_copy               boolean NOT NULL DEFAULT true,
-    --department_print_method             char(1), -- D or E
-    --department_copies                   integer DEFAULT 1,
-    --department_report                   varchar(48),
     print_cover_copy                    boolean NOT NULL DEFAULT true,
-    --cover_print_method                  char(1), -- D or E
-    --cover_copies                        integer DEFAULT 1,
-    --cover_report                        varchar(48),
-    --cover_printer_class                 integer,
     -- order progress management
-	manage_order_progress               boolean NOT NULL DEFAULT False,
+	manage_order_progress               boolean NOT NULL DEFAULT false,
     -- ordered delivered report and view
-    ordered_delivered_automatic_update  boolean NOT NULL DEFAULT False,
+    ordered_delivered_automatic_update  boolean NOT NULL DEFAULT false,
     ordered_delivered_update_interval   integer NOT NULL DEFAULT 0,
-    print_ordered_delivered_report      boolean NOT NULL DEFAULT False,
+    print_ordered_delivered_report      boolean NOT NULL DEFAULT false,
 	ordered_delivered_copies            integer DEFAULT 1,
     ordered_delivered_report            varchar(48),
-    -- ordered_delivered_printer_class     integer,
     -- items inventory
     inventory_warning_stock_level       numeric(12, 2) NOT NULL DEFAULT 12,
     inventory_critical_stock_level      numeric(12, 2) NOT NULL DEFAULT 4,
@@ -140,18 +128,6 @@ CREATE TABLE settings (
         CHECK (order_number_based_on IN ('E', 'D', 'P')),
     CONSTRAINT settings_tab_position_check 
         CHECK (order_list_tab_position IN ('N', 'S', 'E', 'W')),
-    -- CONSTRAINT settings_customer_printer_class_fk 
-    --    FOREIGN KEY (customer_printer_class) 
-    --    REFERENCES printer_class (printer_class_id)
-    --    MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    --CONSTRAINT settings_covers_printer_class_fk 
-    --    FOREIGN KEY (cover_printer_class) 
-    --    REFERENCES printer_class (printer_class_id)
-    --    MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    --CONSTRAINT settings_ordered_delivered_printer_class_fk 
-    --    FOREIGN KEY (ordered_delivered_printer_class) 
-    --    REFERENCES printer_class (printer_class_id)
-    --    MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT settings_default_delivery_type_check 
         CHECK (default_delivery_type IN ('T', 'A')), -- (T)able, take-(A)way
     CONSTRAINT settings_default_payment_type_check 

@@ -48,7 +48,7 @@ from PySide6.QtPrintSupport import QPrintPreviewDialog
 from App import APPNAME
 from App import session
 from App import currentIcon
-from App.Core.L10n import _tr
+from App.Common.L10n import _tr
 from App.Ui.HelpDialog import Ui_HelpDialog
 
 # logger

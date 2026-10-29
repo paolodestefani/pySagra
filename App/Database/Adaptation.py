@@ -36,7 +36,7 @@ from psycopg.rows import dict_row
 
 # application modules
 from App.Database.Exceptions import PyAppDBError
-from App.Core.ExceptionHandler import db_exception_context
+from App.Common.ExceptionHandler import db_exception_context
 from App.Database.Connect import appconn
 
 
