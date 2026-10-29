@@ -7,13 +7,16 @@ ECHO activate virtual env
 call "C:\PyWare\.venv\pysidepsycopg\Scripts\activate.bat"
 
 ECHO create pyInstaller package
-pyinstaller --clean^
+pyinstaller^
  --onedir^
  --icon Icon\pySagra.ico^
  --windowed^
  --exclude-module PySide6.QtDBus^
  --exclude-module PySide6.QtQml^
  --exclude-module PySide6.QtQuick^
+ --exclude-module PySide6.QtQmlModels^
+ --exclude-module PySide6.QtQuickControls2^
+ --exclude-module PySide6.QtGraphs^
  pySagra.py
 
 ECHO deactivate virtual env

@@ -6,14 +6,17 @@ cd /Users/paolo/Development/pySagra
 # activate virtual env
 source /Users/paolo/Development/.venv/pyside-psycopg/bin/activate
 
-pyinstaller --clean \
+pyinstaller \
 	--onedir \
 	--windowed \
 	--icon Icon/pySagra.icns \
 	--noconfirm \
 	--exclude-module PySide6.QtDBus \
-	--exclude-module PySide6.QtQml \
-	--exclude-module PySide6.QtQuick \
+    --exclude-module PySide6.QtQml \
+    --exclude-module PySide6.QtQmlModels \
+    --exclude-module PySide6.QtQuick \
+    --exclude-module PySide6.QtQuickControls2 \
+    --exclude-module PySide6.QtGraphs \
 	pySagra.py
 	
 # remove security issue on macos
