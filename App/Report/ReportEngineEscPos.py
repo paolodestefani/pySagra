@@ -59,11 +59,13 @@ import xml.etree.ElementTree as ET
 import operator
 import logging
 import textwrap
+import random
+import zlib
+
 from itertools import zip_longest
-from typing import Any, Optional, Union
+from typing import Any
 from contextlib import contextmanager
 from escpos.printer import Dummy, Network, Usb
-from escpos.escpos import Escpos
 from escpos.constants import QR_ECLEVEL_L, QR_ECLEVEL_M, QR_ECLEVEL_Q, QR_ECLEVEL_H
 from escpos.constants import QR_MODEL_1, QR_MODEL_2, QR_MICRO
 import PIL
@@ -71,10 +73,18 @@ from io import BytesIO
 import base64
 import socket
 
+import re
+import barcode as pybarcode
+import qrcode
+from qrcode import constants as qrc
+
+
 # PySide6
-# from PySide6.QtCore import QOperatingSystemVersion
-from PySide6.QtCore import QLocale
 from PySide6.QtCore import Qt
+from PySide6.QtCore import QRectF
+from PySide6.QtCore import QMarginsF
+from PySide6.QtCore import QSizeF
+from PySide6.QtCore import QLocale, QPointF
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
@@ -83,20 +93,22 @@ from PySide6.QtCore import QFile
 from PySide6.QtCore import QIODeviceBase
 from PySide6.QtCore import QThread
 from PySide6.QtCore import Signal
-from PySide6.QtCore import QRect
-from PySide6.QtCore import QTimer
 
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QGuiApplication 
+from PySide6.QtGui import QPageLayout 
+from PySide6.QtGui import QPaintDevice 
+from PySide6.QtGui import QPdfWriter 
+from PySide6.QtGui import QPolygonF
 from PySide6.QtGui import QCursor
 from PySide6.QtGui import QImage
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QDialog
-from PySide6.QtWidgets import QPlainTextEdit
-from PySide6.QtWidgets import QVBoxLayout
-from PySide6.QtWidgets import QDialogButtonBox
+
 from PySide6.QtWidgets import QApplication
+from PySide6.QtPrintSupport import QPrintPreviewDialog
+from PySide6.QtPrintSupport import QPrinter
 
-
+from App.Report.EscposPreview import ReceiptPreview   # absolute import
+    
+    
 # application definitions for special fields
 if __name__ != "__main__":
     from App import APPNAME
@@ -213,6 +225,7 @@ class BaseInlineRenderer():
         # other
         self.width = int(paramdict.get("width", "5"))
         self.align = paramdict.get("align", options['align'])
+        self.can_grow = paramdict.get("can_grow", "true") == 'true'
         self.quantity_decimals = int(paramdict.get("quantity_decimals", options['quantity_decimals']))
         self.price_decimals = int(paramdict.get("price_decimals", options['price_decimals']))
         self.amount_decimals = int(paramdict.get("amount_decimals", options['amount_decimals']))
@@ -220,15 +233,16 @@ class BaseInlineRenderer():
         self.field_format = paramdict.get("format", "")
         self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|None = None  # current value
     
-    def render(self) -> str:
-        "Print text"
-        if not self.is_visible:
-            return '' # Row class fill the line in case of invisible elements
-        # update text properties
+    def apply_style(self) -> None:
+        "Set the text properties of this element on the print buffer"
         self.report.update_text_properties(
             self.font, self.bold, self.underline, self.normal_textsize, self.double_height,
             self.double_width, self.density, self.invert, self.flip, self.smooth)
         
+    def render(self) -> str:
+        "Print text"
+        if not self.is_visible:
+            return '' # Row class fill the line in case of invisible elements 
         # create the output string
         text: str = ''
         match (self.value, self.field_format):
@@ -288,9 +302,11 @@ class BaseInlineRenderer():
             # --- GENERAL FALLBACK ---
             case _:
                 text = str(self.value or '')
-
-        return text
-
+        # render only the available width if can't grow
+        if self.can_grow:
+            return text
+        else:
+            return text[:self.width]
 
 class Label(BaseInlineRenderer):
     "Label class"
@@ -310,12 +326,12 @@ class Field(BaseInlineRenderer):
         super().__init__(options, paramdict)
         self.value = None
         self.field_name = field_name
+        self.suppress_repeated = paramdict.get("suppress_repeated", "false") == 'true'
         
     def __repr__(self) -> str:
         return f"Field for {self.field_name}"
 
     def set_value(self, value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage) -> None:
-        # if self.value is not None and self.value != '':
         self.value = value
 
 
@@ -708,15 +724,15 @@ class Row(list):
     def __init__(self, options:dict, paramdict: dict) -> None:
         self.is_visible = paramdict.get("is_visible", "true") == 'true'
         self.report = options['report_instance']
-        raw_param = paramdict.get("is_visible_parameter", "").strip()
-        if raw_param:
-            # it recognizes "not" only if it is a standalone word at the beginning
-            self.parameter_negated = raw_param.startswith("not ") or raw_param.startswith("not\t")
-            # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
-            self.is_visible_parameter = raw_param[4:].lstrip() if self.parameter_negated else raw_param
-        else:
-            self.is_visible_parameter = None
-            self.parameter_negated = None
+        #raw_param = paramdict.get("is_visible_parameter", "").strip()
+        #if raw_param:
+        #    # it recognizes "not" only if it is a standalone word at the beginning
+        #    self.parameter_negated = raw_param.startswith("not ") or raw_param.startswith("not\t")
+        #    # if "not" is present, it takes everything after the space; otherwise, it takes the entire string.
+        #    self.is_visible_parameter = raw_param[4:].lstrip() if self.parameter_negated else raw_param
+        #else:
+        #    self.is_visible_parameter = None
+        #    self.parameter_negated = None
         
     def __repr__(self) -> str:
         return f"Row object with {len(self)} elements"
@@ -729,6 +745,11 @@ class Row(list):
         for element in self:
             if isinstance(element, Field):
                 value = record[element.field_name]
+                if element.suppress_repeated:
+                    if self.report.last_printed_values.get(element.field_name) == value:
+                        value = None
+                    else:
+                        self.report.last_printed_values[element.field_name] = value
                 element.set_value(value)
             if element.is_visible:         
                 lines = textwrap.wrap(element.render(), width=element.width)
@@ -758,7 +779,8 @@ class Row(list):
                     pezzo_formattato = pezzo_testo[:elem.width].ljust(elem.width)
                 else: # center
                     pezzo_formattato = pezzo_testo[:elem.width].center(elem.width)
-                    
+                
+                elem.apply_style()
                 self.report.buffer.text(pezzo_formattato)
             
             # Invio della riga fisica al buffer/stampante
@@ -931,82 +953,83 @@ class PrinterSenderThread(QThread):
                         pass
             
          
-# Dummy subclass for store preview text
+# Dummy subclass for store preview operations
+from escpos.printer import Dummy
+
+def _default_style() -> dict:
+    return dict(font='a', bold=False, underline=0, invert=False,
+                align='left', wm=1, hm=1)   # wm/hm = moltiplicatori larghezza/altezza
 
 class DummyDevice(Dummy):
-    """
-    This Dummy subclass is used to store the text part of the print methods
-    and use that for a textual print preview
-    """
-    
+    "Dummy that records styled operations for a graphical/textual preview"
+
     def __init__(self, *args, **kwargs):
-        "Call the superclass and create the accumulator variable"
         super().__init__(*args, **kwargs)
-        self._preview_accumulator = []
         self.width = self.profile.profile_data['fonts'].get('0')['columns']
-        
+        self.ops: list[tuple] = []
+        self.style = _default_style()
+
+    def _track(self, kw: dict) -> None:
+        s = self.style
+        for k in ('align', 'font', 'bold', 'underline', 'invert'):
+            if kw.get(k) is not None:
+                s[k] = kw[k]
+        if kw.get('normal_textsize'):
+            s['wm'] = s['hm'] = 1
+        if kw.get('double_width') is not None:
+            s['wm'] = 2 if kw['double_width'] else 1
+        if kw.get('double_height') is not None:
+            s['hm'] = 2 if kw['double_height'] else 1
+        if kw.get('custom_size'):
+            s['wm'], s['hm'] = kw.get('width', 1), kw.get('height', 1)
+
+    def set(self, *args, **kwargs) -> None:
+        super().set(*args, **kwargs)
+        self._track(kwargs)
+
+    def set_with_default(self, *args, **kwargs) -> None:
+        super().set_with_default(*args, **kwargs)
+        self.style = _default_style()
+        self._track(kwargs)
+
     def text(self, txt: str) -> None:
-        "Intercepts the text method and store the string argument"
         if txt:
-            self._preview_accumulator.append(txt)
+            self.ops.append(('text', txt, dict(self.style)))
         super().text(txt)
-        
+
     def block(self, txt: str, *args, **kwargs) -> None:
-        "Interceps block method and store the string argument"
         if txt:
-            self._preview_accumulator.append(txt)
+            self.ops.append(('text', txt, dict(self.style)))
         super().block(txt, *args, **kwargs)
-        
+
     def image(self, *args, **kwargs) -> None:
-        "Intercepts the image method and stores a text tag"
-        self._preview_accumulator.append("<< IMAGE >>\n")
+        self.ops.append(('box', 'IMAGE'))
         super().image(*args, **kwargs)
         
     def qr(self, content, *args, **kwargs) -> None:
-        "Intercepts the qr method and stores a text tag"
-        self._preview_accumulator.append(f'<< QRCODE: {content} >>\n')
+        ec = kwargs.get('ec', args[0] if len(args) > 0 else 0)
+        size = kwargs.get('size', args[1] if len(args) > 1 else 3)
+        self.ops.append(('qr', content, ec, size))
         super().qr(content, *args, **kwargs)
-        
-    def barcode(self, code, bc, *args, **kwargs) -> None:
-        "Intercepts the barcode method and stores a text tag"
-        self._preview_accumulator.append(f"<< BARCODE {bc}: {code} >>\n")
-        super().barcode(code, bc, *args, **kwargs)
-        
-    def print_and_feed(self, n: int = 1, *args, **kwargs) -> None:
-        "Intercepts the print_and_feed method and send a LF for preview"
-        self._preview_accumulator.append("\n" * n)
-        super().print_and_feed(n, *args, **kwargs)
-        
-    def cut(self, mode: str = 'FULL', feed: bool = True, *args, **kwargs) -> None:
-        "Intercepts the cut method and stores a text tag"
-        super().cut(mode, feed, *args, **kwargs)
-        # cut calls print_and_feed BEFORE cutting the paper for preview is better do after super()
-        self._preview_accumulator.append(f"<< CUT PAPER - MODE: {mode} FEED: {feed} >>\n\n")
-        
-    def preview_text(self) -> str:
-        "Returns all the text accumulated for the preview"
-        if self._preview_accumulator:
-            return "".join(self._preview_accumulator)
-        return ''
-    
-    def clear_preview(self) -> None:
-        "Clear the text preview buffer"
-        self._preview_accumulator.clear()
-        
-    
-       
-# Preview device
 
-class PreviewDevice:
-    
-    def __init__(sefl) -> None:
-        sefl._text = ''
-        
-    def set_preview(self, text: str) -> None:
-        self._text = text
-        
-    def get_preview(self) -> str:
-        return self._text
+    def barcode(self, code, bc, *args, **kwargs) -> None:
+        self.ops.append(('barcode', code, bc,
+                        kwargs.get('height', 64), kwargs.get('width', 3),
+                        str(kwargs.get('pos', 'BELOW')).upper()))
+        super().barcode(code, bc, *args, **kwargs)
+
+    def print_and_feed(self, n: int = 1, *args, **kwargs) -> None:
+        self.ops.append(('feed', n))
+        super().print_and_feed(n, *args, **kwargs)
+
+    def cut(self, mode: str = 'FULL', feed: bool = True, *args, **kwargs) -> None:
+        super().cut(mode, feed, *args, **kwargs)   # il feed interno è già registrato
+        self.ops.append(('cut', mode))
+
+    def clear_preview(self) -> None:
+        self.ops.clear()
+        self.style = _default_style()
+        self.clear()          # Dummy.clear(): svuota anche i byte
         
     
 # Report
@@ -1023,7 +1046,7 @@ class ReportEscpos():
         self._current_text_property['bold'] = False
         self._current_text_property['underline'] = 0 # 0..2
         self._current_text_property['normal_textsize'] = True
-        self._current_text_property['double_heigh'] = False
+        self._current_text_property['double_height'] = False
         self._current_text_property['double_width'] = False
         self._current_text_property['density'] = 0 # 0..8
         self._current_text_property['invert'] = False
@@ -1276,7 +1299,7 @@ class ReportEscpos():
                      ('bold', bold),
                      ('underline', underline),
                      ('normal_textsize', normal_textsize),
-                     ('double_heigh', double_height),
+                     ('double_height', double_height),
                      ('double_width', double_width),
                      ('density', density),
                      ('invert', invert),
@@ -1369,6 +1392,8 @@ class ReportEscpos():
         if not self.data:  # no data to render
             raise ReportNoDataError
         
+        self.buffer.clear_preview()
+         
         # clear everything first
         self.current_group_index = 0
         for s in self.summaries:
@@ -1443,27 +1468,112 @@ class ReportEscpos():
         print(error_message)
         self.printer_thread = None
         
-    def print(self, pd: Network | Usb | PreviewDevice) -> None:
-        "Print document from generated report raw bytes in the actual print device or a textual print preview"
-        
+    
+    def print(self, pd: Network | Usb | QPaintDevice) -> None:
+        "Print the generated receipt on a raw device, a text preview or a paint device (preview dialog, printer, PDF)"
         match pd:
-            case PreviewDevice():
-                pd.set_preview(self.buffer.preview_text())
             case Network() | Usb():
                 self.printer_thread = PrinterSenderThread(pd, raw_bytes=self.buffer.output)
                 self.printer_thread.job_completed.connect(self._on_print_success)
                 self.printer_thread.print_error.connect(self._on_print_error)
                 self.printer_thread.start()
+            case QPaintDevice():          # QPrinter (anche dalla dialog), QPdfWriter
+                self._print_graphic(pd)
             case _:
                 pass
                 
+    def receipt_page_layout(self, paper_width_mm: float = 80.0) -> QPageLayout:
+        return ReceiptPreview(self.buffer, paper_width_mm).page_layout()
 
+    def _print_graphic(self, device: QPaintDevice, paper_width_mm: float = 80.0) -> None:
+        preview = ReceiptPreview(self.buffer, paper_width_mm)
+        if isinstance(device, QPrinter):
+            device.setDocName(self.options.get('documentName', 'Receipt'))
+        elif isinstance(device, QPdfWriter):
+            device.setTitle(self.options.get('documentName', 'Receipt'))
+            device.setPageLayout(preview.page_layout())
+        preview.paint(device)
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     QLocale.setDefault(QLocale.Language.English)
-
+    
     xml_string0 = """<?xml version="1.0" encoding="UTF-8"?>
+<report version="1.0" print_method="ESC/POS">
+    <options>
+        <printer_profile type="str">TM-T20II</printer_profile>
+        <charcode type="str">AUTO</charcode>
+        <font type="str">a</font> <!-- default Font A -->
+    </options>
+    <columns>
+        <field_name>id</field_name>
+        <field_name>number</field_name>
+        <field_name>date</field_name>
+        <field_name>time</field_name>
+        <field_name>table</field_name>
+        <field_name>customer</field_name>
+        <field_name>item</field_name>
+        <field_name>quantity</field_name>
+        <field_name>price</field_name>
+        <field_name>amount</field_name>
+    </columns>
+    <header>
+    </header>
+    <groups>
+        <group field="id" reverse="false">
+            <group_header>
+                <band>
+                <barcode type="embedded" barcode_type="CODE128">123456789</barcode>
+                    <row>
+                        <label width="48" font="a">****** EXAMPLE OF AVAILABLE OPTIONS ******</label>
+                    </row>
+                    <line width="max"/>
+                </band>
+                <band>
+                    <row>
+                        <label width="48" align="left">-- STYLE TEST --</label>
+                    </row>
+                    <row>
+                        <label width="48" underline="1">Underline 1 (sottile)</label>
+                    </row>
+                    <row>
+                        <label width="48" underline="2">Underline 2 (spesso)</label>
+                    </row>
+                    <row>
+                        <label width="48" invert="true">Invert: bianco su nero</label>
+                    </row>
+                    <row>
+                        <label width="24" double_width="true">Doppia larghezza</label>
+                    </row>
+                    <row>
+                        <label width="48" double_height="true">Doppia altezza</label>
+                    </row>
+                    <row>
+                        <label width="24" double_width="true" double_height="true">Doppia W+H</label>
+                    </row>
+                    <row>
+                        <label width="24" align="center" double_width="true" bold="true">CENTRATO</label>
+                    </row>
+                    <row>
+                        <label width="24" align="right" font="b">Font B a destra</label>
+                    </row>
+                </band>
+            </group_header>
+            <group_footer>
+                <band>
+                    <qrcode type="embedded">ABCDCBA</qrcode>
+                    <feed count="1"/>
+                    <cut mode="PART" feed="true"/>
+                </band>
+            </group_footer>
+        </group>
+    </groups>
+    <details>
+    </details>
+</report>"""
+
+    xml_string1 = """<?xml version="1.0" encoding="UTF-8"?>
 <report version="1.0" print_method="ESC/POS">
     <options>
         <printer_profile type="str">TM-T20II</printer_profile>
@@ -1572,7 +1682,7 @@ if __name__ == "__main__":
                     </row>
                     <feed count="1"/>
                     <row>
-                        <label width="48" align="center" font="b">THANKS AND GOODBYE</label>
+                        <label width="48" align="center">THANKS AND GOODBYE</label>
                     </row>
                     <feed count="1"/>
                     <row>
@@ -1601,9 +1711,7 @@ if __name__ == "__main__":
 </report>
 """
     
-    for i in (
-              xml_string0,
-                 ):
+    for i in (xml_string0, xml_string1):
         report = ReportEscpos(i)
         report.set_data([# id, number, date, time, table, customer name, item, quantity, price, amount
             (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'GNOCCHI', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
@@ -1615,31 +1723,50 @@ if __name__ == "__main__":
             (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
             (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
             (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'GNOCCHI', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'PENNE amatriciana', 3, decimal.Decimal(5.5), decimal.Decimal(16.5)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'SALSICCE con 2 fette di polenta', 1, decimal.Decimal(6.5), decimal.Decimal(6.5)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'COSTICINE', 2, decimal.Decimal(6.5), decimal.Decimal(13.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BRACIOLA', 2, decimal.Decimal(7.5), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'PATATE FRITTE', 4, decimal.Decimal(3.0), decimal.Decimal(12.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'FAGIOLI con cipolla', 1, decimal.Decimal(3.0), decimal.Decimal(3.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
+            (100, 35, QDate(2018, 1, 1), QTime(19, 12, 35), '54B', 'Pippo Baudo', 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0)),                                                    
             (110, 36, QDate(2018, 1, 1), QTime(19, 15, 35), '198A', None, 'BIRRA BIONDA', 3, decimal.Decimal(5.0), decimal.Decimal(15.0)),
             (110, 36, QDate(2018, 1, 1), QTime(19, 15, 35), '198A', None, 'BIRRA ROSSA', 2, decimal.Decimal(5.5), decimal.Decimal(11.0))
             ])
-        
-        def start_process():
-            with wait_cursor_context():
-                report.generate()
-            pdv = PreviewDevice()
-            report.print(pdv)
-            #dlg = PlainTextPreviewDialog(pdv.get_preview())
-            dlg = QDialog()
-            dlg.setWindowTitle("Preview")
-            dlg.setWindowFlags(Qt.WindowType.Dialog|Qt.WindowType.WindowMinMaxButtonsHint|Qt.WindowType.WindowCloseButtonHint)
-            layout = QVBoxLayout()
-            pte = QPlainTextEdit(pdv.get_preview())
-            pte.setReadOnly(True)
-            font = QFont("Menlo", 14)
-            font.setStyleHint(QFont.StyleHint.TypeWriter)
-            pte.setFont(font)
-            layout.addWidget(pte)
-            buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
-            buttonBox.accepted.connect(dlg.accept) 
-            layout.addWidget(buttonBox)
-            dlg.setLayout(layout)
-            dlg.setGeometry(QRect(100, 100, 1024, 768))
-            dlg.exec()
-        QTimer.singleShot(0, start_process)
-        sys.exit(app.exec())
+        with wait_cursor_context():
+            report.generate()
+        dialog = QPrintPreviewDialog()
+        dialog.setWindowTitle("Print preview")
+        printer = dialog.printer()
+        printer.setPageSize(report.receipt_page_layout(80.0).pageSize())
+        printer.setFullPage(True)
+        dialog.paintRequested.connect(report.print)
+        dialog.exec()
+
+

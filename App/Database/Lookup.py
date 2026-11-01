@@ -200,18 +200,34 @@ def cover_order_escpos_report_lookup(null: bool = False) -> list[tuple]:
         return [(None, None)] + [(c, d) for i, c, d in get_report_list('E', 'ORDER_COVER', session['l10n'])]
     else:
         return [(c, d) for i, c, d in get_report_list('E', 'ORDER_COVER', session['l10n'])]
+    
+def ordered_delivered_driver_report_lookup(null: bool = False) -> list[tuple]:
+    "Get a list of all reports of ordered delivered report class"
+    if null:
+        return [(None, None)] + [(c, d) for i, c, d in get_report_list('D', 'ORDERED_DELIVERED', session['l10n'])]
+    else:
+        return [(c, d) for i, c, d in get_report_list('D', 'ORDERED_DELIVERED', session['l10n'])]
+    
+def ordered_delivered_escpos_report_lookup(null: bool = False) -> list[tuple]:
+    "Get a list of all reports of ordered delivered report class"
+    if null:
+        return [(None, None)] + [(c, d) for i, c, d in get_report_list('E', 'ORDERED_DELIVERED', session['l10n'])]
+    else:
+        return [(c, d) for i, c, d in get_report_list('E', 'ORDERED_DELIVERED', session['l10n'])]
 
 def order_driver_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all report (code, description) of customer/cover/department reports"
     return (customer_order_driver_report_lookup(null) + 
             department_order_driver_report_lookup(null) +
-            cover_order_driver_report_lookup(null))
+            cover_order_driver_report_lookup(null) +
+            ordered_delivered_driver_report_lookup(null))
     
 def order_escpos_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all report (code, description) of customer/cover/department reports"
     return (customer_order_escpos_report_lookup(null) + 
             department_order_escpos_report_lookup(null) +
-            cover_order_escpos_report_lookup(null))
+            cover_order_escpos_report_lookup(null) +
+            ordered_delivered_escpos_report_lookup(null))
 
 def stock_unload_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of stock unload class"

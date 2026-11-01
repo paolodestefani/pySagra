@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with pySagra.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Core package
+"""Common package
 
 This package contains core modules used by the other application's modules
 

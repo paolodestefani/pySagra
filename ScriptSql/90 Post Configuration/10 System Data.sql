@@ -202,7 +202,7 @@ VALUES
 ('ds', 'dss1', Null, 2, 'S', Null),
 ('ds', 'dscp', Null, 3, 'A', 'sys_change_password'),
 ('ds', 'dss2', Null, 4, 'S', Null),
-('ds', 'dsct', Null, 5, 'A', 'sys_preferences'),
+('ds', 'dspr', Null, 5, 'A', 'sys_preferences'),
 ('ds', 'dss3', Null, 6, 'S', Null),
 ('ds', 'dsq', Null, 7, 'A', 'sys_quit'),
 ('dh', 'dhi', Null, 1, 'A', 'help_index'),

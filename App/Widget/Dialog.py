@@ -122,7 +122,7 @@ from App.Database.Adaptation import set_adapt_class_default
 from App.Database.Adaptation import set_adapt_user_default
 from App.Database.Event import get_event_data
 from App.Report.ReportEngine import Report
-from App.Report.ReportEngineEscPos import ReportEscpos, PreviewDevice
+from App.Report.ReportEngineEscPos import ReportEscpos
 from App.Report.ReportEngine import ReportException, ReportPrintError
 from App.Widget.Control import RelationalComboBox
 from App.Widget.Control import CheckableComboBox
@@ -2835,10 +2835,13 @@ class PrintDialog(QDialog):
                     dialog.exec()
             
             case 'E': # ESC/POS
-                preview = PreviewDevice()
-                self.report.print(preview)
-                dlg = PlainTextPreviewDialog(session['mainwin'], preview.get_preview())
-                dlg.exec()
+                dialog = QPrintPreviewDialog(session['mainwin'])
+                dialog.setWindowTitle("Print preview")
+                printer = dialog.printer()
+                printer.setPageSize(self.report.receipt_page_layout(80.0).pageSize())
+                printer.setFullPage(True)
+                dialog.paintRequested.connect(self.report.print)
+                dialog.exec()
            
 
     def printReport(self) -> None:

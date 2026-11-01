@@ -54,8 +54,6 @@ from App.Database.Report import report_query
 from App.Report import OrderReportException, NoOrderReportParameters, NotEnoughtReportParameters
 from App.Report.ReportEngine import Report
 from App.Report.ReportEngineEscPos import ReportEscpos
-from App.Report.ReportEngineEscPos import PreviewDevice
-from App.Widget.Dialog import PlainTextPreviewDialog
 
 
 
@@ -83,7 +81,9 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
         raise NoOrderReportParameters()
     if not print_copy:
         return
-    if (not print_method) or not (print_method == 'D' and drv_report is not None):
+    if (not print_method 
+        or (print_method == 'D' and drv_report is None)
+        or (print_method == 'E' and esc_report is None)):
         raise NotEnoughtReportParameters()
     match print_method:
         case 'D': # DRIVER
@@ -132,10 +132,17 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
                 report_esc.print(printer)
             else:
                 # print preview
-                preview = PreviewDevice()
-                report_esc.print(preview)
-                dlg = PlainTextPreviewDialog(session['mainwin'], preview.get_preview())
-                dlg.exec()
+                # preview = PreviewDevice()
+                # report_esc.print(preview)
+                # dlg = PlainTextPreviewDialog(session['mainwin'], preview.get_preview())
+                # dlg.exec()
+                dialog = QPrintPreviewDialog()
+                dialog.setWindowTitle("Print preview")
+                printer = dialog.printer()
+                printer.setPageSize(report_esc.receipt_page_layout(80.0).pageSize())
+                printer.setFullPage(True)
+                dialog.paintRequested.connect(report_esc.print)
+                dialog.exec()
     
 
 def printStockUnloadReport(report_id: int,

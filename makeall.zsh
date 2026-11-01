@@ -20,9 +20,9 @@ echo "Updating translation file"
 # translations without pro file, sources and forms
 pyside6-lupdate	\
 	pySagra.py \
-	App/Core/ExceptionHandler.py \
-	App/Core/Gui.py \
-	App/Core/Scripting.py \
+	App/Common/ExceptionHandler.py \
+	App/Common/Gui.py \
+	App/Common/Scripting.py \
 	App/Database/Models.py \
 	App/System/About.py \
     App/System/Action.py \

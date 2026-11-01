@@ -52,6 +52,7 @@ from App.Widget.Delegate import NewStockDelegate
 from App.Widget.Delegate import StockLevelDelegate
 from App.Widget.Form import FormViewManager
 from App.Widget.Dialog import EventFilterDialog
+from App.Widget.Dialog import PrintDialog
 from App.Database.Lookup import item_with_stock_control_lookup
 from App.Database.Models import InventoryModel
 from App.Database.Models import KitAvailabilityModel
@@ -105,7 +106,7 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
         self.availableStatus = (True, True, True, True, False, False, False, False,
-                                True, False, False, False)
+                                True, False, True, False)
         self.ui = Ui_InventoryWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableViewItem)  # required for formviewmanager
@@ -177,6 +178,12 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         # edit item cell
         newIndex = model.index(newRow, inv.ITEM)
         self.ui.tableViewItem.edit(newIndex)
+        
+    @scriptMethod
+    def print(self):
+        "Items report"
+        dialog = PrintDialog(self, 'INVENTORY')
+        dialog.show()
 
     def updateFilterConditions(self, 
                                event: int,

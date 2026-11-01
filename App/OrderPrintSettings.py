@@ -100,7 +100,8 @@ class ops(IntEnum):
 def print_type() -> list:
     return [('C', _tr('OrderPrintSettings', 'Customer')),
             ('V', _tr('OrderPrintSettings', 'Cover')),
-            ('D', _tr('OrderPrintSettings', 'Department'))]
+            ('D', _tr('OrderPrintSettings', 'Department')),
+            ('O', _tr('OrderPrintSettings', 'Ordered delivered'))]
     
 def print_methods() -> list:
     return [('D', _tr('OrderPrintSettings', 'Driver')),

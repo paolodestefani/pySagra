@@ -83,7 +83,7 @@ CREATE TABLE order_print_settings (
     CONSTRAINT order_print_settings_unique 
         UNIQUE (company_id, hostname, print_type, department_id),
     CONSTRAINT order_print_settings_print_type_check 
-        CHECK (print_type IN ('C', 'V', 'D')),
+        CHECK (print_type IN ('C', 'V', 'D', 'O')), -- (C)ustomer/Co(V)er/(D)epartment/(O)rdered delivered
     CONSTRAINT order_print_settings_print_method_check 
         CHECK (print_method IN ('D', 'E')),
     CONSTRAINT order_print_settings_department_fk 

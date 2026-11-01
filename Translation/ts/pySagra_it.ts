@@ -519,7 +519,7 @@ insieme a questo programma. In caso contrario, consulta
         <location filename="../../App/System/Action.py" line="506"/>
         <location filename="../../App/System/Action.py" line="508"/>
         <source>Order print settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Impostazione stampa ordini</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="545"/>
@@ -554,17 +554,17 @@ insieme a questo programma. In caso contrario, consulta
         <location filename="../../App/System/Action.py" line="484"/>
         <location filename="../../App/System/Action.py" line="486"/>
         <source>ESC/POS Printers</source>
-        <translation type="unfinished"></translation>
+        <translation>Stampanti ESC/POS</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="485"/>
         <source>Manage ESC/POS Printers names and parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Gestione dei nomi e delle impostazionie delle stampanti ESC/POS</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="507"/>
         <source>Manage order print settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Gestione delle impostazioni di stampa degli ordini</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="512"/>
@@ -1003,7 +1003,7 @@ insieme a questo programma. In caso contrario, consulta
     <message>
         <location filename="../../App/Ui/ChangePasswordDialog.ui" line="92"/>
         <source>Retype the password, must match the previous typed password</source>
-        <translation>Reinserisci la password; deve corrispondere alla password inserita in precedenza.</translation>
+        <translation>Reinserisci la password; deve corrispondere alla password inserita in precedenza</translation>
     </message>
 </context>
 <context>
@@ -1040,107 +1040,107 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>Color</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="63"/>
+        <location filename="../../App/Common/Gui.py" line="63"/>
         <source>Dark red</source>
         <translation>Rosso scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="64"/>
+        <location filename="../../App/Common/Gui.py" line="64"/>
         <source>Red</source>
         <translation>Rosso</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="65"/>
+        <location filename="../../App/Common/Gui.py" line="65"/>
         <source>Coral</source>
         <translation>Corallo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="66"/>
+        <location filename="../../App/Common/Gui.py" line="66"/>
         <source>Orange</source>
         <translation>Arancione</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="67"/>
+        <location filename="../../App/Common/Gui.py" line="67"/>
         <source>Gold</source>
         <translation>Oro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="68"/>
+        <location filename="../../App/Common/Gui.py" line="68"/>
         <source>Yellow</source>
         <translation>Giallo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="69"/>
+        <location filename="../../App/Common/Gui.py" line="69"/>
         <source>Dark green</source>
         <translation>Verde scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="70"/>
+        <location filename="../../App/Common/Gui.py" line="70"/>
         <source>Green</source>
         <translation>Verde</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="71"/>
+        <location filename="../../App/Common/Gui.py" line="71"/>
         <source>Green yellow</source>
         <translation>Giallo verde</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="72"/>
+        <location filename="../../App/Common/Gui.py" line="72"/>
         <source>Light green</source>
         <translation>Verde chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="73"/>
+        <location filename="../../App/Common/Gui.py" line="73"/>
         <source>Dark blue</source>
         <translation>Blu scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="74"/>
+        <location filename="../../App/Common/Gui.py" line="74"/>
         <source>Blue</source>
         <translation>Blu</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="75"/>
+        <location filename="../../App/Common/Gui.py" line="75"/>
         <source>Royal blue</source>
         <translation>Blu reale</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="76"/>
+        <location filename="../../App/Common/Gui.py" line="76"/>
         <source>Sky blue</source>
         <translation>Azzurro cielo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="77"/>
+        <location filename="../../App/Common/Gui.py" line="77"/>
         <source>Cyan / Aqua</source>
         <translation>Ciano / Acquamarina</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="78"/>
+        <location filename="../../App/Common/Gui.py" line="78"/>
         <source>Magenta / Fuchsia</source>
         <translation>Magenta / Fucsia</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="79"/>
+        <location filename="../../App/Common/Gui.py" line="79"/>
         <source>Purple</source>
         <translation>Viola</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="80"/>
+        <location filename="../../App/Common/Gui.py" line="80"/>
         <source>Black</source>
         <translation>Nero</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="81"/>
+        <location filename="../../App/Common/Gui.py" line="81"/>
         <source>Gray</source>
         <translation>Grigio</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="82"/>
+        <location filename="../../App/Common/Gui.py" line="82"/>
         <source>Light gray</source>
         <translation>Grigio chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="83"/>
+        <location filename="../../App/Common/Gui.py" line="83"/>
         <source>White</source>
         <translation>Bianco</translation>
     </message>
@@ -1148,17 +1148,17 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>ColorScheme</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="90"/>
+        <location filename="../../App/Common/Gui.py" line="90"/>
         <source>Light</source>
         <translation>Chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="91"/>
+        <location filename="../../App/Common/Gui.py" line="91"/>
         <source>Dark</source>
         <translation>Scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="92"/>
+        <location filename="../../App/Common/Gui.py" line="92"/>
         <source>System default</source>
         <translation>Predefinito di sistema</translation>
     </message>
@@ -1653,67 +1653,67 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="925"/>
         <location filename="../../App/Widget/Dialog.py" line="1627"/>
-        <location filename="../../App/Widget/Dialog.py" line="2556"/>
+        <location filename="../../App/Widget/Dialog.py" line="2557"/>
         <source>Current adaptation set as default for current user</source>
         <translation>Adattamento corrente impostato come predefinito per l&apos;utente corrente</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="940"/>
         <location filename="../../App/Widget/Dialog.py" line="1642"/>
-        <location filename="../../App/Widget/Dialog.py" line="2571"/>
+        <location filename="../../App/Widget/Dialog.py" line="2572"/>
         <source>Current adaptation set as default for class</source>
         <translation>Adattamento corrente impostato come predefinito per la classe</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1940"/>
-        <location filename="../../App/Widget/Dialog.py" line="2878"/>
+        <location filename="../../App/Widget/Dialog.py" line="2882"/>
         <source>Export directory not set</source>
         <translation>Directory di export non impostata</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1944"/>
-        <location filename="../../App/Widget/Dialog.py" line="2882"/>
+        <location filename="../../App/Widget/Dialog.py" line="2886"/>
         <source>File name not set</source>
         <translation>Nome file non impostato</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1950"/>
-        <location filename="../../App/Widget/Dialog.py" line="2888"/>
+        <location filename="../../App/Widget/Dialog.py" line="2892"/>
         <source>Export directory does not exist</source>
         <translation>La directory di Export non esiste</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1966"/>
-        <location filename="../../App/Widget/Dialog.py" line="2904"/>
+        <location filename="../../App/Widget/Dialog.py" line="2908"/>
         <source>File {} exists, overwrite ?</source>
         <translation>IL file {} è già presente, sovrascrivo ?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1999"/>
-        <location filename="../../App/Widget/Dialog.py" line="2937"/>
+        <location filename="../../App/Widget/Dialog.py" line="2941"/>
         <source>Unable to open default PDF viewer</source>
         <translation>Impossibile aprire il visualizzatore PDF predefinito</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="2005"/>
-        <location filename="../../App/Widget/Dialog.py" line="2943"/>
+        <location filename="../../App/Widget/Dialog.py" line="2947"/>
         <source>PDF file created successfully</source>
         <translation>Il file PDF è stato creato correttamente</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="2012"/>
-        <location filename="../../App/Widget/Dialog.py" line="2950"/>
+        <location filename="../../App/Widget/Dialog.py" line="2954"/>
         <source>Select export directory</source>
         <translation>Selezionare la directory di destinazione</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/Dialog.py" line="2978"/>
+        <location filename="../../App/Widget/Dialog.py" line="2982"/>
         <source>Select a date:</source>
         <translation>Selezionare una data:</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1882"/>
-        <location filename="../../App/Widget/Dialog.py" line="2813"/>
+        <location filename="../../App/Widget/Dialog.py" line="2814"/>
         <source>Print preview</source>
         <translation>Anteprima di stampa</translation>
     </message>
@@ -1768,37 +1768,37 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1458"/>
-        <location filename="../../App/Widget/Dialog.py" line="2387"/>
+        <location filename="../../App/Widget/Dialog.py" line="2388"/>
         <source>Adaptation saved</source>
         <translation>Personalizzazione salvata</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1481"/>
-        <location filename="../../App/Widget/Dialog.py" line="2410"/>
+        <location filename="../../App/Widget/Dialog.py" line="2411"/>
         <source>Adaptation deleted</source>
         <translation>Personalizzazione cancellata</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1494"/>
-        <location filename="../../App/Widget/Dialog.py" line="2423"/>
+        <location filename="../../App/Widget/Dialog.py" line="2424"/>
         <source>You must fill all the parameters of a new adaptation</source>
         <translation>E&apos; necessario compilare tutti i parametri della nuova personalizzazione</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1504"/>
-        <location filename="../../App/Widget/Dialog.py" line="2433"/>
+        <location filename="../../App/Widget/Dialog.py" line="2434"/>
         <source>New adaptation &apos;{}&apos; created</source>
         <translation>La nuova personalizzazione &apos;{}&apos; è stata creata</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1605"/>
-        <location filename="../../App/Widget/Dialog.py" line="2534"/>
+        <location filename="../../App/Widget/Dialog.py" line="2535"/>
         <source>Current adaptation sorting updated</source>
         <translation>L&apos;ordinamento della personalizzazione corrente è stato aggiornato</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1865"/>
-        <location filename="../../App/Widget/Dialog.py" line="2794"/>
+        <location filename="../../App/Widget/Dialog.py" line="2795"/>
         <source>No data to render</source>
         <translation>Nessun dato da stampare</translation>
     </message>
@@ -1824,15 +1824,15 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Error</name>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="182"/>
-        <location filename="../../App/Core/ExceptionHandler.py" line="236"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="182"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="236"/>
         <source>Unexpected error</source>
         <translation>Errore imprevisto</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="235"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="235"/>
         <source>Report Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore Report</translation>
     </message>
 </context>
 <context>
@@ -1840,12 +1840,12 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/EscposPrinter.py" line="82"/>
         <source>USB</source>
-        <translation type="unfinished"></translation>
+        <translation>USB</translation>
     </message>
     <message>
         <location filename="../../App/EscposPrinter.py" line="83"/>
         <source>Network</source>
-        <translation type="unfinished"></translation>
+        <translation>Rete</translation>
     </message>
 </context>
 <context>
@@ -2172,12 +2172,12 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Ui/HelpDialog.ui" line="93"/>
         <source>Zoom:</source>
-        <translation>Ingrandisci</translation>
+        <translation>Ingrandimento:</translation>
     </message>
     <message>
         <location filename="../../App/Ui/HelpDialog.ui" line="143"/>
         <source>Find text:</source>
-        <translation>Cerca testo</translation>
+        <translation>Cerca testo:</translation>
     </message>
     <message>
         <location filename="../../App/Ui/HelpDialog.ui" line="157"/>
@@ -2188,22 +2188,22 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>IconSet</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="99"/>
+        <location filename="../../App/Common/Gui.py" line="99"/>
         <source>Oxygen</source>
         <translation>Oxygen</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="100"/>
+        <location filename="../../App/Common/Gui.py" line="100"/>
         <source>Crystal Clear</source>
         <translation>Crystal Clear</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="101"/>
+        <location filename="../../App/Common/Gui.py" line="101"/>
         <source>Fluent UI</source>
         <translation>Fluent UI</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="102"/>
+        <location filename="../../App/Common/Gui.py" line="102"/>
         <source>Flatwoken</source>
         <translation>Flatwoken</translation>
     </message>
@@ -2211,7 +2211,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Inventory</name>
     <message>
-        <location filename="../../App/Inventory.py" line="88"/>
+        <location filename="../../App/Inventory.py" line="89"/>
         <location filename="../../App/Item.py" line="184"/>
         <source>No access right to this archive</source>
         <translation>Nessun diritto di accesso a questo archivio</translation>
@@ -2700,7 +2700,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>MessageDialog</name>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="228"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="228"/>
         <location filename="../../App/System/Company.py" line="237"/>
         <location filename="../../App/System/Login.py" line="246"/>
         <location filename="../../App/System/Mainwindow.py" line="561"/>
@@ -2717,11 +2717,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1950"/>
         <location filename="../../App/Widget/Dialog.py" line="1998"/>
         <location filename="../../App/Widget/Dialog.py" line="2216"/>
-        <location filename="../../App/Widget/Dialog.py" line="2422"/>
-        <location filename="../../App/Widget/Dialog.py" line="2878"/>
+        <location filename="../../App/Widget/Dialog.py" line="2423"/>
         <location filename="../../App/Widget/Dialog.py" line="2882"/>
-        <location filename="../../App/Widget/Dialog.py" line="2888"/>
-        <location filename="../../App/Widget/Dialog.py" line="2936"/>
+        <location filename="../../App/Widget/Dialog.py" line="2886"/>
+        <location filename="../../App/Widget/Dialog.py" line="2892"/>
+        <location filename="../../App/Widget/Dialog.py" line="2940"/>
         <location filename="../../App/Widget/Form.py" line="253"/>
         <location filename="../../App/Widget/Form.py" line="269"/>
         <location filename="../../App/Widget/Form.py" line="798"/>
@@ -2742,13 +2742,13 @@ Proseguire ugualmente ?</translation>
         <translation>Errore critico</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="158"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="158"/>
         <source>Database connection</source>
         <translation>Connessione al database</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="168"/>
-        <location filename="../../App/Core/ExceptionHandler.py" line="172"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="168"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="172"/>
         <location filename="../../App/System/About.py" line="90"/>
         <location filename="../../App/System/Company.py" line="106"/>
         <location filename="../../App/System/Company.py" line="201"/>
@@ -2769,17 +2769,17 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/User.py" line="327"/>
         <location filename="../../App/Widget/Dialog.py" line="875"/>
         <location filename="../../App/Widget/Dialog.py" line="1465"/>
-        <location filename="../../App/Widget/Dialog.py" line="2394"/>
+        <location filename="../../App/Widget/Dialog.py" line="2395"/>
         <location filename="../../App/Widget/View.py" line="610"/>
         <location filename="../../App/Widget/View.py" line="640"/>
         <location filename="../../App/Widget/View.py" line="665"/>
         <location filename="../../App/CashDesk.py" line="74"/>
         <location filename="../../App/EscposPrinter.py" line="94"/>
         <location filename="../../App/Department.py" line="77"/>
-        <location filename="../../App/OrderPrintSettings.py" line="121"/>
+        <location filename="../../App/OrderPrintSettings.py" line="122"/>
         <location filename="../../App/Event.py" line="90"/>
         <location filename="../../App/Event.py" line="167"/>
-        <location filename="../../App/Inventory.py" line="87"/>
+        <location filename="../../App/Inventory.py" line="88"/>
         <location filename="../../App/Item.py" line="183"/>
         <location filename="../../App/OrderArchive.py" line="192"/>
         <location filename="../../App/OrderedDelivered.py" line="84"/>
@@ -2817,7 +2817,7 @@ Proseguire ugualmente ?</translation>
         <translation>Nessun diritto di accesso a questa funzione</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="222"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="222"/>
         <location filename="../../App/System/Company.py" line="231"/>
         <location filename="../../App/System/Company.py" line="263"/>
         <location filename="../../App/System/Company.py" line="270"/>
@@ -2849,14 +2849,14 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1641"/>
         <location filename="../../App/Widget/Dialog.py" line="1864"/>
         <location filename="../../App/Widget/Dialog.py" line="2004"/>
-        <location filename="../../App/Widget/Dialog.py" line="2386"/>
-        <location filename="../../App/Widget/Dialog.py" line="2409"/>
-        <location filename="../../App/Widget/Dialog.py" line="2432"/>
-        <location filename="../../App/Widget/Dialog.py" line="2533"/>
-        <location filename="../../App/Widget/Dialog.py" line="2555"/>
-        <location filename="../../App/Widget/Dialog.py" line="2570"/>
-        <location filename="../../App/Widget/Dialog.py" line="2793"/>
-        <location filename="../../App/Widget/Dialog.py" line="2942"/>
+        <location filename="../../App/Widget/Dialog.py" line="2387"/>
+        <location filename="../../App/Widget/Dialog.py" line="2410"/>
+        <location filename="../../App/Widget/Dialog.py" line="2433"/>
+        <location filename="../../App/Widget/Dialog.py" line="2534"/>
+        <location filename="../../App/Widget/Dialog.py" line="2556"/>
+        <location filename="../../App/Widget/Dialog.py" line="2571"/>
+        <location filename="../../App/Widget/Dialog.py" line="2794"/>
+        <location filename="../../App/Widget/Dialog.py" line="2946"/>
         <location filename="../../App/Widget/View.py" line="568"/>
         <location filename="../../App/Widget/View.py" line="628"/>
         <location filename="../../App/Widget/View.py" line="653"/>
@@ -2895,15 +2895,15 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="879"/>
         <location filename="../../App/Widget/Dialog.py" line="1469"/>
         <location filename="../../App/Widget/Dialog.py" line="1965"/>
-        <location filename="../../App/Widget/Dialog.py" line="2398"/>
-        <location filename="../../App/Widget/Dialog.py" line="2903"/>
+        <location filename="../../App/Widget/Dialog.py" line="2399"/>
+        <location filename="../../App/Widget/Dialog.py" line="2907"/>
         <location filename="../../App/Widget/Form.py" line="378"/>
         <location filename="../../App/Widget/Form.py" line="575"/>
         <location filename="../../App/Widget/Form.py" line="942"/>
         <location filename="../../App/Widget/View.py" line="415"/>
         <location filename="../../App/Widget/View.py" line="503"/>
         <location filename="../../App/Widget/View.py" line="616"/>
-        <location filename="../../App/OrderPrintSettings.py" line="177"/>
+        <location filename="../../App/OrderPrintSettings.py" line="178"/>
         <location filename="../../App/Event.py" line="236"/>
         <location filename="../../App/Item.py" line="410"/>
         <location filename="../../App/OrderArchive.py" line="322"/>
@@ -2963,16 +2963,16 @@ Proseguire ugualmente ?</translation>
         <translation>Messaggio</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="211"/>
-        <location filename="../../App/Core/ExceptionHandler.py" line="217"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="211"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="217"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore</translation>
     </message>
 </context>
 <context>
     <name>MessageError</name>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="173"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="173"/>
         <source>Is not possible to set the same row and column of a salable item</source>
         <translation>Non è possibile impostare la stessa riga e colonna di un articolo vendibile</translation>
     </message>
@@ -3527,27 +3527,27 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Database/Models.py" line="865"/>
         <source>Print type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo stampa</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="867"/>
         <source>Print copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Stampa copia</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="869"/>
         <source>Copies</source>
-        <translation type="unfinished"></translation>
+        <translation>Copie</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="872"/>
         <source>Esc/Pos report</source>
-        <translation type="unfinished"></translation>
+        <translation>Report Esc/Pos</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="873"/>
         <source>Esc/Pos printer</source>
-        <translation type="unfinished"></translation>
+        <translation>Stampanti Esc/Pos</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1257"/>
@@ -3914,82 +3914,82 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="617"/>
         <location filename="../../App/Database/Models.py" line="868"/>
         <source>Print method</source>
-        <translation type="unfinished"></translation>
+        <translation>Metodo di stampa</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="757"/>
         <source>Printer name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome stampante</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="758"/>
         <source>Printer type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo stampante</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="760"/>
         <source>Host address</source>
-        <translation type="unfinished"></translation>
+        <translation>Indirizzo host</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="761"/>
         <source>Port</source>
-        <translation type="unfinished">Porta</translation>
+        <translation>Porta</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="762"/>
         <source>Connection timeout</source>
-        <translation type="unfinished"></translation>
+        <translation>Timeout connessione</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="764"/>
         <source>Id Vendor</source>
-        <translation type="unfinished"></translation>
+        <translation>Id Vendor</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="765"/>
         <source>Id Product</source>
-        <translation type="unfinished"></translation>
+        <translation>Id Product</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="766"/>
         <source>USB timeout</source>
-        <translation type="unfinished"></translation>
+        <translation>Timeout USB</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="767"/>
         <source>Input endpoint</source>
-        <translation type="unfinished"></translation>
+        <translation>Input endpoint</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="768"/>
         <source>Output endpoint</source>
-        <translation type="unfinished"></translation>
+        <translation>Output endpoint</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="844"/>
         <source>Print customer copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Stampa copia cliente</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="845"/>
         <source>Customer print method</source>
-        <translation type="unfinished"></translation>
+        <translation>Metodo di stampa cliente</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="866"/>
         <source>Department ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID reparto</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="870"/>
         <source>Driver report</source>
-        <translation type="unfinished"></translation>
+        <translation>Report driver</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="871"/>
         <source>Driver printer</source>
-        <translation type="unfinished"></translation>
+        <translation>Stampante driver</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1485"/>
@@ -4650,7 +4650,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Ui/OrderDialog0.ui" line="36"/>
         <source>Deliver to</source>
-        <translation>Consegna:</translation>
+        <translation>Consegna</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderDialog0.ui" line="59"/>
@@ -4798,7 +4798,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Ui/OrderDialog1.ui" line="34"/>
         <source>Deliver to</source>
-        <translation>Consegna:</translation>
+        <translation>Consegna</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderDialog1.ui" line="54"/>
@@ -4941,7 +4941,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Ui/OrderDialog2.ui" line="34"/>
         <source>Deliver to</source>
-        <translation>Consegna:</translation>
+        <translation>Consegna</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderDialog2.ui" line="54"/>
@@ -5139,7 +5139,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/OrderEntry.py" line="375"/>
         <source>Select the date for event selection:</source>
-        <translation>Selezionare la data per la selezione dell&apos;evento</translation>
+        <translation>Selezionare la data per la selezione dell&apos;evento:</translation>
     </message>
     <message>
         <location filename="../../App/OrderEntry.py" line="416"/>
@@ -5208,7 +5208,7 @@ Si consiglia di aggiornare i dati della finestra. Aggiorno adesso ?</translation
     <message>
         <location filename="../../App/OrderEntry.py" line="869"/>
         <source>Not enough stock available.</source>
-        <translation>Giacenza non disponibile</translation>
+        <translation>Giacenza non disponibile.</translation>
     </message>
     <message>
         <location filename="../../App/OrderEntry.py" line="1033"/>
@@ -5336,37 +5336,42 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/OrderPrintSettings.py" line="101"/>
         <source>Customer</source>
-        <translation type="unfinished">Cliente</translation>
+        <translation>Cliente</translation>
     </message>
     <message>
         <location filename="../../App/OrderPrintSettings.py" line="102"/>
         <source>Cover</source>
-        <translation type="unfinished">Coperti</translation>
+        <translation>Coperti</translation>
     </message>
     <message>
         <location filename="../../App/OrderPrintSettings.py" line="103"/>
         <source>Department</source>
-        <translation type="unfinished">Reparto</translation>
+        <translation>Reparto</translation>
     </message>
     <message>
-        <location filename="../../App/OrderPrintSettings.py" line="106"/>
-        <source>Driver</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../App/OrderPrintSettings.py" line="104"/>
+        <source>Ordered delivered</source>
+        <translation>Ordinato consegnato</translation>
     </message>
     <message>
         <location filename="../../App/OrderPrintSettings.py" line="107"/>
+        <source>Driver</source>
+        <translation>Driver</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderPrintSettings.py" line="108"/>
         <source>ESC/POS</source>
-        <translation type="unfinished"></translation>
+        <translation>ESC/POS</translation>
     </message>
     <message>
-        <location filename="../../App/OrderPrintSettings.py" line="122"/>
+        <location filename="../../App/OrderPrintSettings.py" line="123"/>
         <source>No access right to this archive</source>
-        <translation type="unfinished">Nessun diritto di accesso a questo archivio</translation>
+        <translation>Nessun diritto di accesso a questo archivio</translation>
     </message>
     <message>
-        <location filename="../../App/OrderPrintSettings.py" line="175"/>
+        <location filename="../../App/OrderPrintSettings.py" line="176"/>
         <source>Copy ALL settings from {from_host} to {to_host} ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Copio TUTTE le impostazioni da {from_host} a {to_host} ?</translation>
     </message>
 </context>
 <context>
@@ -5374,22 +5379,22 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/Ui/OrderPrintSettingsWidget.ui" line="14"/>
         <source>Generic Form View</source>
-        <translation type="unfinished">Vista a modulo generica</translation>
+        <translation>Vista a modulo generica</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderPrintSettingsWidget.ui" line="27"/>
         <source>Copy from</source>
-        <translation type="unfinished"></translation>
+        <translation>Cipia da</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderPrintSettingsWidget.ui" line="37"/>
         <source>to</source>
-        <translation type="unfinished"></translation>
+        <translation>a</translation>
     </message>
     <message>
         <location filename="../../App/Ui/OrderPrintSettingsWidget.ui" line="47"/>
         <source>Copy settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Impostazioni copia</translation>
     </message>
 </context>
 <context>
@@ -5478,7 +5483,7 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/OrderProgress.py" line="331"/>
         <source>Set current selected order as unprocessed ?</source>
-        <translation>Imposta l&apos;ordine selezionato come non elaborato</translation>
+        <translation>Imposto l&apos;ordine selezionato come non elaborato ?</translation>
     </message>
     <message>
         <location filename="../../App/OrderProgress.py" line="352"/>
@@ -5761,157 +5766,157 @@ Devo procedere comunque?</translation>
 <context>
     <name>PGError</name>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="60"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="60"/>
         <source>Wrong database server version (connect sp)</source>
         <translation>Versione errata del server di database (connect sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="61"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="61"/>
         <source>Wrong application database (connect sp)</source>
         <translation>Database dell&apos;applicazione errato (connct sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="62"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="62"/>
         <source>Wrong application database version (connect sp)</source>
         <translation>Versione errata del database dell&apos;applicazione (connect sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="63"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="63"/>
         <source>Authentication failed, user does not exist (connect sp)</source>
         <translation>Autenticazione non riuscita, l&apos;utente non esiste (connect sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="64"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="64"/>
         <source>A password is required (connect sp)</source>
         <translation>È richiesta una password (connect sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="65"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="65"/>
         <source>Authentication failed, wrong password (connect sp)</source>
         <translation>Autenticazione non riuscita, password errata (connect sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="66"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="66"/>
         <source>Unknown company (change company)</source>
         <translation>Azienda sconosciuta (change company)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="67"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="67"/>
         <source>No access rights to required company (change company)</source>
         <translation>Nessun diritto di accesso all&apos;azienda richiesta (change company)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="68"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="68"/>
         <source>Can not kill current connection (kill client)</source>
         <translation>Impossibile terminare la connessione corrente (kill client)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="69"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="69"/>
         <source>Database schema already exists (create company sp)</source>
-        <translation>Lo schema del database esiste già (create company sp).</translation>
+        <translation>Lo schema del database esiste già (create company sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="70"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="70"/>
         <source>Company id already exists (create company sp)</source>
         <translation>L&apos;ID dell&apos;azienda esiste già (create company sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="71"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="71"/>
         <source>Company is in use (drop company sp)</source>
         <translation>L&apos;azienda è in uso (drop company sp)</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="73"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="73"/>
         <source>Row modified before update/delete, roaload records</source>
         <translation>Riga modificata prima dell&apos;aggiornamento/eliminazione, ricaricare i records</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="76"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="76"/>
         <source>Generic data exception</source>
         <translation>Eccezione generica sulla data</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="77"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="77"/>
         <source>Character not in repertoire</source>
         <translation>Carattere non presente nel repertorio</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="78"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="78"/>
         <source>DateTime field overflow</source>
         <translation>Overflow del campo DateTime</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="79"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="79"/>
         <source>Division by zero</source>
         <translation>Divisione per zero</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="80"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="80"/>
         <source>Null value not allowed</source>
         <translation>Valore Null non ammesso</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="81"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="81"/>
         <source>Numeric value out of range</source>
         <translation>Valore numerico fuori intervallo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="82"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="82"/>
         <source>Floating point exception</source>
         <translation>Eccezione su calcolo in virgola mobile</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="84"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="84"/>
         <source>Integrity constraint violation</source>
         <translation>Violazione del vincolo di integrità</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="85"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="85"/>
         <source>Not null violation</source>
         <translation>Violazione del non null</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="86"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="86"/>
         <source>Foreign key violation</source>
         <translation>Violazione di chiave esterna</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="87"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="87"/>
         <source>Unique constraint violation</source>
         <translation>Violazione del vincolo di univocità</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="88"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="88"/>
         <source>Check constraint violation</source>
         <translation>Violazione del vincolo di controllo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="90"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="90"/>
         <source>Syntax error</source>
         <translation>Errore di sintassi</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="91"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="91"/>
         <source>Insufficient privilege</source>
         <translation>Privilegio insufficiente</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="92"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="92"/>
         <source>Column does not exist</source>
         <translation>La colonna non esiste</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="93"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="93"/>
         <source>Ambiguous column name or alias</source>
         <translation>Nome o alias di colonna ambiguo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="156"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="156"/>
         <source>Connection error</source>
         <translation>Errore di connessione</translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="165"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="165"/>
         <source>Undefined database error</source>
         <translation>Errore di database non definito</translation>
     </message>
@@ -5992,7 +5997,7 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/Ui/PreferencesDialog.ui" line="166"/>
         <source>You may need to restart the application for the changes to take effect.</source>
-        <translation>Potrebbe essere necessario riavviare l&apos;applicazione per rendere effettive le modifiche</translation>
+        <translation>Potrebbe essere necessario riavviare l&apos;applicazione per rendere effettive le modifiche.</translation>
     </message>
 </context>
 <context>
@@ -6162,12 +6167,12 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/Ui/PrintDialog.ui" line="687"/>
         <source>Print method / Report class / Report</source>
-        <translation type="unfinished"></translation>
+        <translation>Metodo di stampa / Classe del report / Report</translation>
     </message>
     <message>
         <location filename="../../App/Ui/PrintDialog.ui" line="724"/>
         <source>Method</source>
-        <translation type="unfinished">Metodo</translation>
+        <translation>Metodo</translation>
     </message>
     <message>
         <location filename="../../App/Ui/PrintDialog.ui" line="751"/>
@@ -6177,7 +6182,7 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/Ui/PrintDialog.ui" line="800"/>
         <source>Creating a new adaptation does not save its parameters, you need to select the new adaptation, set the parameters/filters/sorting and update it</source>
-        <translation type="unfinished">Creare una nuova personalizzazione non ne salva i suoi parametri, è necessario</translation>
+        <translation>Creare una nuova personalizzazione non ne salva i suoi parametri, è necessario selezionare la nuova personalizzazione, impostare i parametri/filtri/ordinamenti ed aggiornarla</translation>
     </message>
     <message>
         <location filename="../../App/Ui/PrintDialog.ui" line="591"/>
@@ -6220,12 +6225,12 @@ Devo procedere comunque?</translation>
     <message>
         <location filename="../../App/System/Report.py" line="93"/>
         <source>Driver</source>
-        <translation type="unfinished"></translation>
+        <translation>Driver</translation>
     </message>
     <message>
         <location filename="../../App/System/Report.py" line="94"/>
         <source>ESC/POS</source>
-        <translation type="unfinished"></translation>
+        <translation>ESC/POS</translation>
     </message>
 </context>
 <context>
@@ -6430,83 +6435,83 @@ Devo procedere comunque?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1374"/>
-        <location filename="../../App/Widget/Dialog.py" line="2303"/>
+        <location filename="../../App/Widget/Dialog.py" line="2304"/>
         <source>Get report adaptation list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1393"/>
         <location filename="../../App/Widget/Dialog.py" line="1451"/>
-        <location filename="../../App/Widget/Dialog.py" line="2322"/>
-        <location filename="../../App/Widget/Dialog.py" line="2380"/>
+        <location filename="../../App/Widget/Dialog.py" line="2323"/>
+        <location filename="../../App/Widget/Dialog.py" line="2381"/>
         <source>Save adaptation settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1474"/>
-        <location filename="../../App/Widget/Dialog.py" line="2403"/>
+        <location filename="../../App/Widget/Dialog.py" line="2404"/>
         <source>Delete adaptation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1497"/>
-        <location filename="../../App/Widget/Dialog.py" line="2426"/>
+        <location filename="../../App/Widget/Dialog.py" line="2427"/>
         <source>Save new adaptation as</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1530"/>
-        <location filename="../../App/Widget/Dialog.py" line="2459"/>
+        <location filename="../../App/Widget/Dialog.py" line="2460"/>
         <source>Get adaptation settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1598"/>
-        <location filename="../../App/Widget/Dialog.py" line="2527"/>
+        <location filename="../../App/Widget/Dialog.py" line="2528"/>
         <source>Set adaptation sorting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1617"/>
-        <location filename="../../App/Widget/Dialog.py" line="2546"/>
+        <location filename="../../App/Widget/Dialog.py" line="2547"/>
         <source>Set adaptation user default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1635"/>
-        <location filename="../../App/Widget/Dialog.py" line="2564"/>
+        <location filename="../../App/Widget/Dialog.py" line="2565"/>
         <source>Set adaptation class default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1857"/>
         <location filename="../../App/Widget/Dialog.py" line="1868"/>
-        <location filename="../../App/Widget/Dialog.py" line="2786"/>
-        <location filename="../../App/Widget/Dialog.py" line="2797"/>
+        <location filename="../../App/Widget/Dialog.py" line="2787"/>
+        <location filename="../../App/Widget/Dialog.py" line="2798"/>
         <source>Generate report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1902"/>
-        <location filename="../../App/Widget/Dialog.py" line="2833"/>
+        <location filename="../../App/Widget/Dialog.py" line="2834"/>
         <source>Print preview</source>
         <translation type="unfinished">Anteprima di stampa</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1915"/>
-        <location filename="../../App/Widget/Dialog.py" line="2853"/>
+        <location filename="../../App/Widget/Dialog.py" line="2857"/>
         <source>Print</source>
         <translation type="unfinished">Stampa</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1925"/>
-        <location filename="../../App/Widget/Dialog.py" line="2863"/>
+        <location filename="../../App/Widget/Dialog.py" line="2867"/>
         <source>Print direct</source>
         <translation type="unfinished">Stampa immediata</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1985"/>
-        <location filename="../../App/Widget/Dialog.py" line="2923"/>
+        <location filename="../../App/Widget/Dialog.py" line="2927"/>
         <source>Print PDF</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6514,12 +6519,12 @@ Devo procedere comunque?</translation>
 <context>
     <name>ReportException</name>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="215"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="215"/>
         <source>Not enought print parameters available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Core/ExceptionHandler.py" line="223"/>
+        <location filename="../../App/Common/ExceptionHandler.py" line="223"/>
         <source>No data to render</source>
         <translation>Nessun dato da stampare</translation>
     </message>
@@ -6729,7 +6734,7 @@ Devo procedere comunque?</translation>
         <translation>Tutti i file importati correttamente</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Scripting.py" line="46"/>
+        <location filename="../../App/Common/Scripting.py" line="46"/>
         <source>Error loading script</source>
         <translation>Errore nel caricamento dello script</translation>
     </message>
@@ -7931,22 +7936,22 @@ Devo procedere comunque?</translation>
 <context>
     <name>TabPosition</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="120"/>
+        <location filename="../../App/Common/Gui.py" line="120"/>
         <source>Tabs above the pages</source>
         <translation>Schede sopra le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="121"/>
+        <location filename="../../App/Common/Gui.py" line="121"/>
         <source>Tabs below the pages</source>
         <translation>Schede sotto le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="122"/>
+        <location filename="../../App/Common/Gui.py" line="122"/>
         <source>Tabs to the left of the pages</source>
         <translation>Schede a sinistra delle pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="123"/>
+        <location filename="../../App/Common/Gui.py" line="123"/>
         <source>Tabs to the right of the pages</source>
         <translation>Schede a destra delle pagine</translation>
     </message>
@@ -7997,27 +8002,27 @@ You can recover data only from a backup copy of the database.</source>
 <context>
     <name>ToolButtonStyle</name>
     <message>
-        <location filename="../../App/Core/Gui.py" line="109"/>
+        <location filename="../../App/Common/Gui.py" line="109"/>
         <source>Icon only</source>
         <translation>Solo icone</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="110"/>
+        <location filename="../../App/Common/Gui.py" line="110"/>
         <source>Text only</source>
         <translation>Solo testo</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="111"/>
+        <location filename="../../App/Common/Gui.py" line="111"/>
         <source>Text beside icon</source>
         <translation>Testo accanto all&apos;icona</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="112"/>
+        <location filename="../../App/Common/Gui.py" line="112"/>
         <source>Text under icon</source>
         <translation>Testo sotto l&apos;icona</translation>
     </message>
     <message>
-        <location filename="../../App/Core/Gui.py" line="113"/>
+        <location filename="../../App/Common/Gui.py" line="113"/>
         <source>Follow style</source>
         <translation>Segue lo stile</translation>
     </message>
@@ -8085,7 +8090,7 @@ You can recover data only from a backup copy of the database.</source>
     <message>
         <location filename="../../App/UpdateWOS.py" line="195"/>
         <source>Web order server updated successfully.</source>
-        <translation>Server degli ordini web aggiornato correttamente</translation>
+        <translation>Server degli ordini web aggiornato correttamente.</translation>
     </message>
 </context>
 <context>
@@ -8349,7 +8354,7 @@ You can recover data only from a backup copy of the database.</source>
     <message>
         <location filename="../../App/Tool.py" line="182"/>
         <source>This utility function mark all orders as processed at the order date</source>
-        <translation>Questa funzione di utilità contrassegna tutti gli ordini come evasi alla data dell&apos;ordine.</translation>
+        <translation>Questa funzione di utilità contrassegna tutti gli ordini come evasi alla data dell&apos;ordine</translation>
     </message>
     <message>
         <location filename="../../App/Tool.py" line="194"/>
@@ -8616,20 +8621,20 @@ Apro il file generato ?</translation>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="876"/>
         <location filename="../../App/Widget/Dialog.py" line="1466"/>
-        <location filename="../../App/Widget/Dialog.py" line="2395"/>
+        <location filename="../../App/Widget/Dialog.py" line="2396"/>
         <source>System adaptation cannot be deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Le personalizzazioni di sistema non possono esere cancellate</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="880"/>
         <source>Are you sure to delete the current adaptation?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sei sicuro di voler cancellare la personalizzazione corrente?</translation>
     </message>
     <message>
         <location filename="../../App/Widget/Dialog.py" line="1470"/>
-        <location filename="../../App/Widget/Dialog.py" line="2399"/>
+        <location filename="../../App/Widget/Dialog.py" line="2400"/>
         <source>Are you sure to delete the current adaptation ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sei sicuro di voler cancellare la personalizzazione corrente ?</translation>
     </message>
 </context>
 <context>
