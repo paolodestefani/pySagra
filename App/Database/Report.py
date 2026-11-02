@@ -135,8 +135,7 @@ ORDER BY ra.class_sorting;"""
         return cur.fetchall()
 
 
-def get_report_list(print_method: str|None = None,
-                    report_class: str|None = None,
+def get_report_list(report_class: str|None = None,
                     l10n: str|None = None, 
                     report_id: int|None = None
                     ) -> list:
@@ -144,6 +143,7 @@ def get_report_list(print_method: str|None = None,
     if report_id is not None:
         script = t"""
 SELECT
+    print_method,
     report_id,
     report_code, 
     description
@@ -152,11 +152,12 @@ WHERE report_id = {report_id};"""
     else:
         script = t"""
 SELECT
+    print_method,
     report_id,
     report_code, 
     description
 FROM system.report
-WHERE print_method={print_method} AND report_class = {report_class} AND l10n = {l10n};"""
+WHERE report_class = {report_class} AND l10n = {l10n};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
@@ -236,6 +237,7 @@ WHERE report_id = {report_id};"""
 def get_report_from_adapt(adapt_id: int) -> tuple | tuple[None]:
     script = t"""
 SELECT 
+    r.print_method,
     r.report_id,
     r.report_code,
     r.report_class,
@@ -247,7 +249,7 @@ WHERE ra.adaptation_id = {adapt_id};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
-        return next(cur, (None, None, None, None, None))
+        return next(cur, (None, None, None, None, None, None))
 
 
 def report_query(report: Report | ReportEscpos, 

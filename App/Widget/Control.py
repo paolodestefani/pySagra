@@ -697,6 +697,16 @@ class CheckableComboBox(QComboBox):
         if isinstance(model, QStandardItemModel):
             for i in range(model.rowCount()):
                 model.item(i).setCheckState(Qt.CheckState.Unchecked)
+                
+    def setCheckedData(self, values) -> None:
+        "Check the items whose data is in values, uncheck the others"
+        wanted = {str(v) for v in values}
+        model = self.model()
+        if isinstance(model, QStandardItemModel):
+            for i in range(model.rowCount()):
+                item = model.item(i)
+                checked = str(item.data(Qt.ItemDataRole.UserRole)) in wanted
+                item.setCheckState(Qt.CheckState.Checked if checked else Qt.CheckState.Unchecked)
 
         
 class ButtonSeat(QPushButton):
