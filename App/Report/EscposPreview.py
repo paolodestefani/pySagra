@@ -4,10 +4,11 @@ from dataclasses import dataclass, field
 
 import barcode as pybarcode
 import qrcode
+from PIL import Image
 from qrcode import constants as qrc
 from PySide6.QtCore import Qt, QRectF, QPointF, QMarginsF, QSizeF
 from PySide6.QtGui import (QFont, QPainter, QPainterPath, QPolygonF, QColor, QPen,
-                           QPageSize, QPageLayout)
+                           QPageSize, QPageLayout, QImage)
 
 FONT = "Courier New"              # works on every platform
 DPI = 203
@@ -126,13 +127,43 @@ class BoxLine(Line):
         p.setFont(m.font('a', pixel=18))
         p.drawText(QRectF(0, y, m.dots, self.h), Qt.AlignmentFlag.AlignCenter, self.label)
 
-
+    
 @dataclass
 class ImageLine(Line):
-    "Generic icon instead of an image"
+    "Immagine reale; se non disponibile, icona generica"
+    qimage: QImage | None = None
+    center: bool = False          # escpos allinea a sinistra, salvo center=True
+    dw: float = 0                 # dimensioni di disegno (punti stampante)
+    dh: float = 0
     h: float = 110
 
+    @staticmethod
+    def from_op(op, m: Metrics) -> Line:
+        _, pil, center = op
+        if pil is None:
+            return ImageLine()
+        img = pil
+        if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+            img = img.convert('RGBA')                       # trasparenza -> bianco
+            bg = Image.new('RGBA', img.size, 'white')
+            bg.alpha_composite(img)
+            img = bg
+        img = img.convert('L').convert('1').convert('L')    # 1 bit con dithering, come la termica
+        w, h = img.size
+        qimg = QImage(img.tobytes(), w, h, w, QImage.Format.Format_Grayscale8).copy()
+        k = min(1.0, m.dots / w)                            # più larga della carta: si riduce
+        return ImageLine(qimg, center, w * k, h * k, h=h * k)
+
     def paint(self, p, y, m):
+        if self.qimage is None:
+            self._paint_icon(p, y, m)
+            return
+        x = (m.dots - self.dw) / 2 if self.center else 0.0
+        p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        p.drawImage(QRectF(x, y, self.dw, self.dh), self.qimage)
+        p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, False)
+
+    def _paint_icon(self, p, y, m):
         w = self.h * 1.4
         r = QRectF((m.dots - w) / 2, y + 6, w, self.h - 12)
         p.setPen(QPen(QColor("#888"), 2))
@@ -141,7 +172,7 @@ class ImageLine(Line):
         p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(QColor("#aaa"))
         p.drawEllipse(QPointF(r.left() + r.width() * 0.25, r.top() + r.height() * 0.3),
-                      r.height() * 0.1, r.height() * 0.1)
+                        r.height() * 0.1, r.height() * 0.1)
         p.drawPolygon(QPolygonF([
             QPointF(r.left() + 4, r.bottom() - 4),
             QPointF(r.left() + r.width() * 0.4, r.top() + r.height() * 0.4),
@@ -149,7 +180,8 @@ class ImageLine(Line):
             QPointF(r.left() + r.width() * 0.75, r.top() + r.height() * 0.5),
             QPointF(r.right() - 4, r.bottom() - 4)]))
         p.setBrush(Qt.BrushStyle.NoBrush)
-
+    
+    
 
 def _runs_path(rows, x0, y0, mw, mh) -> QPainterPath:
     "A single path for the black modules (connecting the horizontal segments): no white lines"
@@ -280,8 +312,8 @@ class ReceiptPreview:
                     newline(False); lines.append(QrLine.from_op(op, m))
                 case 'cut':
                     newline(False); lines.append(CutLine())
-                case 'box':                                    # immage
-                    newline(False); lines.append(ImageLine())
+                case 'image':
+                    newline(False); lines.append(ImageLine.from_op(op, m))
         newline(False)
         return lines
 

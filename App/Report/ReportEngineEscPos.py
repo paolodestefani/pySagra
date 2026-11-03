@@ -52,6 +52,8 @@ All sections are optional but a report need at least one detail band.
 
 # standard library
 import sys
+import os
+import io
 import collections
 import decimal
 import itertools
@@ -1002,9 +1004,29 @@ class DummyDevice(Dummy):
             self.ops.append(('text', txt, dict(self.style)))
         super().block(txt, *args, **kwargs)
 
-    def image(self, *args, **kwargs) -> None:
-        self.ops.append(('box', 'IMAGE'))
-        super().image(*args, **kwargs)
+    # def image(self, *args, **kwargs) -> None:
+    #     self.ops.append(('box', 'IMAGE'))
+    #     super().image(*args, **kwargs)
+   
+    def image(self, img_source, *args, **kwargs) -> None:
+        "Record the image for the preview, then send it to the Dummy as usual"
+        pil = None
+        try:
+            if isinstance(img_source, (str, os.PathLike)):
+                pil = PIL.Image.open(img_source)
+            elif hasattr(img_source, 'read'):
+                data = img_source.read()
+                img_source = io.BytesIO(data)          # lo stesso contenuto per super()
+                pil = PIL.Image.open(io.BytesIO(data))
+            else:
+                pil = img_source                       # già un PIL.Image
+            pil = pil.copy()
+            pil.load()
+        except Exception:
+            pil = None                                 # in anteprima resta l'icona generica
+        center = kwargs.get('center', args[4] if len(args) > 4 else False)
+        self.ops.append(('image', pil, center))
+        super().image(img_source, *args, **kwargs)
         
     def qr(self, content, *args, **kwargs) -> None:
         ec = kwargs.get('ec', args[0] if len(args) > 0 else 0)
@@ -1535,28 +1557,28 @@ if __name__ == "__main__":
                         <label width="48" align="left">-- STYLE TEST --</label>
                     </row>
                     <row>
-                        <label width="48" underline="1">Underline 1 (sottile)</label>
+                        <label width="48" underline="1">Underline 1 (thin)</label>
                     </row>
                     <row>
-                        <label width="48" underline="2">Underline 2 (spesso)</label>
+                        <label width="48" underline="2">Underline 2 (thick)</label>
                     </row>
                     <row>
-                        <label width="48" invert="true">Invert: bianco su nero</label>
+                        <label width="48" invert="true">Invert: white on black</label>
                     </row>
                     <row>
-                        <label width="24" double_width="true">Doppia larghezza</label>
+                        <label width="24" double_width="true">Double width</label>
                     </row>
                     <row>
-                        <label width="48" double_height="true">Doppia altezza</label>
+                        <label width="48" double_height="true">Double height</label>
                     </row>
                     <row>
-                        <label width="24" double_width="true" double_height="true">Doppia W+H</label>
+                        <label width="24" double_width="true" double_height="true">Double width + height</label>
                     </row>
                     <row>
-                        <label width="24" align="center" double_width="true" bold="true">CENTRATO</label>
+                        <label width="24" align="center" double_width="true" bold="true">CENTERED</label>
                     </row>
                     <row>
-                        <label width="24" align="right" font="b">Font B a destra</label>
+                        <label width="24" align="right" font="b">Font B on the right</label>
                     </row>
                 </band>
             </group_header>
