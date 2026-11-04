@@ -96,7 +96,7 @@ class BaseQueryModel(QAbstractTableModel):
     def __init__(self, parent: QObject | None = None) -> None:
         "On init only set some empty objects"
         super().__init__(parent)
-        self.dataSet: list[tuple] = [] # list of tuples, each tuple is a record of a table
+        self.dataSet: list[tuple|Record] = [] # list of tuples, each tuple is a record of a table
         self.repr: str = 'BASE QUERY MODEL' # printable representation of the object,
         # subclass must define this
         self.selectQuery: str = '' # subclass must define this
@@ -112,33 +112,41 @@ class BaseQueryModel(QAbstractTableModel):
     def flags(self, 
               index: QModelIndex | QPersistentModelIndex
               ) -> Qt.ItemFlag:
-        "Always return readonly flag"
+        "Item flags"
         if not index.isValid():
             return Qt.ItemFlag.NoItemFlags
-        return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
+        f = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+        if not self.isEditable:
+            return f
+        is_bool = self.columns[index.column()][cla.TYPE] == 'bool'
+        is_ro = self.columns[index.column()][cla.RO]
+        if not is_ro:
+            f |= Qt.ItemFlag.ItemIsEditable
+            if is_bool:
+                f |= Qt.ItemFlag.ItemIsUserCheckable
+        return f
 
     def data(self, index=QModelIndex(), role=Qt.ItemDataRole.DisplayRole):
-        if not index.isValid():
+        if not index.isValid() or index.row() >= len(self.dataSet):
             return None
+        col = index.column()
         try:
-            result = self.dataSet[index.row()][index.column()]
-        except IndexError:
-            return None
+            result = self.dataSet[index.row()][col]
+        except (IndexError, KeyError):          # KeyError: chiave assente in un Record
+            result = None
+        is_bool = self.columns[col][cla.TYPE] == 'bool'
 
         match role:
+            case Qt.ItemDataRole.EditRole:
+                return result
             case Qt.ItemDataRole.DisplayRole:
-                # Hide text for booleans since the checkbox in CheckStateRole is sufficient
-                return None if isinstance(result, bool) else result
-
-            case Qt.ItemDataRole.CheckStateRole if isinstance(result, bool):
+                return None if (is_bool or isinstance(result, bool)) else result
+            case Qt.ItemDataRole.CheckStateRole if is_bool:
                 return Qt.CheckState.Checked if result else Qt.CheckState.Unchecked
-
             case Qt.ItemDataRole.TextAlignmentRole:
-                # Right-align numbers and dates, but explicitly exclude booleans (since bool is a subclass of int)
                 if isinstance(result, (int, float, Decimal, QDate, QDateTime)) and not isinstance(result, bool):
                     return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
                 return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-
             case _:
                 return None
 
@@ -212,7 +220,6 @@ class QueryModel(BaseQueryModel):
         self.repr: str = 'Generic query model' # printable representation of the object,
         self.isCompanyTable: bool = False # True if is a company table
         self.companyField: str = 'company_id' # company_id field name, subclass can modifie this if use table alias
-        self.hasTotalsRow: bool = False  # used for sorting
         self.recordType: Any = None  # dict of field:value key for record type
      
     def addWhere(self, condition: str, value: Any) -> None:
@@ -356,7 +363,7 @@ class Record(dict):
             self.is_modified = True
 
 
-class TableModel(QAbstractTableModel):
+class TableModel(QueryModel):
     """Generic table model for managing one sql table
     
     Structure:
@@ -365,90 +372,23 @@ class TableModel(QAbstractTableModel):
     additional keys are the pkey for primary key dictionary
     and object_version for the concurrency management
     """
+    dataSet: list[Record]  # type: ignore[assignment]
     userDataChanged = Signal()  # can not use dataChanged because is emitted even on select
     rowCountChanged = Signal(int)
 
     def __init__(self, parent: QObject | None = None) -> None:
         "Initialize some empty or default data structure"
         super().__init__(parent)
-        self.dataSet: list[Record] = [] 
-        self.whereCondition: list[tuple] = []  # list of (condition, argument)
-        self.orderByExpression: list[str] = [] # list of string
-        #self.filterMapping: dict = {}
         self.toDelete: list[dict[str, Any]] = []  # list of dict for any cancelled row (need to store pkey and object_version)
         # subclasses must define this properties
         self.table: str | None = None # table or view name - string, subclass must define this
-        self.isCompanyTable = False # True if is a company table
-        self.columns: tuple[Any, ...] = () # model columns definition (field, description, readonly, type)
         self.primaryKey: tuple[str, ...] = () # primary key fields name - sequence, subclass must define this
         self.automaticPKey = False  # set pkey filds at DEFAULT value on insert
-        self.recordType: dict = {}  # list of field:value key for record type (a table with different record type)
         self.newRecordDefault: dict = {} # a record dictionary with default values for some field on insert
-        self.filterCondition: list[tuple] = []  # reference key condition before where conditions, map master row to detail row
-        self.limitCondition: int | None = None
         self.isDirty = False # setted on data changed
         self.isEditable = True # used in forms
-        self.hasTotalsRow = False
         self.repr = 'Generic editable table model' # printable representation of the object
-        
-    def __repr__(self) -> str:
-        "Model representation"
-        return self.repr
-
-    def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
-        "Return standard flags or readonly for some columns"
-        if not index.isValid():
-            return Qt.ItemFlag.NoItemFlags
-        f = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
-        is_bool = self.columns[index.column()][cla.TYPE] == 'bool'
-        is_ro = self.columns[index.column()][cla.RO]
-        if not is_ro:
-            f |= Qt.ItemFlag.ItemIsEditable
-            if is_bool:
-                f |= Qt.ItemFlag.ItemIsUserCheckable
-        return f
-
-    def data(self, 
-             index: QModelIndex | QPersistentModelIndex, 
-             role: int = Qt.ItemDataRole.DisplayRole
-             ) -> Any:
-        """Returns data from the dataSet structured as a list of dictionaries (key = column index)."""
-        if not index.isValid() or index.row() >= len(self.dataSet):
-            return None
-
-        row, col = index.row(), index.column()
-        is_bool_column = (self.columns[col][cla.TYPE] == 'bool')
-
-        # Safe CheckStateRole handling for boolean columns (even if key is missing or None)
-        if role == Qt.ItemDataRole.CheckStateRole and is_bool_column:
-            value = self.dataSet[row].get(col)
-            return Qt.CheckState.Checked if value else Qt.CheckState.Unchecked
-
-        # Early exit if the column key does not exist in the row dictionary
-        if col not in self.dataSet[row]:
-            return None
-
-        result = self.dataSet[row][col]
-
-        match role:
-            case Qt.ItemDataRole.EditRole:
-                return result
-
-            case Qt.ItemDataRole.DisplayRole:
-                # Prevent displaying "True"/"False" text if it is a boolean column
-                if is_bool_column or isinstance(result, bool):
-                    return None
-                return result
-
-            case Qt.ItemDataRole.TextAlignmentRole:
-                # Right-align numbers and dates (explicitly excluding booleans)
-                if isinstance(result, (int, float, Decimal, QDate, QDateTime)) and not isinstance(result, bool):
-                    return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
-                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-
-            case _:
-                return None
-
+       
     def setData(self, 
             index: QModelIndex | QPersistentModelIndex = QModelIndex(),
             value: Any = None,
@@ -496,12 +436,6 @@ class TableModel(QAbstractTableModel):
         
         return True
 
-
-    # def hiddenSetData(self, row: int, column: int, value: Any) -> None:
-    #     "Set data without emitting dataChanged signal"
-    #     row = self.filterMapping[row]
-    #     self.dataSet[row][column] = value
-
     def submit(self) -> bool:
         "Update database: insert/delete/update rows, used only for commit on row changed, do nothing on manual submit"
         # used only for commit on row changed, do nothing on manual submit
@@ -533,7 +467,6 @@ class TableModel(QAbstractTableModel):
                 where = " AND ".join([f"{k} = %({k})s" for k in record.pkey])
                 script = f"DELETE FROM {self.table} WHERE {where};"
                 cur.execute(script, record.pkey)
-            #self.toDelete.clear()
             if self.automaticPKey:
                 # update identity
                 table = self.table
@@ -561,7 +494,7 @@ class TableModel(QAbstractTableModel):
                     upd_fields = [c[cla.FIELD] for c in self.columns if c[cla.FIELD] and not c[cla.RO]]
                     fields_str = ", ".join([f"{f} = %({f})s" for f in upd_fields])
                     where_str = " AND ".join([f"{k} = %({k})s" for k in record.pkey])
-                    fieldsback = ", ".join([i[cla.FIELD] for i in self.columns if i[cla.FIELD]] + [OVFIELD])
+                    fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns] + [OVFIELD])
                     
                     script = f"UPDATE {self.table} SET {fields_str} WHERE {where_str} RETURNING {fieldsback};"
                     
@@ -572,14 +505,6 @@ class TableModel(QAbstractTableModel):
                     res = cur.fetchone()
                     if res:
                         saved.append((row_idx, record, res)) 
-                        # record is updated with returned values (in case of trigger modify the record)
-                        #for i in range(len(self.columns)): record[i] = res[i]
-                        #record.object_version = res[-1]
-                        #record.is_modified = False # Reset flag
-                    # notify of changes
-                    # index_start = self.index(row_idx, 0) # index of the first column of the row
-                    # index_end = self.index(row_idx, self.columnCount() - 1) # index of the last column of the row
-                    # self.dataChanged.emit(index_start, index_end, [Qt.ItemDataRole.DisplayRole])
                 # --- INSERT ---
                 elif record.is_new:
                     fieldList = [i[cla.FIELD] for i in self.columns if i[cla.FIELD] and not i[cla.RO]]
@@ -599,7 +524,8 @@ class TableModel(QAbstractTableModel):
                         args['company_id'] = session['current_company']
                     fields_str = ", ".join(fieldList)
                     placeholders = ", ".join([f"%({f})s" for f in fieldList])
-                    fieldsback = ", ".join([i[cla.FIELD] for i in self.columns if i[cla.FIELD]] + [OVFIELD])
+                    fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns]
+                       + list(self.primaryKey) + [OVFIELD])
                     
                     script = f"INSERT INTO {self.table} ({fields_str}) VALUES ({placeholders}) RETURNING {fieldsback};"
                     
@@ -614,21 +540,10 @@ class TableModel(QAbstractTableModel):
                     res = cur.fetchone()
                     if res:
                         saved.append((row_idx, record, res)) 
-                        # repopulate the inserted record with returned values
-                        # for i in range(len(self.columns)): 
-                        #     record[i] = res[i]
-                        # pk_start = len(self.columns)
-                        # record.pkey = {k: res[pk_start + i] for i, k in enumerate(self.primaryKey)}
-                        # record.object_version = res[-1]
-                        # record.is_new = False
-                        # record.is_modified = False
-                    # notify of changes
-                    # index_start = self.index(row_idx, 0) # index of the first column of the row
-                    # index_end = self.index(row_idx, self.columnCount() - 1) # index of the last column of the row
-                    # self.dataChanged.emit(index_start, index_end, [Qt.ItemDataRole.DisplayRole])
 
-            # self.isDirty = False
-            # self.userDataChanged.emit()
+            ok = True    # ultima riga dentro il with
+        if not ok:
+            return False
         n = len(self.columns)
         self.toDelete.clear()
         for row_idx, record, res in saved:
@@ -654,23 +569,6 @@ class TableModel(QAbstractTableModel):
         self.dataSet.clear()
         self.toDelete.clear()
         self.isDirty = False
-
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
-        "Returns header data for row (field header)/column (columns number) headers"
-        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
-            return self.columns[section][cla.DESCRIPTION]
-        if orientation == Qt.Orientation.Vertical:
-            if role == Qt.ItemDataRole.DisplayRole:
-                return super().headerData(section, orientation, role)
-        return None
-
-    def rowCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:
-        "Returns the rows number of the dataSet"
-        return len(self.dataSet)
-
-    def columnCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:
-        "Returns the columns number of the dataSet"
-        return len(self.columns)
 
     def insertRows(self, position: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
         "Insert rows in model"
@@ -707,54 +605,6 @@ class TableModel(QAbstractTableModel):
         self.userDataChanged.emit()
         self.rowCountChanged.emit(len(self.dataSet))
         return True
-
-    def sort(self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder) -> None:
-        n = len(self.dataSet) - int(self.hasTotalsRow)
-        if n <= 1:
-            return
-        nv = NULL_MAP.get(self.columns[column][cla.TYPE], "")
-        perm = sorted(range(n),
-                    key=lambda i: nv if self.dataSet[i].get(column) is None else self.dataSet[i][column],
-                    reverse=(order == Qt.SortOrder.DescendingOrder))
-        new_pos = {old: new for new, old in enumerate(perm)}
-        self.layoutAboutToBeChanged.emit()
-        old = self.persistentIndexList()
-        self.dataSet[:n] = [self.dataSet[i] for i in perm]
-        for idx in old:
-            if idx.row() < n:
-                self.changePersistentIndex(idx, self.index(new_pos[idx.row()], idx.column()))
-        self.layoutChanged.emit()
-
-    def filter(self, column: int | None = None, value: Any = None) -> None:
-        "Filter records on a master/detail logic, this model is for detail"
-        self.filterCondition.clear()
-        if column is None: # empty master table or new record
-            self.filterCondition.append(('True = %s', False))
-        else:
-            field = f"{self.columns[column][cla.FIELD]}"
-            self.filterCondition.append((f'{field} = %s', value))
-        self.select()
- 
-    def addWhere(self, 
-                 condition: str,
-                 value: Any
-                 ) ->None:
-        "Add where conditions before select"
-        self.whereCondition.append((condition, value))
-
-    def addOrderBy(self, expression: str | list | tuple) -> None:
-        "Add order by expression before select"
-        if isinstance(expression, (list, tuple)):
-            self.orderByExpression += list(expression)
-        elif isinstance(expression, str):
-            self.orderByExpression.append(expression)
-        else:
-            raise TypeError("Order by expression must be string or list/tuple of strings")
-
-    # def getPrimaryKey(self, row: int) -> str|None:
-    #     if row < 0:
-    #         return None
-    #     return self.dataSet[row].get('pkey')
     
     def getPrimaryKey(self, row: int) -> dict | None:
         return self.dataSet[row].pkey if 0 <= row < len(self.dataSet) else None

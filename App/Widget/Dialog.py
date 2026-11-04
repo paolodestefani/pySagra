@@ -1340,6 +1340,8 @@ class PrintDialog(QDialog):
         "Set report and fill parameters"
         if index < 0:
             return
+        if self.ui.comboBoxReportList.count() == 0:
+            return
         self.current_print_method, report_id = self.ui.comboBoxReportList.currentData()
         self.ui.labelPrintMethod.setText(self.current_print_method)
         if self.current_print_method == 'D':

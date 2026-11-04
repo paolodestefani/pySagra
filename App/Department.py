@@ -94,7 +94,7 @@ class DepartmentForm(FormViewManager[Ui_GenericFormViewWidget]):
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (True, True, True, True, False, False, False, False,
+        self.availableStatus = (True, True, True, True, True, True, True, True,
                                 False, False, False, False)
         self.ui = Ui_GenericFormViewWidget()
         self.ui.setupUi(self)

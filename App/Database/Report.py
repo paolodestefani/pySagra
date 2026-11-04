@@ -135,7 +135,8 @@ ORDER BY ra.class_sorting;"""
         return cur.fetchall()
 
 
-def get_report_list(report_class: str|None = None,
+def get_report_list(method: str|None = None,
+                    report_class: str|None = None,
                     l10n: str|None = None, 
                     report_id: int|None = None
                     ) -> list:
@@ -157,7 +158,7 @@ SELECT
     report_code, 
     description
 FROM system.report
-WHERE report_class = {report_class} AND l10n = {l10n};"""
+WHERE print_method = {method} AND report_class = {report_class} AND l10n = {l10n};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)

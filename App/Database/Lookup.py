@@ -162,58 +162,58 @@ def company_lookup(null: bool = False) -> list[tuple]:
 def customer_order_driver_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all report (code, description) of customer order class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list(f'D', 'ORDER_CUSTOMER', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list(f'D', 'ORDER_CUSTOMER', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list(f'D', 'ORDER_CUSTOMER', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list(f'D', 'ORDER_CUSTOMER', session['l10n'])]
 
 def customer_order_escpos_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all report (code, description) of customer order class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('E', 'ORDER_CUSTOMER', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('E', 'ORDER_CUSTOMER', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('E', 'ORDER_CUSTOMER', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list('E', 'ORDER_CUSTOMER', session['l10n'])]
 
 def department_order_driver_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of department order class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('D', 'ORDER_DEPARTMENT', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('D', 'ORDER_DEPARTMENT', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('D', 'ORDER_DEPARTMENT', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list('D', 'ORDER_DEPARTMENT', session['l10n'])]
 
 def department_order_escpos_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of department order class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('E', 'ORDER_DEPARTMENT', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('E', 'ORDER_DEPARTMENT', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('E', 'ORDER_DEPARTMENT', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list('E', 'ORDER_DEPARTMENT', session['l10n'])]
 
 def cover_order_driver_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of cover order class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('D', 'ORDER_COVER', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('D', 'ORDER_COVER', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('D', 'ORDER_COVER', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list('D', 'ORDER_COVER', session['l10n'])]
 
 def cover_order_escpos_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of cover order class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('E', 'ORDER_COVER', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('E', 'ORDER_COVER', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('E', 'ORDER_COVER', session['l10n'])]
-    
+        return [(c, d) for m, i, c, d in get_report_list('E', 'ORDER_COVER', session['l10n'])]
+
 def ordered_delivered_driver_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of ordered delivered report class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('D', 'ORDERED_DELIVERED', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('D', 'ORDERED_DELIVERED', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('D', 'ORDERED_DELIVERED', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list('D', 'ORDERED_DELIVERED', session['l10n'])]
     
 def ordered_delivered_escpos_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of ordered delivered report class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('E', 'ORDERED_DELIVERED', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('E', 'ORDERED_DELIVERED', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('E', 'ORDERED_DELIVERED', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list('E', 'ORDERED_DELIVERED', session['l10n'])]
 
 def order_driver_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all report (code, description) of customer/cover/department reports"
@@ -232,9 +232,9 @@ def order_escpos_report_lookup(null: bool = False) -> list[tuple]:
 def stock_unload_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all reports of stock unload class"
     if null:
-        return [(None, None)] + [(c, d) for i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
+        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
     else:
-        return [(c, d) for i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
+        return [(c, d) for m, i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
     
 
 def escpos_printer_lookup(null: bool = False) -> list[tuple]:

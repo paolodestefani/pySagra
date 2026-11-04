@@ -31,12 +31,11 @@ secondary forms are linked to the main form by a relation.
 
 # standard library
 from enum import IntEnum
+from typing import Any
 
 # PySide6
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QAbstractItemModel
-#from PySide6.QtGui import QCursor
-#from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -50,8 +49,6 @@ from App import session
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import wait_cursor_context
 from App.Common.ExceptionHandler import gui_exception_context
-from App.Database.Connect import appconn
-#from App.Database.Exceptions import PyAppDBError
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Widget.Control import DataWidgetMapper
@@ -91,7 +88,191 @@ class vw(IntEnum):
     GRID = 1
 
 
-class FormManager[T](QWidget):
+class BaseFormManager[T](QWidget):
+    """Common part of FormManager, FormIndexManager and FormViewManager.
+
+    Subclasses must implement:
+    - position(): (current, total), current is 1 based, <= 0 if no current record
+    - goto(row):  move to a zero based row
+    and may override limit() and extraStatus().
+    """
+
+    def __init__(self, parent: QWidget, auth: tuple) -> None:
+        super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.ui: T # The type will be decided by the subclass
+        # subclass must define available status, default: nothing is available
+        # 12 boolean values:
+        # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
+        # FILTER, CHANGE, REPORT, EXPORT
+        self.availableStatus = (False,) * 12
+        self.model: QueryModel|TableModel # main form model
+        self.detailRelations: list = []  # detail relation list
+        self.state = ev.VIEW # initial state
+        self.reloadConfirmation = True  # ask confirmation on reload
+        self.repr = 'Generic form manager'
+        self.read_perm, self.write_perm, self.execute_perm = auth
+        self._is_navigating = False  # True while the form loads a record: changes are not user changes
+        self.sortFilterDialog: SortFilterDialog | EventFilterDialog | None = None
+
+    def __repr__(self) -> str:
+        return self.repr
+
+    # ------------------------------------------------------------ to implement
+
+    def position(self) -> tuple[int, int]:
+        "Return (current, total), current is 1 based and <= 0 if there is no current record"
+        raise NotImplementedError
+
+    def goto(self, row: int) -> None:
+        "Move to the zero based row"
+        raise NotImplementedError
+
+    def limit(self) -> int | None:
+        "Max rows limit shown by the main window, only index forms have it"
+        return None
+
+    def extraStatus(self, status: list[bool], total: int) -> None:
+        "Hook for subclasses to adjust the status list in place"
+
+    # ------------------------------------------------------------ models
+
+    def addDetailRelation(self, relation, masterColumn, detailColumn) -> None:
+        "Add linked models to detailRelations list"
+        self.detailRelations.append((relation, masterColumn, detailColumn))
+        if getattr(relation, 'isEditable', False) and hasattr(relation, 'userDataChanged'):
+            relation.userDataChanged.connect(self.modelChanged)
+
+    def modelChanged(self) -> None:
+        "Update status and navigation on model changed by the user"
+        if self._is_navigating or self.state == ev.EDIT:
+            return
+        self.state = ev.EDIT
+        self.updateEditStatus()
+
+    # ------------------------------------------------------------ status
+
+    @staticmethod
+    def _arrowStatus(current: int, total: int) -> tuple[bool, bool, bool, bool]:
+        "(first, previous, next, last) availability"
+        if total <= 1:
+            return False, False, False, False
+        first = current > 1
+        last = current < total
+        return first, first, last, last
+
+    def updateEditStatus(self) -> None:
+        "Update main window edit status based on current record and state"
+        if not getattr(self, 'model', None):
+            return
+        current, total = self.position()
+        if current > total:  # this can happen on reload
+            current = total
+        if self.state == ev.EDIT:
+            # don't allow navigation while editing
+            currentStatus = EDEDIT + (False,) * 4 + (False, True, True, True)
+        else:
+            currentStatus = EDVIEW + self._arrowStatus(current, total) + (True, True, True, True)
+        # filter available status
+        status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
+        # disable Delete if no record
+        if self.state != ev.EDIT and self.availableStatus[es.DELETE]:
+            status[es.DELETE] = total > 0
+        # disable unavailable actions for Read only auth
+        if not self.write_perm:
+            for i in (es.NEW, es.SAVE, es.DELETE):
+                status[i] = False
+        self.extraStatus(status, total)
+        session['mainwin'].updateEditStatus(status, current, total, self.limit())
+
+    # ------------------------------------------------------------ navigation
+
+    def toFirst(self) -> None:
+        current, total = self.position()
+        if total > 0:
+            self.goto(0)
+
+    def toPrevious(self) -> None:
+        current, total = self.position()
+        if current > 1:
+            self.goto(current - 2)
+
+    def toNext(self) -> None:
+        current, total = self.position()
+        if current < total:
+            self.goto(max(current, 0))   # with no current record goes to the first
+
+    def toLast(self) -> None:
+        current, total = self.position()
+        if total > 0:
+            self.goto(total - 1)
+
+    # ------------------------------------------------------------ filters and view
+
+    def applySortFilter(self) -> None:
+        if self.sortFilterDialog is not None and hasattr(self.sortFilterDialog, 'applySortFilter'):
+            self.sortFilterDialog.applySortFilter()
+
+    def setFilters(self) -> None:
+        "Open filter dialog"
+        if self.sortFilterDialog is not None:
+            self.sortFilterDialog.show()
+
+    def changeView(self) -> None:
+        "Move from and to form/grid view"
+        if not hasattr(self.ui, 'stackedWidget'):
+            return
+        if self.ui.stackedWidget.currentIndex() == vw.FORM:
+            self.ui.stackedWidget.setCurrentIndex(vw.GRID)
+        else:
+            self.ui.stackedWidget.setCurrentIndex(vw.FORM)
+            
+    def save(self) -> None:
+        "Save data to db, implemented by subclasses"
+        raise NotImplementedError
+
+    def new(self) -> None:
+        "Create new record, implemented by subclasses"
+        raise NotImplementedError
+
+    def delete(self) -> None:
+        "Delete record, implemented by subclasses"
+        raise NotImplementedError
+
+    def reload(self) -> None:
+        "Reload data from db, implemented by subclasses"
+        raise NotImplementedError
+
+    # ------------------------------------------------------------ closing
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        "Close the form, ask confirmation if dirty"
+        if self.state == ev.EDIT and self.write_perm:
+            result = QMessageBox.question(
+                self,
+                _tr("MessageDialog", "Question"),
+                _tr("Form", "The data has been modified, save ?"),
+                QMessageBox.StandardButton.Yes|
+                QMessageBox.StandardButton.No|
+                QMessageBox.StandardButton.Cancel
+            )
+            match result:
+                case QMessageBox.StandardButton.Cancel:
+                    event.ignore()
+                    return
+                case QMessageBox.StandardButton.Yes:
+                    self.save()
+                    if self.state == ev.EDIT:   # save failed: stay open, keep the changes
+                        event.ignore()
+                        return
+                case QMessageBox.StandardButton.No:
+                    self.state = ev.VIEW
+                    self.updateEditStatus()
+        event.accept()
+        
+        
+        
+class FormManager[T](BaseFormManager[T]):
     """Generic form manager container
     
     This container class manage the main form and secondary form in a
@@ -103,61 +284,26 @@ class FormManager[T](QWidget):
     # T = The type will be decided by the subclass
 
     def __init__(self, parent: QWidget, auth: tuple) -> None:
-        super().__init__(parent)
-        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        # subclass must define available status, default: nothing is available
-        # 12 boolean values:
-        # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
-        # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False,) * 12 # False, False, False, False, False, False, False,
-                                #False, False, False, False)
-        self.model: QueryModel|TableModel # main form model
-        self.detailRelations: list = []  # detail relation list
-        self.state = ev.VIEW # initial state
-        self.repr = 'Generic form manager'
-        self.reloadConfirmation = True  # ask confirmation on reload
+        super().__init__(parent, auth)
         # mapper
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
-        self.ui: T # The type will be decided by the subclass
         self.linkedMappers: list = [] # linked mapper list
-        self.read_perm, self.write_perm, self.execute_perm = auth
         # mapper cursor changed update detail
         self.mapper.currentIndexChanged.connect(self.mapperIndexChanged)
-        
-    def __repr__(self) -> str:
-        "Model representation"
-        return self.repr
     
     def setModel(self, model: QueryModel|TableModel) -> None:
         "Set the main form model"
         self.model = model
         self.mapper.setModel(self.model) # main form model
         # only for editable models
-        if hasattr(self.model, 'isEditable') and self.model.isEditable:
-            if hasattr(self.model, 'userDataChanged'):
-                self.model.userDataChanged.connect(self.modelChanged)
+        if self.model.isEditable and hasattr(self.model, 'userDataChanged'):
+            self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
-    
-    def addDetailRelation(self, 
-                          relation: QAbstractItemModel,
-                          masterColumn: int,
-                          detailColumn: int
-                          ) -> None:
-        "Add linked models to detailRelations list"
-        self.detailRelations.append((relation, masterColumn, detailColumn))
-        if hasattr(relation, 'isEditable') and relation.isEditable:
-            if hasattr(relation, 'userDataChanged'):
-                relation.userDataChanged.connect(self.modelChanged)
 
     def addLinkedMapper(self, mapper: QDataWidgetMapper) -> None:
         "Add linked mapper"
         self.linkedMappers.append(mapper)
-
-    def modelChanged(self) -> None:
-        "Update status and navigation on (main) model changed"
-        self.state = ev.EDIT
-        self.updateEditStatus()
 
     def mapperIndexChanged(self, row: int) -> None:
         "Reload detail relations on main model index change"
@@ -171,76 +317,9 @@ class FormManager[T](QWidget):
                     relation.filter(detailColumn, value)
             self.updateEditStatus()
         
-    def updateEditStatus(self) -> None:
-        "Update main window edit status based on current model and mapper index"
-        # get current values
-        current = self.mapper.currentIndex() + 1 # mapper index is zero based
-        total = self.model.rowCount()
-        # define current navigation settings
-        if current > total: # this can happen on reload
-            current = total
-        # no navigation needed
-        if current < 0 and total < 0:
-            nav = False, False, False, False
-        # no record at all, disable counter and navigation
-        elif current == 0 and total == 0:
-            nav = False, False, False, False
-        # one record, no need of navigation
-        elif total == 1:
-            nav = False, False, False, False
-        # first record, not need of first/previous arrows
-        elif current == 1:
-            nav = False, False, True, True
-        # last record, no need of next/last arrows
-        elif current == total:
-            nav = True, True, False, False
-        # otherwise
-        else:
-            nav = True, True, True, True
-
-        if self.state == ev.EDIT:
-            # don't allow navigation while editing
-            nav = False, False, False, False
-            currentStatus = EDEDIT + nav + (False, True, True, True)
-        else:
-            currentStatus = EDVIEW + nav + (True, True, True, True)
-        # filter available status
-        status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
-        # disable Delete if no record
-        if self.state != ev.EDIT and self.availableStatus[es.DELETE]:
-            if total == 0:
-                status[es.DELETE] = False
-            else:
-                status[es.DELETE] = True
-        # disable unavailable actions for Read only auth
-        if not self.write_perm:
-            for i in (es.NEW, es.SAVE, es.DELETE):
-                status[i] = False
-        session['mainwin'].updateEditStatus(status, current, total)
-
-    def toFirst(self) -> None:
-        "To first"
-        with wait_cursor_context():
-            self.mapper.toFirst()
-        
-    def toPrevious(self) -> None:
-        "To previous"
-        with wait_cursor_context():
-            self.mapper.toPrevious()
-        
-    def toNext(self) -> None:
-        "To next"
-        with wait_cursor_context():
-            self.mapper.toNext()
-        
-    def toLast(self) -> None:
-        "To last"
-        with wait_cursor_context():
-            self.mapper.toLast()
-        
     def new(self) -> None:
         "Create a new record on model"
-        if not self.write_perm:
+        if not self.write_perm or not self.model.isEditable: 
             return
         # enable widget, in case it's disabled)
         if hasattr(self.ui, 'stackedWidget'):
@@ -274,23 +353,17 @@ class FormManager[T](QWidget):
         with gui_exception_context(self, _tr("Form", "Error on model submit all")):
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
-                
             self.mapper.setCurrentIndex(row)
-            
             for mapper in self.linkedMappers:
                 mapper.submit()
-                
             for relation, masterColumn, detailField in self.detailRelations:
-                with gui_exception_context(self, _tr("Form", "Error on model detail submit all")):
-                    idx = self.model.index(row, masterColumn)
-                    value = self.model.data(idx) if idx.isValid() else None
-                    if hasattr(relation, 'submitAll'):
-                        relation.submitAll(detailField, value)
-                        
-            appconn.commit()
+                idx = self.model.index(row, masterColumn)
+                value = self.model.data(idx) if idx.isValid() else None
+                if hasattr(relation, 'submitAll'):
+                    relation.submitAll(detailField, value)
             self.state = ev.VIEW
             self.mapper.setCurrentIndex(row)
-        
+                
     def delete(self) -> None:
         "Delete current record and commit"
         if not self.write_perm:
@@ -302,7 +375,7 @@ class FormManager[T](QWidget):
             for relation, masterColumn, detailColumn in self.detailRelations:
                 with gui_exception_context(self, _tr("Form", "Relation delete")):
                     if relation.rowCount() > 0:
-                        relation.removeRows(masterColumn, detailColumn)
+                        relation.removeRows(0, relation.rowCount())
                         relation.submitAll()
             
         success = False
@@ -351,79 +424,29 @@ class FormManager[T](QWidget):
             row = self.model.rowCount() - 1
         self.mapper.setCurrentIndex(row)  # setCurrentIndex() implies updateEditStatus()
 
-    def applySortFilter(self)-> None:
-        self.sortFilterDialog.applySortFilter()
+    def position(self):
+        return self.mapper.currentIndex() + 1, self.model.rowCount()
 
-    def setFilters(self) -> None:
-        "Create/open filter dialog and update main model"
-        self.sortFilterDialog.show()
+    def goto(self, row):
+        with wait_cursor_context():
+            self.mapper.setCurrentIndex(row)
+            
 
-    def changeView(self) -> None:
-        "Move from and to form/grid view"
-        if hasattr(self.ui, 'stackedWidget'):
-            if self.ui.stackedWidget.currentIndex() == vw.FORM:
-                self.ui.stackedWidget.setCurrentIndex(vw.GRID)
-                # this works but don't enable navigation on tableview
-                # self.widget.tableView.selectRow(self.mapper.currentIndex())
-            else:
-                self.ui.stackedWidget.setCurrentIndex(vw.FORM)
-                # this works but don't enable navigation on tableview
-                #self.mapper.setCurrentModelIndex(self.widget.tableView.selectionModel().currentIndex())
-                
-    def closeEvent(self, event: QCloseEvent) -> None:
-        "Close the form, ask confirmation if dirty"
-        if self.state == ev.EDIT:
-            result = QMessageBox.question(
-                self,
-                _tr("MessageDialog", "Question"),
-                _tr("Form", "The data has been modified, save ?"),
-                QMessageBox.StandardButton.Yes|
-                QMessageBox.StandardButton.No|
-                QMessageBox.StandardButton.Cancel
-            )
-            match result:
-                case QMessageBox.StandardButton.Cancel:
-                    event.ignore()
-                    return
-                case QMessageBox.StandardButton.Yes:
-                    if self.write_perm:
-                        self.save()
-                case QMessageBox.StandardButton.No:
-                    self.state = ev.VIEW
-                    self.updateEditStatus()
-                    
-        event.accept()
-
-
-class FormViewManager[T](QWidget):
+class FormViewManager[T](BaseFormManager[T]): 
     """A simplified form manager container for only one tableview to manage, no mapper
     """
 
     def __init__(self, parent: QWidget, auth: tuple) -> None:
-        super().__init__(parent)
-        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.ui: T # The type will be decided by the subclass
-        # subclass must define available status, default: nothing is available
-        # 12 boolean values:
-        # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
-        # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (False,) * 12
-        self.model: QueryModel|TableModel # main form model
-        self.state = ev.VIEW # initial state
-        self.reloadConfirmation = True  # ask confirmation on reload
-        self.repr = 'Generic form view manager'
-        # model is mapped direct to tableview
-        self.read_perm, self.write_perm, self.execute_perm = auth
+        super().__init__(parent, auth)
         self.view: QTableView|None = None # subclass must set this
-        self.sortFilterDialog: SortFilterDialog | EventFilterDialog | None # subclass must set this
+        self._lastRow = 0
         
     def setModel(self, model: QueryModel|TableModel) -> None:
         "Set the main form model"
         self.model = model
         # used for isDirty method, only for editable models
-        if hasattr(self.model, 'isEditable') and self.model.isEditable:
-            if hasattr(self.model, 'userDataChanged'):
-                self.model.userDataChanged.connect(self.modelChanged)
+        if self.model.isEditable and hasattr(self.model, 'userDataChanged'):
+            self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
         
     def setView(self, view: QTableView) -> None:
@@ -434,42 +457,28 @@ class FormViewManager[T](QWidget):
         self.view.horizontalHeader().setSectionsMovable(True)
         self.view.setSortingEnabled(True)
         self.view.selectionModel().selectionChanged.connect(self.updateEditStatus)
-        
-    def modelChanged(self) -> None:
-        "Update status and navigation on model changed"
-        if self.state != ev.EDIT:
-            self.state = ev.EDIT
-            self.updateEditStatus()
+        self.model.modelAboutToBeReset.connect(self._saveRow)
+        self.model.modelReset.connect(self._restoreRow)
+        if self.model.rowCount() > 0 and not self.view.currentIndex().isValid():
+            self.view.selectRow(0)
+        self.view.setFocus()
+            
+    def _saveRow(self) -> None:
+        "Remember the current row before the model is reloaded"
+        if self.view:
+            idx = self.view.currentIndex()
+            self._lastRow = idx.row() if idx.isValid() else 0
 
-    def updateEditStatus(self) -> None:
-        "Update main window edit status based on current model and mapper index"
-        if not self.model:
-            return
+    def _restoreRow(self) -> None:
+        "After a reload select the same row (or the first one) so the counter keeps working"
         if not self.view:
             return
         total = self.model.rowCount()
-        index = self.view.selectionModel().currentIndex()
-        current = (index.row() + 1) if (index and index.isValid()) else -1
-
-        if self.state == ev.EDIT:
-            currentStatus = EDEDIT + (False,) * 8
-        else:
-            currentStatus = EDVIEW + (True,) * 8
-
-        # filter available status
-        status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
-        # disable Delete and form if no record
-        if self.state != ev.EDIT and self.availableStatus[es.DELETE]:
-            if total == 0:
-                status[es.DELETE] = False
-            else:
-                status[es.DELETE] = True
-        # disable unavailable actions for RO auth
-        if not self.write_perm:
-            for i in (es.NEW, es.SAVE, es.DELETE):
-                status[i] = False
-        session['mainwin'].updateEditStatus(status, current, total)
-
+        if total == 0:
+            self.updateEditStatus()
+            return
+        self.view.selectRow(self._lastRow if 0 <= self._lastRow < total else 0)
+        
     def new(self) -> None:
         "Create a new record on model"
         if not self.write_perm:
@@ -525,74 +534,15 @@ class FormViewManager[T](QWidget):
         self.state = ev.VIEW
         self.updateEditStatus()
 
-    def applySortFilter(self)-> None:
-        if self.sortFilterDialog and hasattr(self.sortFilterDialog, 'applySortFilter'):
-            self.sortFilterDialog.applySortFilter()
+    def position(self):
+        idx = self.view.selectionModel().currentIndex() if self.view else None
+        return (idx.row() + 1 if idx and idx.isValid() else -1), self.model.rowCount()
 
-    def setFilters(self) -> None:
-        if not self.model:
-            return None
-        # create filter dialog if not exists
-        if not hasattr(self, 'sortFilterDialog'):
-            self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.model, self)
-        if self.sortFilterDialog:
-            self.sortFilterDialog.show()
-
-    def toFirst(self) -> None:
-        "To first"
-        if self.view:
-            self.view.selectRow(0)
-
-    def toPrevious(self) -> None:
-        "To previous"
-        if not self.view:
-            return None
-        index = self.view.selectionModel().currentIndex()
-        if index:
-            self.view.selectRow(index.row() - 1)
-
-    def toNext(self) -> None:
-        "To next"
-        if not self.view:
-            return None
-        index = self.view.selectionModel().currentIndex()
-        if index:
-            self.view.selectRow(index.row() + 1)
-
-    def toLast(self) -> None:
-        "To last"
-        if not self.view:
-            return None
-        if self.model:
-            self.view.selectRow(self.model.rowCount() - 1)
-            
-    def closeEvent(self, event: QCloseEvent) -> None:
-        "Close the form, ask confirmation if dirty"
-        if self.state == ev.EDIT:
-            result = QMessageBox.question(
-                self,
-                _tr("MessageDialog", "Question"),
-                _tr("Form", "The data has been modified, save ?"),
-                QMessageBox.StandardButton.Yes|
-                QMessageBox.StandardButton.No|
-                QMessageBox.StandardButton.Cancel
-            )
-            match result:
-                case QMessageBox.StandardButton.Cancel:
-                    event.ignore()
-                    return
-                case QMessageBox.StandardButton.Yes:
-                    if self.write_perm:
-                        self.save()
-                case QMessageBox.StandardButton.No:
-                    self.model.revert()
-                    self.state = ev.VIEW
-                    self.updateEditStatus()
+    def goto(self, row):
+        self.view.selectRow(row)
         
-        event.accept()
 
-
-class FormIndexManager[T](QWidget):
+class FormIndexManager[T](BaseFormManager[T]): 
     """Generic form manager container with index model
     This container class manage the main form and linked form in a
     master/detail behavior. The role of this class is:
@@ -600,28 +550,15 @@ class FormIndexManager[T](QWidget):
     - consider user authorizations (r/w or r/o form)
     - drive linked forms/grids
     Index model and main model are implicitly linked by the first column of both"""
-    #ui: T # The type will be decided by the subclass
+    # ui: T # The type will be decided by the subclass
 
     def __init__(self, 
                  parent: QWidget,
                  auth: tuple
                  ) -> None:
-        super().__init__(parent)
-        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        # subclass must define available status, default: nothing is available
-        # 12 boolean values:
-        # new, save, delete, reload, first, previous, next,
-        # last, filter, change, report, export
-        self.availableStatus = (False,) * 12
-        self.reloadConfirmation = True  # ask confirmation on reload
-        # track form's state
-        self.state = ev.VIEW # initial state
-        self.read_perm, self.write_perm, self.execute_perm = auth
-        self.detailRelations: list = []  # detail relation list
-        self.model: QAbstractItemModel = TableModel()
+        super().__init__(parent, auth)
         self.indexModel = QueryModel()
         self.repr = 'Generic form index manager'
-        self.ui: T # The type will be decided by the subclass
         # index mapper
         self.indexMapper = QDataWidgetMapper(self)
         self.indexMapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
@@ -630,20 +567,18 @@ class FormIndexManager[T](QWidget):
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
         # flag
-        self._is_navigating = False 
         self._new = False
 
-    def setModel(self, model: QAbstractItemModel, indexModel: QueryModel) -> None:
+    def setModel(self, model: QueryModel | TableModel, indexModel: QueryModel) -> None:
         "Set the main form model and index model, index model can change from filter dialog"
         self.model = model
         self.indexModel = indexModel
         self.mapper.setModel(self.model) # main form model
         self.indexMapper.setModel(self.indexModel) # index model
         # used for isDirty method, only for editable models
-        if hasattr(self.model, 'userDataChanged'):
+        if self.model.isEditable and hasattr(self.model, 'userDataChanged'):
             self.model.userDataChanged.connect(self.modelChanged)
         self.sortFilterDialog = SortFilterDialog(self.__class__.__name__, self.indexModel, self)
-        #self.sortFilterDialog.applySortFilter()
 
     def setIndexView(self, view: QTableView) -> None:
         "Set index view"
@@ -657,23 +592,6 @@ class FormIndexManager[T](QWidget):
         self.indexView.activateWindow()
         self.indexView.horizontalHeader().setSectionsMovable(True)
 
-    def addDetailRelation(self, 
-                          relation: QAbstractItemModel,
-                          masterColumn: int,
-                          detailColumn: int
-                          ) -> None:
-        "Add linked models to detailRelations list"
-        self.detailRelations.append((relation, masterColumn, detailColumn))
-        if hasattr(relation, 'userDataChanged'):  # a modification of the relation cause an update of the status of the main form
-            relation.userDataChanged.connect(self.modelChanged)
-
-    def modelChanged(self) -> None:
-        "Update status and navigation on model changed"
-        if self._is_navigating:
-            return
-        self.state = ev.EDIT
-        self.updateEditStatus()
-    
     def mapperIndexChanged(self, index: int) -> None:
         "Reload form model and detail relations on mapper index change"
         # sanity checks
@@ -709,83 +627,9 @@ class FormIndexManager[T](QWidget):
             # release the block in any case
             self._is_navigating = False
 
-    def updateEditStatus(self) -> None:
-        "Update main window edit status based on current model and mapper index"
-        # get current values
-        current = self.indexMapper.currentIndex() + 1
-        total = self.indexModel.rowCount()
-        # define current navigation settings
-        if current > total:  # this can happen on reload
-            current = total
-        # no navigation needed
-        if current < 0 and total < 0:
-            nav = False, False, False, False
-        # no record at all, disable counter and navigation
-        elif current == 0 and total == 0:
-            nav = False, False, False, False
-        # one record, no need of navigation
-        elif total == 1:
-            nav = False, False, False, False
-        # first record, not need of first/previous arrows
-        elif current == 1:
-            nav = False, False, True, True
-        # last record, no need of next/last arrows
-        elif current == total:
-            nav = True, True, False, False
-        # otherwise
-        else:
-            nav = True, True, True, True
-        if self.state == ev.EDIT:
-            # don't allow navigation while editing
-            nav = False, False, False, False
-            currentStatus = EDEDIT + nav + (False, True, True, True)
-        else:
-            currentStatus = EDVIEW + nav + (True, True, True, True)
-        # filter available status
-        status = [i and j for i, j in zip(currentStatus, self.availableStatus)]
-        # disable Delete and form if no record
-        if self.state != ev.EDIT and self.availableStatus[es.DELETE]:
-            if total == 0:
-                status[es.DELETE] = False
-                if hasattr(self.ui, 'stackedWidget'):
-                    self.ui.stackedWidget.setDisabled(True)
-            else:
-                status[es.DELETE] = True
-                if hasattr(self.ui, 'stackedWidget'):
-                    self.ui.stackedWidget.setEnabled(True)
-        # disable unavailable actions for RO auth
-        if not self.write_perm:
-            for i in (es.SAVE, es.DELETE):
-                status[i] = False
-        # disable write option if is_system is set on the main model
-        # if hasattr(self.model, 'isSystemColumn'):
-        #     system_index = self.model.index(0, self.model.isSystemColumn)
-        #     if system_index.isValid() and bool(system_index.data(Qt.ItemDataRole.EditRole)):
-        #         for i in (es.SAVE, es.DELETE):
-        #             status[i] = False
-        if hasattr(self, 'indexView'):
-            self.indexView.setEnabled(self.state != ev.EDIT)
-        session['mainwin'].updateEditStatus(status, current, total, self.indexModel.limitCondition)
-
-    def toFirst(self) -> None:
-        "To first"
-        self.indexMapper.toFirst()
-
-    def toPrevious(self) -> None:
-        "To previous"
-        self.indexMapper.toPrevious()
-
-    def toNext(self) -> None:
-        "To next"
-        self.indexMapper.toNext()
-
-    def toLast(self) -> None:
-        "To last"
-        self.indexMapper.toLast()
-
     def new(self) -> None:
         "Create a new record on model deleting the current one"
-        if isinstance(self.model, QueryModel):
+        if not self.model.isEditable:
             return
         self._new = True
         self._is_navigating = True
@@ -816,8 +660,8 @@ class FormIndexManager[T](QWidget):
         active_widget = QApplication.focusWidget()
         if active_widget:
             active_widget.clearFocus()
-        if isinstance(self.model, QueryModel):
-            return 
+        if not self.model.isEditable:
+            return
         if not self.mapper.submit():
             QMessageBox.critical(
                 self,
@@ -838,12 +682,13 @@ class FormIndexManager[T](QWidget):
             self.reload()
             self._new = False
             self.state = ev.VIEW
+            self.updateEditStatus()
             
     def delete(self) -> None:
         "Delete current record and commit. Resets the index mapper to the previous value -1"
         if not self.write_perm:
             return
-        if isinstance(self.model, QueryModel):
+        if not self.model.isEditable:
             return
         current_index = self.indexMapper.currentIndex()
         with gui_exception_context(self, _tr("Form", "Master and detail model delete")):
@@ -920,42 +765,15 @@ class FormIndexManager[T](QWidget):
     def setIndexModel(self, model: QueryModel) -> None:
         self.indexModel = model
         
-    def applySortFilter(self)-> None:
-        self.sortFilterDialog.applySortFilter()
+    def position(self):
+        return self.indexMapper.currentIndex() + 1, self.indexModel.rowCount()
 
-    def setFilters(self) -> None:
-        "Create/open filter dialog and update main model"
-        self.sortFilterDialog.show()
+    def goto(self, row):
+        self.indexMapper.setCurrentIndex(row)
 
-    def changeView(self) -> None:
-        "Move from and to form/grid view"
-        if not hasattr(self.ui, 'stackedWidget'):
-            return
-        if self.ui.stackedWidget.currentIndex() ==vw.FORM:
-            self.ui.stackedWidget.setCurrentIndex(vw.GRID)
-        else:
-            self.ui.stackedWidget.setCurrentIndex(vw.FORM)
-            
-    def closeEvent(self, event: QCloseEvent) -> None:
-        "Close the form, ask confirmation if dirty"
-        if self.state == ev.EDIT and self.write_perm:
-            result = QMessageBox.question(
-                self,
-                _tr("MessageDialog", "Question"),
-                _tr("Form", "The data has been modified, save ?"),
-                QMessageBox.StandardButton.Yes|
-                QMessageBox.StandardButton.No|
-                QMessageBox.StandardButton.Cancel
-            )
-            match result:
-                case QMessageBox.StandardButton.Cancel:
-                    event.ignore()
-                    return
-                case QMessageBox.StandardButton.Yes:
-                    self.save()
-                    if self.state == ev.EDIT:      # salvataggio fallito: resta aperto
-                        event.ignore()
-                        return
-                case QMessageBox.StandardButton.No:
-                    self.state = ev.VIEW
-        event.accept()
+    def limit(self):
+        return self.indexModel.limitCondition
+
+    def extraStatus(self, status, total):
+        if self.state != ev.EDIT and self.availableStatus[es.DELETE] and hasattr(self.ui, 'stackedWidget'):
+            self.ui.stackedWidget.setEnabled(total > 0)
