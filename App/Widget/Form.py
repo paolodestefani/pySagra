@@ -389,7 +389,6 @@ class FormManager[T](QWidget):
                     if self.write_perm:
                         self.save()
                 case QMessageBox.StandardButton.No:
-                    self.model.revert()
                     self.state = ev.VIEW
                     self.updateEditStatus()
                     
@@ -630,8 +629,9 @@ class FormIndexManager[T](QWidget):
         # form mapper
         self.mapper = DataWidgetMapper(self)
         self.mapper.setSubmitPolicy(QDataWidgetMapper.SubmitPolicy.AutoSubmit)
-        # vavigation flag
+        # flag
         self._is_navigating = False 
+        self._new = False
 
     def setModel(self, model: QAbstractItemModel, indexModel: QueryModel) -> None:
         "Set the main form model and index model, index model can change from filter dialog"
@@ -763,6 +763,8 @@ class FormIndexManager[T](QWidget):
         #     if system_index.isValid() and bool(system_index.data(Qt.ItemDataRole.EditRole)):
         #         for i in (es.SAVE, es.DELETE):
         #             status[i] = False
+        if hasattr(self, 'indexView'):
+            self.indexView.setEnabled(self.state != ev.EDIT)
         session['mainwin'].updateEditStatus(status, current, total, self.indexModel.limitCondition)
 
     def toFirst(self) -> None:
@@ -805,7 +807,6 @@ class FormIndexManager[T](QWidget):
                 relation.filter(detailColumn, None)
         finally:
             self._is_navigating = False
-            self._new = False
             self.updateEditStatus()
 
     def save(self) -> None:
@@ -878,6 +879,7 @@ class FormIndexManager[T](QWidget):
             # PRIMARY KEY RECOVERY BEFORE REFRESH
             last_saved_key = None
             was_new_record = getattr(self, '_new', False)
+            self._new = False 
             if was_new_record and self.model and self.model.rowCount() > 0:
                 # in the new record (row 0 of the main model), we search in the correct key column
                 last_saved_key = self.model.index(0, pk_col).data()
@@ -950,10 +952,10 @@ class FormIndexManager[T](QWidget):
                     event.ignore()
                     return
                 case QMessageBox.StandardButton.Yes:
-                    if self.write_perm:
-                        self.save()
+                    self.save()
+                    if self.state == ev.EDIT:      # salvataggio fallito: resta aperto
+                        event.ignore()
+                        return
                 case QMessageBox.StandardButton.No:
-                    self.model.revert()
                     self.state = ev.VIEW
-                    self.updateEditStatus()
         event.accept()

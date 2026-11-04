@@ -108,7 +108,6 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrinter
 
-from App.Report.EscposPreview import ReceiptPreview   # absolute import
     
     
 # application definitions for special fields
@@ -129,6 +128,7 @@ if __name__ != "__main__":
     from App.Report import ReportXMLParseError
     from App.Report import ReportNoDataError
     from App.Report import ReportPrintError
+    from App.Report.EscposPreview import ReceiptPreview
 
 else:
     APPNAME = "Report ESC/POS Engine"
@@ -146,7 +146,7 @@ else:
     session['event_image'] = QByteArray()
     session['company_description'] = "Local festivities committee"
     session['company_image'] = QByteArray()
-    
+    from EscposPreview import ReceiptPreview   # absolute import
     @contextmanager
     def wait_cursor_context():
         """

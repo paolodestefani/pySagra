@@ -1051,7 +1051,7 @@ class ItemModel(TableModel):
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("item_id")
         # reference fields dictionary
-        self.reference = {'department': department_lookup}
+        self.reference = {'department_id': department_lookup}
         self.repr = 'Item table model'
 
 
@@ -1639,7 +1639,7 @@ class SalesSummaryModel(QueryWithParamsModel):
                 if index.column() == 1:
                     return _tr('Models', "TOTAL")
                 elif 3 <= index.column() <= len(self.columns):
-                    s = sum([self.dataSet[i, index.column()] for i in range(index.row())])
+                    s = sum([self.dataSet[i][index.column()] for i in range(index.row())])
                     return s
         else:
             return QueryWithParamsModel.data(self, index, role)
