@@ -1261,7 +1261,7 @@ class PrintDialog(QDialog):
         # set report list
         self.report: Report | ReportEscpos | None = None # report object instantiated in setReport()
         self.ui.comboBoxReportList.blockSignals(True)
-        for m, i, c, d in get_report_list(self.reportClass, self.l10n, reportId):
+        for m, i, c, d in get_report_list(None,self.reportClass, self.l10n, reportId):
             self.ui.comboBoxReportList.addItem(d, (m, i))
         self.ui.comboBoxReportList.blockSignals(False)
         # signal for change report and adaptation
@@ -1964,7 +1964,16 @@ class PrintDialog(QDialog):
                 printer = dialog.printer()
                 printer.setPageSize(self.report.receipt_page_layout(80.0).pageSize())
                 printer.setFullPage(True)
-                dialog.paintRequested.connect(self.report.print)
+                # Callback che esegue il rendering del report e ripristina subito il cursore
+                def on_paint_requested(printer):
+                    try:
+                        self.report.print(printer)
+                    finally:
+                        # Rimuove il WaitCursor appena le pagine del report sono state generate
+                        if QGuiApplication.overrideCursor() is not None:
+                            QGuiApplication.restoreOverrideCursor()
+                
+                dialog.paintRequested.connect(on_paint_requested)
                 dialog.exec()
            
 

@@ -129,14 +129,14 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
             if esc_printer:
                 # print
                 printer = escpos_printer(esc_printer)
-                report_esc.print(printer)
+                report_esc.print(printer, copies)
             else:
                 # print preview
-                # preview = PreviewDevice()
-                # report_esc.print(preview)
-                # dlg = PlainTextPreviewDialog(session['mainwin'], preview.get_preview())
-                # dlg.exec()
-                dialog = QPrintPreviewDialog()
+                # restore cursor if necessary
+                if QGuiApplication.overrideCursor() is not None:
+                    if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
+                        QGuiApplication.restoreOverrideCursor()
+                dialog = QPrintPreviewDialog(session['mainwin'])
                 dialog.setWindowTitle("Print preview")
                 printer = dialog.printer()
                 printer.setPageSize(report_esc.receipt_page_layout(80.0).pageSize())

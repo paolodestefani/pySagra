@@ -1385,10 +1385,10 @@ class BaseOrderDialog(QDialog):
         # ---------------------------------------------------------------------
         # SEPARATE DEPARTMENT COPIES PRINT DISPATCH
         # ---------------------------------------------------------------------
-        with report_exception_context(self):
-            for dept_id in used_dep:
-                if dept_id is None:
-                    continue  # skip if department ID is not valid
+        for dept_id in used_dep:
+            if dept_id is None:
+                continue  # skip if department ID is not valid
+            with report_exception_context(self):
                 printOrderReport(pc.DEPARTMENT, dept_id, ti)
         # ---------------------------------------------------------------------
         # STOCK UNLOAD / ORDERED DELIVERED REPORT SYSTEM

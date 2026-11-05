@@ -150,7 +150,7 @@ SELECT
     description
 FROM system.report
 WHERE report_id = {report_id};"""
-    else:
+    elif method is not None:
         script = t"""
 SELECT
     print_method,
@@ -159,12 +159,20 @@ SELECT
     description
 FROM system.report
 WHERE print_method = {method} AND report_class = {report_class} AND l10n = {l10n};"""
+    else:
+        script = t"""
+SELECT
+    print_method,
+    report_id,
+    report_code, 
+    description
+FROM system.report
+WHERE report_class = {report_class} AND l10n = {l10n};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         records = cur.fetchall()
         return records
-        #return [(None, '')] + records if null else records
         
 
 def get_report_driver_list(l10n: str) -> list:

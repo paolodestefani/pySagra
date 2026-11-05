@@ -47,7 +47,7 @@ from PySide6.QtGui import QPainter
 from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QPaintEvent
 from PySide6.QtGui import QCloseEvent
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidgetAction
@@ -77,6 +77,7 @@ from App.Database.Connect import appconn
 from App.Database.Gui import get_actions
 from App.Database.Gui import get_menu
 from App.Database.Gui import get_toolbar
+from App.Report.PrintScheduler import print_scheduler
 
 
 # logger
@@ -371,8 +372,18 @@ class MainWindow(QMainWindow):
                                             QGuiApplication.primaryScreen().availableGeometry()))
         if st.value("MainWindow/State"):
             self.restoreState(st.value("MainWindow/State"), 1)
+        # scheduler for escpos printing
+        sched = print_scheduler()
+        sched.jobFailed.connect(self.showPrintError)
+        QApplication.instance().aboutToQuit.connect(sched.shutdown)
         # and set initial edit status
         self.updateEditStatus(NSEMPTY, -1, -1, None)
+        
+    def showPrintError(self):
+        "Show what happened to print queue"
+        QMessageBox.information(self, 
+                                _tr('MainWindow', "Print error"), 
+                                _tr('MainWindow', "An error occurred while printing, please check the printer and try again."))
 
     def updateActionMenuToolbar(self) -> None:
         "Delete/recreate actions/menus/toolbars on access/change company"

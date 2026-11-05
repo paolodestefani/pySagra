@@ -57,12 +57,14 @@ import io
 import collections
 import decimal
 import itertools
+from turtle import pd
 import xml.etree.ElementTree as ET
 import operator
 import logging
 import textwrap
 import random
 import zlib
+from collections import deque
 
 from itertools import zip_longest
 from typing import Any
@@ -82,6 +84,7 @@ from qrcode import constants as qrc
 
 
 # PySide6
+from PySide6.QtCore import QObject
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import QMarginsF
@@ -128,6 +131,7 @@ if __name__ != "__main__":
     from App.Report import ReportXMLParseError
     from App.Report import ReportNoDataError
     from App.Report import ReportPrintError
+    from App.Report.PrintScheduler import print_scheduler
     from App.Report.EscposPreview import ReceiptPreview
 
 else:
@@ -146,7 +150,9 @@ else:
     session['event_image'] = QByteArray()
     session['company_description'] = "Local festivities committee"
     session['company_image'] = QByteArray()
+    from PrintScheduler import print_scheduler
     from EscposPreview import ReceiptPreview   # absolute import
+    
     @contextmanager
     def wait_cursor_context():
         """
@@ -888,72 +894,6 @@ class SqlField():
         self.ftype = ftype
         self.referenceList = reference # use in report dialog for reference list selection
 
-
-# Print over Network or USB using a thread
-
-class PrinterSenderThread(QThread):
-    # Segnali per la UI
-    job_completed = Signal()
-    print_error   = Signal(str)
-
-    def __init__(self, pd: Network | Usb, raw_bytes: bytes):
-        super().__init__()
-        self.raw_bytes = raw_bytes
-        self.pd = pd
-        
-        # default parameters initialization
-        # network printer
-        self.host: str = ''
-        self.port: int = 9100
-        self.net_timeout: int | float = 4.0
-        # usb printer
-        self.id_vendor: int | None = None
-        self.id_product: int | None = None
-        self.usb_timeout: int | float = 0
-        self.in_ep: int = 0x82
-        self.out_ep: int = 0x01
-        
-        match pd:
-            case Network() as net_dev:
-                self.host = net_dev.host
-                self.port = net_dev.port
-                self.net_timeout = net_dev.timeout if net_dev.timeout else 4.0
-            case Usb() as usb_dev:
-                self.id_vendor = usb_dev.idVendor
-                self.id_product = usb_dev.product_id if hasattr(usb_dev, 'product_id') else usb_dev.idProduct
-                self.usb_timeout = usb_dev.timeout
-                self.in_ep = usb_dev.in_ep
-                self.out_ep = usb_dev.out_ep
-
-    def run(self):
-        match self.pd:
-            case Network():
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(self.net_timeout)
-                try:
-                    s.connect((self.host, self.port))
-                    s.sendall(self.raw_bytes)
-                    self.job_completed.emit()
-                except socket.timeout:
-                    self.print_error.emit(f"Timeout: the printer {self.host} is not responding.")
-                except socket.error as e:
-                    self.print_error.emit(f"Network error: {str(e)}")
-                finally:
-                    s.close()
-                    
-            case Usb() as usb_dev:
-                try:
-                    usb_dev.open()
-                    usb_dev._raw(self.raw_bytes)
-                    self.job_completed.emit()
-                except Exception as e:
-                    self.print_error.emit(f"USB error: {str(e)}")
-                finally:
-                    try:
-                        usb_dev.close()
-                    except:
-                        pass
-            
          
 # Dummy subclass for store preview operations
 from escpos.printer import Dummy
@@ -1052,7 +992,7 @@ class DummyDevice(Dummy):
         self.ops.clear()
         self.style = _default_style()
         self.clear()          # Dummy.clear(): svuota anche i byte
-        
+
     
 # Report
 
@@ -1064,16 +1004,7 @@ class ReportEscpos():
         self.buffer: DummyDevice
         # text properties default
         self._current_text_property: dict = {}
-        self._current_text_property['font'] = 'a' # 'a' or 'b'
-        self._current_text_property['bold'] = False
-        self._current_text_property['underline'] = 0 # 0..2
-        self._current_text_property['normal_textsize'] = True
-        self._current_text_property['double_height'] = False
-        self._current_text_property['double_width'] = False
-        self._current_text_property['density'] = 0 # 0..8
-        self._current_text_property['invert'] = False
-        self._current_text_property['flip'] = False
-        self._current_text_property['smooth'] = False
+        self._resetTextProperties()
         # report elements
         self.header: list = [] # printed on beginning
         self.footer: list = [] # printed on ending
@@ -1113,8 +1044,21 @@ class ReportEscpos():
         if xml_string:
             self.set_report_definition(xml_string)
         self.buffer = DummyDevice(self.options.get('printer_profile', default_options['printer_profile']))
-        # 'codePages', 'colors', 'features', 'fonts', 'media', 'name', 'notes', 'vendor'
 
+    def _resetTextProperties(self) -> None:
+        "Initial text properties, must match the state of the printer after a reset"
+        self._current_text_property = {
+            'font': 'a', 
+            'bold': False, 
+            'underline': 0, 
+            'normal_textsize': True,
+            'double_height': False,
+            'double_width': False,
+            'density': 0,
+            'invert': False,
+            'flip': False,
+            'smooth': False}
+        
     def append_bands(self, child_element: ET.Element) -> list:
         out_list = []
         for band in child_element.findall('band'):
@@ -1415,7 +1359,9 @@ class ReportEscpos():
             raise ReportNoDataError
         
         self.buffer.clear_preview()
-         
+        self._resetTextProperties()
+        self.buffer.set_with_default()   # the printer will resume from the same state
+        
         # clear everything first
         self.current_group_index = 0
         for s in self.summaries:
@@ -1479,26 +1425,12 @@ class ReportEscpos():
         #self.buffer.cut() 
         
         #print(self.buffer.output)
-
-    def _on_print_success(self):
-        "Successful printing"
-        print("Everything OK")
-        self.printer_thread = None  
     
-    def _on_print_error(self, error_message):
-        "Show print error"
-        print(error_message)
-        self.printer_thread = None
-        
-    
-    def print(self, pd: Network | Usb | QPaintDevice) -> None:
+    def print(self, pd: Network | Usb | QPaintDevice, copies: int = 1) -> None:
         "Print the generated receipt on a raw device, a text preview or a paint device (preview dialog, printer, PDF)"
         match pd:
             case Network() | Usb():
-                self.printer_thread = PrinterSenderThread(pd, raw_bytes=self.buffer.output)
-                self.printer_thread.job_completed.connect(self._on_print_success)
-                self.printer_thread.print_error.connect(self._on_print_error)
-                self.printer_thread.start()
+                print_scheduler().submit(pd, self.buffer.output * copies)
             case QPaintDevice():          # QPrinter (anche dalla dialog), QPdfWriter
                 self._print_graphic(pd)
             case _:
