@@ -56,8 +56,8 @@ from App import session
 from App import currentIcon
 
 # application modules
-from App.Common.Cryptography import string_encode
-from App.Common.Cryptography import string_decode
+from App.Common.Cryptography import local_encode
+from App.Common.Cryptography import local_decode
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.Gui import setTheme
@@ -107,11 +107,11 @@ class LoginDialog(QDialog):
         self.ui.spinBoxPort.setValue(st.value("LogIn/Port", 5432, type=int))
         self.ui.lineEditDatabase.setText(st.value("LogIn/Database", ""))
         try:
-            self.ui.lineEditDBUser.setText(string_decode(st.value("LogIn/DbUser", "")))
+            self.ui.lineEditDBUser.setText(local_decode(st.value("LogIn/DbUser", "")))
         except InvalidToken:
             self.ui.lineEditDBUser.setText("")
         try:
-            self.ui.lineEditDBPassword.setText(string_decode(st.value("LogIn/DbPassword", "")))
+            self.ui.lineEditDBPassword.setText(local_decode(st.value("LogIn/DbPassword", "")))
         except InvalidToken:
             self.ui.lineEditDBPassword.setText("")
         self.ui.lineEditUser.setFocus()
@@ -169,8 +169,8 @@ class LoginDialog(QDialog):
         st.setValue("LogIn/Server", par['server'])
         st.setValue("LogIn/Port", par['port'])
         st.setValue("LogIn/Database", par['database'])
-        st.setValue("LogIn/DbUser", string_encode(par['db_user']))
-        st.setValue("LogIn/DbPassword", string_encode(par['db_password']))
+        st.setValue("LogIn/DbUser", local_encode(par['db_user']))
+        st.setValue("LogIn/DbPassword", local_encode(par['db_password']))
         # user style theme
         logger.info("Setting user style to %s", session['style_theme'])
         setTheme(session['style_theme'])

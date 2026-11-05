@@ -50,7 +50,9 @@ MRV_PYSIDE  = 6, 11, 0
 MRV_QT      = 6, 11, 0
 MRV_PSYCOPG = 3, 3, 6
 
-# key for encoding/decoding stored database user and password
+# public key: it only obfuscates the web order server parameters stored in the
+# database and reads values saved by previous versions. Do not use it for
+# anything that needs protection, see App/Common/Cryptography.py
 ENCKEY = "WgqvuDSWuW909HX9Cb0tNpo0IaINHRdsRkqxfImxYGQ="
 
 # application session parameters

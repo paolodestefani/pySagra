@@ -164,9 +164,10 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
         # Map standard PostgreSQL SQLSTATE error codes to clear messages
         msg = error_code_messages.get(er.code, _tr("PGError", "Undefined database error"))
         if er.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008', 'CCER'):
+            # non critical errors are translated here, critical ones stay in English
             QMessageBox.warning(parent_widget,
                                  _tr('MessageDialog', 'Warning'),
-                                 msg)   
+                                 _tr("PGError", msg))
         elif "item_grid_position" in str(er):
             QMessageBox.warning(parent_widget,
                                  _tr('MessageDialog', 'Warning'),

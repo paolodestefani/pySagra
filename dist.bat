@@ -4,7 +4,7 @@ ECHO move to projec root
 cd C:\pyWare\pySagra
 
 ECHO activate virtual env
-call "C:\PyWare\.venv\pysidepsycopg\Scripts\activate.bat"
+call "C:\PyWare\.venv\pysagra\Scripts\activate.bat"
 
 ECHO create pyInstaller package
 pyinstaller^
@@ -20,7 +20,7 @@ pyinstaller^
  pySagra.py
 
 ECHO deactivate virtual env
-call "C:\PyWare\.venv\pysidepsycopg\Scripts\deactivate.bat"
+call "C:\PyWare\.venv\pysagra\Scripts\deactivate.bat"
 
 pause
 

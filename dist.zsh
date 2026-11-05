@@ -4,7 +4,7 @@
 cd /Users/paolo/Development/pySagra
 
 # activate virtual env
-source /Users/paolo/Development/.venv/pyside-psycopg/bin/activate
+source /Users/paolo/Development/.venv/pysagra/bin/activate
 
 pyinstaller \
 	--onedir \

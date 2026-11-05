@@ -57,12 +57,10 @@ import io
 import collections
 import decimal
 import itertools
-from turtle import pd
 import xml.etree.ElementTree as ET
 import operator
 import logging
 import textwrap
-import random
 import zlib
 from collections import deque
 

@@ -49,7 +49,7 @@ from App.Database.Profile import duplicate_profile
 from App.Database.Models import ProfileIndexModel
 from App.Database.Models import ProfileModel
 from App.Database.Models import ProfileActionModel
-from App.System.Action import actionDefinition
+from App import actionDefinition
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager

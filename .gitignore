@@ -205,3 +205,7 @@ cython_debug/
 .vscode/
 .DS_Store
 
+
+# database dumps: real data stays out of the repository, only demo files are shared
+Dump/*
+!Dump/pysagra_demo*
