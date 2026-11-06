@@ -53,7 +53,6 @@ from App.Database.Order import set_order_as_unprocessed
 from App.Database.Models import OrderStatusModel
 from App.Widget.Form import FormViewManager
 from App.Widget.Delegate import GenericDelegate
-from App.Widget.Dialog import EventFilterDialog
 from App.Ui.OrderProgressWidget import Ui_OrderProgressWidget
 from App.Common.L10n import _tr
 from App.Widget.ExceptionHandler import gui_exception_context
@@ -231,13 +230,6 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.model.select()
         self.ui.spinBoxRecords.setValue(self.model.rowCount())
 
-    def setFilters(self):
-        "Filters event and items"
-        # create filter dialog if not exists
-        if not hasattr(self, 'sortFilterDialog'):
-            self.sortFilterDialog = EventFilterDialog(self, session['event'])
-        self.sortFilterDialog.show()
-        
     def scan(self):
         "Update order header department status, insert a record in scans history"
         barcode = self.ui.lineEditBarcode.text()

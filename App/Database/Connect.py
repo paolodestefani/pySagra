@@ -142,8 +142,10 @@ SELECT EXISTS(SELECT 1
                     {session['hostname']});"""
                 cur.execute(script)
                 # postgres search path is set to system, common, company by pa_connect
-                # update session parameters
-                session.update(par)
+                # update session parameters, passwords stay out because session is
+                # visible to user scripts: a reconnection reads them from self._par
+                session.update({k: v for k, v in par.items()
+                                if k not in ('password', 'db_password')})
                 session.update(next(cur))
                 logging.info("DB Application connection established")
         except psycopg.Error as er:
