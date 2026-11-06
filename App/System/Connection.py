@@ -50,7 +50,7 @@ from App.Ui.ConnectionWidget import Ui_ConnectionWidget
 from App.Ui.ConnectionHistoryWidget import Ui_ConnectionHistoryWidget
 from App.Common.L10n import _tr
 from App.Widget.Form import FormViewManager
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 
 
 # logger

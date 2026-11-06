@@ -123,7 +123,7 @@ if __name__ != "__main__":
     from App import WEBSITE
     from App import session
     from App.Database.Settings import Settings
-    from App.Common.ExceptionHandler import wait_cursor_context
+    from App.Common.Gui import wait_cursor_context
     from App.Report import ReportException
     from App.Report import ReportCreationError
     from App.Report import ReportXMLParseError

@@ -31,11 +31,15 @@ and currency formatting
 # standard library
 
 # PySide6
+from contextlib import contextmanager
+
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QDirIterator
 from PySide6.QtGui import QColorConstants
+from PySide6.QtGui import QCursor
 from PySide6.QtGui import QFont
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QProxyStyle
@@ -190,3 +194,16 @@ def setFont(ffamily: str|None = None, fsize: int = 10):
                      fsize,
                      QFont.Weight.Normal)
     app.setFont(font)
+
+
+@contextmanager
+def wait_cursor_context():
+    """
+    Simple context manager for wait cursor only, usefull for 
+    heavy operation that does not involve the database
+    """
+    QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+    try:
+        yield
+    finally:
+        QGuiApplication.restoreOverrideCursor()

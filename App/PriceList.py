@@ -51,7 +51,7 @@ from App.Widget.Form import FormIndexManager
 from App.Widget.Dialog import PrintDialog
 from App.Ui.PriceListWidget import Ui_PriceListWidget
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
 

@@ -38,7 +38,7 @@ from escpos.printer import Dummy, Usb, Network
 # application modules
 from App import session
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Database.Escpos import get_escpos_printer_params
 
 

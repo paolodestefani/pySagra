@@ -56,7 +56,7 @@ from App.Widget.Delegate import GenericDelegate
 from App.Widget.Dialog import EventFilterDialog
 from App.Ui.OrderProgressWidget import Ui_OrderProgressWidget
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 
 
 # logger

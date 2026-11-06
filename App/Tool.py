@@ -40,7 +40,7 @@ from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Lookup import event_lookup
 from App.Database.Tool import delete_event_order

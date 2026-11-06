@@ -52,7 +52,7 @@ from App.Database.Models import EventIndexModel
 from App.Database.Models import EventModel
 from App.Database.Event import is_used
 from App.Database.Lookup import price_list_lookup
-from App.Widget.Dialog import MessageBoxCritical
+from App.Widget.MessageBox import MessageBoxCritical
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ImageDelegate
 from App.Widget.Form import FormIndexManager

@@ -47,7 +47,7 @@ from PySide6.QtCore import QDateTime
 
 # application modules
 from App.Database import OVFIELD
-from App.Common.ExceptionHandler import db_exception_context
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 from App.Common.L10n import _tr
 

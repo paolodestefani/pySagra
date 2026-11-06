@@ -49,7 +49,7 @@ from App.Database.Models import OrderLineModel
 from App.Database.Models import OrderDepartmentTreeModel
 from App.Database.Lookup import item_all_lookup
 from App.Database.Lookup import department_lookup
-from App.Widget.Dialog import MessageBoxCritical
+from App.Widget.MessageBox import MessageBoxCritical
 from App.Widget.Dialog import PrintDialog
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import QuantityDelegate
@@ -62,7 +62,7 @@ from App.Ui.OrderWidget import Ui_OrderWidget
 from App.Common.L10n import _tr
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
-from App.Common.ExceptionHandler import report_exception_context
+from App.Widget.ExceptionHandler import report_exception_context
 from App.Report.Order import printOrderReport
 
 

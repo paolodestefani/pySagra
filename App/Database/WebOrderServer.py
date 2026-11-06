@@ -31,7 +31,7 @@ This module provides classes and functions for web order server updating
 import logging
 
 # application modules
-from App.Common.ExceptionHandler import db_exception_context
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 from App.Common.Cryptography import string_encode
 from App.Common.Cryptography import string_decode

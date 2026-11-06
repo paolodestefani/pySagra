@@ -44,7 +44,7 @@ from PySide6.QtWidgets import QButtonGroup
 from App import session
 from App import currentIcon
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Database.Profile import duplicate_profile
 from App.Database.Models import ProfileIndexModel
 from App.Database.Models import ProfileModel

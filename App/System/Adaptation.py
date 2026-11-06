@@ -45,13 +45,13 @@ from PySide6.QtWidgets import QMessageBox
 # application modules
 from App import session
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Database.Adaptation import export_adaptation
 from App.Database.Adaptation import export_adaptation_setting
 from App.Database.Adaptation import import_adaptation
 from App.Database.Adaptation import import_adaptation_settings
 from App.Database.Adaptation import clear_adaptation
-from App.Widget.Dialog import MessageBoxCritical
+from App.Widget.MessageBox import MessageBoxCritical
 
 from App.Ui.AdaptationsDialog import Ui_AdaptationsDialog
 

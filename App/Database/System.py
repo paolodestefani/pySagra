@@ -31,7 +31,7 @@ This module provides classes and functions for system settings management
 import logging
 
 # application modules
-from App.Common.ExceptionHandler import db_exception_context
+from App.Database.Exceptions import db_exception_context
 from App.Database.Connect import appconn
 
 

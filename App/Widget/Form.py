@@ -47,14 +47,14 @@ from PySide6.QtWidgets import QApplication
 # application modules
 from App import session
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import wait_cursor_context
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Gui import wait_cursor_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
 from App.Widget.Dialog import EventFilterDialog
-from App.Widget.Dialog import MessageBoxCritical
+from App.Widget.MessageBox import MessageBoxCritical
 
 
 

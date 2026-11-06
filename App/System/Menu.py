@@ -42,7 +42,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App import currentIcon
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Database.Models import MenuIndexModel
 from App.Database.Models import MenuModel
 from App.Database.Models import MenuItemTreeModel

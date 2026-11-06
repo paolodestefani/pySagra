@@ -59,7 +59,7 @@ from App import currentIcon
 from App.Common.Cryptography import local_encode
 from App.Common.Cryptography import local_decode
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Common.Gui import setTheme
 from App.Common.Gui import setColorScheme
 from App.Common.Gui import setFont
@@ -71,7 +71,7 @@ from App.Database.Connect import get_company_desc
 from App.Database.Connect import get_current_event
 from App.Database.Connect import can_use_company
 from App.Database.Connect import get_current_event
-from App.Widget.Dialog import MessageBoxCritical
+from App.Widget.MessageBox import MessageBoxCritical
 from App.System.User import ChangePasswordDialog
 from App.System.Help import HelpDialog
 from App.Ui.LoginDialog import Ui_LoginDialog

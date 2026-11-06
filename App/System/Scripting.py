@@ -57,7 +57,7 @@ from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import GenericDelegate
 from App.Ui.ScriptingWidget import Ui_ScriptingWidget
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Common.SyntaxHighlighter import PythonHighlighter
 
 

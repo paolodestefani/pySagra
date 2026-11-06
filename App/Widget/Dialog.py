@@ -30,17 +30,14 @@ This module contains general custom dialogs
 
 # standard library
 from enum import IntEnum
-import sys
 from typing import cast, Any
 
 # PySide6
-from PySide6.QtCore import QCoreApplication
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QFileInfo
 from PySide6.QtCore import QUrl
 from PySide6.QtCore import QDir
 from PySide6.QtCore import Qt
-from PySide6.QtCore import QSize
 from PySide6.QtCore import QMimeDatabase
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QIODevice
@@ -59,7 +56,6 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtGui import QPdfWriter
 from PySide6.QtGui import QPagedPaintDevice
 from PySide6.QtGui import QGuiApplication
-from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QDialog
@@ -74,15 +70,14 @@ from PySide6.QtWidgets import QDateEdit
 from PySide6.QtWidgets import QDateTimeEdit
 from PySide6.QtWidgets import QTimeEdit
 from PySide6.QtWidgets import QComboBox
-from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QPushButton
 
 # application modules
 from App import session
 from App import currentIcon
 from App.Common.L10n import _tr
-from App.Common.ExceptionHandler import gui_exception_context
-from App.Ui.MessageDialog import Ui_MessageDialog
+from App.Widget.ExceptionHandler import gui_exception_context
+from App.Widget.MessageBox import MessageBoxCritical
 from App.Ui.SelectImageDialog import Ui_SelectImageDialog
 from App.Ui.PrintDialog import Ui_PrintDialog
 from App.Ui.SortFilterDialog import Ui_SortFilterDialog
@@ -165,45 +160,6 @@ referenceList = {'eventList': event_lookup,
                  'itemList': item_lookup,
                  'departmentList':department_lookup}
 
-
-class MessageBox(QDialog):
-    "Custom message expanding dialog"
-
-    def __init__(self, parent: QWidget|None = None) -> None:
-        super().__init__(parent)
-        self.ui = Ui_MessageDialog()
-        self.ui.setupUi(self)
-        app = cast(QApplication, QCoreApplication.instance())
-        if not app:
-            return
-        sty = app.style()
-        icon = sty.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
-        self.ui.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
-        
-        
-def MessageBoxCritical(parent, 
-                       title: str|None = None,
-                       ercode: str|None = None,
-                       text: str|None = None, 
-                       detail: str|None = None
-                       ) -> None:
-    "Show a critical message dialog with optional detail message"
-    dlg = MessageBox(parent)
-    dlg.setWindowTitle(title or _tr('Dialog', "Critical error"),)
-    dlg.ui.labelErrorCode.setText(ercode or '')
-    dlg.ui.labelMessage.setText(text or _tr('Dialog', "Unidentified critical error"),)
-    if detail:
-        detail = f"""
-```python
-{detail.strip()}
-```
-"""
-    dlg.ui.textEditDetailMessage.setMarkdown(detail or "")
-    ret = dlg.exec()
-    # clicking on Abort should be equal to dialog.rejected
-    if ret == QDialog.DialogCode.Rejected:
-        sys.exit(0)
-        
 
 class SelectImageDialog(QDialog):
     "Select Image Dialog"

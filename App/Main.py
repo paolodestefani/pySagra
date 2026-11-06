@@ -72,7 +72,7 @@ def log_unhandled_exception(ex_cls: type[BaseException],
                             ex: BaseException,
                             tb: types.TracebackType | None) -> None:
     "Function to get and log unhandled exceptions"
-    from App.Widget.Dialog import MessageBoxCritical
+    from App.Widget.MessageBox import MessageBoxCritical
     logger.critical(''.join(traceback.format_tb(tb)))
     logger.critical('%s', ex_cls)
     logger.critical('%s', ex)
