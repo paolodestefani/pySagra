@@ -50,6 +50,7 @@ from PySide6.QtCore import QObject
 from PySide6.QtCore import QTimerEvent
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QKeyEvent
+from PySide6.QtGui import QMouseEvent
 from PySide6.QtGui import QPaintEvent
 from PySide6.QtGui import QResizeEvent
 from PySide6.QtGui import QBrush
@@ -80,7 +81,6 @@ from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QStyleOptionButton
 from PySide6.QtWidgets import QStyle
-from PySide6.QtGui import QPen
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QLinearGradient
 from PySide6.QtNetwork import QHostInfo
@@ -333,7 +333,6 @@ class RelationalComboBox(QComboBox):
         super().__init__(parent)
         self.sqlFunc: Callable|None = None
         self.nullable = False
-        # Modifica questa riga usando una funzione lambda di controllo
         self.currentIndexChanged.connect(self._on_index_changed)
 
     def _on_index_changed(self, index: int) -> None:
@@ -356,34 +355,23 @@ class RelationalComboBox(QComboBox):
             return
         data = self.sqlFunc()
         if data:
-            if len(data[0]) == 3:  # items with icon
-                if self.nullable:
-                    for i, v, k in [(QIcon(), None, None)] + data:
-                        self.addItem(i, k, v)
-                else:
-                    for i, v, k in data:
-                        self.addItem(i, k, v)
-            else:                  # items without icon
-                if self.nullable:
-                    for v, k in [(None, None)] + data:
-                        self.addItem(k, v)
-                else:
-                    for v, k in data:
-                        self.addItem(k, v)
+            self._addItems([(None, None)] + data if self.nullable else data)
 
     def setItemList(self, items: list) -> None:
-        self.currentIndexChanged.disconnect(self._on_index_changed)
         self.blockSignals(True)
         self.clear()
-        if items:
-            if len(items[0]) == 3:  # items with icon
-                for i, v, k in items:
-                    self.addItem(i, k, v)
-            else:                   # items without icon
-                for v, k in items:
-                    self.addItem(k, v)
+        self._addItems(items)
         self.blockSignals(False)
-        self.currentIndexChanged.connect(self._on_index_changed)
+
+    def _addItems(self, items: list) -> None:
+        "Add (value, text) or (icon, value, text) items"
+        for item in items:
+            if len(item) == 3:
+                icon, value, text = item
+                self.addItem(icon, text, value)
+            else:
+                value, text = item
+                self.addItem(text, value)
 
     def showPopup(self) -> None:
         "Update key/value list before show popup request"
@@ -591,11 +579,9 @@ class CheckableComboBox(QComboBox):
 
         if object == self.view().viewport():
             if event.type() == QEvent.Type.MouseButtonRelease:
-                from PySide6.QtGui import QMouseEvent
-                from PySide6.QtGui import QStandardItemModel
                 mouse_event = event if isinstance(event, QMouseEvent) else None
                 if mouse_event:
-                    index = self.view().indexAt(mouse_event.pos())
+                    index = self.view().indexAt(mouse_event.position().toPoint())
                     model = self.model()
                     if isinstance(model, QStandardItemModel):
                         item = model.item(index.row())
@@ -913,14 +899,15 @@ class ButtonItem(Button3D):
         if self.hasInventory and self.showLevel:
             # extract integer and fractional strings directly.
             # avoids floating-point precision loss and messy string stripping (.rstrip).
-            int_part = self._stockLevel // self._qty_factor
-            dec_part = self._stockLevel % self._qty_factor
-            
+            int_part, dec_part = divmod(abs(self._stockLevel), self._qty_factor)
+            sign = '-' if self._stockLevel < 0 else ''
+
             if dec_part == 0:
-                level_str = str(int_part)
+                level_str = f"{sign}{int_part}"
             else:
                 # handle zero padding safely based on dynamic configurations (e.g., 5 with 2 decs -> "05")
-                level_str = f"{int_part},{str(dec_part).zfill(self._quantityDecs)}".rstrip('0')
+                decimals = str(dec_part).zfill(self._quantityDecs).rstrip('0')
+                level_str = f"{sign}{int_part}{QLocale().decimalPoint()}{decimals}"
                 
             self.setText(f"{self.caption}\n({level_str})")
         else:
@@ -942,7 +929,7 @@ class ButtonItemExample(Button3D):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.setText("Example Item")
+        self.setText(_tr("Controls", "Example Item"))
 
 
 class ButtonColor(ButtonItemExample):
@@ -1008,7 +995,7 @@ class HostNameLineEdit(QLineEdit):
         self.arrow_dark = QIcon(":/arrow_circle_left_dark")
         # action
         self.hostname_action = QAction(self)
-        self.hostname_action.setToolTip("Press to set the current host name")
+        self.hostname_action.setToolTip(_tr('HostNameLineEdit', 'Press to set the current host name'))
         self.addAction(self.hostname_action, QLineEdit.ActionPosition.TrailingPosition)
         
         self.update_icon()
