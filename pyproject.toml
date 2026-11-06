@@ -5,7 +5,8 @@ description = "A simple program to manage a food stand"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 requires-python = ">=3.14"
-# keep minimum versions aligned with the MRV_* constants in App/__init__.py
+# keep minimum versions aligned with MIN_PYTHON in pySagra.py and the MRV_*
+# constants in App/__init__.py
 dependencies = [
     "PySide6-Essentials>=6.11",
     "psycopg[binary]>=3.3.6",

@@ -17,6 +17,8 @@ pyinstaller^
  --exclude-module PySide6.QtQmlModels^
  --exclude-module PySide6.QtQuickControls2^
  --exclude-module PySide6.QtGraphs^
+ --collect-data escpos^
+ --collect-data barcode^
  pySagra.py
 
 ECHO deactivate virtual env

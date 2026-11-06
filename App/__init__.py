@@ -45,7 +45,6 @@ ORGANIZATION    = 'PDS Software'
 WEBSITE         = 'paolodestefani.it'
 
 # minumum required version
-MRV_PYTHON  = 3, 14, 0 
 MRV_PYSIDE  = 6, 11, 0
 MRV_QT      = 6, 11, 0
 MRV_PSYCOPG = 3, 3, 6

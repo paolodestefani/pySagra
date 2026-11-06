@@ -17,6 +17,8 @@ pyinstaller \
     --exclude-module PySide6.QtQuick \
     --exclude-module PySide6.QtQuickControls2 \
     --exclude-module PySide6.QtGraphs \
+	--collect-data escpos \
+	--collect-data barcode \
 	pySagra.py
 	
 # remove security issue on macos
@@ -27,4 +29,4 @@ codesign --force --deep --sign - dist/pySagra.app
 deactivate
 
 # to run the bundle with line arguments:
-# ./dist/pySagra.app/Contents/MacOS/pySagra -c -l DEBUG
+# ./dist/pySagra.app/Contents/MacOS/pySagra -l DEBUG

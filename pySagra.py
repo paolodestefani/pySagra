@@ -23,213 +23,126 @@
 
 """pySagra - Application launcher
 
-This module startup the application, login to database server and start
-the main window
+This module sets up logging, checks the environment and starts the application
+that lives in App.Main.
+
+It must import only the standard library at module level and stay readable by
+older Python releases: it has to run even when a library is missing or the
+Python version is wrong, so that the problem can be reported. print() is not
+an option because a graphical application has no console on macOS and Windows.
 
 """
 
 # standard library
-import sys
-import os
-import traceback
-import types
-import logging
 import argparse
-from typing import Any
+import logging
+import os
+import sys
+from logging.handlers import RotatingFileHandler
+from typing import NoReturn, Optional
 
-# check component version modules
-from sys import version_info
-from typing import Any
-from psycopg import __version__ as psycopg_version
-from PySide6 import __version__ as pyside6_version
-from PySide6.QtCore import qVersion 
 
-# PySide6
-from PySide6.QtCore import QOperatingSystemVersion
-from PySide6.QtCore import QLocale
-from PySide6.QtCore import QTranslator
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QDialog
-from PySide6.QtNetwork import QHostInfo
+# minimum required Python release, it can not live in the App package because
+# importing App requires PySide6
+MIN_PYTHON = (3, 14)
 
-# minimum required version of application components
-from App import MRV_PYTHON
-from App import MRV_PYSIDE
-from App import MRV_QT
-from App import MRV_PSYCOPG
-
-# application definitions
-from App import APPNAME
-from App import APPVERSIONMAJOR
-from App import APPVERSIONMINOR
-from App import APPVERSIONPATCH
-from App import APPVERSIONTAG
-from App import ORGANIZATION
-from App import WEBSITE
-from App import session
-
-# application modules
-from App.Widget.Dialog import MessageBoxCritical
-from App.System.Login import LoginDialog
-from App.System.MainWindow import MainWindow
-    
+# log file rotation
+LOG_MAX_BYTES = 1_000_000
+LOG_BACKUPS = 3
 
 # logger
 logger = logging.getLogger(__name__)
 
 
-def logUnhandledException(ex_cls: type[BaseException], ex: BaseException, tb: types.TracebackType | None) -> None:
-    "Function to get and log unhandled exceptions"
-    logger.critical(''.join(traceback.format_tb(tb)))
-    logger.critical('%s', ex_cls)
-    logger.critical('%s', ex)
-    # normal cursor
-    QApplication.restoreOverrideCursor() # good in any case
-    MessageBoxCritical(session.get('mainwin'),
-                       "Unhandled exception",
-                       "Uncaught exception occurred, see details for more information",
-                       str(ex),
-                       ''.join(traceback.format_tb(tb)))
+def default_log_file() -> str:
+    "Return the log file path in the user log folder of the current platform"
+    if sys.platform == 'darwin':
+        return os.path.expanduser('~/Library/Logs/pySagra.log')
+    if sys.platform == 'win32':
+        base = os.environ.get('LOCALAPPDATA') or os.path.expanduser('~')
+        return os.path.join(base, 'pySagra', 'Logs', 'pySagra.log')
+    base = os.environ.get('XDG_STATE_HOME') or os.path.expanduser('~/.local/state')
+    return os.path.join(base, 'pySagra', 'pySagra.log')
 
 
-# -------------------------------------------------------------------------- #
+def open_log_file(logfile: Optional[str]) -> Optional[RotatingFileHandler]:
+    "Return a handler for the required log file or, failing that, the default one"
+    for path in filter(None, (logfile, default_log_file())):
+        try:
+            os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+            return RotatingFileHandler(path,
+                                       maxBytes=LOG_MAX_BYTES,
+                                       backupCount=LOG_BACKUPS,
+                                       encoding='utf-8')
+        except OSError:
+            continue
+    return None
 
-if __name__ == "__main__":
+
+def setup_logging(level: str, logfile: Optional[str]) -> None:
+    "Log to file and, when there is one, to the console"
+    handlers: list[logging.Handler] = []
+    file_handler = open_log_file(logfile)
+    if file_handler is not None:
+        handlers.append(file_handler)
+    if sys.stderr is not None:  # None in a windowed application
+        handlers.append(logging.StreamHandler())
+    logging.basicConfig(level=getattr(logging, level),
+                        format='%(asctime)s %(levelname)s %(module)s: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        handlers=handlers)
+
+
+def fatal(message: str) -> NoReturn:
+    "Log the error, show it to the user whenever possible and exit"
+    logger.critical(message)
+    try:
+        from PySide6.QtWidgets import QApplication, QMessageBox
+        app = QApplication.instance() or QApplication(sys.argv)
+        QMessageBox.critical(None, 'pySagra', message)
+    except ImportError:
+        pass  # without Qt the console and the log file are all that is left
+    sys.exit(1)
+
+
+def parse_arguments() -> argparse.Namespace:
+    "Return the logging arguments, the others are left to Qt"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-l", "--loglevel",
+                        default="WARNING",
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        help="Set the required log level")
+    parser.add_argument("-f", "--logfile",
+                        nargs='?',
+                        help="Log to the specified file instead of the default one")
+    args, _ = parser.parse_known_args()
+    return args
+
+
+def main() -> None:
     "Start application"
     # set working directory to the executable folder if frozen (= executed from pyinstaller's bundle)
     # mandatory for macos and usefull for windows and linux as well
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(sys.executable))
-            
-    # parse command line arguments for logging
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-l", "--loglevel",
-                        default="CRITICAL",
-                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        help="Set the required log level")
-    parser.add_argument("-f", "--logfile",
-                        nargs='?',
-                        help="Log to a specified log file, default logfile.txt on current working directory")
-    parser.add_argument("-c", "--console",
-                        action='store_true',
-                        help="Log to console if available, overcome logging to a file")  # only if a console is available
-    args, unknown = parser.parse_known_args()
-    loglevel = getattr(logging, args.loglevel.upper(), logging.CRITICAL)
-    logfile = None
-    # logging to console if available, otherwise to a file
-    if args.console:
-        logfile = None  # Console
-    elif args.logfile:
-        try:
-            with open(args.logfile, 'a', encoding="utf-8") as f:
-                pass
-            logfile = args.logfile
-        except IOError:
-            # not able to write to the specified file, fallback to default
-            logfile = os.path.join(os.getcwd(), 'logfile.log')
-    else:
-        # default behavior
-        # save log file to system folder on MacOS, to current working directory on other platforms
-        if sys.platform == 'darwin':
-            log_dir = os.path.expanduser("~/Library/Logs")
-            os.makedirs(log_dir, exist_ok=True)
-            logfile = os.path.join(log_dir, "pySagra.log")
-        else:
-            logfile = os.path.join(os.getcwd(), 'logfile.log')
-            
-    log_config: dict[str, Any] = {
-        "level": loglevel,
-        "format": '%(asctime)s %(levelname)s %(module)s: %(message)s',
-        "datefmt": '%Y-%m-%d %H:%M:%S'
-    }
-    # if logfile is None, basicConfig write automatically to sys.stderr (Console)
-    if logfile:
-        log_config["filename"] = logfile
-        log_config["encoding"] = "utf-8"
+    args = parse_arguments()
+    setup_logging(args.loglevel, args.logfile)
+    if sys.version_info < MIN_PYTHON:
+        fatal(f"This program requires Python {'.'.join(map(str, MIN_PYTHON))} or later, "
+              f"detected {sys.version.split()[0]}")
+    try:
+        # App modules are imported here so that a failure can be reported
+        from App.Main import check_requirements, run
+        problem = check_requirements()
+        if problem:
+            fatal(problem)
+        run()
+    except ImportError as er:
+        fatal(f"Missing or unusable library: {er.name or er}")
+    except Exception as er:  # a library can fail at import time in other ways
+        logger.exception("Startup failed")
+        fatal(f"Startup failed: {er}")
 
-    logging.basicConfig(**log_config)
-    
-    # check client component minimum required version
-    # python version
-    pyv = (version_info.major, version_info.minor, version_info.micro)
-    if pyv < MRV_PYTHON:
-        logger.critical(f"This program require Python rel. >= {MRV_PYTHON} but detected rel. {pyv}")
-        sys.exit(0)
-    # PySide version
-    psv = tuple(map(int, pyside6_version.split('.')[:3]))
-    if psv < MRV_PYSIDE:
-        logger.critical(f"This program require PySide6 rel. >= {MRV_PYSIDE} but detected rel. {psv}")
-        sys.exit(0)
-    # Qt version
-    qtv = tuple(map(int, qVersion().split('.')[:3]))
-    if qtv < MRV_QT:
-        logger.critical(f"This program require Qt rel. >= {MRV_QT} but detected rel. {qtv}")
-        sys.exit(0)
-    # psycopg version
-    ppv = tuple(map(int, psycopg_version.split('.')[:3]))
-    if ppv < MRV_PSYCOPG:
-        logger.critical(f"This program require psycopg rel. >= {MRV_PSYCOPG} but detected rel. {ppv}")
-        sys.exit(0)
-    
-    ##########################################
-    # redirect uncaught exceptions to logger
-    sys.excepthook = logUnhandledException
-    ##########################################
-    # logging information
-    logger.info('')
-    logger.info('****************************************')
-    logger.info('Starting %s version %s.%s.%s %s', APPNAME, APPVERSIONMAJOR, APPVERSIONMINOR, APPVERSIONPATCH, APPVERSIONTAG)
-    logger.info('Log level set to %s', logging.getLevelName(logging.getLogger().level))
-    logger.info('****************************************')
-    logger.info('')
-    # start PySide6 Application
-    logger.info('Setting up QApplication')
-    app = QApplication(sys.argv)
-    # host name
-    session['hostname'] = QHostInfo.localHostName()
-    logger.info('Computer hostname has been set to %s', session['hostname'])
-    # l10n
-    logger.info('Setting up QLocale to system locale')
-    # set system language
-    lang = QLocale.system().name()[:2]
-    # different behaviour on macOS
-    if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-        ui_langs = QLocale().uiLanguages(QLocale.TagSeparator.Underscore)
-        if ui_langs:
-            lang = ui_langs[0][:2]
-    # set default locale even if it is not stricly necessary
-    session['qlocale'] = QLocale(lang)
-    QLocale.setDefault(session['qlocale'])
-    # install translators for qt and main application
-    logger.info('Installing translators')
-    for i in ('qtbase', APPNAME):
-        tr_key = i + '_translator'
-        session[tr_key] = QTranslator()
-        if session[tr_key].load(f"{i}_{lang}", ":/"):
-            if app.installTranslator(session[tr_key]):
-                logger.info("Successfully installed translator for %s", i)
-            else:
-                logger.error("Error installing application translator for %s", i)
-                session[tr_key] = None
-        else:
-            logger.error("Error loading application translator for %s", i)
-            session[tr_key] = None
-    # set basic parameters
-    logger.info('Setting QApplication name, version, domain and icon')
-    app.setApplicationName(APPNAME)
-    app.setApplicationVersion(f'{APPVERSIONMAJOR:02}.{APPVERSIONMINOR:02}.{APPVERSIONPATCH:04}')
-    app.setOrganizationName(ORGANIZATION)
-    app.setOrganizationDomain(WEBSITE)
-    app.setWindowIcon(QIcon(f":/{APPNAME}"))
-    # create a db and application connection
-    logger.info('Starting the login dialog')
-    login = LoginDialog()
-    if login.exec() == QDialog.DialogCode.Rejected:
-        sys.exit(0)
-    # create a main window
-    logger.info('Starting MainWindow')
-    session['mainwin'] = MainWindow()
-    session['mainwin'].show()
-    sys.exit(app.exec())
-    
+
+if __name__ == "__main__":
+    main()
