@@ -50,6 +50,7 @@ from PySide6.QtCore import QObject
 from PySide6.QtCore import QTimerEvent
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QKeyEvent
+from PySide6.QtGui import QPaintEvent
 from PySide6.QtGui import QResizeEvent
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QPixmap
@@ -714,69 +715,95 @@ class CheckableComboBox(QComboBox):
                 item.setCheckState(Qt.CheckState.Checked if checked else Qt.CheckState.Unchecked)
 
         
-class ButtonSeat(QPushButton):
-    """A QPushButton with a custom paint event to create a 3D effect and custom colors, 
-    used for seat selection in order dialog or seat map management"""
+class Button3D(QPushButton):
+    """A QPushButton painted with a 3D gradient and custom colors.
+    Subclasses can change the base color with paintColor() and draw on top of
+    the button with paintOverlay()"""
 
-    def __init__(self, 
+    def __init__(self,
+                 parent: QWidget,
+                 textColor: QColor|str = QColorConstants.Black,
+                 backgroundColor: QColor|str = QColorConstants.Svg.lightgreen) -> None:
+        super().__init__(parent)
+        self.textColor = QColor(textColor)
+        self.backgroundColor = QColor(backgroundColor)
+        self.setMinimumWidth(65)
+
+    def setTextColor(self, color: QColor|str) -> None:
+        self.textColor = QColor(color)
+        self.update()
+
+    def setBackgroundColor(self, color: QColor|str) -> None:
+        self.backgroundColor = QColor(color)
+        self.update()
+
+    def paintColor(self) -> QColor:
+        "Return the base color of the gradient"
+        return self.backgroundColor
+
+    def paintOverlay(self, painter: QPainter, rect: QRect) -> None:
+        "Draw on top of the button, rect is the visible area of the button"
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        "Draw the gradient, the border, the top edge light and the text"
+        with QPainter(self) as painter:
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            option = QStyleOptionButton()
+            self.initStyleOption(option)
+            margin = 5
+            rect = option.rect.adjusted(margin, margin, -margin, -margin)
+            color = self.paintColor()
+            pressed = bool(option.state & QStyle.StateFlag.State_Sunken)
+            gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+            if pressed:
+                gradient.setColorAt(0, color.darker(120))
+                gradient.setColorAt(1, color.darker(110))
+            else:
+                gradient.setColorAt(0, color.lighter(115))
+                gradient.setColorAt(0.5, color)
+                gradient.setColorAt(1, color.darker(110))
+            painter.setBrush(gradient)
+            painter.setPen(QPen(color.darker(150), 1))
+            painter.drawRoundedRect(rect, 6, 6)
+            if self.isEnabled() and not pressed:
+                painter.setPen(QPen(color.lighter(130), 1))
+                painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
+            painter.setPen(self.textColor)
+            painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
+            self.paintOverlay(painter, rect)
+
+
+class ButtonSeat(Button3D):
+    "A 3D button for seat selection in order dialog or seat map management"
+
+    def __init__(self,
                  parent: QWidget,
                  text: str,
                  font: QFont,
                  textColor: str,
                  backgroundColor: str,
                  unavailable: bool) -> None:
-        super().__init__(parent)
+        super().__init__(parent, textColor, backgroundColor)
         self.setText(text)
         self.setFont(font)
         self.setMinimumWidth(80)
         self.setMinimumHeight(40)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        # colors
-        self.seatBackgroundColor = QColor(backgroundColor)
-        self.seatTextColor = QColor(textColor)
         self.unavailable = unavailable
 
-    def paintEvent(self, event):
-        "Custom paint event to draw a button with a 3D effect and custom colors"
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        option = QStyleOptionButton()
-        self.initStyleOption(option)
-        margin = 5
-        rect = option.rect.adjusted(margin, margin, -margin, -margin)
-        # top to bottom gradient for 3D effect
-        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        gradient.setColorAt(0, self.seatBackgroundColor.lighter(120)) # light reflection at the top
-        gradient.setColorAt(0.5, self.seatBackgroundColor)            # central color
-        gradient.setColorAt(1, self.seatBackgroundColor.darker(105))  # base shadow at the bottom
-        # draw background with gradient
-        painter.setBrush(gradient)
-        # pen for border: darker than the base color for a subtle 3D border
-        border_color = self.seatBackgroundColor.darker(150)
-        painter.setPen(QPen(border_color, 1))
-        painter.drawRoundedRect(rect, 6, 6)
-        # add a light line at the top to simulate the illuminated edge
-        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
-            painter.setPen(QPen(self.seatBackgroundColor.lighter(130), 1))
-            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
-        # draw text
-        painter.setPen(QColor(self.seatTextColor))
-        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
-        painter.end()
 
-
-class ButtonItem(QPushButton):
+class ButtonItem(Button3D):
     """
     A custom QPushButton representing a menu item.
-    Features a dynamic 3D gradient effect, automated color-coding based on 
-    stock thresholds, and visual indicator overlays for item variants.
+    Features automated color-coding based on stock thresholds and visual
+    indicator overlays for item variants.
     All monetary values and quantity balances are kept strictly as integers 
     to guarantee flawless arithmetic operations without rounding anomalies.
     """
     
     def __init__(self, parent: QWidget, text: str, textColor: str, backgroundColor: str, setting: dict) -> None:
-        super().__init__(parent)
-        
+        super().__init__(parent, textColor, backgroundColor)
+
         self.setting = setting
         self.description = text or ''
         self.caption = self.description.replace(' ', '\n')
@@ -798,16 +825,12 @@ class ButtonItem(QPushButton):
         font_family = self.setting.get('order_list_font_family', 'Arial')
         font_size = int(self.setting.get('order_list_font_size', 11))
         self.setFont(QFont(font_family, font_size, QFont.Weight.Bold))
-        self.setMinimumWidth(65)
-        
         # Variant indicator icon fallback logic
         self.variantIndicatorIcon = currentIcon['order_flag'].pixmap(25, 25) if 'order_flag' in currentIcon else QPixmap()
         
         # Standard palette initialization
-        self.default_bg = QColor(backgroundColor)
-        self.default_text = QColor(textColor)
-        self.current_bg = self.default_bg
-        self.current_text = self.default_text
+        self.default_bg = self.backgroundColor
+        self.default_text = self.textColor
         
         self._color_cache = {
             'warning_bg': QColor(self.setting.get('warning_background_color', '#ffaa00')),
@@ -857,8 +880,8 @@ class ButtonItem(QPushButton):
     def recalculate_state_and_colors(self):
         """Evaluates integer stock level thresholds and shifts active styling parameters"""
         if not self.hasInventory:
-            self.current_bg = self.default_bg
-            self.current_text = self.default_text
+            self.backgroundColor = self.default_bg
+            self.textColor = self.default_text
             self.setEnabled(True)
             return
 
@@ -881,8 +904,8 @@ class ButtonItem(QPushButton):
             bc, tc = self._color_cache['disabled_bg'], self._color_cache['disabled_tx']
             self.setEnabled(False)
             
-        self.current_bg = bc
-        self.current_text = tc
+        self.backgroundColor = bc
+        self.textColor = tc
         self.update() # Safe scheduling for an asymmetrical canvas refresh
 
     def update_button_text(self):
@@ -903,158 +926,27 @@ class ButtonItem(QPushButton):
         else:
             self.setText(self.caption)
 
-    # --- PAINT EVENT ---
+    # --- PAINTING ---
 
-    def paintEvent(self, event):
-        """Renders the component using custom styling, 3D gradients, and conditional icon layers"""
-        # This handles the lifecycle of QPainter implicitly, avoiding any 'painter.end()' commands.
-        with QPainter(self) as painter:
-            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            
-            option = QStyleOptionButton()
-            self.initStyleOption(option)
-            
-            margin = 5
-            rect = option.rect.adjusted(margin, margin, -margin, -margin)
-            
-            # Switch background context based on active state parameters
-            base_color = self.current_bg if self.isEnabled() else self._color_cache['disabled_bg']
-                
-            # Build the 3D tactile linear depth gradient
-            gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-            if option.state & QStyle.StateFlag.State_Sunken:
-                gradient.setColorAt(0, base_color.darker(120))
-                gradient.setColorAt(1, base_color.darker(110))
-            else:
-                gradient.setColorAt(0, base_color.lighter(115))
-                gradient.setColorAt(0.5, base_color)
-                gradient.setColorAt(1, base_color.darker(110))
-                
-            # Draw the main rounded boundary container
-            painter.setBrush(gradient)
-            painter.setPen(QPen(base_color.darker(150), 1))
-            painter.drawRoundedRect(rect, 6, 6)
-            
-            # Subtle top rim lighting (internal glossy accentuation)
-            if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
-                painter.setPen(QPen(base_color.lighter(130), 1))
-                painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
-                
-            # Text rendering
-            painter.setPen(QColor(self.current_text))
-            painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
-            
-            # Conditional indicator icon rendering for complex variations
-            if self.hasVariants and not self.variantIndicatorIcon.isNull():
-                icon_rect = QRect(rect.right() - 18, rect.top() - 2, 24, 24)
-                painter.drawPixmap(icon_rect, self.variantIndicatorIcon)
+    def paintColor(self) -> QColor:
+        return self.backgroundColor if self.isEnabled() else self._color_cache['disabled_bg']
+
+    def paintOverlay(self, painter: QPainter, rect: QRect) -> None:
+        "Draw the variant indicator"
+        if self.hasVariants and not self.variantIndicatorIcon.isNull():
+            painter.drawPixmap(QRect(rect.right() - 18, rect.top() - 2, 24, 24), self.variantIndicatorIcon)
 
 
-
-class ButtonItemExample(QPushButton):
+class ButtonItemExample(Button3D):
     "A pushbutton for settings example of color change on stock level value"
-    
+
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
-        self.textColor = QColorConstants.Black # QColor("#000000")
-        self.backgroundColor = QColorConstants.Svg.lightgreen # QColor("#90ee90")
         self.setText("Example Item")
-        self.setMinimumWidth(65)
-        
-    def setTextColor(self, color: str) -> None:
-        self.textColor = QColor(color)
-        self.update()
-
-    def setBackgroundColor(self, color: str) -> None:
-        self.backgroundColor = QColor(color)
-        self.update()
-
-    def paintEvent(self, event):
-        """Custom paint event to draw the button with a 3D effect with custom colors"""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        option = QStyleOptionButton()
-        self.initStyleOption(option)
-        margin = 5
-        rect = option.rect.adjusted(margin, margin, -margin, -margin)
-        # GRADIEN FOR 3D EFFECT: light at the top, base color in the middle, darker at the bottom
-        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        if option.state & QStyle.StateFlag.State_Sunken:
-            # on pushed state, invert gradient for pressed effect: darker at the top, base color at the bottom
-            gradient.setColorAt(0, self.backgroundColor.darker(120))
-            gradient.setColorAt(1, self.backgroundColor.darker(110))
-        else:
-            # not pushed state, normal gradient with light reflection at the top and shadow at the bottom
-            gradient.setColorAt(0, self.backgroundColor.lighter(115)) # light reflection at the top
-            gradient.setColorAt(0.5, self.backgroundColor)            # central color
-            gradient.setColorAt(1, self.backgroundColor.darker(110))  # base shadow at the bottom
-        # DRAW BACKGROUND WITH GRADIENT AND BORDER
-        painter.setBrush(gradient)
-        # border pen: slightly darker than the base color for a subtle 3D border
-        border_color = self.backgroundColor.darker(150)
-        painter.setPen(QPen(border_color, 1))
-        painter.drawRoundedRect(rect, 6, 6)
-        # add a light line at the top to simulate the illuminated edge, only if enabled and not pressed
-        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
-            painter.setPen(QPen(self.backgroundColor.lighter(130), 1))
-            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
-        # DRAW TEXT
-        painter.setPen(QColor(self.textColor))
-        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
-        painter.end()
 
 
-class ButtonColor(QPushButton):
+class ButtonColor(ButtonItemExample):
     "A button for showing example of color"
-    
-    def __init__(self, parent: QWidget) -> None:
-        super().__init__(parent)
-        self.textColor = QColorConstants.Black # QColor("#000000")
-        self.backgroundColor = QColorConstants.Svg.lightgreen # QColor("#90ee90")
-        self.setText("Example Item")
-        self.setMinimumWidth(65)
-        
-    def setTextColor(self, color: str) -> None:
-        self.textColor = QColor(color)
-        self.update()
-
-    def setBackgroundColor(self, color: str) -> None:
-        self.backgroundColor = QColor(color)
-        self.update()
-
-    def paintEvent(self, event):
-        """Custom paint event to draw the button with a 3D effect with custom colors"""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        option = QStyleOptionButton()
-        self.initStyleOption(option)
-        margin = 5
-        rect = option.rect.adjusted(margin, margin, -margin, -margin)
-        # GRADIEN FOR 3D EFFECT: light at the top, base color in the middle, darker at the bottom
-        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        if option.state & QStyle.StateFlag.State_Sunken:
-            # on pushed state, invert gradient for pressed effect: darker at the top, base color at the bottom
-            gradient.setColorAt(0, self.backgroundColor.darker(120))
-            gradient.setColorAt(1, self.backgroundColor.darker(110))
-        else:
-            # not pushed state, normal gradient with light reflection at the top and shadow at the bottom
-            gradient.setColorAt(0, self.backgroundColor.lighter(115)) # light reflection at the top
-            gradient.setColorAt(0.5, self.backgroundColor)            # central color
-            gradient.setColorAt(1, self.backgroundColor.darker(110))  # base shadow at the bottom
-        # DRAW BACKGROUND WITH GRADIENT AND BORDER
-        painter.setBrush(gradient)
-        # border pen: slightly darker than the base color for a subtle 3D border
-        border_color = self.backgroundColor.darker(150)
-        painter.setPen(QPen(border_color, 1))
-        painter.drawRoundedRect(rect, 6, 6)
-        # add a light line at the top to simulate the illuminated edge, only if enabled and not pressed
-        if self.isEnabled() and not (option.state & QStyle.StateFlag.State_Sunken):
-            painter.setPen(QPen(self.backgroundColor.lighter(130), 1))
-            painter.drawLine(rect.left() + 5, rect.top() + 1, rect.right() - 5, rect.top() + 1)
-        # DRAW TEXT
-        painter.setPen(QColor(self.textColor))
-        painter.drawText(rect, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, self.text())
-        painter.end()
 
 
 class PasswordLineEdit(QLineEdit):
