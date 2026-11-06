@@ -388,7 +388,10 @@ class RelationalComboBox(QComboBox):
         "Update key/value list before show popup request"
         if self.sqlFunc:
             self.blockSignals(True)
+            current = self.currentData()
             self.updateList()
+            # updateList moves to the first item: go back to the selected one
+            self.setCurrentIndex(self.findData(current))
             self.blockSignals(False)
         super().showPopup()
 
@@ -595,6 +598,8 @@ class CheckableComboBox(QComboBox):
                     model = self.model()
                     if isinstance(model, QStandardItemModel):
                         item = model.item(index.row())
+                        if item is None:  # click outside of the items
+                            return True
 
                         if item.checkState() == Qt.CheckState.Checked:
                             item.setCheckState(Qt.CheckState.Unchecked)
