@@ -802,7 +802,6 @@ class DepartmentModel(TableModel):
         self.columns = (("department_id", _tr('Models', 'ID'), True, 'int'),
                         ("description", _tr('Models', 'Department description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
-                        #("printer_class_id", _tr('Models', 'Printer class'), False, 'str'),
                         ("is_obsolete", _tr('Models', 'Obsolete'), False, 'bool'),
                         ("is_menu_container", _tr('Models', 'Menu'), False, 'bool'),
                         ("is_for_takeaway", _tr('Models', 'For takeaway'), False, 'bool'),

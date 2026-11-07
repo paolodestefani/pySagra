@@ -193,17 +193,6 @@ WHERE company_id = system.pa_current_company();"""
         cur.execute(script)
 
     
-def delete_all_printer_classes() -> None:
-    "Delete ALL printer classes for current company"
-    script = """
-DELETE FROM printer_class
-WHERE company_id = system.pa_current_company();"""
-    # linked table (printer_class_printer) is automatically deleted from db cascade constraints
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-
-
 def copy_cash_desk(from_company_id: int) -> None:
     "Copy ALL the cash desks from another company to current company"
     script = t"""
@@ -212,7 +201,7 @@ INSERT INTO cash_desk (
     hostname,
     cash_desk_description,
     note)
-SElECT
+SELECT
     system.pa_current_company(),
     hostname,
     cash_desk_description,
@@ -224,25 +213,6 @@ WHERE company_id = {from_company_id};"""
         cur.execute(script)
 
 
-def copy_printer_class(from_company_id: int) -> None:
-    "Copy ALL the printer classes from another company to current company"
-    script = t"""
-INSERT INTO printer_class (
-    company_id,
-    description,
-    external_code)
-SElECT
-    system.pa_current_company(),
-    description,
-    printer_class_id
-FROM printer_class
-WHERE company_id = {from_company_id};
-"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
- 
-
 def copy_table(from_company_id: int) -> None:
     "Copy ALL the tables from another company to current company"
     script = t"""
@@ -253,17 +223,15 @@ INSERT INTO seat_map (
     pos_column,
     text_color,
     background_color,
-    is_obsolete,
-    external_code)
-SElECT
+    is_obsolete)
+SELECT
     system.pa_current_company(),
     table_code,
     pos_row,
     pos_column,
     text_color,
     background_color,
-    is_obsolete,
-    seat_map_id
+    is_obsolete
 FROM seat_map
 WHERE company_id = {from_company_id};"""
     # Unified context managers in the recommended evaluation order
@@ -278,30 +246,25 @@ INSERT INTO department (
     company_id,
     description,
     sorting,
-    printer_class_id,
     is_obsolete,
     is_menu_container,
-    is_for_takeaway,
-    external_code)
-SElECT
+    is_for_takeaway)
+SELECT
     system.pa_current_company(),
-    a.description,
-    a.sorting,
-    b.printer_class_id,
-    a.is_obsolete,
-    a.is_menu_container,
-    a.is_for_takeaway,
-    a.department_id
-FROM department a
-LEFT JOIN printer_class b ON a.printer_class_id = b.external_code AND b.company_id = {from_company_id}
-WHERE a.company_id = {from_company_id};"""
+    description,
+    sorting,
+    is_obsolete,
+    is_menu_container,
+    is_for_takeaway
+FROM department
+WHERE company_id = {from_company_id};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
 
     
 def copy_item(from_company_id: int) -> None:
-    "Copy all items from selected company to current company"
+    "Copy all items from selected company to current company, departments must be copied first"
     script = t"""
 INSERT INTO company.item (
 	item_type,
@@ -343,8 +306,11 @@ SELECT
 	i.web_sorting,
 	i.is_obsolete
 FROM company.item i
-JOIN company.department d ON i.department_id = d.external_code 
-WHERE i.company_id = {from_company_id}
+-- the new department is the one with the same description in the current company
+JOIN company.department s ON s.department_id = i.department_id
+JOIN company.department d ON d.description = s.description
+    AND d.company_id = system.pa_current_company()
+WHERE i.company_id = {from_company_id};
 """
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:

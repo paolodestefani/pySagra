@@ -107,20 +107,15 @@ class Ui_CopyToolDialog(object):
 
         self.gridLayout.addWidget(self.checkBoxCashDesk, 0, 0, 1, 1)
 
-        self.checkBoxPrinterClass = QCheckBox(self.groupBoxDelete)
-        self.checkBoxPrinterClass.setObjectName(u"checkBoxPrinterClass")
-
-        self.gridLayout.addWidget(self.checkBoxPrinterClass, 1, 0, 1, 1)
-
         self.checkBoxTable = QCheckBox(self.groupBoxDelete)
         self.checkBoxTable.setObjectName(u"checkBoxTable")
 
-        self.gridLayout.addWidget(self.checkBoxTable, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.checkBoxTable, 1, 0, 1, 1)
 
         self.checkBoxSettings = QCheckBox(self.groupBoxDelete)
         self.checkBoxSettings.setObjectName(u"checkBoxSettings")
 
-        self.gridLayout.addWidget(self.checkBoxSettings, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.checkBoxSettings, 2, 0, 1, 1)
 
 
         self.verticalLayout_2.addLayout(self.gridLayout)
@@ -167,7 +162,6 @@ class Ui_CopyToolDialog(object):
         self.checkBoxPriceList.setText(QCoreApplication.translate("CopyToolDialog", u"Price lists", None))
         self.checkBoxDepartment.setText(QCoreApplication.translate("CopyToolDialog", u"Departments", None))
         self.checkBoxCashDesk.setText(QCoreApplication.translate("CopyToolDialog", u"Cash desks", None))
-        self.checkBoxPrinterClass.setText(QCoreApplication.translate("CopyToolDialog", u"Printer classes", None))
         self.checkBoxTable.setText(QCoreApplication.translate("CopyToolDialog", u"Tables", None))
         self.checkBoxSettings.setText(QCoreApplication.translate("CopyToolDialog", u"Settings", None))
     # retranslateUi

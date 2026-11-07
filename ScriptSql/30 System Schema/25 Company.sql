@@ -106,11 +106,10 @@ CREATE FUNCTION pa_company_drop(in_company int)
 RETURNS void AS
 $$
 DECLARE
-i integer;
+i bigint;
 s text;
 t text;
 n text;
-tt text[];
 BEGIN
 	-- check if company is in use
 	IF EXISTS(
@@ -172,31 +171,16 @@ BEGIN
 		EXECUTE format('REINDEX TABLE %s.%s', s, t);
 	END LOOP;
 
-	-- update identity
-	FOREACH tt SLICE 1 IN ARRAY ARRAY[
-		['system.connection_history', 'history_id'],
-		['company.cash_desk', 'cash_desk_id'],
-		['company.department', 'department_id'],
-		['company.event', 'event_id'],
-		['company.inventory', 'inventory_id'],
-        ['company.item', 'item_id'],
-		['company.item_part', 'item_part_id'],
-		['company.item_variant', 'item_variant_id'],
-		['company.numbering', 'numbering_id'],
-		['company.order_header', 'order_header_id'],
-		['company.order_header_department', 'order_header_department_id'],
-		['company.order_line', 'order_line_id'],
-		['company.order_line_department', 'order_line_department_id'],
-        ['company.ordered_delivered', 'ordered_delivered_id'],
-		['company.price_list', 'price_list_id'],
-		['company.price_list_item', 'price_list_item_id'],
-		['company.printer_class', 'printer_class_id'],
-		['company.printer_class_printer', 'printer_class_printer_id'],
-		['company.seat_map', 'seat_map_id']
-		] LOOP
-		EXECUTE format('SELECT coalesce(max(%s), 0) + 1 FROM %s', tt[2], tt[1]) INTO i;
-		EXECUTE format('ALTER TABLE %s ALTER COLUMN %s RESTART WITH %s', tt[1], tt[2], i) ;
-		--RAISE NOTICE '%', t[2];
+	-- update identity: every identity column of the system and company schemas
+	FOR s, t, n IN
+		SELECT table_schema, table_name, column_name
+		FROM information_schema.columns
+		WHERE table_catalog = current_database()
+			AND is_identity = 'YES'
+			AND table_schema IN ('system', 'company')
+	LOOP
+		EXECUTE format('SELECT coalesce(max(%I), 0) + 1 FROM %I.%I', n, s, t) INTO i;
+		EXECUTE format('ALTER TABLE %I.%I ALTER COLUMN %I RESTART WITH %s', s, t, n, i);
 	END LOOP;
     
 END;

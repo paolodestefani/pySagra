@@ -150,15 +150,6 @@ def company_lookup(null: bool = False) -> list[tuple]:
                                      null=null)
 
 
-# def printer_class_lookup() -> list[tuple]:
-#     "Get printer classes list with null"
-#     return abstract_lookup('printer_class_id',
-#                            'description',
-#                            'printer_class',
-#                            condition=['company_id = system.pa_current_company()'], 
-#                            null=True)
-
-    
 def customer_order_driver_report_lookup(null: bool = False) -> list[tuple]:
     "Get a list of all report (code, description) of customer order class"
     if null:

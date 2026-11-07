@@ -90,11 +90,6 @@ class Ui_DeleteToolDialog(object):
 
         self.gridLayout.addWidget(self.checkBoxCashDesk, 3, 1, 1, 1)
 
-        self.checkBoxPrinterClass = QCheckBox(self.groupBoxDelete)
-        self.checkBoxPrinterClass.setObjectName(u"checkBoxPrinterClass")
-
-        self.gridLayout.addWidget(self.checkBoxPrinterClass, 4, 1, 1, 1)
-
         self.checkBoxInventory = QCheckBox(self.groupBoxDelete)
         self.checkBoxInventory.setObjectName(u"checkBoxInventory")
 
@@ -158,7 +153,6 @@ class Ui_DeleteToolDialog(object):
         self.checkBoxItem.setText(QCoreApplication.translate("DeleteToolDialog", u"Items", None))
         self.checkBoxTable.setText(QCoreApplication.translate("DeleteToolDialog", u"Tables", None))
         self.checkBoxCashDesk.setText(QCoreApplication.translate("DeleteToolDialog", u"Cash desks", None))
-        self.checkBoxPrinterClass.setText(QCoreApplication.translate("DeleteToolDialog", u"Printer classes", None))
         self.checkBoxInventory.setText(QCoreApplication.translate("DeleteToolDialog", u"Inventory", None))
         self.checkBoxEvent.setText(QCoreApplication.translate("DeleteToolDialog", u"Events", None))
         self.checkBoxDepartment.setText(QCoreApplication.translate("DeleteToolDialog", u"Departments", None))

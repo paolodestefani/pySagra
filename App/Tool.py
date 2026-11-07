@@ -56,9 +56,7 @@ from App.Database.Tool import delete_all_items
 from App.Database.Tool import delete_all_departments
 from App.Database.Tool import delete_all_tables
 from App.Database.Tool import delete_all_cash_desks
-from App.Database.Tool import delete_all_printer_classes
 from App.Database.Tool import copy_cash_desk
-from App.Database.Tool import copy_printer_class
 from App.Database.Tool import copy_table
 from App.Database.Tool import copy_department
 from App.Database.Tool import copy_item
@@ -263,8 +261,6 @@ class DeleteToolDialog(QDialog):
                 delete_all_tables()
             if self.ui.checkBoxCashDesk.isChecked():
                 delete_all_cash_desks()
-            if self.ui.checkBoxPrinterClass.isChecked():
-                delete_all_printer_classes()
                 
         except PyAppDBError as er:
             QMessageBox.critical(self,
@@ -310,8 +306,6 @@ class CopyToolDialog(QDialog):
         try:
             if self.ui.checkBoxCashDesk.isChecked():
                 copy_cash_desk(company_id)
-            if self.ui.checkBoxPrinterClass.isChecked():
-                copy_printer_class(company_id)
             if self.ui.checkBoxTable.isChecked():
                 copy_table(company_id)
             if self.ui.checkBoxDepartment.isChecked():
