@@ -119,7 +119,6 @@ class EventForm(FormIndexManager):
         self.ui.pushButtonUpload.clicked.connect(self.upload)
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
-        self.ui.tableView.horizontalHeader().setSectionsMovable(True)
         self.ui.tableView.setItemDelegateForColumn(evn.PRICELIST, RelationDelegate(self, price_list_lookup))
         self.ui.tableView.setItemDelegateForColumn(evn.IMAGE, ImageDelegate(self))
         # mapper settings

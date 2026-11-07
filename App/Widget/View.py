@@ -31,6 +31,7 @@ such as the enhanced table view with layout customizations
 # standard library
 import os
 import csv
+from decimal import Decimal
 from typing import Any
 
 # PySide6
@@ -39,6 +40,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtCore import QUrl
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
+from PySide6.QtCore import QTime
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QLocale
@@ -116,7 +118,8 @@ class TableViewSettingsDialog(QDialog):
             item_name = TableWidgetItem(model.headerData(i, Qt.Orientation.Horizontal))
             item_sort = TableWidgetItem(header.visualIndex(i))
             item_visible = TableWidgetItem(not parent.isColumnHidden(i))
-            item_width = TableWidgetItem(parent.columnWidth(i))
+            # a hidden column has width 0: propose the default one to show it again
+            item_width = TableWidgetItem(parent.columnWidth(i) or header.defaultSectionSize())
             # apply interaction flags immediately upon instantiation to prevent sorting race-conditions
             readonly_flags = (
                 Qt.ItemFlag.ItemIsEnabled | 
@@ -322,11 +325,11 @@ class EnhancedTableView(QTableView):
         """Set the layout identifier name after instantiation to trigger database sync."""
         self.layout_name = name
         self.fillCustomizationMenu()
-        if self.cm_movable:
-            self.cm_movable.setChecked(True)
-            self.cm_movable.trigger()      
-        # safer async trigger loop that resolves the action at execution time
-        QTimer.singleShot(0, lambda: self.setStoredLayout(self.action_group.checkedAction()))
+        # trigger() would invert a checkable action: set the state and apply it
+        self.cm_movable.setChecked(True)
+        self.activateMovableColumns()
+        # applied when the view is ready, the timer is dropped if the view is deleted first
+        QTimer.singleShot(0, self, lambda: self.setStoredLayout(self.action_group.checkedAction()))
 
     def setStoredLayout(self, action: QAction | None) -> None:
         """Apply a layout definition stored in the database to the table view."""
@@ -340,6 +343,7 @@ class EnhancedTableView(QTableView):
         else:
             self.horizontal_header_state = header.saveState()
         title: str = _tr("Menu", "Error applying stored layout")
+        sorting = self.isSortingEnabled()
         with gui_exception_context(self, title):
             # fetch columns implementation: column_number, sorting, is_visible, size
             result = get_view_columns(view_id)
@@ -358,6 +362,7 @@ class EnhancedTableView(QTableView):
                 visual_idx = header.visualIndex(col_num)
                 if visual_idx != sorting_idx:
                     header.moveSection(visual_idx, sorting_idx)
+        self.setSortingEnabled(sorting)
 
     def showContextMenu(self, pos: QPoint) -> None:
         """Executes the custom layout options context menu at the requested position."""
@@ -410,6 +415,9 @@ class EnhancedTableView(QTableView):
         model = self.model()
         if model is None:
             return
+        index = self.currentIndex()
+        if not index.isValid():
+            return
         if QMessageBox.question(
             self,
             _tr("MessageDialog", "Question"),
@@ -417,9 +425,6 @@ class EnhancedTableView(QTableView):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No
         ) == QMessageBox.StandardButton.No:
-            return
-        index = self.currentIndex()
-        if not index.isValid():
             return
         if not model.removeRows(index.row(), 1, QModelIndex()):
             QMessageBox.critical(
@@ -472,31 +477,21 @@ class EnhancedTableView(QTableView):
                             data = _tr('View', 'HIDDEN TEXT')
                         else:
                             data = model.data(index, Qt.ItemDataRole.DisplayRole)
-                        # format and normalize data types cleanly for Excel compatibility
-                        match data:
-                            case QByteArray():
-                                data = _tr('View', 'BINARY DATA')
-                            case QDate():
-                                data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
-                            case QDateTime():
-                                data = session['qlocale'].toString(data, QLocale.FormatType.ShortFormat)
-                            case bool():
-                                data = "I" if data else "O"  # Best localization pattern for raw spreadsheet inputs
-                            case float():
-                                data = f"{data}".replace(".", ",")
-                            case None:
-                                data = ""
-                        csv_row.append(data)
+                            if data is None:  # booleans are shown by the check state only
+                                check = model.data(index, Qt.ItemDataRole.CheckStateRole)
+                                if check is not None:
+                                    data = Qt.CheckState(check) == Qt.CheckState.Checked
+                        csv_row.append(self._csvValue(data))
                     writer.writerow(csv_row)
         except Exception as err:
             QMessageBox.critical(
                 self,
                 _tr('MessageDialog', "Critical"),
-                _tr('View', f"Unable to write to filename: {file_name}\nError: {str(err)}")
+                _tr('View', "Unable to write to filename: {}\nError: {}").format(file_name, err)
             )
             return
         # save the successfully validated export path location
-        settings.setValue("ExportPath", os.path.dirname(file_name))
+        settings.setValue("EnhancedTableView/ExportPath", os.path.dirname(file_name))
         # ask user to open the generated document
         if QMessageBox.question(
             self,
@@ -505,6 +500,28 @@ class EnhancedTableView(QTableView):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         ) == QMessageBox.StandardButton.Yes:
             QDesktopServices.openUrl(QUrl.fromLocalFile(file_name))
+
+    @staticmethod
+    def _csvValue(data: Any) -> Any:
+        """Return a value as text for the CSV file, formatted with the locale of the
+        current user; numbers have no group separator so that any program can read them"""
+        locale: QLocale = session['qlocale']
+        match data:
+            case QByteArray():
+                return _tr('View', 'BINARY DATA')
+            case QDate() | QTime() | QDateTime():
+                return locale.toString(data, QLocale.FormatType.ShortFormat)
+            case bool():
+                return "I" if data else "O"
+            case Decimal():
+                return f"{data:f}".replace(".", locale.decimalPoint())
+            case float():
+                text = repr(data) if 'e' not in repr(data) else f"{data:f}"
+                return text.replace(".", locale.decimalPoint())
+            case None:
+                return ""
+            case _:
+                return data
 
     def hideCurrentColumn(self) -> None:
         """Hide the currently selected column layout index."""
@@ -561,8 +578,11 @@ class EnhancedTableView(QTableView):
             for col_idx in range(header.count())
         ]
         title: str = _tr("Menu", "Error saving view layout")
+        success = False
         with gui_exception_context(self, title):
             set_adapt_setting(view_id, columns)
+            success = True
+        if success:  # messages outside of the context, it shows the wait cursor
             QMessageBox.information(
                 self,
                 _tr("MessageDialog", "Information"),
@@ -582,18 +602,22 @@ class EnhancedTableView(QTableView):
         if not ok or not view_desc.strip():
             return
         title: str = _tr("Menu", "Error creating new layout")
+        success = False
         with gui_exception_context(self, title):
             # write entity and extract generated master view table ID reference
             view_id = create_adaptation('I', self.layout_name, view_desc.strip())
-            # rebuild structural elements on context menus safely
-            self.fillCustomizationMenu()
-            # map state adjustments dynamically across newly instantiated actions
-            for action in self.action_group.actions():
-                if action.data() == str(view_id):
-                    action.setChecked(True)
-                    break            
-            # perform instant schema sync to serialize configurations downstream
-            self.updateViewLayout()
+            success = True
+        if not success:
+            return
+        # rebuild structural elements on context menus safely
+        self.fillCustomizationMenu()
+        # map state adjustments dynamically across newly instantiated actions
+        for action in self.action_group.actions():
+            if action.data() == str(view_id):
+                action.setChecked(True)
+                break
+        # perform instant schema sync to serialize configurations downstream
+        self.updateViewLayout()
 
     def deleteViewLayout(self, action: QAction | None = None) -> None:
         """Remove the active layout mapping definition safely after validation gates clear."""
@@ -602,25 +626,33 @@ class EnhancedTableView(QTableView):
             return
         view_id = int(checked_action.data())
         title: str = _tr("Menu", "Error deleting layout")
+        system = None
         with gui_exception_context(self, title):
-            # restrict core system-level objects against destructive user operations
-            if is_system_object(view_id):
-                QMessageBox.warning(
-                    self,
-                    _tr("MessageDialog", "Warning"),
-                    _tr("View", "System layout cannot be deleted")
-                )
-                return 
-            confirm = QMessageBox.question(
+            system = is_system_object(view_id)
+        if system is None:
+            return
+        # restrict core system-level objects against destructive user operations
+        if system:
+            QMessageBox.warning(
                 self,
-                _tr("MessageDialog", "Question"),
-                _tr("View", "Are you sure you want to delete the current layout?"),
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+                _tr("MessageDialog", "Warning"),
+                _tr("View", "System layout cannot be deleted")
             )
-            if confirm == QMessageBox.StandardButton.No:
-                return
+            return
+        confirm = QMessageBox.question(
+            self,
+            _tr("MessageDialog", "Question"),
+            _tr("View", "Are you sure you want to delete the current layout?"),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        if confirm == QMessageBox.StandardButton.No:
+            return
+        success = False
+        with gui_exception_context(self, title):
             # fire structural drop commands at database layers
             delete_adaptation(view_id)
+            success = True
+        if success:
             # re-render system structures to clear lingering pointers cleanly
             self.fillCustomizationMenu()
             QMessageBox.information(
@@ -644,8 +676,11 @@ class EnhancedTableView(QTableView):
         view_id = int(checked_action.data())
         title: str = _tr("Menu", "Error setting user default layout")
         # safe transaction pipeline wrapped in the exception handler boundary
+        success = False
         with gui_exception_context(self, title):
             set_adapt_user_default('I', self.layout_name, session['user'], view_id)
+            success = True
+        if success:
             # rebuild structural elements on context menus safely
             self.fillCustomizationMenu()
             QMessageBox.information(
@@ -668,8 +703,11 @@ class EnhancedTableView(QTableView):
             return
         view_id = int(checked_action.data())
         title: str = _tr("Menu", "Error setting class default layout")
+        success = False
         with gui_exception_context(self, title):
             set_adapt_class_default(view_id)
+            success = True
+        if success:
             # rebuild structural elements on context menus safely
             self.fillCustomizationMenu()
             QMessageBox.information(
