@@ -125,13 +125,16 @@ FROM system.python_scripting;
         return cur.fetchall()
     
 
-def activate_script(script_id: int, is_active: bool) -> None:
-    "Activate or deactivate a python script"
+def activate_script(script_id: int, is_active: bool) -> int | None:
+    "Activate or deactivate a python script, return its new object version"
     script = t"""
 UPDATE system.python_scripting
 SET is_active = {is_active}
-WHERE script_id = {script_id};
+WHERE script_id = {script_id}
+RETURNING object_version;
 """
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
+        row = cur.fetchone()
+        return row[0] if row else None

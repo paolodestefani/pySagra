@@ -51,6 +51,7 @@ from App.Database.Scripting import load_script
 from App.Database.Scripting import get_all_scripts
 from App.Database.Scripting import activate_script
 from App.Database.Company import company_list
+from App.Database.AbstractModels.TableModel import TableModel
 from App.Database.Models import ScriptingIndexModel
 from App.Database.Models import ScriptingModel
 from App.Widget.Form import FormIndexManager
@@ -186,6 +187,7 @@ class ScriptingForm(FormIndexManager):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
+        self._writePerm = self.write_perm   # the user's right, system records are read only
         model = ScriptingModel(self)
         idxModel = ScriptingIndexModel(self)
         self.setModel(model, idxModel)
@@ -246,12 +248,9 @@ class ScriptingForm(FormIndexManager):
         self.ui.comboBoxMethod.addItems(SCRIPTABLE.get(self.ui.comboBoxClass.currentText()) or [])  # on New text is empty
 
     def mapperIndexChanged(self, index):
-        # disable save option for system profiles
+        "System scripts can not be changed, the others only with the write right of the user"
         super().mapperIndexChanged(index)
-        if self.ui.checkBoxSystem.isChecked():
-            self.write_perm = False
-        else:
-            self.write_perm = True
+        self.write_perm = self._writePerm and not self.ui.checkBoxSystem.isChecked()
             
     def activateScript(self, checked: bool) -> None:
         "Activate/Deactivate script"
@@ -266,13 +265,25 @@ class ScriptingForm(FormIndexManager):
             QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
             QMessageBox.StandardButton.No  # default botton
             ) == QMessageBox.StandardButton.Yes:
-            script_id = self.model.index(self.mapper.currentIndex(), scr.ID).data()
-            activate_script(script_id, checked)
+            row = self.mapper.currentIndex()
+            script_id = self.model.index(row, scr.ID).data()
+            with gui_exception_context(self, _tr('Scripting', 'Activate script')) as outcome:
+                version = activate_script(script_id, checked)
+            if not outcome.ok:
+                self.ui.checkBoxActive.setChecked(not checked)
+                return
+            if version is not None and isinstance(self.model, TableModel):
+                # the row was written here: take the new object version and state without
+                # marking the record as changed, so a later save does not see a conflict
+                record = self.model.dataSet[row]
+                dict.__setitem__(record, scr.ACTIVE, checked)
+                record.object_version = version
         else:
             self.ui.checkBoxActive.setChecked(not checked)
 
     def new(self) -> None:
         "New script"
+        self.write_perm = self._writePerm   # a new record is never a system one
         super().new()
         self.ui.comboBoxClass.setCurrentIndex(-1)
         self.ui.comboBoxTrigger.setCurrentIndex(-1)
@@ -352,9 +363,9 @@ class ScriptingForm(FormIndexManager):
                 zf.writestr('trigger', self.model.index(row, scr.TRIGGER).data())
                 zf.writestr('company', str(self.model.index(row, scr.COMPANY).data()))
                 zf.writestr('active', str(self.model.index(row, scr.ACTIVE).data()))
-                zf.writestr('description', str(self.model.index(row, scr.DESCRIPTION).data()))
+                zf.writestr('description', self.model.index(row, scr.DESCRIPTION).data() or '')
                 zf.writestr('pyscript', self.model.index(row, scr.SCRIPT).data())
-                zf.writestr('note', str(self.model.index(row, scr.NOTE).data()))
+                zf.writestr('note', self.model.index(row, scr.NOTE).data() or '')
                 zf.writestr('system', str(self.model.index(row, scr.SYSTEM).data()))
         
             msg = _tr('Scripting', "Current script saved to file:")
@@ -378,7 +389,7 @@ class ScriptingForm(FormIndexManager):
         if directory == "":
             return
         with gui_exception_context(self, _tr('Scripting', "Saving all scripts to files")):
-            for cls, mth, trg, cmp, act, des, pys, nte, sys in get_all_scripts():
+            for cls, mth, trg, cmp, act, des, pys, nte, system in get_all_scripts():
                 # looks like zipfile accept qt file path with / so no need to use os.path.join
                 fileName = (f"{directory}/"
                             f"{cmp}"
@@ -395,7 +406,7 @@ class ScriptingForm(FormIndexManager):
                     zf.writestr('description', des)
                     zf.writestr('pyscript', pys)
                     zf.writestr('note', nte or '')
-                    zf.writestr('system', str(sys))
+                    zf.writestr('system', str(system))
                     
             msg = _tr('Scripting', "All scripts saved to directory:")
             QMessageBox.information(
@@ -429,17 +440,17 @@ class ScriptingForm(FormIndexManager):
                 des = zf.read('description').decode('utf-8')
                 pys = zf.read('pyscript').decode('utf-8')
                 nte = zf.read('note').decode('utf-8')
-                sys = zf.read('system').decode('utf-8')
+                system = zf.read('system').decode('utf-8')
             with gui_exception_context(self, _tr('Scripting', "Saving script file to database")):
                 load_script(cls, 
                             mth,
                             trg,
                             int(cmp),
-                            True if act == 'True' else False,
+                            act == 'True',
                             des,
                             pys,
                             nte or None,
-                            True if sys == 'True' else False)
+                            system == 'True')
                 self.reload()
                 QMessageBox.information(
                     self,
@@ -460,12 +471,14 @@ class ScriptingForm(FormIndexManager):
             return
         
         it = QDirIterator(QDir(directory), QDirIterator.IteratorFlag.NoIteratorFlags)
-        imported_count = 0  # Contatore invece di un semplice boolean
+        imported_count = 0
+        failed_count = 0
 
         while it.hasNext():
             it.next()
             if it.fileInfo().isFile() and it.fileInfo().completeSuffix() == 'scp.zip':
                 fileName = it.fileInfo().absoluteFilePath()
+                saved = False
                 with gui_exception_context(self, _tr('Scripting', "Uploading script file")):
                     with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                         cls = zf.read('class').decode('utf-8')
@@ -476,22 +489,31 @@ class ScriptingForm(FormIndexManager):
                         des = zf.read('description').decode('utf-8')
                         pys = zf.read('pyscript').decode('utf-8')
                         nte = zf.read('note').decode('utf-8')
-                        sys = zf.read('system').decode('utf-8')
-                        
-                    with gui_exception_context(self, _tr('Scripting', f"Saving script file {fileName} to database")):
-                        load_script(cls, 
+                        system = zf.read('system').decode('utf-8')
+                    with gui_exception_context(self, _tr('Scripting', "Saving script file to database")) as outcome:
+                        load_script(cls,
                                     mth,
                                     trg,
                                     int(cmp),
-                                    True if act == 'True' else False,
+                                    act == 'True',
                                     des,
                                     pys,
                                     nte or None,
-                                    True if sys == 'True' else False)
-                    imported_count += 1 # Incrementa per ogni file salvato
+                                    system == 'True')
+                    saved = outcome.ok
+                # an unreadable file counts as not imported too
+                if saved:
+                    imported_count += 1
+                else:
+                    failed_count += 1
 
-        # Il controllo va FUORI dal ciclo while
-        if imported_count > 0:        
+        if failed_count:
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "warning"),
+                _tr('Scripting', "{0} files imported, {1} not imported").format(imported_count, failed_count)
+            )
+        elif imported_count:
             QMessageBox.information(
                 self,
                 _tr("MessageDialog", "information"),

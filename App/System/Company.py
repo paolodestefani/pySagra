@@ -50,6 +50,7 @@ from PySide6.QtWidgets import QDialog
 # application modules
 from App import session
 from App import currentIcon
+from App.Database.Connect import appconn
 from App.Database.Company import max_company_code
 from App.Database.Company import create_company
 from App.Database.Company import drop_company
@@ -119,6 +120,7 @@ class CompanyForm(FormIndexManager):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
+        self._writePerm = self.write_perm   # the user's right, system records are read only
         model = CompanyModel()
         idxModel = CompanyIndexModel()
         model2 = UserCompanyModelReferenceCompany()
@@ -164,12 +166,9 @@ class CompanyForm(FormIndexManager):
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
         
     def mapperIndexChanged(self, index):
-        # disable save option for system companies
+        "System companies can not be changed, the others only with the write right of the user"
         super().mapperIndexChanged(index)
-        if self.ui.checkBoxSystem.isChecked():
-            self.write_perm = False
-        else:
-            self.write_perm = True
+        self.write_perm = self._writePerm and not self.ui.checkBoxSystem.isChecked()
 
     def add(self) -> None:
         "Add a new user company relation"
@@ -199,7 +198,7 @@ class CompanyForm(FormIndexManager):
             QMessageBox.warning(
                 self,
                 _tr('MessageDialog', "Warning"),
-                _tr('Company', "The selected image is too big, it was"
+                _tr('Company', "The selected image is too big, it was "
                     "automatically resized to the max allowed size of 640x480 pixels")
             )
         else:
@@ -249,12 +248,16 @@ class CompanyForm(FormIndexManager):
 
     def new(self) -> None:
         "Create a new company"
+        if not self._writePerm:
+            return
         dlg = NewCompanyDialog(self)
         if dlg.exec() == QDialog.DialogCode.Accepted:
             self.reload()
 
     def delete(self) -> None:
         "Delete the current selected company"
+        if not self._writePerm:
+            return
         companyId = self.ui.spinBoxId.value()
         companyDescription = self.ui.lineEditDescription.text()
         if self.ui.checkBoxSystem.isChecked():
@@ -344,7 +347,7 @@ class NewCompanyDialog(QDialog):
                 self,
                 _tr('MessageDialog', "Warning"),
                 _tr('Company', "The selected image is too big, "
-                    "it was automaticlly resized to the max "
+                    "it was automatically resized to the max "
                     "allowed size of 640x480 pixels")
             )
         else:
@@ -382,14 +385,16 @@ class NewCompanyDialog(QDialog):
         userToolbar = self.ui.comboBoxToolbar.currentData()
         # create a new company
         with gui_exception_context(self, _tr('Company', "Creating new company")):
-            create_company(companyCode,
-                           companyDescription,
-                           image)
-            set_company_access(companyCode,
-                               session['app_user_code'],
-                               userProfile,
-                               userMenu,
-                               userToolbar)
+            # one transaction: a company the user can not access is never left behind
+            with appconn.transaction():
+                create_company(companyCode,
+                               companyDescription,
+                               image)
+                set_company_access(companyCode,
+                                   session['app_user_code'],
+                                   userProfile,
+                                   userMenu,
+                                   userToolbar)
         
             QMessageBox.information(
                 self,

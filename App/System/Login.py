@@ -30,7 +30,6 @@ the working company
 """
 
 # standard library
-import sys
 import logging
 from cryptography.fernet import InvalidToken
 
@@ -70,7 +69,6 @@ from App.Database.Connect import get_companies_list
 from App.Database.Connect import get_company_desc
 from App.Database.Connect import get_current_event
 from App.Database.Connect import can_use_company
-from App.Database.Connect import get_current_event
 from App.System.User import ChangePasswordDialog
 from App.System.Help import HelpDialog
 from App.Ui.LoginDialog import Ui_LoginDialog
@@ -115,7 +113,7 @@ class LoginDialog(QDialog):
             self.ui.lineEditDBPassword.setText("")
         self.ui.lineEditUser.setFocus()
         self.ui.checkBoxMore.clicked.connect(self.expand) # error if i set this in QtDesigner
-        txt = _tr('Login', f"Application Version:")
+        txt = _tr('Login', "Application Version:")
         self.ui.labelVersion.setText(f"{txt} {APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}")
         # help
         self.ui.buttonBox.helpRequested.connect(self.showHelp)
@@ -220,7 +218,7 @@ class LoginDialog(QDialog):
             else:
                 logger.info("User language is English, native strings will be used")
         else:
-            logger.info("No translation required for user %s", session['app_user'])
+            logger.info("No translation required for user %s", session['app_user_code'])
         
         # set working company
         if session['current_company'] and can_use_company(session['app_user_code'], session['current_company']):
@@ -234,7 +232,9 @@ class LoginDialog(QDialog):
             if has_companies_available(session['app_user_code']):
                 dlg = ChangeCompanyDialog(self)
                 if dlg.exec() == QDialog.DialogCode.Rejected:
-                    sys.exit(0)
+                    # no company chosen: the caller closes the application
+                    self.reject()
+                    return
                 dlg.close()
             else:
                 QMessageBox.warning(self,
@@ -256,8 +256,10 @@ class LoginDialog(QDialog):
                 _tr('Login', "Password change is required")
             )
             pd = ChangePasswordDialog(self, session['user'])
-            if pd.exec_() == QDialog.DialogCode.Rejected:
-                sys.exit(0)
+            if pd.exec() == QDialog.DialogCode.Rejected:
+                # the password must be changed to log in
+                self.reject()
+                return
         super().accept()
 
 
@@ -308,9 +310,8 @@ class ChangeCompanyDialog(QDialog):
         if not outcome.ok:            
             return
         
-        session['company'] = newco
-        session['company_description'] = newde
-        logger.info("On change company setting working company to %s", session['company'])
+        # pa_company_change has already updated current_company and company_description
+        logger.info("On change company setting working company to %s %s", newco, newde)
         # setting current event
         logger.info("On change company setting current event if any")
         with gui_exception_context(self, _tr('ChangeCompany', 'Getting current event')):

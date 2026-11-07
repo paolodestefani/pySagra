@@ -38,7 +38,6 @@ from App.Database import OVFIELD
 from App.Database.Connect import appconn
 from App.Database.Exceptions import db_exception_context
 from App.Database.Exceptions import PyAppDBConcurrencyError
-from App.Database.Exceptions import PyAppDBConcurrencyError
 
 
 # logger
@@ -96,55 +95,38 @@ class Record(dict):
             if result:
                 self.update(result)
         
-    def update_record(self) -> None:
-        "Update a record base on primary key, raise an exception if modified before"
-        # check object_version
+    def _where(self) -> str:
+        "Primary key condition, plus the object version when the record has one"
+        where = " AND ".join([f"{i} = %({i})s" for i in self.pkey])
         if OVFIELD in self:
-            where = " AND ".join([f"{i} = %({i})s" for i in self.pkey])
-            args = {k:self[k] for k in self.pkey} # primary key fields
-            args[OVFIELD] = self[OVFIELD]
-            script = (f"SELECT {OVFIELD} = %({OVFIELD})s\n"
-                      f"FROM {self.table}\n"
-                      f"WHERE {where};")
-            # Unified context managers in the recommended evaluation order
-        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-            cur.execute(script, args)
-            result = next(cur, None)
-            if not result:
-                raise PyAppDBConcurrencyError()
-        # update
-        script = (f"UPDATE {self.table}\n"
-                  f"SET {', '.join([f'{i} = %({i})s' for i in self if i not in self.pkey])}\n"
-                  f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])}\n"
-                  f"RETURNING {OVFIELD};")
-        # Unified context managers in the recommended evaluation order
-        with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-            cur.execute(script, self)
-            result = next(cur, None)
-            if result:
-                self.update(result)
+            # optimistic concurrency: no row matches if someone changed it since it was read
+            where += f" AND {OVFIELD} = %({OVFIELD})s"
+        return where
 
-    def delete_record(self) :
-        "Delete one record base on primary key, raise an exception if modified before"
-        # check row_timestamp
-        if OVFIELD in self:
-            where = " AND ".join([f"{i} = %({i})s" for i in self.pkey])
-            args = {k:self[k] for k in self.pkey}
-            script = (f"SELECT {OVFIELD} = {self[OVFIELD]}\n"
-                      f"FROM {self.table}\n"
-                      f"WHERE {where};")
-            # Unified context managers in the recommended evaluation order
-        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-            cur.execute(script, args)
-            result = cur.fetchone()[0]
-            if not result:
-                raise PyAppDBConcurrencyError()
-        # delete
-        script = (f"DELETE FROM {self.table}\n"
-                  f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.pkey])}")
+    def update_record(self) -> None:
+        "Update the record by primary key, raise an exception if it was modified or deleted before"
+        fields = [i for i in self if i not in self.pkey and i != OVFIELD]
+        script = (f"UPDATE {self.table}\n"
+                  f"SET {', '.join([f'{i} = %({i})s' for i in fields])}\n"
+                  f"WHERE {self._where()}\n"
+                  f"RETURNING *;")
         # Unified context managers in the recommended evaluation order
         with db_exception_context(logger), appconn.transaction(), appconn.cursor(row_factory=psycopg.rows.dict_row) as cur:
             cur.execute(script, self)
+            result = cur.fetchone()
+            if result is None:
+                raise PyAppDBConcurrencyError()
+            # the new object version and whatever the triggers wrote
+            self.update(result)
+
+    def delete_record(self) -> None:
+        "Delete the record by primary key, raise an exception if it was modified or deleted before"
+        script = f"DELETE FROM {self.table}\nWHERE {self._where()};"
+        # Unified context managers in the recommended evaluation order
+        with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+            cur.execute(script, self)
+            if cur.rowcount == 0:
+                raise PyAppDBConcurrencyError()
 
 
 class RecordSet(list):

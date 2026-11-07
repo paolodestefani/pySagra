@@ -32,7 +32,7 @@ import json
 import logging
 
 # PySide6
-from PySide6.QtCore import QDir, QFile
+from PySide6.QtCore import QDir, QFile, QFileInfo
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
@@ -46,6 +46,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App.Common.L10n import _tr
 from App.Widget.ExceptionHandler import gui_exception_context
+from App.Database.Connect import appconn
 from App.Database.Adaptation import export_adaptation
 from App.Database.Adaptation import export_adaptation_setting
 from App.Database.Adaptation import import_adaptation
@@ -184,14 +185,14 @@ class AdaptationsDialog(QDialog):
         with gui_exception_context(self, _tr('Adaptations', 'Import adaptations')):
             with open(fileName, 'r', encoding='utf-8') as f:
                 import_data = json.load(f)
-                
-            for adapt in import_data:
-                adp_id = import_adaptation(adapt)
-                for setting in adapt.get('settings', []):
-                    setting['adaptation_id'] = adp_id
-                    import_adaptation_settings(setting)
-                
-            st.setValue("Adaptations/PathExportAdaptations", path)
+            # one transaction: a file is imported entirely or not at all
+            with appconn.transaction():
+                for adapt in import_data:
+                    adp_id = import_adaptation(adapt)
+                    for setting in adapt.get('settings', []):
+                        setting['adaptation_id'] = adp_id
+                        import_adaptation_settings(setting)
+            st.setValue("Adaptations/PathExportAdaptations", QFileInfo(fileName).path())
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),

@@ -380,14 +380,13 @@ class ReportForm(FormIndexManager):
                 cod = zf.read('code').decode('utf-8')
                 lcn = zf.read('l10n').decode('utf-8')
                 cls = zf.read('class').decode('utf-8')
-                sys = zf.read('system').decode('utf-8')
+                system = zf.read('system').decode('utf-8')
                 dsc = zf.read('description').decode('utf-8')
                 xml = zf.read('xml').decode('utf-8')
-        
-            sysb: bool = sys == 'True'
-            with gui_exception_context(self, _tr('Report', "Upload current report")):
-                load_report(met, cod, lcn, cls, sysb, dsc, xml)
-            
+            with gui_exception_context(self, _tr('Report', "Upload current report")) as outcome:
+                load_report(met, cod, lcn, cls, system == 'True', dsc, xml)
+            if not outcome.ok:
+                return
             self.reload()
             QMessageBox.information(
                 self,
@@ -407,32 +406,46 @@ class ReportForm(FormIndexManager):
         if directory == "":
             return
 
+        imported_count = 0
+        failed_count = 0
         for f in QDir(directory).entryInfoList(QDir.Filter.NoFilter, QDir.SortFlag.Name):
             if f.isFile() and f.completeSuffix() == 'rpt.zip':
                 fileName = f.absoluteFilePath()
+                saved = False
                 with gui_exception_context(self, _tr('Report', "Upload all reports")):
                     with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                         try:
                             met = zf.read('method').decode('utf-8')
-                        except Exception:
+                        except KeyError:   # files saved before the print method existed
                             met = 'D'
                         cod = zf.read('code').decode('utf-8')
                         lcn = zf.read('l10n').decode('utf-8')
                         cls = zf.read('class').decode('utf-8')
-                        sys = zf.read('system').decode('utf-8')                    
+                        system = zf.read('system').decode('utf-8')
                         dsc = zf.read('description').decode('utf-8')
                         xml = zf.read('xml').decode('utf-8')
+                    with gui_exception_context(self, _tr('Report', "Upload all reports")) as outcome:
+                        load_report(met, cod, lcn, cls, system == 'True', dsc, xml)
+                    saved = outcome.ok
+                # an unreadable file counts as not imported too
+                if saved:
+                    imported_count += 1
+                else:
+                    failed_count += 1
 
-                    sysb: bool = sys == 'True'
-                    with gui_exception_context(self, _tr('Report', "Upload all reports")):
-                        load_report(met, cod, lcn, cls, sysb, dsc, xml)
-        
         self.reload()
-        QMessageBox.information(
-            self,
-            _tr("MessageDialog", "information"),
-            _tr('Report', "All reports imported to database")
-        )
+        if failed_count:
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "warning"),
+                _tr('Report', "{0} reports imported, {1} not imported").format(imported_count, failed_count)
+            )
+        else:
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "information"),
+                _tr('Report', "All reports imported to database")
+            )
 
     def print(self) -> None:
         "Print current report"

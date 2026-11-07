@@ -136,8 +136,8 @@ class PreferencesDialog(QDialog):
 
     def clicked(self, button: QPushButton) -> None:
         "Call Apply on clicked"
-        if self.ui.buttonBox.standardButton(button) in (QDialogButtonBox.StandardButton.Apply,
-                                                        QDialogButtonBox.StandardButton.Ok):
+        # Ok applies through accept(), here it would apply twice
+        if self.ui.buttonBox.standardButton(button) == QDialogButtonBox.StandardButton.Apply:
             self.apply()
         if self.ui.buttonBox.standardButton(button) == QDialogButtonBox.StandardButton.RestoreDefaults:
             self.restoreDefault()

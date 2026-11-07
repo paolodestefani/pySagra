@@ -343,7 +343,7 @@ LIMIT 1;"""
             if cur.description is None:
                 return [] 
             colnames = [desc[0] for desc in cur.description]
-            row = next(cur)
+            row = next(cur, None)
             if row is None:
                 return [] 
             return list(zip(colnames, row))

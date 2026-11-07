@@ -388,22 +388,6 @@ WHERE adaptation_id = {adapt_id};"""
         cur.execute(script)
     
 
-def get_adapt_class_default(adapt_type: str, adapt_class: str) -> int | None:
-    """Get the default adaptation_id for the given type and class"""
-    script = t"""
-SELECT adaptation_id
-FROM system.adaptation
-WHERE 
-        type  = {adapt_type} 
-    AND class = {adapt_class};"""
-    # Unified context managers ensuring consistent execution and clean exception trapping
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        result = cur.execute(script).fetchone()
-        if result:
-            return result
-        return None
-
-
 def set_adapt_class_default(adapt_id: int) -> None:
     """Set the adaptation class default for its specific type and class"""
     script1 = t"""
@@ -428,23 +412,6 @@ WHERE adaptation_id = {adapt_id};"""
         adapt_class = result[1]
         cur.execute(script2, (adapt_type, adapt_class))
         cur.execute(script3)
-
-
-def get_adapt_user_default(adapt_type: str, adapt_class: str, user: str) -> int | None:
-    """Get the default adaptation id if any for the given type, class, and user"""
-    script = t"""
-SELECT adaptation_id
-FROM system.adaptation_user_default
-WHERE 
-        type  = {adapt_type}
-    AND class = {adapt_class}
-    AND app_user_code = {user};"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        result = cur.execute(script).fetchone()
-        if result:
-            return result
-        return None
 
 
 def get_adapt_default(adapt_type: str, adapt_class: str, user: str) -> int | None:

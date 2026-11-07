@@ -247,7 +247,8 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             userIndex = self.model.index(self.mapper.currentIndex(), usr.CODE)
             passwordIndex = self.model.index(self.mapper.currentIndex(), usr.PASSWORD)
             dlg = SetPasswordDialog(self, self.model, userIndex, passwordIndex)
-            dlg.exec()
+            if dlg.exec() == QDialog.DialogCode.Rejected:
+                return   # a user can not be saved without a password
         super().save()
         self.ui.lineEditUser.setDisabled(True)
 
@@ -302,7 +303,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         userIndex = self.model.index(self.mapper.currentIndex(), usr.CODE)
         passwordIndex = self.model.index(self.mapper.currentIndex(), usr.PASSWORD)
         dlg = SetPasswordDialog(self, self.model, userIndex, passwordIndex)
-        if dlg.exec_() == QDialog.DialogCode.Accepted:
+        if dlg.exec() == QDialog.DialogCode.Accepted:
             # if password was modified set for change required
             cprIndex = self.model.index(self.mapper.currentIndex(), usr.CHANGE_PWD)
             self.model.setData(cprIndex, True)
@@ -325,8 +326,8 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             QMessageBox.warning(
                 self,
                 _tr('MessageDialog', "Warning"),
-                _tr('User', "The selected image is too big, it was"
-                    "automaticlly resized to the max allowed size of 640x480 pixels")
+                _tr('User', "The selected image is too big, it was "
+                    "automatically resized to the max allowed size of 640x480 pixels")
             )
         else:
             self.ui.labelImage.setPixmap(pix)
@@ -362,7 +363,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
             )
 
     def removeImage(self, checked: bool) -> None:
-        "Remove company image"
+        "Remove user image"
         self.ui.labelImage.clear()
         self.ui.labelImage.setText(_tr('User', "NO IMAGE"))
         if isinstance(self.model, TableModel):
@@ -424,15 +425,16 @@ class ChangePasswordDialog(QDialog):
                     "that of the 'Confirm password'")
             )
             return
-        with gui_exception_context(self, _tr('ChangePassword', 'Change password')):
+        with gui_exception_context(self, _tr('ChangePassword', 'Change password')) as outcome:
             change_password(self.ui.lineEditUser.text(),
                             self.ui.lineEditNewPassword.text())
-        
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "Information"),
-                _tr('ChangePassword', "Password changed successfully")
-            )
+        if not outcome.ok:
+            return   # the dialog stays open: a required change must really happen
+        QMessageBox.information(
+            self,
+            _tr('MessageDialog', "Information"),
+            _tr('ChangePassword', "Password changed successfully")
+        )
         QDialog.accept(self)
 
 
@@ -466,7 +468,10 @@ class SetPasswordDialog(ChangePasswordDialog):
             )
             return
         # return encrypted password to model
-        ep = encrypt_password(self.ui.lineEditNewPassword.text())
+        with gui_exception_context(self, _tr('ChangePassword', 'Set password')) as outcome:
+            ep = encrypt_password(self.ui.lineEditNewPassword.text())
+        if not outcome.ok:
+            return
         self.model.setData(self.passwordIndex, ep)
         QDialog.accept(self)
 
