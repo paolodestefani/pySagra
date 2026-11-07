@@ -187,10 +187,10 @@ CREATE TABLE item_part (
         FOREIGN KEY (item_id) 
         REFERENCES item (item_id)
         MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
-    CONSTRAINT item_part_part_fk 
-        FOREIGN KEY (part_id) 
+    CONSTRAINT item_part_part_fk
+        FOREIGN KEY (part_id)
         REFERENCES item (item_id)
-        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE
+        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION -- a component can not leave a kit or menu unnoticed
 
 ) TABLESPACE {pyAppPgTablesTS};
 COMMENT ON TABLE item_part IS 

@@ -1109,6 +1109,7 @@ class KitPartModel(TableModel):
         self.foreignKey = {'item_id': 'id', 'part_id': 'id'}
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("item_part_id")
+        self.newRecordDefault = {'quantity': 1}
         self.repr = 'Kit part table model'
 
 
@@ -1137,6 +1138,7 @@ class MenuPartModel(TableModel):
         self.foreignKey = {'item_id': 'id', 'part_id': 'id'}
         # sql order by clause, plain sql string without ORDER BY
         self.addOrderBy("item_part_id")
+        self.newRecordDefault = {'quantity': 1}
         self.repr = 'Menu part table model'
 
 

@@ -309,6 +309,13 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonRemoveMen.clicked.connect(self.ui.tableViewMenuItems.remove)
         self.ui.pushButtonAddPri.clicked.connect(self.ui.tableViewPrices.add)
         self.ui.pushButtonRemovePri.clicked.connect(self.ui.tableViewPrices.remove)
+        # errore messages
+        self.errorMessages = {
+            'order_line_item_fk': _tr('Item', 'The item is used in orders, it can not be deleted'),
+            'order_line_department_item_fk': _tr('Item', 'The item is used in orders, it can not be deleted'),
+            'inventory_item_fk': _tr('Item', 'The item has stock movements, it can not be deleted'),
+            'item_part_part_fk': _tr('Item', 'The item is a component of a kit or menu, it can not be deleted')
+            }
         # scripting init
         self.script = scriptInit(self)
         # scripting init
