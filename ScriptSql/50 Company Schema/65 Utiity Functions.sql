@@ -97,11 +97,13 @@ CREATE FUNCTION set_order_as_processed(in_event int)
 RETURNS VOID AS
 $$
 BEGIN
-	UPDATE order_header_department
-    SET fulfillment_date = oh.date_time
-    FROM order_header_department ohd
-    JOIN order_header oh ON ohd.order_header_id = oh.order_header_id
-    WHERE ohd.fulfillment_date is null
+	-- the target table must not be repeated in FROM: an unjoined second
+	-- instance would update every row of every event
+	UPDATE order_header_department ohd
+    SET fulfillment_date = oh.order_date_time
+    FROM order_header oh
+    WHERE ohd.order_header_id = oh.order_header_id
+        AND ohd.fulfillment_date IS NULL
         AND oh.event_id = in_event; -- event include company
 END;
 $$ 

@@ -89,14 +89,3 @@ ORDER BY t.sorting;"""
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
         return cur.fetchall()
-
-
-def set_user_theme(theme: str) -> None:
-    "Update last used theme for user"
-    script = t"""
-UPDATE system.app_user 
-SET stylesheet_theme = {theme} 
-WHERE id = system.pa_current_user();"""
-    # Unified context managers ensuring proper evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)

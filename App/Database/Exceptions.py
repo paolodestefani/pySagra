@@ -59,7 +59,7 @@ class PyAppDatabaseException(Exception):
                  message: Optional[str] = None,
                  detail: Optional[str] = None,
                  constraint: Optional[str] = None) -> None:
-        # Passiamo il messaggio a Exception. str(error) eviterà cicli infiniti.
+        # Pass the message to Exception: str(error) avoids infinite recursion
         super().__init__(message) 
         self.code: str = code or 'UNKNOWN'
         self.message: str = message or ''
@@ -105,7 +105,7 @@ class PyAppDBConcurrencyError(PyAppDBError):
                  code: str = 'CCER', 
                  message: str = 'Row modified before update/delete', 
                  detail: Optional[str] = None) -> None:
-        # Manteniamo la firma compatibile con la classe base usando i parametri di default
+        # Keep the signature compatible with the base class through default arguments
         super().__init__(code=code, message=message, detail=detail)
 
 
@@ -113,7 +113,7 @@ class PyAppDBConcurrencyError(PyAppDBError):
 
 @contextmanager
 def db_exception_context(logger: Optional[logging.Logger] = None) -> Generator[None, None, None]:
-    # Se passi il logger del modulo, usa quello, altrimenti usa il fallback
+    # Use the logger of the calling module when given, the default one otherwise
     active_logger = logger or default_logger
     
     try:

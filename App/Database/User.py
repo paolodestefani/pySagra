@@ -40,28 +40,6 @@ from App.Database.Connect import appconn
 logger = logging.getLogger(__name__)
 
 
-def user_list() -> list:
-    script = """
-SELECT id 
-FROM system.app_user;"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-        return [i[0] for i in cur.fetchall()]
-
-
-def user_company_set(user: str,
-                     company: int,
-                     profile: str,
-                     menu: str,
-                     toolbar: str
-                     ) -> None:
-    script = t'SELECT system.pa_user_company_set({user}, {company}, {profile}, {menu}, {toolbar});'
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-
-
 def change_password(user: str, new_password: str) -> None:
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
@@ -80,10 +58,11 @@ def encrypt_password(password: str) -> str:
 
 
 def force_password_change(user: str) -> None:
+    "The user must change the password at the next login"
     script = t"""
 UPDATE system.app_user
-SET is_change_password_required = true
-WHERE code = {user};"""
+SET new_password_required = true
+WHERE user_code = {user};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)

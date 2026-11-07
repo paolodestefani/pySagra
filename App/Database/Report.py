@@ -178,29 +178,6 @@ WHERE report_class = {report_class} AND l10n = {l10n};"""
         return records
         
 
-def get_report_driver_list(l10n: str) -> list:
-    "Return code and description of all reports of l10n localization or en_US"
-    script = t"""
-SELECT
-    report_id,
-    report_code, 
-    description
-FROM system.report r
--- set a specifit sorting
-LEFT JOIN (
-	SELECT v.i, v.c
-	FROM (VALUES 
-{", \n".join([f"({i}, '{j}')" for i, j in enumerate(REPORT_CLASSES, start=1)])}
-	    ) v(i, c)) v 
-	ON r.report_class = v.c 
-WHERE r.print_method = 'D' AND r.l10n = {l10n}
-ORDER BY v.i, r.report_code;"""
-    # Unified context managers in the recommended evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-        return cur.fetchall()
-
-
 def report_description(report_id: int) -> str | None:
     "Return the report description of report code of l10n localization or en_US"
     script = t"""
