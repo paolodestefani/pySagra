@@ -131,7 +131,7 @@ class BaseQueryModel(QAbstractTableModel):
         col = index.column()
         try:
             result = self.dataSet[index.row()][col]
-        except (IndexError, KeyError):          # KeyError: chiave assente in un Record
+        except (IndexError, KeyError):          # KeyError: key missing in a Record
             result = None
         is_bool = self.columns[col][cla.TYPE] == 'bool'
 
@@ -180,14 +180,14 @@ class BaseQueryModel(QAbstractTableModel):
         n = len(self.dataSet) - int(self.hasTotalsRow)
         if n <= 1:
             return
-        nv = NULL_MAP.get(self.columns[column][cla.TYPE], "")   # il tuo null_map spostato a livello di modulo
+        nv = NULL_MAP.get(self.columns[column][cla.TYPE], "")   # sort value for NULL, by column type
         perm = sorted(range(n),
                     key=lambda i: nv if self.dataSet[i][column] is None else self.dataSet[i][column],
                     reverse=(order == Qt.SortOrder.DescendingOrder))
         new_pos = {old: new for new, old in enumerate(perm)}
         self.layoutAboutToBeChanged.emit()
         old_indexes = self.persistentIndexList()
-        self.dataSet[:n] = [self.dataSet[i] for i in perm]      # i totali, dopo n, non si toccano
+        self.dataSet[:n] = [self.dataSet[i] for i in perm]      # the totals row, after n, stays last
         for idx in old_indexes:
             if idx.row() < n:
                 self.changePersistentIndex(idx, self.index(new_pos[idx.row()], idx.column()))
@@ -447,27 +447,24 @@ class TableModel(QueryModel):
         if column is not None:
             for record in self.dataSet:
                 record[column] = value
-        sqlCheck = (f"SELECT {', '.join(self.primaryKey)}\n"
-                    f"FROM {self.table}\n"
-                    f"WHERE {' AND '.join([f'{i} = %({i})s' for i in self.primaryKey + (OVFIELD,)])};")
-        # Unified context managers in the recommended evaluation order
-        ok = False
-        saved: list[tuple[int, Record, tuple]] = []
+        # optimistic concurrency: a row is written only if its object_version is
+        # still the one read, otherwise another user changed or deleted it
+        whereKey = " AND ".join([f"{k} = %({k})s" for k in self.primaryKey])
+        whereVersion = f"{whereKey} AND {OVFIELD} = %({OVFIELD})s"
+        returningKey = ", ".join(self.primaryKey)
+        # rows written, with their primary key, to be read back at the end
+        saved: list[tuple[int, Record, dict]] = []
         with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:  
             # *** DELETE ***
             # toDelete contains dict with pkey and object_version for each deleted record
             for record in self.toDelete:
-                args = record.pkey.copy()
-                args[OVFIELD] = record.object_version
-                # concurrency check
-                cur.execute(sqlCheck, args)
+                args = record.pkey | {OVFIELD: record.object_version}
+                cur.execute(f"DELETE FROM {self.table} WHERE {whereVersion};", args)
                 if cur.rowcount == 0:
                     raise PyAppDBConcurrencyError()
-                where = " AND ".join([f"{k} = %({k})s" for k in record.pkey])
-                script = f"DELETE FROM {self.table} WHERE {where};"
-                cur.execute(script, record.pkey)
-            if self.automaticPKey:
-                # update identity
+            if self.automaticPKey and self.toDelete:
+                # after a delete, bring the identity back to the current maximum
+                # so that the last deleted ids are reused
                 table = self.table
                 field = self.primaryKey[0]
                 script = f"""
@@ -479,31 +476,25 @@ class TableModel(QueryModel):
             # if both are False do nothing
             for row_idx, record in enumerate(self.dataSet):
                 if record.is_new and record.is_modified:
-                    print("***** Record marked as NEW and MODIFIED, possible logical error! *****")
+                    logger.warning("Record marked as NEW and MODIFIED, possible logical error")
                 # --- UPDATE ---
                 if record.is_modified and not record.is_new:
-                    args = record.pkey.copy()
-                    args[OVFIELD] = record.object_version
-                    # concurrency check
-                    cur.execute(sqlCheck, args)
-                    if cur.rowcount == 0:
-                        raise PyAppDBConcurrencyError()
-                    # list of fields to update, only non read only fields with a field name
-                    # (calculated fields have None as field name)
-                    upd_fields = [c[cla.FIELD] for c in self.columns if c[cla.FIELD] and not c[cla.RO]]
-                    fields_str = ", ".join([f"{f} = %({f})s" for f in upd_fields])
-                    where_str = " AND ".join([f"{k} = %({k})s" for k in record.pkey])
-                    fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns] + [OVFIELD])
-                    
-                    script = f"UPDATE {self.table} SET {fields_str} WHERE {where_str} RETURNING {fieldsback};"
-                    
-                    # mapping arguments for update, only non read only fields with a field name
-                    upd_args = {self.columns[i][cla.FIELD]: record[i] for i in range(len(self.columns)) if self.columns[i][cla.FIELD]}
-                    upd_args.update(record.pkey)
+                    # fields to update: editable fields with a name (calculated fields have None),
+                    # the primary key is never changed
+                    upd_fields = [c[cla.FIELD] for c in self.columns
+                                  if c[cla.FIELD] and not c[cla.RO]
+                                  and c[cla.FIELD] not in self.primaryKey + (OVFIELD,)]
+                    # the version trigger runs even if there is nothing else to set
+                    fields_str = ", ".join([f"{f} = %({f})s" for f in upd_fields]) or f"{OVFIELD} = {OVFIELD}"
+                    script = f"UPDATE {self.table} SET {fields_str} WHERE {whereVersion} RETURNING {returningKey};"
+                    upd_args = {self.columns[i][cla.FIELD]: record[i] for i in range(len(self.columns))
+                                if self.columns[i][cla.FIELD] in upd_fields}
+                    upd_args |= record.pkey | {OVFIELD: record.object_version}
                     cur.execute(script, upd_args)
                     res = cur.fetchone()
-                    if res:
-                        saved.append((row_idx, record, res)) 
+                    if res is None:
+                        raise PyAppDBConcurrencyError()
+                    saved.append((row_idx, record, record.pkey))
                 # --- INSERT ---
                 elif record.is_new:
                     fieldList = [i[cla.FIELD] for i in self.columns if i[cla.FIELD] and not i[cla.RO]]
@@ -532,27 +523,27 @@ class TableModel(QueryModel):
                     # an empty field takes the column default of the table, NULL if it has none
                     placeholders = ", ".join(["DEFAULT" if ins_args.get(f) is None else f"%({f})s"
                                               for f in fieldList])
-                    fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns]
-                       + list(self.primaryKey) + [OVFIELD])
-
-                    script = f"INSERT INTO {self.table} ({fields_str}) VALUES ({placeholders}) RETURNING {fieldsback};"
-                    
+                    script = f"INSERT INTO {self.table} ({fields_str}) VALUES ({placeholders}) RETURNING {returningKey};"
                     cur.execute(script, ins_args)
-                    res = cur.fetchone()
-                    if res:
-                        saved.append((row_idx, record, res)) 
-
-            ok = True    # ultima riga dentro il with
-        if not ok:
-            return False
+                    res = cast(tuple, cur.fetchone())   # an INSERT ... RETURNING always returns its row
+                    saved.append((row_idx, record, dict(zip(self.primaryKey, res))))
+            # *** READ BACK ***
+            # RETURNING would miss what AFTER triggers write on the same row,
+            # a SELECT in the same transaction sees the final values and version
+            fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns] + [OVFIELD])
+            readBack = f"SELECT {fieldsback} FROM {self.table} WHERE {whereKey};"
+            values: list[tuple] = []
+            for _, _, pkey in saved:
+                cur.execute(readBack, pkey)
+                values.append(cast(tuple, cur.fetchone()))
+        # the transaction is committed: update the records
         n = len(self.columns)
         self.toDelete.clear()
-        for row_idx, record, res in saved:
+        for (row_idx, record, pkey), res in zip(saved, values):
             for i in range(n):
-                dict.__setitem__(record, i, res[i])      # evita il tracciamento di Record.__setitem__
-            if record.is_new:
-                record.pkey = {k: res[n + i] for i, k in enumerate(self.primaryKey)}
-                record.is_new = False
+                dict.__setitem__(record, i, res[i])      # bypass the change tracking of Record.__setitem__
+            record.pkey = pkey
+            record.is_new = False
             record.object_version = res[-1]
             record.is_modified = False
             self.dataChanged.emit(self.index(row_idx, 0), self.index(row_idx, n - 1))
@@ -567,9 +558,13 @@ class TableModel(QueryModel):
 
     def clearData(self) -> None:
         "Clear all the content of model"
+        # views and mappers must know the rows are gone before any new insert
+        self.beginResetModel()
         self.dataSet.clear()
         self.toDelete.clear()
         self.isDirty = False
+        self.endResetModel()
+        self.rowCountChanged.emit(0)
 
     def insertRows(self, position: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
         "Insert rows in model"
@@ -671,8 +666,6 @@ class TableModel(QueryModel):
                     if pkey_dict[self.primaryKey[0]] is None:
                         continue
                     new_record = Record(data_dict, pkey_dict, record[ovcol])
-                    new_record['master_row'] = record[1]
-                    new_record.is_modified = False
                     self.dataSet.append(new_record)
             finally:
                 self.endResetModel()
