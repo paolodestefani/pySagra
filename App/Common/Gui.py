@@ -207,3 +207,28 @@ def wait_cursor_context():
         yield
     finally:
         QGuiApplication.restoreOverrideCursor()
+
+
+def remove_wait_cursor() -> None:
+    "Remove the wait cursor set by a context, unless something else already removed it"
+    cursor = QGuiApplication.overrideCursor()
+    if cursor is not None and cursor.shape() == Qt.CursorShape.WaitCursor:
+        QGuiApplication.restoreOverrideCursor()
+
+
+@contextmanager
+def no_wait_cursor_context():
+    """
+    Show the normal cursor while a message waits for the user: nested contexts
+    can stack wait cursors, they are removed and then put back so that each
+    context can remove its own as usual
+    """
+    cursors: list[QCursor] = []
+    while (current := QGuiApplication.overrideCursor()) is not None and len(cursors) < 100:
+        cursors.append(QCursor(current))
+        QGuiApplication.restoreOverrideCursor()
+    try:
+        yield
+    finally:
+        for cursor in reversed(cursors):
+            QGuiApplication.setOverrideCursor(cursor)

@@ -28,27 +28,33 @@ This module shows database and report exceptions to the user
 """
 
 # standard library
+import logging
 from contextlib import contextmanager
 from typing import Generator
 from typing import Any
 
 # PySide6
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QCursor
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QMessageBox
 
 # application modules
 from App import session
 from App.Database.Exceptions import PyAppDBConnectionError
 from App.Database.Exceptions import PyAppDBError
-from App.Report import ReportException, ReportPrintError, ReportNoDataError, ReportCreationError, ReportXMLParseError
-from App.Report import OrderReportException, NoOrderReportParameters, NotEnoughtReportParameters
+from App.Report import ReportException, ReportNoDataError
+from App.Report import NoOrderReportParameters, NotEnoughtReportParameters
 
 from App.Database.Connect import appconn
+from App.Common.Gui import no_wait_cursor_context
+from App.Common.Gui import remove_wait_cursor
 from App.Common.L10n import _tr
 from App.Widget.MessageBox import MessageBoxCritical
 
+
+# logger
+logger = logging.getLogger(__name__)
 
 # main application and postgres error codes and messages mapping
 error_code_messages = {
@@ -91,122 +97,126 @@ error_code_messages = {
 
 # Context manager to capture exceptions in GUI operations and show critical dialogs
 
+def _rollback() -> None:
+    "Reset the transaction state of the shared connection, it can already be closed"
+    try:
+        appconn.rollback()
+    except Exception:
+        logger.exception("Rollback failed after a database error")
+
+
+def _showError(parent_widget: Any,
+               operation_title: str,
+               messages: dict[str, str] | None,
+               error: Exception) -> None:
+    "Show an error caught by gui_exception_context"
+    match error:
+        case PyAppDBConnectionError():
+            msg = error_code_messages.get(error.code, _tr("PGError", "Connection error"))
+            MessageBoxCritical(parent_widget,
+                               _tr("MessageDialog", "Database connection"),
+                               error.code,
+                               msg,
+                               error.detail)
+        case PyAppDBError():
+            # message of the form for this constraint or code
+            messages = messages or {}
+            user_msg = messages.get(error.constraint) if error.constraint else None
+            user_msg = user_msg or messages.get(error.code)
+            # Map standard PostgreSQL SQLSTATE error codes to clear messages
+            msg = error_code_messages.get(error.code, _tr("PGError", "Undefined database error"))
+            if user_msg:
+                QMessageBox.warning(parent_widget, _tr('MessageDialog', 'Warning'), user_msg)
+            elif error.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008', 'CCER'):
+                # non critical errors are translated here, critical ones stay in English
+                QMessageBox.warning(parent_widget,
+                                    _tr('MessageDialog', 'Warning'),
+                                    _tr("PGError", msg))
+            elif "item_grid_position" in str(error):
+                QMessageBox.warning(parent_widget,
+                                    _tr('MessageDialog', 'Warning'),
+                                    _tr('MessageError', "Is not possible to set the same row and column of a salable item"))
+            else:
+                # Display the custom PySide6 critical dialog box
+                MessageBoxCritical(parent_widget, operation_title, error.code, msg, error.message)
+        case _:
+            # Handle any other unexpected exceptions gracefully
+            MessageBoxCritical(parent_widget, operation_title, _tr("Error", "Unexpected error"), str(error))
+
+
 @contextmanager
 def gui_exception_context(parent_widget: Any,
                           operation_title: str,
                           messages: dict[str, str] | None = None
                           ) -> Generator[None, None, None]:
     """
-    Catches PyAppDBError exceptions, translates PostgreSQL SQLSTATE codes 
-    into user-friendly localized messages, and displays a critical dialog.
+    Shows the wait cursor, catches PyAppDBError exceptions, translates PostgreSQL
+    SQLSTATE codes into user-friendly localized messages, and displays a critical dialog.
     messages maps a constraint name or a SQLSTATE code to a translated
     message for the user of a form, shown as a warning; the constraint
     name is checked first because many constraints share the same code
     """
     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     try:
-        try:
-            yield
-            
-            # If the execution is successful, restore the cursor here
-            if QGuiApplication.overrideCursor() is not None:
-                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                    QGuiApplication.restoreOverrideCursor()
-                    
-        except Exception:
-            # reset the cursor in case of any exception and raise it for subsequent management
-            if QGuiApplication.overrideCursor() is not None:
-                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                    QGuiApplication.restoreOverrideCursor()
-            raise
-        
-    except PyAppDBConnectionError as er:
-        msg = error_code_messages.get(er.code, _tr("PGError", "Connection error"))
-        MessageBoxCritical(parent_widget,
-                           _tr("MessageDialog", "Database connection"),
-                           er.code,
-                           msg,
-                           er.detail)
-        
-    except PyAppDBError as er:
-        # message of the form for this constraint or code
-        messages = messages or {}
-        user_msg = messages.get(er.constraint) if er.constraint else None
-        user_msg = user_msg or messages.get(er.code)
-        if user_msg:
-            QMessageBox.warning(parent_widget, _tr('MessageDialog', 'Warning'), user_msg)
-            appconn.rollback()
-            return
-        # Map standard PostgreSQL SQLSTATE error codes to clear messages
-        msg = error_code_messages.get(er.code, _tr("PGError", "Undefined database error"))
-        if er.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008', 'CCER'):
-            # non critical errors are translated here, critical ones stay in English
-            QMessageBox.warning(parent_widget,
-                                 _tr('MessageDialog', 'Warning'),
-                                 _tr("PGError", msg))
-        elif "item_grid_position" in str(er):
-            QMessageBox.warning(parent_widget,
-                                 _tr('MessageDialog', 'Warning'),
-                                 _tr('MessageError', "Is not possible to set the same row and column of a salable item"))  
-        else:
-            # Display the custom PySide6 critical dialog box
-            MessageBoxCritical(parent_widget, operation_title, er.code, msg, er.message)
-        # Safe fallback: rollback the shared connection to reset the transaction state
-        appconn.rollback()
-        
-    except Exception as ex:
-        # Handle any other unexpected exceptions gracefully
-        MessageBoxCritical(parent_widget, operation_title, _tr("Error", "Unexpected error"), str(ex))
+        yield
+    except Exception as error:
+        remove_wait_cursor()
+        if isinstance(error, PyAppDBError) and not isinstance(error, PyAppDBConnectionError):
+            # reset the transaction before the message: Abort can close the connection
+            _rollback()
+        with no_wait_cursor_context():  # outer contexts can have their own wait cursor
+            _showError(parent_widget, operation_title, messages, error)
+    except BaseException:
+        remove_wait_cursor()
+        raise
+    else:
+        remove_wait_cursor()
+
+
+def _showReportError(parent_widget: Any, error: Exception) -> None:
+    "Show an error caught by report_exception_context"
+    match error:
+        case NoOrderReportParameters():
+            msg = f"{_tr('ReportException', 'No print parameters available for computer name')}: {session['hostname']}"
+            QMessageBox.information(parent_widget,
+                                    _tr('MessageDialog', "Error"),
+                                    msg)
+        case NotEnoughtReportParameters():
+            msg = _tr('ReportException', 'Not enought print parameters available')
+            QMessageBox.information(parent_widget,
+                                    _tr('MessageDialog', "Error"),
+                                    msg)
+        case ReportNoDataError():
+            QMessageBox.information(parent_widget,
+                                    _tr('MessageDialog', "Information"),
+                                    _tr('ReportException', "No data to render"))
+        case ReportException():
+            msg = f"{_tr('ReportException', 'Unhandled report exception')}: {error}"
+            QMessageBox.critical(parent_widget,
+                                 _tr('MessageDialog', "Critical"),
+                                 msg)
+        case _:
+            MessageBoxCritical(parent_widget,
+                               _tr("Error", "Report Error"),
+                               _tr("Error", "Unexpected error"),
+                               str(error))
 
 
 @contextmanager
 def report_exception_context(parent_widget: Any) -> Generator[None, None, None]:
     """
-    Gestisce le eccezioni legate alla generazione dei report, 
-    gestisce il WaitCursor e mostra i messaggi localizzati corretti.
+    Shows the wait cursor while a report is generated and shows the right
+    localized message for report errors
     """
     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     try:
-        try:
-            yield
-            
-            # Ripristino del cursore in caso di successo
-            if QGuiApplication.overrideCursor() is not None:
-                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                    QGuiApplication.restoreOverrideCursor()
-                    
-        except Exception:
-            # Ripristino del cursore in caso di qualsiasi eccezione prima del re-raise
-            if QGuiApplication.overrideCursor() is not None:
-                if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                    QGuiApplication.restoreOverrideCursor()
-            raise
-            
-    except NoOrderReportParameters:
-        msg = f"{_tr('ReportException', 'No print parameters available for computer name')}: {session['hostname']}"
-        QMessageBox.information(parent_widget,
-                                _tr('MessageDialog', "Error"),
-                                msg)
-        
-    except NotEnoughtReportParameters:
-        msg = _tr('ReportException', 'Not enought print parameters available')
-        QMessageBox.information(parent_widget, 
-                                _tr('MessageDialog', "Error"),
-                                msg)
-        
-    except ReportNoDataError:
-        QMessageBox.information(parent_widget, 
-                                _tr('MessageDialog', "Information"), 
-                                _tr('ReportException', "No data to render"))
-        
-    except ReportException as er:
-        msg = f"{_tr('ReportException', 'Unhandled report exception')}: {er}"
-        QMessageBox.critical(parent_widget, 
-                             _tr('MessageDialog', "Critical"),
-                             msg)
-        
-    except Exception as ex:
-        MessageBoxCritical(parent_widget, 
-                           _tr("Error", "Report Error"), 
-                           _tr("Error", "Unexpected error"), 
-                           str(ex))
+        yield
+    except Exception as error:
+        remove_wait_cursor()
+        with no_wait_cursor_context():  # outer contexts can have their own wait cursor
+            _showReportError(parent_widget, error)
+    except BaseException:
+        remove_wait_cursor()
+        raise
+    else:
+        remove_wait_cursor()

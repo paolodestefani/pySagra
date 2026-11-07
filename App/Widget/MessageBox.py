@@ -39,8 +39,6 @@ from typing import cast
 # PySide6
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QCursor
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QAbstractButton
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QDialog
@@ -50,6 +48,7 @@ from PySide6.QtWidgets import QWidget
 
 # application modules
 from App import session
+from App.Common.Gui import no_wait_cursor_context
 from App.Common.L10n import _tr
 from App.Ui.MessageDialog import Ui_MessageDialog
 
@@ -109,17 +108,8 @@ def MessageBoxCritical(parent,
     # Esc and the close button reject the dialog as Abort does: only the button counts
     clicked: list[QAbstractButton] = []
     dlg.ui.buttonBox.clicked.connect(clicked.append)
-    # nested contexts can stack wait cursors: remove them all while the message
-    # is open, then put them back so their contexts can remove them as usual
-    cursors: list[QCursor] = []
-    while (current := QGuiApplication.overrideCursor()) is not None and len(cursors) < 100:
-        cursors.append(QCursor(current))
-        QGuiApplication.restoreOverrideCursor()
-    try:
+    with no_wait_cursor_context():
         dlg.exec()
-    finally:
-        for cursor in reversed(cursors):
-            QGuiApplication.setOverrideCursor(cursor)
     aborted = bool(clicked) and dlg.ui.buttonBox.standardButton(clicked[-1]) == QDialogButtonBox.StandardButton.Abort
     if aborted:
         abortApplication()
