@@ -65,7 +65,6 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QStyledItemDelegate
 from PySide6.QtWidgets import QComboBox
-from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QSpinBox
 from PySide6.QtWidgets import QDoubleSpinBox
 from PySide6.QtWidgets import QLineEdit
@@ -91,7 +90,36 @@ from App.Widget.Dialog import SelectImageDialog
  
 
 
-class GenericDelegate(QStyledItemDelegate):
+def editorValue(editor: QWidget) -> Any:
+    "Return the value shown by an editor, for a combo box its position in the list"
+    if isinstance(editor, QComboBox):
+        return editor.currentIndex()
+    return editor.metaObject().userProperty().read(editor)
+
+
+class ChangeOnlyDelegate(QStyledItemDelegate):
+    """A delegate that writes to the model only if the user changed the value.
+    Qt commits the editor when the cell loses focus, even if nothing was typed,
+    and what an editor shows can differ from the model: a spin box shows zero
+    instead of NULL, a combo box can not show a value missing from its list.
+    Subclasses implement loadEditor and saveEditor"""
+
+    def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+        "Fill the editor with the model value"
+
+    def saveEditor(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+        "Write the editor value to the model"
+
+    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+        self.loadEditor(editor, index)
+        editor.setProperty('initialValue', editorValue(editor))
+
+    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+        if editorValue(editor) != editor.property('initialValue'):
+            self.saveEditor(editor, model, index)
+
+
+class GenericDelegate(ChangeOnlyDelegate):
     """A Delegate for view that automatically choose the editor type 
     based on the field type, and format the display of values"""
 
@@ -126,19 +154,19 @@ class GenericDelegate(QStyledItemDelegate):
                 option.text = str(value) if value is not None else ""
                 option.displayAlignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
 
-    def createEditor(self, 
+    def createEditor(self,  # type: ignore[override] 
                      parent: QWidget,
                      option: QStyleOptionViewItem,
                      index: QModelIndex | QPersistentModelIndex
-                     ) -> QWidget:
+                     ) -> QWidget | None:
         abstract_model = index.model()
         model = cast(QueryModel | TableModel, abstract_model)
         fieldType = cast(str, model.columns[index.column()][3])
         widget: QWidget | QSpinBox | QDateEdit | QDateTimeEdit|QDoubleSpinBox
         match fieldType:
             case 'bool':  
-                # empty QWidget as placeholder: actual toggling is done on click
-                return QWidget(parent)
+                # no editor: the model and the check indicator handle booleans
+                return None
             case 'int':
                 widget = QSpinBox(parent)
                 widget.setRange(0, 999999999)
@@ -150,12 +178,12 @@ class GenericDelegate(QStyledItemDelegate):
             case 'decimal':
                 widget = QDoubleSpinBox(parent)
                 widget.setDecimals(2)
-                widget.setRange(-999999999.0, 999999999.0) # Gestisce anche i negativi
+                widget.setRange(-999999999.0, 999999999.0)  # negative values too
                 return widget
             case _: 
                 return QLineEdit(parent)
 
-    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+    def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
             val = index.data(Qt.ItemDataRole.DisplayRole)
@@ -164,8 +192,6 @@ class GenericDelegate(QStyledItemDelegate):
             return
             
         match editor:
-            case QCheckBox() as cb:
-                cb.setChecked(bool(val))
             case QSpinBox() as sb:
                 sb.setValue(int(val))
             case QDateEdit() as de:
@@ -176,15 +202,11 @@ class GenericDelegate(QStyledItemDelegate):
                 dsb.setValue(float(val))
             case QLineEdit() as le:
                 le.setText(str(val))
-            case QWidget():  
-                pass
             case _:
                 raise TypeError(f"Unsupported editor type: {type(editor)}")
 
-    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+    def saveEditor(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         match editor:
-            case QCheckBox():
-                model.setData(index, editor.isChecked(), Qt.ItemDataRole.EditRole)
             case QSpinBox():
                 model.setData(index, editor.value(), Qt.ItemDataRole.EditRole)
             case QDateEdit():
@@ -195,12 +217,6 @@ class GenericDelegate(QStyledItemDelegate):
                 model.setData(index, editor.value(), Qt.ItemDataRole.EditRole)
             case QLineEdit():
                 model.setData(index, editor.text(), Qt.ItemDataRole.EditRole)
-            case QWidget():  
-                # fixed getting the current value for the boolean toggle
-                current_val = index.data(Qt.ItemDataRole.EditRole)
-                if current_val is None:
-                    current_val = index.data(Qt.ItemDataRole.DisplayRole)
-                model.setData(index, not bool(current_val), Qt.ItemDataRole.EditRole)
             case _:
                 raise TypeError(f"Unsupported editor type: {type(editor)}")
 
@@ -260,7 +276,7 @@ class ColorDelegate(QStyledItemDelegate):
         return None
 
 
-class ColorComboDelegate(QStyledItemDelegate):
+class ColorComboDelegate(ChangeOnlyDelegate):
     "Color delegate select from combobox"
 
     def __init__(self, parent: QWidget, colors: list[tuple[str, str]]) -> None:
@@ -272,30 +288,25 @@ class ColorComboDelegate(QStyledItemDelegate):
                      option: QStyleOptionViewItem,
                      index: QModelIndex|QPersistentModelIndex
                      ) -> QWidget:
-        color = QColor(index.model().data(index, Qt.ItemDataRole.DisplayRole))
-        if not color.isValid():
-            color = QColor(QColorConstants.White)
         cb = ColorComboBox(parent)
         cb.setColorList(self.colors)
         return cb
 
-    def setEditorData(self, 
+    def loadEditor(self, 
                       editor: QWidget,
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
-        if not index.data():
-            return
         color_editor = cast(ColorComboBox, editor)
-        cbi = color_editor.findData(index.data())
-        color_editor.setCurrentIndex(cbi if cbi >= 0 else 0)  # can be -1 on New
+        value = index.data()
+        color_editor.setCurrentIndex(color_editor.findData(QColor(value)) if value else -1)
 
-    def setModelData(self, 
+    def saveEditor(self, 
                      editor: QWidget,
                      model: QAbstractItemModel,
                      index: QModelIndex|QPersistentModelIndex
                      ) -> None:
         ccb = cast(ColorComboBox, editor)
-        model.setData(index, ccb.currentData(Qt.ItemDataRole.UserRole), Qt.ItemDataRole.EditRole)
+        model.setData(index, ccb.modelDataStr, Qt.ItemDataRole.EditRole)
 
     def paint(self, 
             painter: QPainter,
@@ -356,11 +367,11 @@ class ImageDelegate(QStyledItemDelegate):
             option.decorationAlignment = Qt.AlignmentFlag.AlignCenter
             option.displayAlignment = Qt.AlignmentFlag.AlignCenter
 
-    def createEditor(self,
+    def createEditor(self,  # type: ignore[override]
                      parent: QWidget,
                      option: QStyleOptionViewItem,
                      index: QModelIndex | QPersistentModelIndex
-                     ) -> QWidget:
+                     ) -> QWidget | None:
         dd = SelectImageDialog(parent)
         ba = index.data(Qt.ItemDataRole.DisplayRole)
         if ba:
@@ -377,11 +388,8 @@ class ImageDelegate(QStyledItemDelegate):
                 px.save(buf, "PNG")
             index.model().setData(index, new_ba, Qt.ItemDataRole.EditRole)
             
-        # We create a dummy QWidget, but never display it.
-        # This is only to comply with the method signature required by PySide6 and Mypy.
-        dummy = QWidget(parent)
-        dummy.hide()
-        return dummy
+        # no editor: the dialog already wrote the image, an editor would be committed as NULL
+        return None
 
 
     # setEditorData and setModelData are NO longer needed and are removed altogether
@@ -404,15 +412,13 @@ class HideTextDelegate(QStyledItemDelegate):
         # center text
         option.displayAlignment = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
-    def createEditor(self, 
+    def createEditor(self,  # type: ignore[override] 
                      parent: QWidget, 
                      option: QStyleOptionViewItem, 
                      index: QModelIndex | QPersistentModelIndex
-                     ) -> QWidget:
-        # Returns an invisible widget to block editing
-        dummy = QWidget(parent)
-        dummy.hide()
-        return dummy
+                     ) -> QWidget | None:
+        "Important, otherwise an editor is created if the user clicks in this cell."
+        return None
 
      # setEditorData and setModelData are NO longer needed and are removed altogether
 
@@ -423,13 +429,13 @@ class BooleanDelegate(QStyledItemDelegate):
     Actually obsolete, because the same can be achieved with GenericDelegate
     that used model data end check state role"""
 
-    def createEditor(self, 
+    def createEditor(self,  # type: ignore[override] 
                      parent: QWidget, 
                      option: QStyleOptionViewItem,
                      index: QModelIndex|QPersistentModelIndex
-                     ) -> QWidget:
+                     ) -> QWidget | None:
         "Important, otherwise an editor is created if the user clicks in this cell."
-        return QWidget(parent)  # dummy editor, not used
+        return None
 
     def paint(self, 
           painter: QPainter,
@@ -484,10 +490,10 @@ class BooleanDelegate(QStyledItemDelegate):
             return False
 
         if event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonRelease, QEvent.Type.MouseButtonDblClick):
-            mouse_event = cast(QMouseEvent, event) # Importa cast da typing per Mypy
+            mouse_event = cast(QMouseEvent, event)
             
             if mouse_event.button() != Qt.MouseButton.LeftButton or \
-            not self.getCheckBoxRect(option).contains(mouse_event.pos()):
+            not self.getCheckBoxRect(option).contains(mouse_event.position().toPoint()):
                 return False
             
             if event.type() == QEvent.Type.MouseButtonRelease:
@@ -512,7 +518,7 @@ class BooleanDelegate(QStyledItemDelegate):
         model.setData(index, not bool(current_val), Qt.ItemDataRole.EditRole)
 
 
-class ItemsDelegate(QStyledItemDelegate):
+class ItemsDelegate(ChangeOnlyDelegate):
     "A delegate (combo box) for choose a value from a list"
 
     def __init__(self, parent: QWidget, items: list[str]) -> None:
@@ -547,18 +553,12 @@ class ItemsDelegate(QStyledItemDelegate):
         cb.addItems(self.data)
         return cb
 
-    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+    def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
         val = index.data(Qt.ItemDataRole.EditRole)
-        if val is None:
-            val = index.data(Qt.ItemDataRole.DisplayRole)
-            
-        if val is None:
-            return
-            
         cb = cast(QComboBox, editor)
-        cb.setCurrentText(str(val))
+        cb.setCurrentIndex(cb.findText(str(val) if val is not None else ''))
 
-    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+    def saveEditor(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         cb = cast(QComboBox, editor)
         model.setData(index, cb.currentText(), Qt.ItemDataRole.EditRole)
 
@@ -580,7 +580,7 @@ class PrintersDelegate(ItemsDelegate):
         return cb
 
 
-class RelationDelegate(QStyledItemDelegate):
+class RelationDelegate(ChangeOnlyDelegate):
     "A delegate (combo box) for referenced table fields"
 
     def __init__(self, parent: QWidget, function: Callable, null: bool = False ) -> None:
@@ -631,20 +631,12 @@ class RelationDelegate(QStyledItemDelegate):
             cb.addItem(str(v), k) # v is the description, k is the ID/key saved as userData
         return cb
 
-    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
-        val = index.data(Qt.ItemDataRole.EditRole)
-        if val is None:
-            return
-            
+    def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
         cb = cast(QComboBox, editor)
         # find the correct item by comparing the ID stored as UserData
-        idx = cb.findData(val)
-        if idx != -1:
-            cb.setCurrentIndex(idx)
-        else:
-            cb.setCurrentText(str(self.data.get(val, '')))
+        cb.setCurrentIndex(cb.findData(index.data(Qt.ItemDataRole.EditRole)))
 
-    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+    def saveEditor(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         cb = cast(QComboBox, editor)
         # save the real ID (currentData) in the template, not the description string
         model.setData(index, cb.currentData(), Qt.ItemDataRole.EditRole)
@@ -654,7 +646,7 @@ class RelationDelegate(QStyledItemDelegate):
         return self.data.get(val)
 
 
-class IntegerDelegate(QStyledItemDelegate):
+class IntegerDelegate(ChangeOnlyDelegate):
     "A delegate for integer values"
 
     def __init__(self, parent: QWidget, bold=False):
@@ -687,7 +679,7 @@ class IntegerDelegate(QStyledItemDelegate):
         sb.setMaximum(999999999)
         return sb
 
-    def setEditorData(self, 
+    def loadEditor(self, 
                       editor: QWidget, 
                       index: QModelIndex|QPersistentModelIndex
                       ) -> None:
@@ -696,7 +688,7 @@ class IntegerDelegate(QStyledItemDelegate):
         sb = cast(QSpinBox, editor)
         sb.setValue(index.data())
 
-    def setModelData(self, 
+    def saveEditor(self, 
                      editor: QWidget,
                      model: QAbstractItemModel,
                      index: QModelIndex|QPersistentModelIndex
@@ -705,7 +697,7 @@ class IntegerDelegate(QStyledItemDelegate):
         model.setData(index, sb.value())
 
 
-class DecimalDelegate(QStyledItemDelegate):
+class DecimalDelegate(ChangeOnlyDelegate):
     "A delegate for decimal values or currency values"
 
     def __init__(self, 
@@ -753,14 +745,14 @@ class DecimalDelegate(QStyledItemDelegate):
         sb.setMaximum(self.maximum)
         return sb
 
-    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+    def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
         val = index.data(Qt.ItemDataRole.EditRole)
         if val is None:
             return
         dsb = cast(QDoubleSpinBox, editor)
         dsb.setValue(float(val))
 
-    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+    def saveEditor(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         dsb = cast(QDoubleSpinBox, editor)
         model.setData(index, dsb.value(), Qt.ItemDataRole.EditRole)
 
@@ -813,25 +805,22 @@ class NewStockDelegate(QuantityDelegate):
         # keeps the cell visually blank when not in edit mode
         option.text = ""        
 
-    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
-        val = index.data(Qt.ItemDataRole.EditRole)
-        if val is None:
-            return
-            
+    def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+        # the cell has no value of its own: start from the current stock
         model = index.model()
         stock_index = model.index(index.row(), self.STOCK)
-        
+
         # retrieve the value using EditRole and maintain consistency with Decimal/float
         stock_data = model.data(stock_index, Qt.ItemDataRole.EditRole)
         new_loads = float(stock_data) if stock_data is not None else 0.0
-        
+
         dsb = cast(QDoubleSpinBox, editor)
         dsb.setValue(new_loads)
 
-    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+    def saveEditor(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         dsb = cast(QDoubleSpinBox, editor)
         editor_value = dsb.value()
-        
+
         stock_diff = Decimal(str(editor_value))
         
         # 1. Update loads
@@ -905,7 +894,7 @@ class StockLevelDelegate(QuantityDelegate):
             option.palette.setColor(QPalette.ColorRole.Text, self.outOfStockColor)
 
 
-class ActionDelegate(QStyledItemDelegate):
+class ActionDelegate(ChangeOnlyDelegate):
     "A custom delegate for action code/description"
 
     def __init__(self, parent: QWidget) -> None:
@@ -942,19 +931,11 @@ class ActionDelegate(QStyledItemDelegate):
             cb.addItem(f"[{k}] {v}", k)
         return cb
 
-    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
-        val = index.data(Qt.ItemDataRole.EditRole)
-        if val is None:
-            return
-        
+    def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
         cb = cast(QComboBox, editor)
-        idx = cb.findData(val)
-        if idx != -1:
-            cb.setCurrentIndex(idx)
-        else:
-            cb.setCurrentText(self.action.get(val, ''))
+        cb.setCurrentIndex(cb.findData(index.data(Qt.ItemDataRole.EditRole)))
 
-    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+    def saveEditor(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         cb = cast(QComboBox, editor)
         model.setData(index, cb.currentData(), Qt.ItemDataRole.EditRole)
 
@@ -995,12 +976,12 @@ class GenericReadOnlyDelegate(QStyledItemDelegate):
 class ReadOnlyDelegate(QStyledItemDelegate):
     "Read only delegate"
 
-    def createEditor(self, 
+    def createEditor(self,  # type: ignore[override] 
                      parent: QWidget,
                      option: QStyleOptionViewItem,
-                     index: QModelIndex|QPersistentModelIndex) -> QWidget:
+                     index: QModelIndex|QPersistentModelIndex) -> QWidget | None:
         "Important, otherwise an editor is created if the user clicks in this cell."
-        return QWidget(parent)
+        return None
     
     
 class TimeDelegate(QStyledItemDelegate):
@@ -1023,117 +1004,8 @@ class TimeDelegate(QStyledItemDelegate):
         option.displayAlignment = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
         
-class JasonDelegate(QStyledItemDelegate):
+class JasonDelegate(GenericDelegate):
     """A Delegate for view that use a  """
-
-    def initStyleOption(self, option: QStyleOptionViewItem, index: QModelIndex | QPersistentModelIndex) -> None:
-        # let Qt load the basic model data (including fonts, colors, and selection)
-        super().initStyleOption(option, index)
-        
-        # retrieves the value to display
-        value = index.data(Qt.ItemDataRole.DisplayRole)
-        
-        # format text, alignment, and native checkboxes based on data type
-        match value:
-            case bool():  # boolean check must precede int (bool is a subclass of int)
-                option.text = ""
-                option.features |= QStyleOptionViewItem.ViewItemFeature.HasCheckIndicator
-                option.checkState = Qt.CheckState.Checked if value else Qt.CheckState.Unchecked
-                option.displayAlignment = Qt.AlignmentFlag.AlignCenter
-            case int():
-                option.text = str(value)
-                option.displayAlignment = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
-            case QDate() | QDateTime() | QTime():
-                option.text = session['qlocale'].toString(value, QLocale.FormatType.ShortFormat)
-                option.displayAlignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-            case Decimal():
-                q_locale = session['qlocale']
-                thousand_sep = q_locale.groupSeparator()
-                decimal_sep = q_locale.decimalPoint()
-                raw_formatted = f"{float(value or 0.0):,.2f}"
-                option.text = raw_formatted.replace(",", "X").replace(".", decimal_sep).replace("X", thousand_sep)
-                option.displayAlignment = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
-            case _:
-                option.text = str(value) if value is not None else ""
-                option.displayAlignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-
-    def createEditor(self, 
-                     parent: QWidget,
-                     option: QStyleOptionViewItem,
-                     index: QModelIndex | QPersistentModelIndex
-                     ) -> QWidget:
-        abstract_model = index.model()
-        model = cast(QueryModel | TableModel, abstract_model)
-        fieldType = cast(str, model.columns[index.column()][3])
-        widget: QWidget | QSpinBox | QDateEdit | QDateTimeEdit|QDoubleSpinBox
-        match fieldType:
-            case 'bool':  
-                # empty QWidget as placeholder: actual toggling is done on click
-                return QWidget(parent)
-            case 'int':
-                widget = QSpinBox(parent)
-                widget.setRange(0, 999999999)
-                return widget
-            case 'date':
-                return QDateEdit(parent)
-            case 'datetime':
-                return QDateTimeEdit(parent)
-            case 'decimal':
-                widget = QDoubleSpinBox(parent)
-                widget.setDecimals(2)
-                widget.setRange(-999999999.0, 999999999.0) # Gestisce anche i negativi
-                return widget
-            case _: 
-                return QLineEdit(parent)
-
-    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
-        val = index.data(Qt.ItemDataRole.EditRole)
-        if val is None:
-            val = index.data(Qt.ItemDataRole.DisplayRole)
-            
-        if val is None:
-            return
-            
-        match editor:
-            case QCheckBox() as cb:
-                cb.setChecked(bool(val))
-            case QSpinBox() as sb:
-                sb.setValue(int(val))
-            case QDateEdit() as de:
-                de.setDate(val)
-            case QDateTimeEdit() as dte:
-                dte.setDateTime(val)
-            case QDoubleSpinBox() as dsb:
-                dsb.setValue(float(val))
-            case QLineEdit() as le:
-                le.setText(str(val))
-            case QWidget():  
-                pass
-            case _:
-                raise TypeError(f"Unsupported editor type: {type(editor)}")
-
-    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
-        match editor:
-            case QCheckBox():
-                model.setData(index, editor.isChecked(), Qt.ItemDataRole.EditRole)
-            case QSpinBox():
-                model.setData(index, editor.value(), Qt.ItemDataRole.EditRole)
-            case QDateEdit():
-                model.setData(index, editor.date(), Qt.ItemDataRole.EditRole)
-            case QDateTimeEdit():
-                model.setData(index, editor.dateTime(), Qt.ItemDataRole.EditRole)
-            case QDoubleSpinBox():
-                model.setData(index, editor.value(), Qt.ItemDataRole.EditRole)
-            case QLineEdit():
-                model.setData(index, editor.text(), Qt.ItemDataRole.EditRole)
-            case QWidget():  
-                # fixed getting the current value for the boolean toggle
-                current_val = index.data(Qt.ItemDataRole.EditRole)
-                if current_val is None:
-                    current_val = index.data(Qt.ItemDataRole.DisplayRole)
-                model.setData(index, not bool(current_val), Qt.ItemDataRole.EditRole)
-            case _:
-                raise TypeError(f"Unsupported editor type: {type(editor)}")
 
 
 class HostNameDelegate(QStyledItemDelegate):
