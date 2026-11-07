@@ -382,7 +382,7 @@ class TableModel(QueryModel):
         # subclasses must define this properties
         self.table: str | None = None # table or view name - string, subclass must define this
         self.primaryKey: tuple[str, ...] = () # primary key fields name - sequence, subclass must define this
-        self.automaticPKey = False  # set pkey filds at DEFAULT value on insert
+        self.automaticPKey = False  # the primary key is left out of INSERT: the identity fills it
         self.newRecordDefault: dict = {} # a record dictionary with default values for some field on insert
         self.isDirty = False # setted on data changed
         self.isEditable = True # used in forms
@@ -462,15 +462,6 @@ class TableModel(QueryModel):
                 cur.execute(f"DELETE FROM {self.table} WHERE {whereVersion};", args)
                 if cur.rowcount == 0:
                     raise PyAppDBConcurrencyError()
-            if self.automaticPKey and self.toDelete:
-                # after a delete, bring the identity back to the current maximum
-                # so that the last deleted ids are reused
-                table = self.table
-                field = self.primaryKey[0]
-                script = f"""
-                SELECT setval(pg_get_serial_sequence('{table}', '{field}'), COALESCE((SELECT max({field}) FROM {table}), 1),
-                (SELECT max({field}) IS NOT NULL FROM {table}));"""
-                cur.execute(script)
             # *** UPDATE and INSERT ***
             # loop through all records, if is_new is True do insert, if is_modified is True do update, 
             # if both are False do nothing

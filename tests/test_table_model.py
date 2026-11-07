@@ -41,6 +41,9 @@ class FakeCursor:
             self._result = (args['code'],)
             # an AFTER trigger rewrites the row: one more version and a changed value
             self._row = (args['code'], args['description'] + ' by trigger', args['object_version'] + 2)
+        elif script.startswith('INSERT'):
+            self._result = ('N',)
+            self._row = ('N', args.get('description'), 0)
         elif script.startswith('SELECT'):
             self._result = self._row
 
@@ -111,13 +114,17 @@ class SubmitAllTest(unittest.TestCase):
             self.submit(model, 0)
         self.assertEqual(len(model.toDelete), 1)
 
-    def test_identity_realigned_only_after_a_delete(self) -> None:
+    def test_identity_is_never_realigned(self) -> None:
+        "The identity runs freely: no setval, the key is left out of the INSERT"
         model = Model()
         model.automaticPKey = True
-        model.setData(model.index(0, 1), 'changed')
-        self.assertFalse(any('setval' in script for script, _ in self.submit(model, 1).statements))
-        model.removeRows(0, 1)
-        self.assertTrue(any('setval' in script for script, _ in self.submit(model, 1).statements))
+        model.insertRows(0, 1)
+        model.setData(model.index(0, 1), 'new')
+        model.removeRows(1, 1)
+        statements = [script for script, _ in self.submit(model, 1).statements]
+        self.assertFalse(any('setval' in s for s in statements))
+        insert = next(s for s in statements if s.startswith('INSERT'))
+        self.assertTrue(insert.startswith('INSERT INTO test (description) VALUES'))
 
 
 class ClearDataTest(unittest.TestCase):
