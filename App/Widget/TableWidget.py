@@ -54,9 +54,6 @@ class TableWidgetItem(QTableWidgetItem):
         else:
             self._data = None
 
-    def flags(self) -> Qt.ItemFlag:
-        return Qt.ItemFlag.ItemIsEditable
-
     def data(self, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
         if role == Qt.ItemDataRole.DisplayRole:
             return self._data
@@ -106,16 +103,21 @@ class TableWidgetDragRows(QTableWidget):
                 for column_index, column_data in enumerate(data):
                     self.setItem(row_index, column_index, column_data)
             event.accept()
+            # select the moved rows, self.item() returns copies
+            self.clearSelection()
             for row_index in range(len(rows_to_move)):
-                self.item(drop_row + row_index, 0).setSelected(True)
-                self.item(drop_row + row_index, 1).setSelected(True)
+                for column_index in range(self.columnCount()):
+                    item = super().item(drop_row + row_index, column_index)
+                    if item is not None:
+                        item.setSelected(True)
         super().dropEvent(event)
 
     def drop_on(self, event: QDropEvent) -> int:
-        index = self.indexAt(event.pos())
+        pos = event.position().toPoint()
+        index = self.indexAt(pos)
         if not index.isValid():
             return self.rowCount()
-        return index.row() + 1 if self.is_below(event.pos(), index) else index.row()
+        return index.row() + 1 if self.is_below(pos, index) else index.row()
 
     def is_below(self, pos: QPoint, index: QModelIndex) -> bool:
         rect = self.visualRect(index)
