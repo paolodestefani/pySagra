@@ -34,6 +34,7 @@ import logging
 # PySide6
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QItemSelectionModel
+from PySide6.QtCore import QModelIndex
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
@@ -131,51 +132,52 @@ class ToolbarForm(FormIndexManager):
         self.ui.pushButtonRemove.clicked.connect(self.remove)
 
     def addChild(self) -> None:
-        "Add child item to current"
-        index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
-        model = self.ui.treeViewMenuItems.model()
-        if model.columnCount(index) == 0:
-            if not model.insertColumn(0, index):
-                return
-        if not model.insertRow(0, index):
-            return
-        for column in range(model.columnCount(index)):
-            child = model.index(0, column, index)
-            model.setData(child, "[No data]", Qt.ItemDataRole.EditRole)
-            if model.headerData(column, Qt.Orientation.Horizontal) is None:
-                model.setHeaderData(column, Qt.Orientation.Horizontal, "[No header]", Qt.ItemDataRole.EditRole)
-
-        self.ui.treeViewMenuItems.selectionModel().setCurrentIndex(model.index(0, 0, index),
-                                                                   QItemSelectionModel.SelectionFlag.ClearAndSelect)
+        "Add an item under the current one, as its first child"
+        view = self.ui.treeViewMenuItems
+        index = view.selectionModel().currentIndex()
+        if index.isValid():
+            index = index.sibling(index.row(), 0)
+        self._insertItem(0, index)
+        view.expand(index)
 
     def add(self) -> None:
-        "Add element"
+        "Add an item after the current one, at the top level when nothing is selected"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
+        if index.isValid():
+            self._insertItem(index.row() + 1, index.parent())
+        else:
+            self._insertItem(self.ui.treeViewMenuItems.model().rowCount(), index)
+
+    def _insertItem(self, row: int, parent: QModelIndex) -> None:
+        "Insert an item with sorting after the previous one, then edit its code"
         model = self.ui.treeViewMenuItems.model()
-        if not model.insertRow(index.row() + 1, index.parent()):
+        if not model.insertRow(row, parent):
             return
-        for column in range(model.columnCount(index.parent())):
-            child = model.index(index.row() + 1, column, index.parent())
-            model.setData(child, "[No data]", Qt.ItemDataRole.EditRole)
-            if model.headerData(column, Qt.Orientation.Horizontal) is None:
-                model.setHeaderData(column, Qt.Orientation.Horizontal, "[No header]", Qt.ItemDataRole.EditRole)
+        previous = model.index(row - 1, tbt.SORTING, parent).data() if row > 0 else 0
+        model.setData(model.index(row, tbt.SORTING, parent), (previous or 0) + 1)
+        model.setData(model.index(row, tbt.ITEMTYPE, parent), 'T')
+        child = model.index(row, tbt.CHILD, parent)
+        self.ui.treeViewMenuItems.selectionModel().setCurrentIndex(child, QItemSelectionModel.SelectionFlag.ClearAndSelect)
+        self.ui.treeViewMenuItems.edit(child)
 
     def remove(self) -> None:
-        "Remove element"
+        "Remove the current item with its subitems"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
-        model = self.ui.treeViewMenuItems.model()
-        if (model.removeRow(index.row(), index.parent())):
-            pass
+        if index.isValid():
+            self.ui.treeViewMenuItems.model().removeRow(index.row(), index.parent())
 
     def mapperIndexChanged(self, row: int) -> None:
-        "Make uneditable system profiles"
+        "Make uneditable system toolbars"
         super().mapperIndexChanged(row)
-        if self.ui.checkBoxSystem.isChecked():
-            self.ui.lineEditCode.setReadOnly(True)
-            self.ui.lineEditDescription.setReadOnly(True)
-        else:
-            self.ui.lineEditCode.setReadOnly(False)
-            self.ui.lineEditDescription.setReadOnly(False)
+        self._setSystem(self.ui.checkBoxSystem.isChecked())
+
+    def _setSystem(self, system: bool) -> None:
+        "Nothing of a system toolbar can be changed: code, description and items"
+        self.ui.lineEditCode.setReadOnly(system)
+        self.ui.lineEditDescription.setReadOnly(system)
+        self.ui.treeViewMenuItems.model().isEditable = not system
+        for button in (self.ui.pushButtonAddChild, self.ui.pushButtonAdd, self.ui.pushButtonRemove):
+            button.setEnabled(not system)
 
     def delete(self) -> None:
         "Delete current toolbar"
@@ -201,6 +203,7 @@ class ToolbarForm(FormIndexManager):
     def new(self) -> None:
         "Inser a new toolbar"
         super().new()
+        self._setSystem(False)   # a new toolbar is never a system one
         self.ui.lineEditCode.setEnabled(True)
         self.ui.lineEditCode.setFocus()
 

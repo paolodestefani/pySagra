@@ -78,6 +78,7 @@ class MenuItemTreeModel(TreeModel):
         self.parentFieldColumn = 0
         self.childField = "child"
         self.childFieldColumn = 1
+        self.addOrderBy('sorting')
         self.repr = 'Menu item tree model'
 
 
@@ -106,6 +107,7 @@ class ToolbarItemTreeModel(TreeModel):
         self.parentFieldColumn = 0
         self.childField = "child"
         self.childFieldColumn = 1
+        self.addOrderBy('sorting')
         self.repr = 'Toolbar item tree model'
 
 

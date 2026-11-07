@@ -91,25 +91,6 @@ ORDER BY t.sorting;"""
         return cur.fetchall()
 
 
-def get_menu_tree(menu: str) -> list[tuple]:
-    "Returns actions for given menu"
-    script = t"""
-SELECT 
-    child,
-    item_type,
-    coalesce(description, ''),
-    coalesce(action, '')
-FROM system.menu_toolbar m
-WHERE
-    company_id = system.pa_current_company()
-    AND parent = {menu}
-ORDER BY sorting;"""
-    # Unified context managers ensuring proper evaluation order
-    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
-        cur.execute(script)
-        return cur.fetchall()
-
-
 def set_user_theme(theme: str) -> None:
     "Update last used theme for user"
     script = t"""
