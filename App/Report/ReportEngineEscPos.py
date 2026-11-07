@@ -364,6 +364,9 @@ class Summary(BaseInlineRenderer):
             if self.last_value == record[self.on_related_field]:
                 return
             self.last_value = record[self.on_related_field]
+        # NULL values are not part of a sum, minimum, maximum or average, as in SQL
+        if self.function != 'count' and record[self.field_name] is None:
+            return
 
         match self.function:
             case 'sum':
@@ -522,7 +525,7 @@ class Image(BaseBlockRenderer):
         self.high_density_vertical = paramdict.get("high_density_vertical", "true") == 'true'
         self.high_density_horizontal = paramdict.get("high_density_horizontal", "true") == 'true'
         self.impl = paramdict.get("impl", "bitImageRaster")
-        self.fragment_height = paramdict.get("fragment_height", 960) # Images larger than this will be split into multiple fragments
+        self.fragment_height = int(paramdict.get("fragment_height", 960)) # Images larger than this will be split into multiple fragments
         self.center = paramdict.get("center", "true") == 'true'
         # create image for in report defined image
         self.image = None
@@ -533,7 +536,8 @@ class Image(BaseBlockRenderer):
             case 'embedded':
                 self.image = PIL.Image.open(BytesIO(base64.b64decode(text)))
             case 'file':
-                pass
+                if not self.img_source:
+                    raise ReportCreationError("Image file name not specified")
             case 'resource':
                 image_res = QFile(f":/{text}")
                 image_res.open(QIODeviceBase.OpenModeFlag.ReadOnly)
@@ -553,10 +557,15 @@ class Image(BaseBlockRenderer):
         if self.type == 'field':
             # create the image
             field_data = record[self.field_name]
+            if field_data is None:  # no image for this record
+                return
             if not isinstance(field_data, QByteArray):
                 raise ReportPrintError("Field IS NOT an image")
             raw_bytes = field_data.data()
             image = PIL.Image.open(BytesIO(raw_bytes))
+            image.load()
+        elif self.type == 'file':
+            image = PIL.Image.open(str(self.img_source))  # checked when the report is read
             image.load()
         else:
             image = self.image
@@ -575,7 +584,8 @@ class Image(BaseBlockRenderer):
         # Optional: Sharp black and white (Recommended for crisp LOGOS/TEXT)
         # image = image.convert("L").point(lambda x: 0 if x < 128 else 255, '1')
         
-        self.report.buffer.image(img_source=self.image or self.img_source,
+        # the prepared image: from a field the original one is not available
+        self.report.buffer.image(img_source=image,
                                  high_density_vertical=self.high_density_vertical,
                                  high_density_horizontal=self.high_density_horizontal,
                                  impl=self.impl,
@@ -622,11 +632,11 @@ class QRCode(BaseBlockRenderer):
             return
         if self.type == 'field':
             content = record[self.field_name]
-        elif self.type == 'embedded':
-            content = self.content
         else:
-            pass
-        self.report.buffer.qr(content,
+            content = self.content
+        if content is None:  # nothing to encode for this record
+            return
+        self.report.buffer.qr(str(content),  # numeric fields too
                               ec=self.ec_level,
                               size=self.size,
                               model=self.model,
@@ -670,12 +680,13 @@ class Barcode(BaseBlockRenderer):
             return
         if self.type == 'field':
             code = record[self.field_name]
-        elif self.type == 'embedded':
-            code = self.code
         else:
-            pass
-        if self.bc == 'CODE128':
-            code = '{B' + code
+            code = self.code
+        if code is None:  # nothing to encode for this record
+            return
+        code = str(code)  # numeric fields too
+        if self.bc == 'CODE128' and not code.startswith('{'):
+            code = '{B' + code  # code set B unless the code chooses its own
         self.report.buffer.barcode(code, 
                                    bc=self.bc, 
                                    height=self.height, 
@@ -827,19 +838,17 @@ class Band(list):
         # # execute python code before rendering
         # if self.execute_before:
         #     exec(self.execute_before, global_parameters)
+        # script contexts, shared by the scripts before and after rendering
+        exec_globals = {
+            '__builtins__': __builtins__ # keeps the standard Python functions (len, str, ...)
+        }
+        # variables the script can work on directly
+        exec_locals = {
+            'report': self.report,
+            'band': self,
+            'record': record
+        }
         if self.execute_before:
-            # 1. Definiamo il contesto globale (in sola lettura per lo script)
-            exec_globals = {
-                '__builtins__': __builtins__ # Mantiene le funzioni standard di Python (len, str, ecc.)
-            }
-            
-            # 2. Definiamo le variabili locali su cui lo script può operare direttamente
-            exec_locals = {
-                'report': self.report,
-                'band': self,
-                'record': record
-            }
-            # 3. Eseguiamo isolando i contesti
             exec(self.execute_before, exec_globals, exec_locals)
         # do nothing (but execute before) if not visible
         # if self.is_visible_parameter:
@@ -1199,7 +1208,7 @@ class ReportEscpos():
         if sorting is not None:
             for sort in sorting.findall("sort"):
                 field = sort.attrib.get('field')
-                reverse = bool(sort.attrib.get('reverse'))
+                reverse = 'true' == sort.attrib.get('reverse', 'false')  # bool('false') would be True
                 self.sortings.append(Sort(field, reverse))
 
         # groups headers/footers
@@ -1231,8 +1240,7 @@ class ReportEscpos():
                 case _:
                     raise ReportXMLParseError(f"Root child tag unknown {child.tag}")
 
-        if self.details is None:
-            raise ReportXMLParseError("The mandatory element 'details' was not found.")
+        # details are optional: a cover copy prints its header and footer only
 
     def set_data(self, data_set: list[Any]|tuple[Any]|None = None) -> None:
         self.data = data_set
@@ -1296,6 +1304,12 @@ class ReportEscpos():
                 self._current_text_property[p] = v
                 #print('Text property dict ', self._current_text_property)
 
+    def _footer_summaries(self) -> list:
+        "Summaries of the group footers and of the report footer, updated by every detail record"
+        footer_bands = [b for bands in self.group_footers.values() for b in bands] + self.footer
+        return [ilo for b in footer_bands for r in b if isinstance(r, Row)
+                for ilo in r if isinstance(ilo, Summary)]
+
     def group_generate(self, data: list[Any]|tuple[Any], group_index: int = 0) -> None:
         "Resolve groups recursively"
         grp = self.groups[group_index] if self.groups else None
@@ -1326,15 +1340,8 @@ class ReportEscpos():
                     b.render(record)
                 # update summaries on group footers and report footers
                 # it is require to scroll all the dataset for update summaries so is not possible to put summaries on headers
-                if self.groups:
-                    for i in self.groups:
-                        if self.group_footers.get(i):
-                            for b in self.group_footers.get(i): # type: ignore band
-                                for r in b: # row
-                                    if isinstance(r, Row):
-                                        for ilo in r: # summary
-                                            if isinstance(ilo, Summary):
-                                                ilo.update(record)
+                for summary in self._footer_summaries():
+                    summary.update(record)
                 self.rn += 1  # increase record number only after rendering the previous one
                 self.prev_record = record.copy()
 
