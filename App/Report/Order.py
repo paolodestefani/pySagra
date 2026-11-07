@@ -28,6 +28,7 @@ This module contains functions to generate and print order-related reports.
 """
 
 # standard library
+import logging
 from typing import Any
 from enum import StrEnum
 
@@ -58,11 +59,33 @@ from App.Report.ReportEngineEscPos import ReportEscpos
 
 
 
+# logger
+logger = logging.getLogger(__name__)
+
+
 # print copy
 class pc(StrEnum):
     CUSTOMER        = 'C'
     COVER           = 'V'
     DEPARTMENT      = 'D'
+
+
+def _orderConditions(report: Report | ReportEscpos,
+                     order_id: int | None,
+                     department_id: int | None) -> list[tuple[str, Any]]:
+    """Return the filter of an order report from its conditions with code
+    order_id and department_id. Without the order_id condition the report
+    would print every order: raise NotEnoughtReportParameters"""
+    where: list[tuple[str, Any]] = []
+    for field, condition in report.conditions.items():
+        if condition.code == 'order_id':
+            where.append((f"{field} = %s", order_id))
+        elif condition.code == 'department_id':
+            where.append((f"{field} = %s", department_id))
+    if not any(condition.code == 'order_id' for condition in report.conditions.values()):
+        logger.error("The order report has no condition with code order_id")
+        raise NotEnoughtReportParameters()
+    return where
 
 def printOrderReport(print_type: pc, department_id: int | None, order_id: int | None) -> None:
     "Generate a print report (driver or escpos) for the provided order_id"
@@ -89,14 +112,7 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
         case 'D': # DRIVER
             # driver report and printer
             report_drv = Report(get_report_xml(print_method, drv_report, session['l10n']))
-            # report definition on condition fields must have code for order_id and department_id
-            where = []
-            for i in report_drv.conditions:
-                if report_drv.conditions[i].code == 'order_id':
-                    where.append((f"{i} = %s", order_id))
-                if report_drv.conditions[i].code == 'department_id':
-                    where.append((f"{i} = %s", department_id))
-            report_drv.data = report_query(report_drv, where)
+            report_drv.data = report_query(report_drv, _orderConditions(report_drv, order_id, department_id))
             report_drv.generate()
             if drv_printer:
                 # print
@@ -114,14 +130,7 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
         case 'E': # ESC/POS
             # escpos report and printer
             report_esc = ReportEscpos(get_report_xml(print_method, esc_report, session['l10n']))
-            # report definition on condition fields must have code for order_id and department_id
-            where = []
-            for i in report_esc.conditions:
-                if report_esc.conditions[i].code == 'order_id':
-                    where.append((f"{i} = %s", order_id))
-                if report_esc.conditions[i].code == 'department_id':
-                    where.append((f"{i} = %s", department_id))
-            report_esc.data = report_query(report_esc, where)
+            report_esc.data = report_query(report_esc, _orderConditions(report_esc, order_id, department_id))
             report_esc.generate()
             if esc_printer:
                 # print
