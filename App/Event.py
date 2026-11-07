@@ -52,7 +52,6 @@ from App.Database.Models import EventIndexModel
 from App.Database.Models import EventModel
 from App.Database.Event import is_used
 from App.Database.Lookup import price_list_lookup
-from App.Widget.MessageBox import MessageBoxCritical
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ImageDelegate
 from App.Widget.Form import FormIndexManager
@@ -193,7 +192,7 @@ class EventForm(FormIndexManager):
                                     _tr("MessageDialog", "Information"),
                                     _tr("Event", "Image file saved"))
         else:
-            MessageBoxCritical(self,
+            QMessageBox.critical(self,
                                _tr("MessageDialog", "Critical"),
                                _tr("Event", "Error on saving image file"))
 

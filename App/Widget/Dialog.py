@@ -76,7 +76,6 @@ from App import session
 from App import currentIcon
 from App.Common.L10n import _tr
 from App.Widget.ExceptionHandler import gui_exception_context
-from App.Widget.MessageBox import MessageBoxCritical
 from App.Ui.SelectImageDialog import Ui_SelectImageDialog
 from App.Ui.PrintDialog import Ui_PrintDialog
 from App.Ui.SortFilterDialog import Ui_SortFilterDialog
@@ -175,8 +174,8 @@ class SelectImageDialog(QDialog):
             return
         pix = QPixmap()
         if not pix.load(f):
-            MessageBoxCritical(self,
-                                 _tr("MessageDialog", "Critical"),
+            QMessageBox.warning(self,
+                                 _tr("MessageDialog", "Warning"),
                                  _tr("Dialog", "Unable to load the file {}").format(f))
             return
         db = QMimeDatabase()
@@ -736,8 +735,8 @@ class PrintDialog(QDialog):
         if self.ui.comboBoxReportList.count() != 0:
             super().show()
         else:
-            MessageBoxCritical(self,
-                               _tr('MessageDialog', 'Critical'),
+            QMessageBox.information(self,
+                               _tr('MessageDialog', 'Information'),
                                _tr('Dialog', 'No report available'))
             
     def setReport(self, index: int) -> None:
@@ -906,8 +905,8 @@ class PrintDialog(QDialog):
         print_method,report_id = self.ui.comboBoxReportList.currentData()
         description = self.ui.lineEditNewName.text()
         if not report_id or not description:
-            MessageBoxCritical(self,
-                               _tr("MessageDialog", "Critical"),
+            QMessageBox.warning(self,
+                               _tr("MessageDialog", "Warning"),
                                _tr("Dialog", "You must fill all the parameters of a new adaptation"))
             return
         success = False
@@ -1172,17 +1171,17 @@ class PrintDialog(QDialog):
         filename_str = self.ui.lineEditFileName.text().strip()
 
         if not directory_str:
-            MessageBoxCritical(self, _tr('MessageDialog', 'Critical'), _tr('Dialog', "Export directory not set"))
+            QMessageBox.warning(self, _tr('MessageDialog', 'Warning'), _tr('Dialog', "Export directory not set"))
             return
 
         if not filename_str:
-            MessageBoxCritical(self, _tr('MessageDialog', 'Critical'), _tr('Dialog', "File name not set"))
+            QMessageBox.warning(self, _tr('MessageDialog', 'Warning'), _tr('Dialog', "File name not set"))
             return
 
         # Verifico che la directory esista con QDir
         export_dir = QDir(directory_str)
         if not export_dir.exists():
-            MessageBoxCritical(self, _tr('MessageDialog', 'Critical'), _tr('Dialog', "Export directory does not exist"))
+            QMessageBox.warning(self, _tr('MessageDialog', 'Warning'), _tr('Dialog', "Export directory does not exist"))
             return
 
         # Assicuro che l'estensione sia .pdf (case-insensitive)
@@ -1228,9 +1227,9 @@ class PrintDialog(QDialog):
         if self.ui.checkBoxOpenPDF.isChecked():
             url = QUrl.fromLocalFile(file_path_str)
             if not QDesktopServices.openUrl(url):
-                MessageBoxCritical(
-                    self, 
-                    _tr('MessageDialog', 'Critical'), 
+                QMessageBox.warning(
+                    self,
+                    _tr('MessageDialog', 'Warning'),
                     _tr('Dialog', "Unable to open default PDF viewer")
                 )
         else:

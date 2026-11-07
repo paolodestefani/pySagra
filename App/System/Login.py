@@ -71,7 +71,6 @@ from App.Database.Connect import get_company_desc
 from App.Database.Connect import get_current_event
 from App.Database.Connect import can_use_company
 from App.Database.Connect import get_current_event
-from App.Widget.MessageBox import MessageBoxCritical
 from App.System.User import ChangePasswordDialog
 from App.System.Help import HelpDialog
 from App.Ui.LoginDialog import Ui_LoginDialog
@@ -242,10 +241,10 @@ class LoginDialog(QDialog):
                     sys.exit(0)
                 dlg.close()
             else:
-                MessageBoxCritical(self,
-                                   _tr('MessageDialog', "Critical"),
-                                   _tr('Login', "There is no company "
-                                       "you can log on"))
+                QMessageBox.warning(self,
+                                    _tr('MessageDialog', "Warning"),
+                                    _tr('Login', "There is no company "
+                                        "you can log on"))
                 return
             
         # get current event

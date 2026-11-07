@@ -55,7 +55,6 @@ from App.Database.AbstractModels.TableModel import TableModel
 from App.Widget.Control import DataWidgetMapper
 from App.Widget.Dialog import SortFilterDialog
 from App.Widget.Dialog import EventFilterDialog
-from App.Widget.MessageBox import MessageBoxCritical
 
 
 
@@ -647,7 +646,7 @@ class FormIndexManager[T](BaseFormManager[T]):
             if hasattr(self.model, 'clearData'):
                 self.model.clearData() 
             if not self.model.insertRow(0):
-                MessageBoxCritical(self,
+                QMessageBox.critical(self,
                                     _tr("MessageDialog", "Critical"),
                                     _tr("Form", "Error inserting a new row"))
                 self._new = False

@@ -619,7 +619,10 @@ class MainWindow(QMainWindow):
             st.setValue("MainWindow/State", self.saveState(1))
             # disconnect
             logger.info("DB disconnection")
-            appconn.close()
+            try:
+                appconn.close()
+            except Exception:  # the server can be gone: quit anyway
+                logger.exception("Logout failed while closing the application")
             # last log messsage
             logger.info('Closing the application')
             logger.info('****************************************')

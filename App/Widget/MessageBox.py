@@ -26,23 +26,36 @@ This module contains the critical error dialog with its expanding details.
 It is separated from App.Widget.Dialog because the exception handler needs it
 and App.Widget.Dialog needs the exception handler.
 
+The dialog is for unhandled exceptions and serious errors only: it can be
+resized, its details can be copied and Abort closes the application. Other
+messages use the standard QMessageBox.
+
 """
 
 # standard library
-import sys
+import logging
 from typing import cast
 
 # PySide6
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtCore import QSize
+from PySide6.QtGui import QCursor
+from PySide6.QtGui import QGuiApplication
+from PySide6.QtWidgets import QAbstractButton
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QWidget
 
 # application modules
+from App import session
 from App.Common.L10n import _tr
 from App.Ui.MessageDialog import Ui_MessageDialog
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 class MessageBox(QDialog):
@@ -60,13 +73,28 @@ class MessageBox(QDialog):
         self.ui.labelIcon.setPixmap(icon.pixmap(icon.actualSize(QSize(32, 32))))
         
         
-def MessageBoxCritical(parent, 
+def abortApplication() -> None:
+    """Close the application in order: the main window asks to quit, closes
+    the forms with their save requests, saves its settings and logs out"""
+    mainwin = session.get('mainwin')
+    if mainwin is not None:
+        try:
+            mainwin.close()
+        except Exception:  # an error while closing must not leave the application without windows
+            logger.exception("Error closing the main window, quitting anyway")
+        if mainwin.isVisible():  # the user chose to go on
+            return
+    QApplication.quit()
+
+
+def MessageBoxCritical(parent,
                        title: str|None = None,
                        ercode: str|None = None,
-                       text: str|None = None, 
+                       text: str|None = None,
                        detail: str|None = None
-                       ) -> None:
-    "Show a critical message dialog with optional detail message"
+                       ) -> bool:
+    """Show a critical message dialog with optional detail message.
+    Return True if the user chose Abort; Ignore, Esc and the close button go on"""
     dlg = MessageBox(parent)
     dlg.setWindowTitle(title or _tr('Dialog', "Critical error"),)
     dlg.ui.labelErrorCode.setText(ercode or '')
@@ -78,7 +106,21 @@ def MessageBoxCritical(parent,
 ```
 """
     dlg.ui.textEditDetailMessage.setMarkdown(detail or "")
-    ret = dlg.exec()
-    # clicking on Abort should be equal to dialog.rejected
-    if ret == QDialog.DialogCode.Rejected:
-        sys.exit(0)
+    # Esc and the close button reject the dialog as Abort does: only the button counts
+    clicked: list[QAbstractButton] = []
+    dlg.ui.buttonBox.clicked.connect(clicked.append)
+    # nested contexts can stack wait cursors: remove them all while the message
+    # is open, then put them back so their contexts can remove them as usual
+    cursors: list[QCursor] = []
+    while (current := QGuiApplication.overrideCursor()) is not None and len(cursors) < 100:
+        cursors.append(QCursor(current))
+        QGuiApplication.restoreOverrideCursor()
+    try:
+        dlg.exec()
+    finally:
+        for cursor in reversed(cursors):
+            QGuiApplication.setOverrideCursor(cursor)
+    aborted = bool(clicked) and dlg.ui.buttonBox.standardButton(clicked[-1]) == QDialogButtonBox.StandardButton.Abort
+    if aborted:
+        abortApplication()
+    return aborted
