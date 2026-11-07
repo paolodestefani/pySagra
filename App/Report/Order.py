@@ -33,8 +33,6 @@ from enum import StrEnum
 
 # PySide6
 from PySide6.QtCore import QDate
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrinterInfo
@@ -45,6 +43,8 @@ from escpos.printer import Network
 
 # application modules
 from App import session
+from App.Common.Gui import no_wait_cursor_context
+from App.Common.L10n import _tr
 from App.Common.Escpos import escpos_printer
 from App.Database.Settings import Settings
 from App.Database.OrderPrintSettings import order_print_settings
@@ -105,15 +105,12 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
                 report_drv.print(printer)
             else:
                 # print preview
-                # restore cursor if necessary
-                if QGuiApplication.overrideCursor() is not None:
-                    if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                        QGuiApplication.restoreOverrideCursor()
                 # create the preview
                 dialog = QPrintPreviewDialog(session['mainwin'])
                 # start
                 dialog.paintRequested.connect(report_drv.print)
-                dialog.exec()
+                with no_wait_cursor_context():  # the order is printed inside a wait cursor context
+                    dialog.exec()
         case 'E': # ESC/POS
             # escpos report and printer
             report_esc = ReportEscpos(get_report_xml(print_method, esc_report, session['l10n']))
@@ -132,17 +129,14 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
                 report_esc.print(printer, copies)
             else:
                 # print preview
-                # restore cursor if necessary
-                if QGuiApplication.overrideCursor() is not None:
-                    if QGuiApplication.overrideCursor().shape() == Qt.CursorShape.WaitCursor:
-                        QGuiApplication.restoreOverrideCursor()
                 dialog = QPrintPreviewDialog(session['mainwin'])
-                dialog.setWindowTitle("Print preview")
+                dialog.setWindowTitle(_tr("Dialog", "Print preview"))
                 printer = dialog.printer()
                 printer.setPageSize(report_esc.receipt_page_layout(80.0).pageSize())
                 printer.setFullPage(True)
                 dialog.paintRequested.connect(report_esc.print)
-                dialog.exec()
+                with no_wait_cursor_context():  # the order is printed inside a wait cursor context
+                    dialog.exec()
     
 
 def printStockUnloadReport(report_id: int,

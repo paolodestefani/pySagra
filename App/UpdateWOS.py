@@ -149,12 +149,10 @@ class UpdateWebOrderServerDialog(QDialog):
                             ET.SubElement(vr, "price").text = str(vp)
         tree = ET.ElementTree(root)
         ET.indent(tree, space="    ", level=0)
-        success = False
-        with gui_exception_context(self, _tr("UpdateWOS", "Save XML file")):
+        with gui_exception_context(self, _tr("UpdateWOS", "Save XML file")) as outcome:
             with open(filename, 'wb') as f:
                 tree.write(f, encoding='utf-8', xml_declaration=True)
-            success = True
-        if success:
+        if outcome.ok:
             logger.info('XML file %s created successfully', filename)
         else:
             return
@@ -168,8 +166,7 @@ class UpdateWebOrderServerDialog(QDialog):
         password = self.ui.lineEditPassword.text()
         filename = self.ui.lineEditFileName.text()
         # Connect FTP Server
-        success = False
-        with gui_exception_context(self, _tr("UpdateWOS", "Update ftp server")):
+        with gui_exception_context(self, _tr("UpdateWOS", "Update ftp server")) as outcome:
             # connect
             ftp_server = ftplib.FTP(server, user, password)
             # force encoding
@@ -187,8 +184,7 @@ class UpdateWebOrderServerDialog(QDialog):
                                         user,
                                         password,
                                         filename)
-            success = True
-        if success:
+        if outcome.ok:
             logger.info('Web order server updated successfully') 
             QMessageBox.information(self,
                                     _tr("MessageDialog", "Information"),

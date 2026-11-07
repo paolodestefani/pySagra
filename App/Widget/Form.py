@@ -377,8 +377,7 @@ class FormManager[T](BaseFormManager[T]):
             return
         
         row = self.mapper.currentIndex()
-        success = False
-        with gui_exception_context(self, _tr("Form", "model delete"), self.errorMessages):
+        with gui_exception_context(self, _tr("Form", "model delete"), self.errorMessages) as outcome:
             # one transaction: a master that can not be deleted keeps its details
             with appconn.transaction():
                 for relation, masterColumn, detailColumn in self.detailRelations:
@@ -389,8 +388,7 @@ class FormManager[T](BaseFormManager[T]):
                 self.model.removeRow(row)
                 if hasattr(self.model, 'submitAll'):
                     self.model.submitAll()
-            success = True
-        if not success:
+        if not outcome.ok:
             self.reload()  # the models must show again what the database has
             return
         row -= 1
@@ -518,14 +516,12 @@ class FormViewManager[T](BaseFormManager[T]):
             return
         rows = self.view.selectionModel().selectedRows()
         row = rows[0].row() if rows else -1
-        success = False
-        with gui_exception_context(self, _tr("Form", "Model submit all"), self.errorMessages):
+        with gui_exception_context(self, _tr("Form", "Model submit all"), self.errorMessages) as outcome:
             if hasattr(self.view, 'remove'):
                 self.view.remove()
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
-            success = True
-        if not success:
+        if not outcome.ok:
             self.reload()
             if row >= 0:
                 self.view.selectRow(row)
@@ -695,8 +691,7 @@ class FormIndexManager[T](BaseFormManager[T]):
         if not self.model.isEditable:
             return
         current_index = self.indexMapper.currentIndex()
-        success = False
-        with gui_exception_context(self, _tr("Form", "Master and detail model delete"), self.errorMessages):
+        with gui_exception_context(self, _tr("Form", "Master and detail model delete"), self.errorMessages) as outcome:
             # one transaction: a master that can not be deleted keeps its details
             with appconn.transaction():
                 for relation, masterColumn, detailColumn in self.detailRelations:
@@ -707,10 +702,9 @@ class FormIndexManager[T](BaseFormManager[T]):
                 self.model.removeRow(0)
                 if hasattr(self.model, 'submitAll'):
                     self.model.submitAll()
-            success = True
         self.state = ev.VIEW
         self.reload()  # stays on the same record when it still exists
-        if not success:
+        if not outcome.ok:
             return
         new_indice = current_index - 1
         if new_indice < 0:

@@ -109,6 +109,26 @@ class GuiExceptionContextTest(ContextTestCase):
         self.assertEqual(cursor_stack(), [WAIT])
 
 
+class OutcomeTest(ContextTestCase):
+    "The block knows if it succeeded through the outcome of the context"
+
+    def test_gui_context(self) -> None:
+        with EH.gui_exception_context(None, 'Operation') as outcome:
+            self.assertFalse(outcome.ok)  # not yet: the block is still running
+        self.assertTrue(outcome.ok)
+        with EH.gui_exception_context(None, 'Operation') as outcome:
+            raise PyAppDBError(code='42P01', message='missing table')
+        self.assertFalse(outcome.ok)
+
+    def test_report_context(self) -> None:
+        with EH.report_exception_context(None) as outcome:
+            pass
+        self.assertTrue(outcome.ok)
+        with EH.report_exception_context(None) as outcome:
+            raise ReportNoDataError()
+        self.assertFalse(outcome.ok)
+
+
 class ReportExceptionContextTest(ContextTestCase):
 
     def run_report(self, error: Exception | None = None) -> None:

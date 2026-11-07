@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # PySide6
 from PySide6.QtGui import QValidator
-from PySide6.QtWidgets import QApplication, QWidget
+from PySide6.QtWidgets import QApplication, QLineEdit, QWidget
 
 # application modules
 from App import session
@@ -213,6 +213,83 @@ class PrintDialogTest(DialogTestCase):
              mock.patch.object(Dialog, 'get_adapt_sorting', lambda a: 0), \
              mock.patch.object(Dialog, 'get_adapt_setting', lambda a: settings):
             dialog.setAdaptationSettings()
+
+
+class ReportParametersTest(DialogTestCase):
+    "Saved parameter values follow the parameter name, not its row"
+
+    def dialog_with(self, names: list[str]) -> Dialog.PrintDialog:
+        dialog = Dialog.PrintDialog(self.parent, 'TEST')
+        dialog.ui.comboBoxReportList.blockSignals(True)
+        dialog.ui.comboBoxReportList.addItem('Report', ('D', 1))
+        dialog.ui.comboBoxReportList.blockSignals(False)
+        dialog.ui.comboBoxReportAdaptations.blockSignals(True)
+        dialog.ui.comboBoxReportAdaptations.addItem('A', 1)
+        dialog.ui.comboBoxReportAdaptations.blockSignals(False)
+        for row, name in enumerate(names):
+            editor = QLineEdit(dialog)
+            editor.param = name
+            dialog.ui.layoutParameters.addWidget(QWidget(dialog), row, 0)
+            dialog.ui.layoutParameters.addWidget(editor, row, 1)
+        dialog.ui.layoutParameters.setRowStretch(len(names), 1)
+        return dialog
+
+    def editors(self, dialog: Dialog.PrintDialog) -> dict[str, QLineEdit]:
+        layout = dialog.ui.layoutParameters
+        return {item.widget().param: item.widget() for row in range(layout.rowCount())
+                if (item := layout.itemAtPosition(row, 1)) is not None}
+
+    def restore(self, dialog: Dialog.PrintDialog, params: list) -> None:
+        with mock.patch.object(Dialog, 'get_report_from_adapt', lambda a: ('D', 1, 'C', 'it', 'Report', 'it')), \
+             mock.patch.object(Dialog, 'get_adapt_sorting', lambda a: 0), \
+             mock.patch.object(Dialog, 'get_adapt_setting', lambda a: (params, [], [])):
+            dialog.setAdaptationSettings()
+
+    def test_values_follow_the_names(self) -> None:
+        dialog = self.dialog_with(['first', 'second'])
+        self.editors(dialog)['first'].setText('one')
+        self.editors(dialog)['second'].setText('two')
+        saved = {}
+        with mock.patch.object(Dialog, 'update_adaptation'), \
+             mock.patch.object(Dialog, 'set_adapt_setting', lambda cid, columns: saved.update(columns=columns)), \
+             mock.patch.object(Dialog.QMessageBox, 'information'):
+            dialog.saveReportAdaptation()
+        params = [c[5:] for c in saved['columns'] if c[5] == 'P']
+        self.assertEqual([(p[2], p[5]) for p in params], [('first', 'one'), ('second', 'two')])
+        # the report now has the parameters in the opposite order
+        reordered = self.dialog_with(['second', 'first'])
+        self.restore(reordered, [p[:3] + (None, None, p[5]) for p in params])
+        self.assertEqual({k: e.text() for k, e in self.editors(reordered).items()},
+                         {'first': 'one', 'second': 'two'})
+
+    def test_old_saves_use_the_row(self) -> None:
+        dialog = self.dialog_with(['first', 'second'])
+        self.restore(dialog, [('P', 1, None, None, None, 'by row')])
+        self.assertEqual(self.editors(dialog)['second'].text(), 'by row')
+
+    def test_removed_parameter_is_skipped(self) -> None:
+        dialog = self.dialog_with(['first'])
+        self.restore(dialog, [('P', 0, 'gone', None, None, 'x')])
+        self.assertEqual(self.editors(dialog)['first'].text(), '')
+
+
+class PrintPreviewTest(DialogTestCase):
+
+    def test_error_while_painting_is_shown(self) -> None:
+        "The preview calls the paint slot: an error must be shown, not lost or raised"
+        dialog = Dialog.PrintDialog(self.parent, 'TEST')
+        report = mock.Mock(spec=Dialog.ReportEscpos)
+        report.print.side_effect = ValueError('broken page')
+        dialog.report = report
+        dialog.generateReport = lambda: True
+        preview = mock.MagicMock()
+        preview.paintRequested.connect.side_effect = lambda slot: setattr(preview, 'slot', slot)
+        preview.exec.side_effect = lambda: preview.slot(mock.Mock())
+        with mock.patch.object(Dialog, 'QPrintPreviewDialog', return_value=preview), \
+             mock.patch.object(ExceptionHandler, 'MessageBoxCritical') as critical:
+            dialog.printPreview()
+        critical.assert_called_once()
+        report.receipt_page_layout.assert_called_once()
 
 
 if __name__ == '__main__':

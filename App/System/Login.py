@@ -154,13 +154,11 @@ class LoginDialog(QDialog):
         par['db_user'] = self.ui.lineEditDBUser.text()
         par['db_password'] = self.ui.lineEditDBPassword.text()
         # connect
-        success = False
-        with gui_exception_context(self, _tr("Login", "Database connection")):
+        with gui_exception_context(self, _tr("Login", "Database connection")) as outcome:
             # on network error is better to have a wait cursor
             appconn.connect(par)
             logger.info("Database connection established")
-            success = True
-        if not success:
+        if not outcome.ok:
             self.ui.lineEditPassword.clear()
             return
         # store login settinggs
@@ -227,12 +225,10 @@ class LoginDialog(QDialog):
         # set working company
         if session['current_company'] and can_use_company(session['app_user_code'], session['current_company']):
             logger.info("Setting working company to %s", session['current_company'])
-            success = False
-            with gui_exception_context(self, _tr("Login", "Setting working company")):
+            with gui_exception_context(self, _tr("Login", "Setting working company")) as outcome:
                 appconn.change_company(session['current_company'])
                 logger.info("Working company setted to %s", session['current_company'])
-                success = True
-            if not success:
+            if not outcome.ok:
                 return
         else:
             if has_companies_available(session['app_user_code']):
@@ -307,11 +303,9 @@ class ChangeCompanyDialog(QDialog):
         newco = int(value)
         newde = get_company_desc(newco)
         logger.info("On change company starting setting working company")
-        success = False
-        with gui_exception_context(self, _tr('ChangeCompany', 'Setting working company')):
+        with gui_exception_context(self, _tr('ChangeCompany', 'Setting working company')) as outcome:
             appconn.change_company(newco)
-            success = True
-        if not success:            
+        if not outcome.ok:            
             return
         
         session['company'] = newco

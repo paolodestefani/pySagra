@@ -578,11 +578,9 @@ class EnhancedTableView(QTableView):
             for col_idx in range(header.count())
         ]
         title: str = _tr("Menu", "Error saving view layout")
-        success = False
-        with gui_exception_context(self, title):
+        with gui_exception_context(self, title) as outcome:
             set_adapt_setting(view_id, columns)
-            success = True
-        if success:  # messages outside of the context, it shows the wait cursor
+        if outcome.ok:  # messages outside of the context, it shows the wait cursor
             QMessageBox.information(
                 self,
                 _tr("MessageDialog", "Information"),
@@ -602,12 +600,10 @@ class EnhancedTableView(QTableView):
         if not ok or not view_desc.strip():
             return
         title: str = _tr("Menu", "Error creating new layout")
-        success = False
-        with gui_exception_context(self, title):
+        with gui_exception_context(self, title) as outcome:
             # write entity and extract generated master view table ID reference
             view_id = create_adaptation('I', self.layout_name, view_desc.strip())
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         # rebuild structural elements on context menus safely
         self.fillCustomizationMenu()
@@ -647,12 +643,10 @@ class EnhancedTableView(QTableView):
         )
         if confirm == QMessageBox.StandardButton.No:
             return
-        success = False
-        with gui_exception_context(self, title):
+        with gui_exception_context(self, title) as outcome:
             # fire structural drop commands at database layers
             delete_adaptation(view_id)
-            success = True
-        if success:
+        if outcome.ok:
             # re-render system structures to clear lingering pointers cleanly
             self.fillCustomizationMenu()
             QMessageBox.information(
@@ -676,11 +670,9 @@ class EnhancedTableView(QTableView):
         view_id = int(checked_action.data())
         title: str = _tr("Menu", "Error setting user default layout")
         # safe transaction pipeline wrapped in the exception handler boundary
-        success = False
-        with gui_exception_context(self, title):
+        with gui_exception_context(self, title) as outcome:
             set_adapt_user_default('I', self.layout_name, session['user'], view_id)
-            success = True
-        if success:
+        if outcome.ok:
             # rebuild structural elements on context menus safely
             self.fillCustomizationMenu()
             QMessageBox.information(
@@ -703,11 +695,9 @@ class EnhancedTableView(QTableView):
             return
         view_id = int(checked_action.data())
         title: str = _tr("Menu", "Error setting class default layout")
-        success = False
-        with gui_exception_context(self, title):
+        with gui_exception_context(self, title) as outcome:
             set_adapt_class_default(view_id)
-            success = True
-        if success:
+        if outcome.ok:
             # rebuild structural elements on context menus safely
             self.fillCustomizationMenu()
             QMessageBox.information(

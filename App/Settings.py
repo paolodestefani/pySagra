@@ -85,11 +85,9 @@ class SettingsDialog(QDialog):
         self.setWindowTitle(title)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
-        success = False
-        with gui_exception_context(self, _tr("Settings", "Load settings")):
+        with gui_exception_context(self, _tr("Settings", "Load settings")) as outcome:
             self.setting = Settings()
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         self.ui.spinBoxLunch.setValue(self.setting['lunch_start_time'])
         self.ui.horizontalSliderLunch.setValue(self.setting['lunch_start_time']) # initially slider/spinbox are not connected
@@ -309,11 +307,9 @@ class SettingsDialog(QDialog):
         self.setting['amount_decimal_places'] = self.ui.spinBoxAmountDecimals.value()
         self.setting['currency_symbol'] = self.ui.lineEditCurrencySymbol.text()
         
-        success = False
-        with gui_exception_context(self, _tr("Settings", "Save settings")):
+        with gui_exception_context(self, _tr("Settings", "Save settings")) as outcome:
             self.setting.save()
-            success = True
-        if success:    
+        if outcome.ok:    
             # save geometry
             st = QSettings()
             st.setValue("Settings/Geometry", self.saveGeometry())

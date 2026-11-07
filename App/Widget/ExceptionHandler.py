@@ -97,6 +97,14 @@ error_code_messages = {
 
 # Context manager to capture exceptions in GUI operations and show critical dialogs
 
+class ContextOutcome:
+    """What an exception context reports to its block:
+    ok is True only when the block ended without exceptions"""
+
+    def __init__(self) -> None:
+        self.ok = False
+
+
 def _rollback() -> None:
     "Reset the transaction state of the shared connection, it can already be closed"
     try:
@@ -148,17 +156,19 @@ def _showError(parent_widget: Any,
 def gui_exception_context(parent_widget: Any,
                           operation_title: str,
                           messages: dict[str, str] | None = None
-                          ) -> Generator[None, None, None]:
+                          ) -> Generator[ContextOutcome, None, None]:
     """
     Shows the wait cursor, catches PyAppDBError exceptions, translates PostgreSQL
     SQLSTATE codes into user-friendly localized messages, and displays a critical dialog.
     messages maps a constraint name or a SQLSTATE code to a translated
     message for the user of a form, shown as a warning; the constraint
     name is checked first because many constraints share the same code
+    Use it as: with gui_exception_context(...) as outcome: ... if not outcome.ok: ...
     """
+    outcome = ContextOutcome()
     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     try:
-        yield
+        yield outcome
     except Exception as error:
         remove_wait_cursor()
         if isinstance(error, PyAppDBError) and not isinstance(error, PyAppDBConnectionError):
@@ -171,6 +181,7 @@ def gui_exception_context(parent_widget: Any,
         raise
     else:
         remove_wait_cursor()
+        outcome.ok = True
 
 
 def _showReportError(parent_widget: Any, error: Exception) -> None:
@@ -203,14 +214,15 @@ def _showReportError(parent_widget: Any, error: Exception) -> None:
 
 
 @contextmanager
-def report_exception_context(parent_widget: Any) -> Generator[None, None, None]:
+def report_exception_context(parent_widget: Any) -> Generator[ContextOutcome, None, None]:
     """
     Shows the wait cursor while a report is generated and shows the right
-    localized message for report errors
+    localized message for report errors; the outcome tells if the block succeeded
     """
+    outcome = ContextOutcome()
     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     try:
-        yield
+        yield outcome
     except Exception as error:
         remove_wait_cursor()
         with no_wait_cursor_context():  # outer contexts can have their own wait cursor
@@ -220,3 +232,4 @@ def report_exception_context(parent_widget: Any) -> Generator[None, None, None]:
         raise
     else:
         remove_wait_cursor()
+        outcome.ok = True

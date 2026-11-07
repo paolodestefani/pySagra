@@ -109,11 +109,9 @@ class PreferencesDialog(QDialog):
         self.ui.comboBoxFontFamily.setCurrentFont(QFont('Arial'))
         self.ui.spinBoxFontSize.setValue(10)
         # load user preferences
-        success = False
-        with gui_exception_context(self, _tr('Preferences', 'Load user preferences')):
+        with gui_exception_context(self, _tr('Preferences', 'Load user preferences')) as outcome:
             theme, color, icon, ffamily, fsize, tbstyle, tabposition  = load_preferences(session['app_user_code'])
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         # set widget current value
         self.ui.comboBoxTheme.setCurrentText(theme)

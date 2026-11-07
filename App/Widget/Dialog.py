@@ -55,7 +55,6 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtGui import QPdfWriter
 from PySide6.QtGui import QPagedPaintDevice
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QDialog
@@ -191,11 +190,11 @@ class SelectImageDialog(QDialog):
         path = QDir.currentPath()
         f, fi = QFileDialog.getSaveFileName(
             self,
-            _tr("SelectImageDialod", "Select the image file name"),
+            _tr("SelectImageDialog", "Select the image file name"),
             path,
-            _tr("SelectImageDialod","Portable Network Graphics (*.png);;Tutti i files (*.*)")
+            _tr("SelectImageDialog", "Portable Network Graphics (*.png);;All files (*.*)")
         )
-        if self.image:
+        if f and self.image:
             self.image.save(f)
 
     def getImage(self) -> QPixmap|None:
@@ -319,11 +318,9 @@ class SortFilterDialog(QDialog):
         try:
             self.ui.comboBoxSetting.clear()
             # adaptation list
-            success = False
-            with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation list')):
+            with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation list')) as outcome:
                 result = list_adaptation('S', self.sortfilterClass)
-                success = True
-            if not success:
+            if not outcome.ok:
                 return
             # fill the combobox
             for i, d, y in result:
@@ -358,19 +355,15 @@ class SortFilterDialog(QDialog):
             self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(0)
             self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(-1)
         # get sort and filter params
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation settings')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation settings')) as outcome:
             _, filters, sortings = get_adapt_setting(sortFilterId)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         self.filters.restore(filters)
         # limit
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation limit')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation limit')) as outcome:
             result = get_adapt_limit(sortFilterId)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         if result:
             self.ui.checkBoxMaxRows.setChecked(True)
@@ -404,19 +397,15 @@ class SortFilterDialog(QDialog):
                 so = self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().currentData()
                 columns.append((cid, None, None, None, None, 'S', row, fn, None, so, 'None'))
         # update sort filter
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Update adaptation settings')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Update adaptation settings')) as outcome:
             set_adapt_setting(cid, columns)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         # limit (None removes a previous limit; check that set_adapt_limit accepts None)
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation limit')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation limit')) as outcome:
             set_adapt_limit(cid, self.ui.spinBoxMaxRows.value()
                             if self.ui.checkBoxMaxRows.isChecked() else None)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -449,11 +438,9 @@ class SortFilterDialog(QDialog):
     def newCustomization(self) -> None:
         "Create a new customization"
         name = self.ui.lineEditNewName.text()
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Create new adaptation')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Create new adaptation')) as outcome:
             adaptId = create_adaptation('S', self.sortfilterClass, name, None)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -481,11 +468,9 @@ class SortFilterDialog(QDialog):
                                 _tr("View", "Are you sure to delete the current adaptation?"),
                                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
             return
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Delete current adaptation')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Delete current adaptation')) as outcome:
             delete_adaptation(cid)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         self.availableCustomizations()
         QMessageBox.information(self,
@@ -497,11 +482,9 @@ class SortFilterDialog(QDialog):
         sortfilterId = self._current_adaptation_id()
         if sortfilterId is None:
             return
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation sorting')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation sorting')) as outcome:
             set_adapt_sorting(sortfilterId, self.ui.spinBoxClassSorting.value())
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -512,14 +495,12 @@ class SortFilterDialog(QDialog):
         cid = self._current_adaptation_id()
         if cid is None:
             return
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation user default')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation user default')) as outcome:
             set_adapt_user_default('S',
                                    self.sortfilterClass,
                                    session['user'],
                                    cid)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -530,11 +511,9 @@ class SortFilterDialog(QDialog):
         cid = self._current_adaptation_id()
         if cid is None:
             return
-        success = False
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation class default')):
+        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation class default')) as outcome:
             set_adapt_class_default(cid)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -638,8 +617,6 @@ class EventFilterDialog(QDialog):
             dayPart = 'L' if self.ui.radioButtonLunch.isChecked() else 'D'
         else:
             dayPart = None
-        from typing import Any, cast
-
         if hasattr(self.parent(), 'updateFilterConditions'):
             cast(Any, self.parent()).updateFilterConditions(self.ui.comboBoxEvent.currentData(), 
                                                             date, 
@@ -813,12 +790,10 @@ class PrintDialog(QDialog):
         self.ui.comboBoxReportAdaptations.blockSignals(True)
         try:
             self.ui.comboBoxReportAdaptations.clear()
-            success = False
-            with gui_exception_context(self, _tr('ReportDialog', 'Get report adaptation list')):
+            with gui_exception_context(self, _tr('ReportDialog', 'Get report adaptation list')) as outcome:
                 for i, j in report_class_adapt_list(self.reportClass, session['l10n']):
                     self.ui.comboBoxReportAdaptations.addItem(j, i)
-                success = True
-            if not success:
+            if not outcome.ok:
                 return
             adaptid = get_adapt_default('R', self.reportClass, session['user'])
             cid = self.ui.comboBoxReportAdaptations.findData(adaptid)
@@ -860,14 +835,14 @@ class PrintDialog(QDialog):
                         wv = False
                 case _:
                     raise ReportPrintError("Unable to identify parameter type")
-            columns.append((cid, None, None, None, None, 'P', row, None, None, None, str(wv)))
+            # the parameter name lets the value find its widget even if the report changes order
+            columns.append((cid, None, None, None, None, 'P', row, getattr(widget, 'param', None),
+                            None, None, str(wv)))
         # filters
         columns += [(cid, None, None, None, None, 'F', *setting) for setting in self.filters.settings()]
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Save adaptation settings')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Save adaptation settings')) as outcome:
             set_adapt_setting(cid, columns)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -886,11 +861,9 @@ class PrintDialog(QDialog):
                                 _tr("View", "Are you sure to delete the current adaptation ?"),
                                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
             return
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Delete adaptation')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Delete adaptation')) as outcome:
             delete_adaptation(adaptId)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -909,11 +882,9 @@ class PrintDialog(QDialog):
                                _tr("MessageDialog", "Warning"),
                                _tr("Dialog", "You must fill all the parameters of a new adaptation"))
             return
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Save new adaptation as')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Save new adaptation as')) as outcome:
             adaptId = create_adaptation('R', self.reportClass, description, report_id)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -942,20 +913,25 @@ class PrintDialog(QDialog):
             self.ui.comboBoxReportList.setCurrentText(report_desc)
         # report class sorting
         self.ui.spinBoxClassSorting.setValue(get_adapt_sorting(adaptId))
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Get adaptation settings')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Get adaptation settings')) as outcome:
             params, filters, _ = get_adapt_setting(adaptId)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
-        # parameters
+        # parameters, by name; adaptations saved before have no name and use the row
+        layout = self.ui.layoutParameters
+        by_name = {getattr(item.widget(), 'param', None): item.widget()
+                   for row in range(layout.rowCount())
+                   if (item := layout.itemAtPosition(row, 1)) is not None}
         for t, row, fn, neg, op, wv in params:
             if not wv:  # this happens on report modification, old adaptation could refer to deleted objects
                 continue
-            item = self.ui.layoutParameters.itemAtPosition(row, 1)
-            if item is None:  # the parameter was removed from the report
+            if fn:
+                widget = by_name.get(fn)
+            else:
+                item = layout.itemAtPosition(row, 1)
+                widget = item.widget() if item is not None else None
+            if widget is None:  # the parameter was removed from the report
                 continue
-            widget = item.widget()
             match widget:
                 case QLineEdit():
                     widget.setText(wv)
@@ -985,11 +961,9 @@ class PrintDialog(QDialog):
         if self.ui.comboBoxReportAdaptations.count() == 0:
             return
         adaptId = self.ui.comboBoxReportAdaptations.currentData()
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation sorting')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation sorting')) as outcome:
             set_adapt_sorting(adaptId,self.ui.spinBoxClassSorting.value())
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -1004,14 +978,12 @@ class PrintDialog(QDialog):
         if not self.reportClass:
             return
         adaptId = int(self.ui.comboBoxReportAdaptations.currentData())
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation user default')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation user default')) as outcome:
             set_adapt_user_default('R',
                                    self.reportClass,
                                    session['user'],
                                    adaptId)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -1022,11 +994,9 @@ class PrintDialog(QDialog):
         if self.ui.comboBoxReportAdaptations.count() == 0:
             return
         adaptId = int(self.ui.comboBoxReportAdaptations.currentData())
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation class default')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Set adaptation class default')) as outcome:
             set_adapt_class_default(adaptId)
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         QMessageBox.information(self,
                                 _tr("MessageDialog", "Information"),
@@ -1064,11 +1034,9 @@ class PrintDialog(QDialog):
         self.where = self.filters.conditions()
         # create self.data
         if self.report.query:
-            success = False
-            with gui_exception_context(self, _tr('ReportDialog', 'Generate report')):
+            with gui_exception_context(self, _tr('ReportDialog', 'Generate report')) as outcome:
                 self.report.data = report_query(self.report, self.where)
-                success = True
-            if not success:
+            if not outcome.ok:
                 return False
         if not self.report.data:
             QMessageBox.information(self,
@@ -1076,11 +1044,9 @@ class PrintDialog(QDialog):
                                     _tr('Dialog', "No data to render"))
             return False
         # generate a report
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Generate report')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Generate report')) as outcome:
             self.report.generate()
-            success = True
-        return success
+        return outcome.ok
 
     def printPreview(self) -> None:
         "Generate report and show a print preview"
@@ -1088,53 +1054,30 @@ class PrintDialog(QDialog):
             return
         if not self.generateReport():
             return
-        match self.current_print_method:
-            case 'D': # DRIVER
-                dialog = QPrintPreviewDialog(self)
-                dialog.setWindowFlags(Qt.WindowType.Dialog |
-                                    Qt.WindowType.WindowMinMaxButtonsHint |
-                                    Qt.WindowType.WindowCloseButtonHint)
-                dialog.setWindowTitle(_tr("Dialog", "Print preview"))
-                # Imposta lo zoom FitToWidth
-                pp = dialog.findChild(QPrintPreviewWidget)
-                if pp:
-                    pp.setZoomMode(QPrintPreviewWidget.ZoomMode.FitToWidth)
+        report = self.report
+        dialog = QPrintPreviewDialog(self)
+        dialog.setWindowFlags(Qt.WindowType.Dialog |
+                              Qt.WindowType.WindowMinMaxButtonsHint |
+                              Qt.WindowType.WindowCloseButtonHint)
+        dialog.setWindowTitle(_tr("Dialog", "Print preview"))
+        if isinstance(report, ReportEscpos):
+            # receipt page of the ESC/POS printer
+            printer = dialog.printer()
+            printer.setPageSize(report.receipt_page_layout(80.0).pageSize())
+            printer.setFullPage(True)
+        else:
+            preview = dialog.findChild(QPrintPreviewWidget)
+            if preview:
+                preview.setZoomMode(QPrintPreviewWidget.ZoomMode.FitToWidth)
 
-                # Callback che esegue il rendering del report e ripristina subito il cursore
-                def on_paint_requested(printer):
-                    try:
-                        self.report.print(printer)
-                    finally:
-                        # Rimuove il WaitCursor appena le pagine del report sono state generate
-                        if QGuiApplication.overrideCursor() is not None:
-                            QGuiApplication.restoreOverrideCursor()
+        def paint(printer: QPrinter) -> None:
+            # the preview calls this slot: errors would not reach a context around exec()
+            with gui_exception_context(self, _tr('ReportDialog', 'Print preview')):
+                report.print(printer)
 
-                # Collega il wrapper anziché direttamente self.report.print
-                dialog.paintRequested.connect(on_paint_requested)
+        dialog.paintRequested.connect(paint)
+        dialog.exec()
 
-                # Nota: se il tuo context manager imposta già il WaitCursor all'ingresso,
-                # on_paint_requested lo rimuoverà non appena la stampa/anteprima è pronta.
-                with gui_exception_context(self, _tr('ReportDialog', 'Print preview')):
-                    dialog.exec()
-            
-            case 'E': # ESC/POS
-                dialog = QPrintPreviewDialog(session['mainwin'])
-                dialog.setWindowTitle("Print preview")
-                printer = dialog.printer()
-                printer.setPageSize(self.report.receipt_page_layout(80.0).pageSize())
-                printer.setFullPage(True)
-                # Callback che esegue il rendering del report e ripristina subito il cursore
-                def on_paint_requested(printer):
-                    try:
-                        self.report.print(printer)
-                    finally:
-                        # Rimuove il WaitCursor appena le pagine del report sono state generate
-                        if QGuiApplication.overrideCursor() is not None:
-                            QGuiApplication.restoreOverrideCursor()
-                
-                dialog.paintRequested.connect(on_paint_requested)
-                dialog.exec()
-           
 
     def printReport(self) -> None:
         "Generate report, choose a printer and print"
@@ -1215,12 +1158,10 @@ class PrintDialog(QDialog):
         paintDevice.setResolution(self.ui.spinBoxResolution.value())
 
         # 4. Generazione del report con context manager
-        success = False
-        with gui_exception_context(self, _tr('ReportDialog', 'Print PDF')):
+        with gui_exception_context(self, _tr('ReportDialog', 'Print PDF')) as outcome:
             self.report.print(paintDevice)
-            success = True
 
-        if not success:
+        if not outcome.ok:
             return
 
         # 5. Apertura del file o notifica
@@ -1285,8 +1226,9 @@ def DateTimeInputDialog(text: str) -> tuple[QDateTime | None, bool] :
     
 
 class PlainTextPreviewDialog(QDialog):
-    
-     def __init__(self, parent: None, text: str) -> None:
+    "Show a plain text"
+
+    def __init__(self, parent: QWidget | None, text: str) -> None:
         super().__init__(parent)
         self.ui = Ui_PlainTextPreviewDialog()
         self.ui.setupUi(self)

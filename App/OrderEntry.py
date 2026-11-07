@@ -528,8 +528,7 @@ class BaseOrderDialog(QDialog):
         self.ui.bgt.setExclusive(True)  # tables operate in exclusive selection mode
         
         # populate the grid with active tables from database/list
-        success = False
-        with gui_exception_context(self, _tr('OrderEntry', "Loading tables from database")):
+        with gui_exception_context(self, _tr('OrderEntry', "Loading tables from database")) as outcome:
             for table_title, row_pos, col_pos, text_color, bg_color, unavailable in table_list():
                 if row_pos is None or col_pos is None:
                     continue
@@ -550,9 +549,8 @@ class BaseOrderDialog(QDialog):
                         empty_placeholder.setMinimumHeight(50)
                         empty_placeholder.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
                         self.ui.gridLayoutTables.addWidget(empty_placeholder, r, c)
-            success = True
             
-        if not success:
+        if not outcome.ok:
             return  # stop execution if loading tables fails
             
         # connect the new button group to our click handler
@@ -626,8 +624,7 @@ class BaseOrderDialog(QDialog):
         
         # dynamic generation of departments and item buttons including inventory
         self._original_inventory.clear()
-        success = False
-        with gui_exception_context(self, _tr('OrderEntry', "Loading items from database")):
+        with gui_exception_context(self, _tr('OrderEntry', "Loading items from database")) as outcome:
             for dept_id, dept_name in department_list(include_menu=True):
                 tab_pane = QWidget()
                 grid_layout = QGridLayout()
@@ -683,9 +680,8 @@ class BaseOrderDialog(QDialog):
                 tab_pane.setLayout(grid_layout)
                 self.ui.tabWidgetList.addTab(tab_pane, dept_name)
                     
-            success = True
             
-        if not success:
+        if not outcome.ok:
             logger.error("Failed to re-populate order entry department grids layout view.")
             return
 
@@ -1366,11 +1362,9 @@ class BaseOrderDialog(QDialog):
         # ---------------------------------------------------------------------
         # DATABASE COMMIT OPERATION
         # ---------------------------------------------------------------------
-        success = False
-        with gui_exception_context(self, _tr('OrderEntry', "Saving order to database")):
+        with gui_exception_context(self, _tr('OrderEntry', "Saving order to database")) as outcome:
             ti, used_dep = order.insert()  # ti = order header reference key ID
-            success = True
-        if not success:
+        if not outcome.ok:
             return
         # ---------------------------------------------------------------------
         # ASYNC ORDER PRINT REPORTS DISPATCH
