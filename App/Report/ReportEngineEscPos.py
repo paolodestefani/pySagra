@@ -209,6 +209,14 @@ default_options = {
 }
 
 
+def format_number(value: int | float | decimal.Decimal | None, decimals: int,
+                  thousand_sep: str, decimal_sep: str) -> str:
+    "Round half up to the given decimals and group the thousands, without going through float"
+    number = decimal.Decimal(str(value or 0)).quantize(decimal.Decimal(1).scaleb(-decimals),
+                                                       rounding=decimal.ROUND_HALF_UP)
+    return f"{number:,f}".translate({ord(','): thousand_sep, ord('.'): decimal_sep})
+
+
 ### BASE RENDERER INLINE OBJECTS ###
 
 class BaseInlineRenderer():
@@ -258,33 +266,16 @@ class BaseInlineRenderer():
 
             # --- NUMBERS WITH SPECIFIC FORMAT ---
             case (int() | float() | decimal.Decimal(), 'currency'):
-                raw_formatted = f"{float(self.value or 0.0):,.2f}"
-                integer_part, decimal_part = raw_formatted.split('.')
-                text = f"{self.currency_symbol} {integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                text = f"{self.currency_symbol} {format_number(self.value, self.amount_decimals, self.report.thousand_sep, self.report.decimal_sep)}"
 
             case (int() | float() | decimal.Decimal(), 'amount'):
-                raw_formatted = f"{float(self.value or 0.0):,.{self.amount_decimals}f}"
-                if self.amount_decimals > 0:
-                    integer_part, decimal_part = raw_formatted.split('.')
-                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                else:
-                    text = raw_formatted.replace(',', self.report.thousand_sep)
+                text = format_number(self.value, self.amount_decimals, self.report.thousand_sep, self.report.decimal_sep)
 
             case (int() | float() | decimal.Decimal(), 'price'):
-                raw_formatted = f"{float(self.value or 0.0):,.{self.price_decimals}f}"
-                if self.price_decimals > 0:
-                    integer_part, decimal_part = raw_formatted.split('.')
-                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                else:
-                    text = raw_formatted.replace(',', self.report.thousand_sep)
+                text = format_number(self.value, self.price_decimals, self.report.thousand_sep, self.report.decimal_sep)
 
             case (int() | float() | decimal.Decimal(), 'quantity'):
-                raw_formatted = f"{float(self.value or 0.0):,.{self.quantity_decimals}f}"
-                if self.quantity_decimals > 0:
-                    integer_part, decimal_part = raw_formatted.split('.')
-                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                else:
-                    text = raw_formatted.replace(',', self.report.thousand_sep)
+                text = format_number(self.value, self.quantity_decimals, self.report.thousand_sep, self.report.decimal_sep)
 
             # --- NUMBERS WITH PYTHON STRING FORMAT (ex. '{0:.2f}') ---
             case (int() | float() | decimal.Decimal(), str() as fmt) if fmt:
@@ -776,32 +767,25 @@ class Row(list):
                 lines = [""]
             text_columns.append(lines)
         # 2. Synchronize the columns vertically using zip_longest
-        phisical_lines = list(zip_longest(*text_columns, fillvalue=""))
+        physical_lines = list(zip_longest(*text_columns, fillvalue=""))
         
-        # 3. Composizione stringa e invio fisico alla stampante
-        for line in phisical_lines:
-            stringa_finale_linea = "\n"
-            
-            for i, pezzo_testo in enumerate(line):
+        # 3. Build each physical line and send it to the printer
+        for line in physical_lines:
+            for i, piece in enumerate(line):
                 elem = self[i]
-                
-                # Gestione dinamica del grassetto inline: 
-                # Diciamo al report engine di impostare il grassetto solo se l'elemento lo richiede
-                #report_engine.imposta_formato(bold=elem.bold, font_style=self.font_style)
-                
-                # Applichiamo il padding in base all'allineamento dell'elemento inline
+                # Pad the piece according to the alignment of the inline element
                 if elem.align == 'right':
-                    pezzo_formattato = pezzo_testo[:elem.width].rjust(elem.width)
+                    padded = piece[:elem.width].rjust(elem.width)
                 elif elem.align == 'left':
-                    pezzo_formattato = pezzo_testo[:elem.width].ljust(elem.width)
+                    padded = piece[:elem.width].ljust(elem.width)
                 else: # center
-                    pezzo_formattato = pezzo_testo[:elem.width].center(elem.width)
-                
+                    padded = piece[:elem.width].center(elem.width)
+                # bold and the other text properties of each inline element
                 elem.apply_style()
-                self.report.buffer.text(pezzo_formattato)
+                self.report.buffer.text(padded)
             
-            # Invio della riga fisica al buffer/stampante
-            self.report.buffer.text(stringa_finale_linea)
+            # End of the physical line
+            self.report.buffer.text("\n")
 
 
 # BAND block objects container
@@ -854,13 +838,13 @@ class Band(list):
         # if self.is_visible_parameter:
         #     self.is_visible = (not self.report.parameter.get(self.is_visible_parameter) if self.parameter_negated 
         #                         else self.report.parameter.get(self.is_visible_parameter))
-        # 2. Se c'è un parametro dell'operatore, valuta il suo stato attuale a runtime
+        # 2. If there is an operator parameter, evaluate its current state at runtime
         if not self.is_visible:
                     return
                 
         if self.is_visible_parameter:
             param_value = bool(self.report.parameter.get(self.is_visible_parameter))
-            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            # If the condition (including 'not') is false, skip the current record
             if not (param_value ^ self.parameter_negated):
                 return
             
@@ -907,7 +891,7 @@ from escpos.printer import Dummy
 
 def _default_style() -> dict:
     return dict(font='a', bold=False, underline=0, invert=False,
-                align='left', wm=1, hm=1)   # wm/hm = moltiplicatori larghezza/altezza
+                align='left', wm=1, hm=1)   # wm/hm = width/height multipliers
 
 class DummyDevice(Dummy):
     "Dummy that records styled operations for a graphical/textual preview"
@@ -963,10 +947,10 @@ class DummyDevice(Dummy):
                 pil = PIL.Image.open(img_source)
             elif hasattr(img_source, 'read'):
                 data = img_source.read()
-                img_source = io.BytesIO(data)          # lo stesso contenuto per super()
+                img_source = io.BytesIO(data)          # the same content for super()
                 pil = PIL.Image.open(io.BytesIO(data))
             else:
-                pil = img_source                       # già un PIL.Image
+                pil = img_source                       # already a PIL.Image
             pil = pil.copy()
             pil.load()
         except Exception:
@@ -992,13 +976,13 @@ class DummyDevice(Dummy):
         super().print_and_feed(n, *args, **kwargs)
 
     def cut(self, mode: str = 'FULL', feed: bool = True, *args, **kwargs) -> None:
-        super().cut(mode, feed, *args, **kwargs)   # il feed interno è già registrato
+        super().cut(mode, feed, *args, **kwargs)   # the internal feed is already recorded
         self.ops.append(('cut', mode))
 
     def clear_preview(self) -> None:
         self.ops.clear()
         self.style = _default_style()
-        self.clear()          # Dummy.clear(): svuota anche i byte
+        self.clear()          # Dummy.clear(): also empties the bytes
 
     
 # Report
@@ -1436,7 +1420,7 @@ class ReportEscpos():
         match pd:
             case Network() | Usb():
                 print_scheduler().submit(pd, self.buffer.output * copies)
-            case QPaintDevice():          # QPrinter (anche dalla dialog), QPdfWriter
+            case QPaintDevice():          # QPrinter (also from the dialog), QPdfWriter
                 self._print_graphic(pd)
             case _:
                 pass

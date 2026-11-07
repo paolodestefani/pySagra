@@ -373,6 +373,14 @@ def code128encode(s: str) -> str|None:
 
 ### BASE RENDER OBJECTS ###
 
+def format_number(value: int | float | decimal.Decimal | None, decimals: int,
+                  thousand_sep: str, decimal_sep: str) -> str:
+    "Round half up to the given decimals and group the thousands, without going through float"
+    number = decimal.Decimal(str(value or 0)).quantize(decimal.Decimal(1).scaleb(-decimals),
+                                                       rounding=decimal.ROUND_HALF_UP)
+    return f"{number:,f}".translate({ord(','): thousand_sep, ord('.'): decimal_sep})
+
+
 class BaseRenderer():
     "Base class for all tex renderer elements"
 
@@ -430,33 +438,16 @@ class BaseRenderer():
 
             # --- NUMBERS WITH SPECIFIC FORMAT ---
             case (int() | float() | decimal.Decimal(), 'currency'):
-                raw_formatted = f"{float(self.value or 0.0):,.2f}"
-                integer_part, decimal_part = raw_formatted.split('.')
-                text = f"{self.currencySymbol} {integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
+                text = f"{self.currencySymbol} {format_number(self.value, self.amountDecimals, self.report.thousand_sep, self.report.decimal_sep)}"
 
             case (int() | float() | decimal.Decimal(), 'amount'):
-                raw_formatted = f"{float(self.value or 0.0):,.{self.amountDecimals}f}"
-                if self.amountDecimals > 0:
-                    integer_part, decimal_part = raw_formatted.split('.')
-                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                else:
-                    text = raw_formatted.replace(',', self.report.thousand_sep)
+                text = format_number(self.value, self.amountDecimals, self.report.thousand_sep, self.report.decimal_sep)
 
             case (int() | float() | decimal.Decimal(), 'price'):
-                raw_formatted = f"{float(self.value or 0.0):,.{self.priceDecimals}f}"
-                if self.priceDecimals > 0:
-                    integer_part, decimal_part = raw_formatted.split('.')
-                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                else:
-                    text = raw_formatted.replace(',', self.report.thousand_sep)
+                text = format_number(self.value, self.priceDecimals, self.report.thousand_sep, self.report.decimal_sep)
 
             case (int() | float() | decimal.Decimal(), 'quantity'):
-                raw_formatted = f"{float(self.value or 0.0):,.{self.quantityDecimals}f}"
-                if self.quantityDecimals > 0:
-                    integer_part, decimal_part = raw_formatted.split('.')
-                    text = f"{integer_part.replace(',', self.report.thousand_sep)}{self.report.decimal_sep}{decimal_part}"
-                else:
-                    text = raw_formatted.replace(',', self.report.thousand_sep)
+                text = format_number(self.value, self.quantityDecimals, self.report.thousand_sep, self.report.decimal_sep)
 
             # --- NUMBERS WITH PYTHON STRING FORMAT (ex. '{0:.2f}') ---
             case (int() | float() | decimal.Decimal(), str() as fmt) if fmt:
@@ -536,7 +527,7 @@ class BaseRenderer():
             return
         if self.isVisibleParameter:
             param_value = bool(self.report.parameter.get(self.isVisibleParameter))
-            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            # If the condition (including 'not') is false, skip the current record
             if not (param_value ^ self.parameterNegated):
                 return
             
@@ -758,7 +749,7 @@ class Line():
             return
         if self.isVisibleParameter:
             param_value = bool(self.report.parameter.get(self.isVisibleParameter))
-            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            # If the condition (including 'not') is false, skip the current record
             if not (param_value ^ self.parameterNegated):
                 return
         painter = self.report.painter
@@ -814,7 +805,7 @@ class Ellipse():
             return
         if self.isVisibleParameter:
             param_value = bool(self.report.parameter.get(self.isVisibleParameter))
-            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            # If the condition (including 'not') is false, skip the current record
             if not (param_value ^ self.parameterNegated):
                 return
         painter = self.report.painter
@@ -880,7 +871,7 @@ class Rectangle():
             return
         if self.isVisibleParameter:
             param_value = bool(self.report.parameter.get(self.isVisibleParameter))
-            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            # If the condition (including 'not') is false, skip the current record
             if not (param_value ^ self.parameterNegated):
                 return
             
@@ -961,7 +952,7 @@ class Image():
             return
         if self.isVisibleParameter:
             param_value = bool(self.report.parameter.get(self.isVisibleParameter))
-            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            # If the condition (including 'not') is false, skip the current record
             if not (param_value ^ self.parameterNegated):
                 return
             
@@ -1038,7 +1029,7 @@ class Band(list):
             return
         if self.isVisibleParameter:
             param_value = bool(self.report.parameter.get(self.isVisibleParameter))
-            # Se la condizione (considerando il 'not') è falsa, salta il record corrente
+            # If the condition (including 'not') is false, skip the current record
             if not (param_value ^ self.parameterNegated):
                 return
 

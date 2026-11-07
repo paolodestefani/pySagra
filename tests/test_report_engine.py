@@ -1,4 +1,4 @@
-"""Driver report engine: sorting and summaries, on the shipped report definitions
+"""Report engines: number format; driver engine sorting and summaries on the shipped definitions
 
 Run from the project root with: python -m unittest discover tests
 """
@@ -23,6 +23,7 @@ from PySide6.QtWidgets import QApplication
 # application modules
 from App import session
 from App.Report import ReportEngine as R
+from App.Report import ReportEngineEscPos as E
 
 
 app = QApplication.instance() or QApplication([])
@@ -79,6 +80,28 @@ class SummaryTest(EngineTestCase):
             summary.update({summary.fieldName: value})
         self.assertEqual(summary.summary, Decimal('5'))
         self.assertEqual(summary.items, 2)
+
+
+class FormatNumberTest(unittest.TestCase):
+
+    CASES = ((Decimal('1234.5'), 2, '1.234,50'),
+             (Decimal('2.675'), 2, '2,68'),         # half up, as for money
+             (2.675, 2, '2,68'),                    # the float 2.67499... is not rounded down
+             (Decimal('-1234.005'), 2, '-1.234,01'),
+             (0.1 + 0.2, 2, '0,30'),
+             (1234567, 0, '1.234.567'),
+             (Decimal('12.5'), 0, '13'),
+             (3, 3, '3,000'),
+             (None, 2, '0,00'))
+
+    def test_both_engines(self) -> None:
+        for engine in (R, E):
+            for value, decimals, expected in self.CASES:
+                with self.subTest(engine=engine.__name__, value=value, decimals=decimals):
+                    self.assertEqual(engine.format_number(value, decimals, '.', ','), expected)
+
+    def test_english_separators(self) -> None:
+        self.assertEqual(R.format_number(Decimal('1234567.891'), 2, ',', '.'), '1,234,567.89')
 
 
 if __name__ == '__main__':

@@ -130,10 +130,10 @@ class BoxLine(Line):
     
 @dataclass
 class ImageLine(Line):
-    "Immagine reale; se non disponibile, icona generica"
+    "The actual image, or a generic icon when it is not available"
     qimage: QImage | None = None
-    center: bool = False          # escpos allinea a sinistra, salvo center=True
-    dw: float = 0                 # dimensioni di disegno (punti stampante)
+    center: bool = False          # escpos aligns left unless center=True
+    dw: float = 0                 # drawing size (printer dots)
     dh: float = 0
     h: float = 110
 
@@ -144,14 +144,14 @@ class ImageLine(Line):
             return ImageLine()
         img = pil
         if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
-            img = img.convert('RGBA')                       # trasparenza -> bianco
+            img = img.convert('RGBA')                       # transparency -> white
             bg = Image.new('RGBA', img.size, 'white')
             bg.alpha_composite(img)
             img = bg
-        img = img.convert('L').convert('1').convert('L')    # 1 bit con dithering, come la termica
+        img = img.convert('L').convert('1').convert('L')    # 1 bit with dithering, like the thermal printer
         w, h = img.size
         qimg = QImage(img.tobytes(), w, h, w, QImage.Format.Format_Grayscale8).copy()
-        k = min(1.0, m.dots / w)                            # più larga della carta: si riduce
+        k = min(1.0, m.dots / w)                            # wider than the paper: scale it down
         return ImageLine(qimg, center, w * k, h * k, h=h * k)
 
     def paint(self, p, y, m):
@@ -214,14 +214,14 @@ class BarcodeLine(Line):
     @staticmethod
     def from_op(op, m: Metrics) -> Line:
         _, code, bc, height, width, pos = op
-        if bc.upper() == 'CODE128':            # prefisso di subset aggiunto da escpos
+        if bc.upper() == 'CODE128':            # subset prefix added by escpos
             code = re.sub(r'^\{[ABC]', '', code)
         name = _BC_NAMES.get(bc.upper())
         try:
             cls = pybarcode.get_barcode_class(name)
             obj = cls(code, add_checksum=False) if name == 'code39' else cls(code)
             mods = obj.build()[0]
-        except Exception:                       # simbologia non supportata o codice non valido
+        except Exception:                       # unsupported symbology or invalid code
             return BoxLine(label=f'BARCODE {bc}: {code}', h=90)
         above, below = pos in ('ABOVE', 'BOTH'), pos in ('BELOW', 'BOTH')
         mw = min(width, m.dots / len(mods))
@@ -267,7 +267,7 @@ class QrLine(Line):
                               self.mod, self.mod), Qt.GlobalColor.black)
 
 
-# ---------------------------------------------------------------- anteprima
+# ---------------------------------------------------------------- preview
 
 class ReceiptPreview:
     "Converts the Dummy Device's 'oops' into lines and draws them onto a QPaintDevice"
@@ -299,7 +299,7 @@ class ReceiptPreview:
                             newline()
                         cur.touch(st, lh)
                         for ch in part:
-                            if cur.w + cw > m.dots + 0.5:      # a capo automatico
+                            if cur.w + cw > m.dots + 0.5:      # automatic line wrap
                                 newline(False)
                                 cur.touch(st, lh)
                             cur.add(ch, st, cw)
