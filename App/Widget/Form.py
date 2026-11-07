@@ -49,6 +49,7 @@ from App import session
 from App.Common.L10n import _tr
 from App.Common.Gui import wait_cursor_context
 from App.Widget.ExceptionHandler import gui_exception_context
+from App.Database.Connect import appconn
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
 from App.Widget.Control import DataWidgetMapper
@@ -227,6 +228,13 @@ class BaseFormManager[T](QWidget):
         else:
             self.ui.stackedWidget.setCurrentIndex(vw.FORM)
             
+    def commitPendingEdit(self) -> None:
+        """Close the editor that has the focus, so its value reaches the model.
+        Toolbar buttons and shortcuts do not take the focus from the editor"""
+        active_widget = QApplication.focusWidget()
+        if active_widget:
+            active_widget.clearFocus()
+
     def save(self) -> None:
         "Save data to db, implemented by subclasses"
         raise NotImplementedError
@@ -338,10 +346,7 @@ class FormManager[T](BaseFormManager[T]):
         "Save data to db and commit"
         if not self.write_perm:
             return
-        active_widget = QApplication.focusWidget()
-        if active_widget:
-            active_widget.clearFocus()
-            
+        self.commitPendingEdit()
         row = self.mapper.currentIndex()
         if not self.mapper.submit():
             QMessageBox.critical(self,
@@ -370,25 +375,23 @@ class FormManager[T](BaseFormManager[T]):
             return
         
         row = self.mapper.currentIndex()
-        # *** not sure about this removeRows on detail
-        if self.detailRelations:
-            for relation, masterColumn, detailColumn in self.detailRelations:
-                with gui_exception_context(self, _tr("Form", "Relation delete")):
-                    if relation.rowCount() > 0:
-                        relation.removeRows(0, relation.rowCount())
-                        relation.submitAll()
-            
         success = False
         with gui_exception_context(self, _tr("Form", "model delete")):
-            self.model.removeRow(row)
-            row -= 1
+            # one transaction: a master that can not be deleted keeps its details
+            with appconn.transaction():
+                for relation, masterColumn, detailColumn in self.detailRelations:
+                    if relation.rowCount() > 0:
+                        relation.removeRows(0, relation.rowCount())
+                        if hasattr(relation, 'submitAll'):
+                            relation.submitAll()
+                self.model.removeRow(row)
+                if hasattr(self.model, 'submitAll'):
+                    self.model.submitAll()
             success = True
         if not success:
+            self.reload()  # the models must show again what the database has
             return
-            
-        with gui_exception_context(self, _tr("Form", "model delete")):
-            if hasattr(self.model, 'submitAll'):
-                self.model.submitAll()
+        row -= 1
 
         # call revert only if there are still records in the model
         if self.model.rowCount() > 0:
@@ -495,6 +498,7 @@ class FormViewManager[T](BaseFormManager[T]):
             return
         if not self.model:
             return None
+        self.commitPendingEdit()
         with gui_exception_context(self, _tr("Form", "Error on model submit all")):
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
@@ -511,18 +515,18 @@ class FormViewManager[T](BaseFormManager[T]):
         if not self.view:
             return
         rows = self.view.selectionModel().selectedRows()
-        if rows:
-            row = rows[0].row()
+        row = rows[0].row() if rows else -1
         success = False
-        with gui_exception_context(self, _tr("Form", "Mmodel submit all")):
+        with gui_exception_context(self, _tr("Form", "Model submit all")):
             if hasattr(self.view, 'remove'):
                 self.view.remove()
-            if hasattr(self. model, 'submitAll'):
+            if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
             success = True
         if not success:
             self.reload()
-            self.view.selectRow(row)
+            if row >= 0:
+                self.view.selectRow(row)
         self.state = ev.VIEW
         self.updateEditStatus()
 
@@ -629,7 +633,7 @@ class FormIndexManager[T](BaseFormManager[T]):
 
     def new(self) -> None:
         "Create a new record on model deleting the current one"
-        if not self.model.isEditable:
+        if not self.write_perm or not self.model.isEditable:
             return
         self._new = True
         self._is_navigating = True
@@ -657,9 +661,7 @@ class FormIndexManager[T](BaseFormManager[T]):
         "Save data to db and commit"
         if not self.write_perm:
             return
-        active_widget = QApplication.focusWidget()
-        if active_widget:
-            active_widget.clearFocus()
+        self.commitPendingEdit()
         if not self.model.isEditable:
             return
         if not self.mapper.submit():
@@ -691,17 +693,23 @@ class FormIndexManager[T](BaseFormManager[T]):
         if not self.model.isEditable:
             return
         current_index = self.indexMapper.currentIndex()
+        success = False
         with gui_exception_context(self, _tr("Form", "Master and detail model delete")):
-            for relation, masterColumn, detailColumn in self.detailRelations:
-                if relation.rowCount() > 0:
-                    relation.removeRows(0, relation.rowCount())
-                    if hasattr(relation, 'submitAll'): # sometimes relation i read only
-                        relation.submitAll()
-            self.model.removeRow(0)
-            if hasattr(self.model, 'submitAll'):
-                self.model.submitAll()   
+            # one transaction: a master that can not be deleted keeps its details
+            with appconn.transaction():
+                for relation, masterColumn, detailColumn in self.detailRelations:
+                    if relation.rowCount() > 0:
+                        relation.removeRows(0, relation.rowCount())
+                        if hasattr(relation, 'submitAll'): # sometimes relation i read only
+                            relation.submitAll()
+                self.model.removeRow(0)
+                if hasattr(self.model, 'submitAll'):
+                    self.model.submitAll()
+            success = True
         self.state = ev.VIEW
-        self.reload()
+        self.reload()  # stays on the same record when it still exists
+        if not success:
+            return
         new_indice = current_index - 1
         if new_indice < 0:
             new_indice = 0

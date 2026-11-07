@@ -521,19 +521,21 @@ class TableModel(QueryModel):
                     if self.isCompanyTable:
                         fieldList += ['company_id']
                         args['company_id'] = session['current_company']
-                    fields_str = ", ".join(fieldList)
-                    placeholders = ", ".join([f"%({f})s" for f in fieldList])
-                    fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns]
-                       + list(self.primaryKey) + [OVFIELD])
-                    
-                    script = f"INSERT INTO {self.table} ({fields_str}) VALUES ({placeholders}) RETURNING {fieldsback};"
-                    
                     # arguments for insert, only non read only fields with a field name
-                    ins_args = {self.columns[i][cla.FIELD]: record[i] 
-                                for i in range(len(self.columns)) 
-                                if self.columns[i][cla.FIELD] 
+                    ins_args = {self.columns[i][cla.FIELD]: record[i]
+                                for i in range(len(self.columns))
+                                if self.columns[i][cla.FIELD]
                                 and not self.columns[i][cla.RO]}
                     ins_args.update(args)
+
+                    fields_str = ", ".join(fieldList)
+                    # an empty field takes the column default of the table, NULL if it has none
+                    placeholders = ", ".join(["DEFAULT" if ins_args.get(f) is None else f"%({f})s"
+                                              for f in fieldList])
+                    fieldsback = ", ".join([i[cla.FIELD] or 'Null' for i in self.columns]
+                       + list(self.primaryKey) + [OVFIELD])
+
+                    script = f"INSERT INTO {self.table} ({fields_str}) VALUES ({placeholders}) RETURNING {fieldsback};"
                     
                     cur.execute(script, ins_args)
                     res = cur.fetchone()
