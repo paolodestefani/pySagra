@@ -790,7 +790,7 @@ class TableModel(QueryModel):
 #             header = header.split('\n')[0]  # in case of multi-line header
 #         fm = self.columns[self.trcolumns[header]][4]  # (name, format)
 #         if role == Qt.ItemDataRole.TextAlignmentRole:
-#             if fm in ('int', 'float', 'decimal2'):   
+#             if fm in ('int', 'float', 'decimal'):   
 #                 return Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter
 #             return Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         
@@ -810,7 +810,7 @@ class TableModel(QueryModel):
 #                 outstr = label[c] if isinstance(label, tuple) else label
 #                 if fm == 'int':
 #                     return session['qlocale'].toString(int(outstr or 0))
-#                 elif fm in ('float', 'decimal2'):
+#                 elif fm in ('float', 'decimal'):
 #                     return session['qlocale'].toString(float(outstr or 0.0), 'f', 2)
 #                 elif fm == 'date':
 #                     if pd.isna(outstr):
@@ -821,7 +821,7 @@ class TableModel(QueryModel):
 #             # CASE 4: Actual Data Values
 #             if fm == 'int':
 #                 return session['qlocale'].toString(int(dt or 0))
-#             elif fm in ('float', 'decimal2'):
+#             elif fm in ('float', 'decimal'):
 #                 return session['qlocale'].toString(float(dt or 0.0), 'f', 2)
 #             elif fm == 'date':
 #                 if pd.isna(dt):

@@ -71,7 +71,7 @@ logger = logging.getLogger(__name__)
 FILTER_ROWS = 30
 
 # types of the reports stored in the database that use the filters of another type
-FILTER_TYPE_ALIAS = {'decimal2': 'decimal', 'float': 'decimal'}
+FILTER_TYPE_ALIAS = {'float': 'decimal'}
 
 
 # filter fields, these are the columns of the layout

@@ -1914,7 +1914,7 @@ WHERE Null = %s;"""]
 #         # available types are pandas dtype: 
 #         # int64, boolean, float64, string, datetime64[ns], None (=auto/generic object)
 #         # available formats:
-#         # int (0 decimal, right aligned), decimal2 (2 decimals, right aligned), 
+#         # int (0 decimal, right aligned), decimal (2 decimals, right aligned), 
 #         # str (left aligned), bool (centered), 
 #         # date (locale date), datetime (locale date time), time (locale time), None = no specific format
 #         self.columns = {#"company_id": (_tr('Models', 'Company ID'), False, 'int64', 'int'),
@@ -1934,8 +1934,8 @@ WHERE Null = %s;"""]
 #                         "customer_name": (_tr('Models', 'Customer name'), False, True, 'string', 'str'),
 #                         "customer_contact": (_tr('Models', 'Customer contact'), False, True, 'string', 'str'),
 #                         "covers": (_tr('Models', 'Covers'), True, False, 'int64', 'int'),
-#                         "total_amount": (_tr('Models', 'Total amount'), True, False, 'float64', 'decimal2'),
-#                         "discount": (_tr('Models', 'Discount'), True, False, 'float64', 'decimal2'),
+#                         "total_amount": (_tr('Models', 'Total amount'), True, False, 'float64', 'decimal'),
+#                         "discount": (_tr('Models', 'Discount'), True, False, 'float64', 'decimal'),
 #                         "cash": (_tr('Models', 'Cash'), True, False, 'float64')}
 #         # True if is a company table
 #         self.isCompanyTable = True
@@ -1948,7 +1948,7 @@ WHERE Null = %s;"""]
 #         super().__init__(parent)
 #         self.table = "company.bi_order_line"
 #         # model columns: {field: (description, pivot value, type)}, dict
-#         # available types: int, bool, decimal2, str, date, datetime, None = no filter
+#         # available types: int, bool, decimal, str, date, datetime, None = no filter
 #         self.columns = {#"company_id": (_tr('Models', 'Company ID'), False, 'int'),
 #                         "event": (_tr('Models', 'Event description'), False, True, 'str'),
 #                         "order_number": (_tr('Models', 'Order number'), False, True, 'int'),
@@ -1966,8 +1966,8 @@ WHERE Null = %s;"""]
 #                         "variants": (_tr('Models', 'Variants'), False, True, 'str'),
 #                         "item_with_variants": (_tr('Models', 'Item with variants'), False, True, 'str'),
 #                         "quantity": (_tr('Models', 'Quantity'), True, False, 'int'),
-#                         "price": (_tr('Models', 'Price'), True, False, 'decimal2'),
-#                         "amount": (_tr('Models', 'Amount'), True, False, 'decimal2')}
+#                         "price": (_tr('Models', 'Price'), True, False, 'decimal'),
+#                         "amount": (_tr('Models', 'Amount'), True, False, 'decimal')}
 #         # True if is a company table
 #         self.isCompanyTable = True
 #         self.repr = 'Order line pandas model'

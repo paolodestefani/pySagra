@@ -32,7 +32,6 @@ FIELDS = [('a', 'Int', 'int', None),
           ('h', 'Time', 'time', None),
           ('i', 'Reference', 'refstr', VALUES),
           ('j', 'Float', 'float', None),
-          ('k', 'Old decimal', 'decimal2', None),
           ('l', 'Unknown', 'unknown', None)]
 
 
@@ -103,11 +102,8 @@ class FieldTypesTest(GridTestCase):
         combo = self.grid.rows[0].operator
         return [combo.itemText(i) for i in range(combo.count())]
 
-    def test_report_types_use_the_decimal_operators(self) -> None:
-        expected = [o[1] for o in filterOperators()['decimal']]
-        for field in ('j', 'k'):
-            with self.subTest(field=field):
-                self.assertEqual(self.operators(field), expected)
+    def test_float_uses_the_decimal_operators(self) -> None:
+        self.assertEqual(self.operators('j'), [o[1] for o in filterOperators()['decimal']])
 
     def test_from_list_needs_a_list(self) -> None:
         self.assertNotIn('From list', self.operators('a'))
