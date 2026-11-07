@@ -30,6 +30,7 @@ This module contains general custom dialogs
 
 # standard library
 from enum import IntEnum
+from functools import partial
 from typing import cast, Any
 
 # PySide6
@@ -44,7 +45,6 @@ from PySide6.QtCore import QIODevice
 from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QDate
 from PySide6.QtCore import QDateTime
-from PySide6.QtCore import QTime
 
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
@@ -68,7 +68,6 @@ from PySide6.QtWidgets import QDoubleSpinBox
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QDateEdit
 from PySide6.QtWidgets import QDateTimeEdit
-from PySide6.QtWidgets import QTimeEdit
 from PySide6.QtWidgets import QComboBox
 from PySide6.QtWidgets import QPushButton
 
@@ -98,7 +97,6 @@ from App.Database.Adaptation import update_adaptation
 from App.Database.Adaptation import get_adapt_sorting
 from App.Database.Adaptation import set_adapt_sorting
 from App.Database.Adaptation import is_system_object
-from App.Database.Report import report_description
 from App.Database.Lookup import event_lookup
 from App.Database.Lookup import item_lookup
 from App.Database.Lookup import department_lookup
@@ -120,27 +118,18 @@ from App.Report.ReportEngine import Report
 from App.Report.ReportEngineEscPos import ReportEscpos
 from App.Report.ReportEngine import ReportException, ReportPrintError
 from App.Widget.Control import RelationalComboBox
-from App.Widget.Control import CheckableComboBox
+from App.Widget.FilterGrid import FilterGrid
+from App.Widget.FilterGrid import RowComboBox
 
 from App.Ui.PlainTextPreviewDialog import Ui_PlainTextPreviewDialog
 
 
-
-# filter rows
-FILTER_ROWS = 30
 
 # sort tab index
 class sti(IntEnum):
     FILTER      = 0
     SORT        = 1
     CUSTOMIZE   = 2
-
-# filter fields
-class ff(IntEnum):
-    FIELD       = 0
-    NEGATE      = 1
-    OPERATOR    = 2 
-    OPERAND     = 3
 
 # sort fields
 class sf(IntEnum):
@@ -152,7 +141,7 @@ class pti(IntEnum):
     PARAMS      = 0
     FILTER      = 1
     OPTION      = 2
-    CUSTIMIZE   = 3
+    CUSTOMIZE   = 3
 
 
 # for reference list selection in print dialog
@@ -233,108 +222,6 @@ class SelectImageDialog(QDialog):
         self.ui.spinBoxPixmapSize.setValue(ba.size()/1024)
 
 
-class RowComboBox(QComboBox):
-    "Custom combo box for store row number and set currentData"
-
-    def __init__(self, parent: QWidget|None = None) -> None:
-        super().__init__(parent)
-        self.row: int|None = None
-        
-    def setCurrentData(self, data: Any) -> None:
-        "Set current index based on data"
-        idx = self.findData(data)
-        if idx >= 0:
-            self.setCurrentIndex(idx)
-        else:
-            self.setCurrentIndex(0)
-            
-    def setCurrentOperator(self, operator: str) -> None:
-        "Set current index based on operator string inside a tuple stored in userData"
-        for idx in range(self.count()):
-            tuple_data = self.itemData(idx)
-            if tuple_data and tuple_data[0] == operator:
-                self.setCurrentIndex(idx)
-                return
-        self.setCurrentIndex(0)
-        
-    def currentOperator(self) -> str|None:
-        "Return the operator string inside a tuple stored in userData"
-        tuple_data = self.currentData()
-        return tuple_data[0] if tuple_data else None
-    
-    def currentFormat(self) -> int|None:
-        "Return the format code inside a tuple stored in userData"
-        tuple_data = self.currentData()
-        return tuple_data[2] if tuple_data else None
-    
-    def currentWidgetType(self) -> str|None:
-        "Return the widget type string inside a tuple stored in userData"
-        tuple_data = self.currentData()
-        return tuple_data[3] if tuple_data else None
-    
-    def currentOperatorKey(self) -> str:
-        "Key saved in the DB: SQL operator + widget type (ex. '=#SB', '=#LIST')"
-        data = self.currentData()
-        return f"{data[0]}#{data[3] or ''}" if data else ''
-
-    def setCurrentOperatorKey(self, key: str) -> None:
-        "Select the operator from its key; old keys without '#' use the first match"
-        if '#' not in key:
-            self.setCurrentOperator(key)    # data saved before the change
-            return
-        for idx in range(self.count()):
-            data = self.itemData(idx)
-            if data and f"{data[0]}#{data[3] or ''}" == key:
-                self.setCurrentIndex(idx)
-                return
-        self.setCurrentIndex(0)
-    
-        
-class RowCheckBox(QCheckBox):
-    "Custom checkbox for storeing row number"
-
-    def __init__(self, parent: QWidget|None = None) -> None:
-        super().__init__(parent)
-        self.row: int|None = None
-        
-        
-class SpacerWidget(QWidget):
-    "Custom widget for storeing field type"
-
-
-class LineEditStrings(QLineEdit):
-    "Custom line edit for list of string values separated by comma"
-
-    def __init__(self, parent: QWidget|None = None) -> None:
-        super().__init__(parent)
-
-    def value(self) -> list:
-        "Return the list of values separated by comma for ues in SQL ILIKE ANY(%s) operator"
-        return [f'%{v.strip()}%' for v in self.text().split(',') if v.strip()]
-    
-    
-class LineEditInts(QLineEdit):
-    "Custom line edit for list of int values separated by comma"
-
-    def __init__(self, parent: QWidget|None = None) -> None:
-        super().__init__(parent)
-
-    def value(self) -> list:
-        "Return the list of values separated by comma"
-        return [int(v.strip()) for v in self.text().split(',') if v.strip()]
-    
-    
-class LineEditDecimals(QLineEdit):
-    "Custom line edit for list of decimal values separated by comma"
-
-    def __init__(self, parent: QWidget|None = None) -> None:
-        super().__init__(parent)
-
-    def value(self) -> list:
-        "Return the list of values separated by comma"
-        return [float(v.strip()) for v in self.text().split(',') if v.strip()]
-    
-
 class SortFilterDialog(QDialog):
     "Sort and filter Dialog for Forms (versione con correzioni minime)"
 
@@ -346,100 +233,13 @@ class SortFilterDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_SortFilterDialog()
         self.ui.setupUi(self)
-        # can't be class variables for translation requirements
-        # object type (operator, operator description, format, widget)
-        # format:
-        # 0 = require operand argument (field operator %s - args)
-        # 1 = no require operand (field operator)
-        # 2 = operand included in operator with argument as list (field operator - args)
-        # 3 = operand included in operator with argument literal
-        self.FILTERING = {
-            # integer
-            'int': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', 'From list'), 0, 'LIST'), # list of reference values
-                ('=', _tr('Operator', '='), 0, 'SB'), # spinbox
-                ('<', _tr('Operator', '<'), 0, 'SB'),
-                ('<=', _tr('Operator', '<='), 0, 'SB'),
-                ('>', _tr('Operator', '>'), 0, 'SB'),
-                ('>=', _tr('Operator', '>='), 0, 'SB'),
-                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None),
-                ],
-            # decimal number
-            'decimal': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
-                ('<', _tr('Operator', '<'), 0, 'DSB'),
-                ('<=', _tr('Operator', '<='), 0, 'DSB'),
-                ('>', _tr('Operator', '>'), 0, 'DSB'),
-                ('>=', _tr('Operator', '>='), 0, 'DSB'),
-                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
-                ],
-            # boolean
-            'bool': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'CB'), # checkbox
-                ('IS NULL', _tr('Operator', 'Is null'), 1, None)
-                ],
-            # string
-            'str': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'LE'), # line edit
-                ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
-                ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
-                ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
-                ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
-                ('IS NULL', _tr('Operator', 'Is null'), 1, None)
-                ],
-            # date
-            'date': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'DE'), # date edit
-                ('<', _tr('Operator', '<'), 0, 'DE'),
-                ('<=', _tr('Operator', '<='), 0, 'DE'),
-                ('>', _tr('Operator', '>'), 0, 'DE'),
-                ('>=', _tr('Operator', '>='), 0, 'DE'),
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
-                ],
-            # date time
-            'datetime': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'DTE'), # date time edit
-                ('<', _tr('Operator', '<'), 0, 'DTE'),
-                ('<=', _tr('Operator', '<='), 0, 'DTE'),
-                ('>', _tr('Operator', '>'), 0, 'DTE'),
-                ('>=', _tr('Operator', '>='), 0, 'DTE'),
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
-                ],
-             # time
-            'time': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
-                ('<', _tr('Operator', '<'), 0, 'TE'),
-                ('<=', _tr('Operator', '<='), 0, 'TE'),
-                ('>', _tr('Operator', '>'), 0, 'TE'),
-                ('>=', _tr('Operator', '>='), 0, 'TE'),
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
-                ],
-            # reference field / list
-            'refstr': [
-                ('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'SCB'), # standard combo box
-                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'CCB'), # checkable combo box
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)
-                ]
-            }
-
+        # can't be a class variable for translation requirements
         self.ORDERING = [('ASC', _tr('Sort', 'Ascending')),
                          ('DESC', _tr('Sort', 'Descending'))]
 
         self.sortfilterClass = sortfilterClass
         self.ui.lineEditSortFilterClass.setText(sortfilterClass)
         self.model: QueryModel|TableModel = model # set also on sortfiltercustomization selection
-        # field types (moved here from availableCustomizations)
-        self.fieldType = {f: t for f, d, r, t in self.model.columns}
         # restore settings
         st = QSettings(self)
         if st.value(f"SortFilterDialog/Geometry/{self.sortfilterClass}"):
@@ -453,44 +253,14 @@ class SortFilterDialog(QDialog):
         self.ui.pushButtonUpdate.clicked.connect(self.updateSettings)
         self.ui.pushButtonSetSorting.clicked.connect(self.setCustomizationSorting)
         self.ui.buttonBox.clicked.connect(self.clicked)
-        # create filter and sorting comboboxes
-        # filters comboboxes
-        for row in range(FILTER_ROWS):
-            # field combobox
-            field = RowComboBox(self)
-            field.addItem('', None) # item 0 for clear/reset
-            for f, d, r, t in self.model.columns:
-                if t: # except None fields
-                    field.addItem(d, f)
-            field.row = row
-            field.currentIndexChanged.connect(self.fieldIndexChanged)
-            # negate checkbox
-            neg = RowCheckBox(self)
-            neg.setDisabled(True)
-            neg.row = row
-            neg.setToolTip(_tr('SoftFilterDialog','Not'))
-            # operator combobox
-            oper = RowComboBox(self)
-            oper.setDisabled(True)
-            oper.row = row
-            oper.currentIndexChanged.connect(self.operIndexChanged)
-            # operand widget placeholder
-            sw = SpacerWidget(self)
-            self.ui.layoutFilters.addWidget(field, row, ff.FIELD)
-            self.ui.layoutFilters.addWidget(neg, row, ff.NEGATE)
-            self.ui.layoutFilters.addWidget(oper, row, ff.OPERATOR)
-            self.ui.layoutFilters.addWidget(sw, row, ff.OPERAND) # position widget only
+        # filter rows
+        self.filters = FilterGrid(self.ui.layoutFilters, self)
+        self.filters.setFields(self._filterFields())
         if self.model.limitCondition:
             self.ui.checkBoxMaxRows.setChecked(True)
             self.ui.spinBoxMaxRows.setValue(self.model.limitCondition)
         else:
             self.ui.checkBoxMaxRows.setChecked(False)
-        # set layout stretch
-        self.ui.layoutFilters.setColumnStretch(ff.FIELD, 2)
-        self.ui.layoutFilters.setColumnStretch(ff.NEGATE, 0)
-        self.ui.layoutFilters.setColumnStretch(ff.OPERATOR, 1)
-        self.ui.layoutFilters.setColumnStretch(ff.OPERAND, 1)
-        self.ui.layoutFilters.setRowStretch(FILTER_ROWS, 1)
         # sorting comboboxes
         for row in range(len(self.model.columns)):
             # field combobox
@@ -519,15 +289,22 @@ class SortFilterDialog(QDialog):
 
     # ------------------------------------------------------------ helpers
 
-    @staticmethod
-    def _set_checked(widget: QWidget, values: list[str]) -> None:
-        "Check the items of a CheckableComboBox whose data (as string) is in values"
-        wanted = set(values)
-        model = widget.model() # type: ignore
-        for i in range(model.rowCount()):
-            item = model.item(i)
-            checked = str(item.data(Qt.ItemDataRole.UserRole)) in wanted
-            item.setCheckState(Qt.CheckState.Checked if checked else Qt.CheckState.Unchecked)
+    def _filterFields(self) -> list[tuple]:
+        "Return the fields of the model for the filter rows"
+        reference = getattr(self.model, 'reference', {})
+        fields = []
+        for f, d, r, t in self.model.columns:
+            if not t: # except None fields
+                continue
+            match t:
+                case 'int':
+                    values = reference.get(f)
+                case 'refstr':
+                    values = partial(get_list, f)
+                case _:
+                    values = None
+            fields.append((f, d, t, values))
+        return fields
 
     def _current_adaptation_id(self) -> int|None:
         "Current customization id or None if the list is empty"
@@ -576,11 +353,7 @@ class SortFilterDialog(QDialog):
         if sortFilterId is None:
             return
         # initial reset
-        # filters
-        for row in range(FILTER_ROWS):
-            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentIndex(0)
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
+        self.filters.reset()
         # sortings
         for row in range(len(self.model.columns)):
             self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(0)
@@ -592,41 +365,7 @@ class SortFilterDialog(QDialog):
             success = True
         if not success:
             return
-        # set filters settings
-        for t, row, fn, neg, op, wv in filters:
-            if row >= FILTER_ROWS:
-                continue
-            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentData(fn)
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(neg)
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentOperatorKey(op)
-            widget = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
-            wv = wv or ''
-            match widget:
-                case CheckableComboBox(): # before QComboBox: it is a subclass
-                    self._set_checked(widget, [x for x in wv.split('|') if x])
-                case QComboBox():
-                    # saved as data; old saves contain the index
-                    idx = next((i for i in range(widget.count())
-                                if str(widget.itemData(i)) == wv), -1)
-                    if idx < 0 and wv.isdigit() and int(wv) < widget.count():
-                        idx = int(wv)
-                    widget.setCurrentIndex(idx)
-                case QLineEdit():
-                    widget.setText(wv)
-                case QSpinBox():
-                    widget.setValue(int(float(wv or 0)))
-                case QDoubleSpinBox():
-                    widget.setValue(float(wv or 0.0))
-                case QDateEdit():
-                    widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
-                case QTimeEdit(): # before QDateTimeEdit: it is a subclass
-                    widget.setTime(QTime.fromString(wv, Qt.DateFormat.ISODate))
-                case QDateTimeEdit():
-                    widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
-                case QCheckBox():
-                    widget.setChecked(wv == 'True')
-                case _:
-                    pass
+        self.filters.restore(filters)
         # limit
         success = False
         with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation limit')):
@@ -656,35 +395,9 @@ class SortFilterDialog(QDialog):
         cid = self._current_adaptation_id()
         if cid is None:
             return
-        columns = []
         # filters
-        for row in range(FILTER_ROWS):
-            if self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().currentIndex() != 0:
-                fn = self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().currentData()
-                neg = self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().currentOperatorKey()
-                widget = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
-                wv: str|float|bool|None = None
-                match widget:
-                    case CheckableComboBox(): # before QComboBox: it is a subclass
-                        wv = '|'.join(str(x) for x in widget.currentData())
-                    case QComboBox():
-                        wv = str(widget.currentData())
-                    case QLineEdit():
-                        wv = widget.text()
-                    case (QSpinBox()|QDoubleSpinBox()):
-                        wv = widget.value()
-                    case QDateEdit():
-                        wv = widget.date().toString(Qt.DateFormat.ISODate)
-                    case QTimeEdit(): # before QDateTimeEdit: it is a subclass
-                        wv = widget.time().toString(Qt.DateFormat.ISODate)
-                    case QDateTimeEdit():
-                        wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
-                    case QCheckBox():
-                        wv = widget.checkState() == Qt.CheckState.Checked
-                    case _:
-                        wv = None
-                columns.append((cid, None, None, None, None, 'F', row, fn, neg, op, str(wv)))
+        columns: list[tuple] = [(cid, None, None, None, None, 'F', *setting)
+                                for setting in self.filters.settings()]
         # sorting
         for row in range(len(self.model.columns)):
             if self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().currentIndex() > 0:
@@ -711,124 +424,6 @@ class SortFilterDialog(QDialog):
                                 _tr("Dialog", "Current adaptation was updated"))
 
     # ------------------------------------------------------------ row slots
-
-    def fieldIndexChanged(self, index: int) -> None:
-        "Set combobox items (operator) and operand QWidget"
-        if not self.model or index < 0:
-            return
-        # get current row number
-        s = self.sender()
-        if not isinstance(s, RowComboBox):
-            return
-        row = s.row
-        # if index is zero reset everything of the row
-        if index == 0:
-            # reset negate
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setDisabled(True)
-            # reset operator combobox
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setDisabled(True)
-            return
-        # index != 0 enable negate
-        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setEnabled(True)
-        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
-        # get field type
-        field = self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().currentData()
-        ftype = self.fieldType.get(field)
-        if not ftype:
-            return
-        # set operator alternatives
-        self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setEnabled(True)
-        self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().clear()
-        for item in self.FILTERING[ftype]:
-            o, d, r, w = item
-            if hasattr(self.model, 'reference') and w == 'LIST':
-                if field not in self.model.reference: # skip list if not required
-                    continue
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().addItem(d, item)
-
-    def operIndexChanged(self, index: int) -> None:
-        "Create a widget for field and operator"
-        if not self.model or index < 0:
-            return
-        # get current row number
-        s = self.sender()
-        if not isinstance(s, RowComboBox):
-            return
-        row = s.row
-        # clear if index is zero
-        if index == 0:
-            # delete previous widget (MANDATORY)
-            w = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
-            self.ui.layoutFilters.removeWidget(w)
-            w.deleteLater()
-            # add spacer
-            sw = SpacerWidget(self) # spacer widget
-            self.ui.layoutFilters.addWidget(sw, row, ff.OPERAND)
-            return
-        # get field type
-        field = self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().currentData()
-        w = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
-        op = s.currentOperator()
-        if not op:
-            return
-        nwt = s.currentWidgetType()
-        # insert new operand widget
-        widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
-        match nwt:
-            case 'SB': # spinbox
-                widget = QSpinBox(self)
-                widget.setRange(0, 2147483647)
-            case 'DSB': # double spinbox
-                widget = QDoubleSpinBox(self)
-                widget.setDecimals(2)
-                widget.setMaximum(99999999.99)
-            case 'CB': # check box
-                widget = QCheckBox(self)
-            case 'DE': # date edit
-                widget = QDateEdit(QDate.currentDate(), self)
-                widget.setCalendarPopup(True)
-                widget.setMinimumDate(QDate(1800, 1, 1))
-                widget.setMaximumDate(QDate(3000, 12, 31))
-                widget.setDate(QDate.currentDate())
-            case 'DTE': # date time edit
-                widget = QDateTimeEdit(self)
-                widget.setCalendarPopup(True)
-                widget.setMinimumDate(QDate(1800, 1, 1))
-                widget.setMaximumDate(QDate(3000, 12, 31))
-                widget.setDate(QDate.currentDate())
-            case 'TE': # time edit
-                widget = QTimeEdit(QTime.currentTime(), self)
-            case 'LE': # line edit
-                widget = QLineEdit(self)
-            case 'LES': # line edit string list
-                widget = LineEditStrings(self)
-            case 'LEI': # line edit int list
-                widget = LineEditInts(self)
-            case 'LED': # line edit decimal list
-                widget = LineEditDecimals(self)
-            case 'SCB': # standard combo box
-                widget = QComboBox(self)
-                for k, v in get_list(field):
-                    widget.addItem(v, k)
-            case 'CCB': # checkable combo box
-                widget = CheckableComboBox(self)
-                for k, v in get_list(field):
-                    widget.addItem(v, k)
-            case 'LIST':
-                if hasattr(self.model, 'reference'):
-                    widget = QComboBox(self)
-                    for k, v in self.model.reference[field]():
-                        widget.addItem(v, k)
-                else:
-                    widget = SpacerWidget(self)
-            case _: # no widget required (is null/is not null)
-                widget = SpacerWidget(self)
-        self.ui.layoutFilters.removeWidget(w)
-        w.deleteLater()
-        # new widget
-        self.ui.layoutFilters.addWidget(widget, row, ff.OPERAND)
 
     def sortIndexChanged(self, index: int) -> None:
         "Set combobox items and parameter qwidget"
@@ -949,13 +544,7 @@ class SortFilterDialog(QDialog):
     def clicked(self, button: QPushButton|None = None) -> None:
         "Intercept Reset button action"
         if button == self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Reset):
-            for r in range(self.ui.layoutFilters.rowCount()):
-                if self.ui.layoutFilters.itemAtPosition(r, ff.FIELD):
-                    self.ui.layoutFilters.itemAtPosition(r, ff.FIELD).widget().setCurrentIndex(0)
-                if self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE):
-                    self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().setChecked(False)
-                if self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR):
-                    self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().setCurrentIndex(0)
+            self.filters.reset()
             for r in range(self.ui.layoutSorting.rowCount()):
                 if self.ui.layoutSorting.itemAtPosition(r, sf.SORTFIELD):
                     self.ui.layoutSorting.itemAtPosition(r, sf.SORTFIELD).widget().setCurrentIndex(0)
@@ -968,55 +557,8 @@ class SortFilterDialog(QDialog):
             return
         # get filters
         self.model.whereCondition.clear()
-        v: list|str|int|float|QDate|QDateTime|QTime|bool|None
-        for r in range(FILTER_ROWS):
-            if (self.ui.layoutFilters.itemAtPosition(r, ff.FIELD).widget().currentIndex() != 0 and # field
-                self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentIndex() != 0): # operator
-                fl = self.ui.layoutFilters.itemAtPosition(r, ff.FIELD).widget().currentData()
-                ng = self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentOperator()
-                fmt = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentFormat()
-                wd = self.ui.layoutFilters.itemAtPosition(r, ff.OPERAND).widget()
-                match wd:
-                    case CheckableComboBox():
-                        v = wd.currentData() # list
-                    case QComboBox():
-                        v = wd.currentData()
-                    case LineEditStrings()|LineEditInts()|LineEditDecimals(): # lists
-                        v = wd.value()
-                    case QLineEdit(): # must be after list edit because is subclass of QLineEdit
-                        v = wd.text()
-                    case (QSpinBox()|QDoubleSpinBox()):
-                        v = wd.value()
-                    case QDateEdit():
-                        v = wd.date()
-                    case QTimeEdit(): # time before datetime because is subclass of QDateTimeEdit
-                        v = wd.time()
-                    case QDateTimeEdit():
-                        v = wd.dateTime()
-                    case QCheckBox():
-                        v = wd.checkState() == Qt.CheckState.Checked
-                    case _:
-                        v = None
-                arg: Any
-                match fmt:
-                    case 0:
-                        cond = f"{fl} {op} %s"
-                        arg = v
-                    case 1:
-                        cond = f"{fl} {op}"
-                        arg = None
-                    case 2:
-                        cond = f"{fl} {op}"
-                        arg = v.split() if isinstance(v, str) else v
-                    case 3:
-                        cond = f"{fl} {op}"
-                        arg = v
-                    case _:
-                        raise ValueError(f"Unknown operator format: {fmt}")
-                if ng:
-                    cond = f"NOT {cond}"
-                self.model.addWhere(cond, arg)
+        for condition, argument in self.filters.conditions():
+            self.model.addWhere(condition, argument)
         if self.ui.checkBoxMaxRows.isChecked():
             self.model.limitCondition = self.ui.spinBoxMaxRows.value()
         else:
@@ -1122,73 +664,7 @@ class PrintDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_PrintDialog()
         self.ui.setupUi(self)
-        # can't be class variables for translation requirements
-        # object type (operator, operator description, format, widget)
-        # format:
-        # 0 = require operand argument (field operator %s - args)
-        # 1 = no require operand (field operator)
-        # 2 = operand included in operator with argument as list (field operator - args)
-        # 3 = operand included in operator with argument literal
-        self.FILTERING = {
-            # integer
-            'int': [('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', 'From list'), 0, 'LIST'), # list of reference values
-                ('=', _tr('Operator', '='), 0, 'SB'), # spinbox
-                ('<', _tr('Operator', '<'), 0, 'SB'),
-                ('<=', _tr('Operator', '<='), 0, 'SB'),
-                ('>', _tr('Operator', '>'), 0, 'SB'),
-                ('>=', _tr('Operator', '>='), 0, 'SB'),
-                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LEI'), # line edit int list
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
-            # decimal number
-            'decimal': [('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'DSB'), # double spinbox
-                ('<', _tr('Operator', '<'), 0, 'DSB'),
-                ('<=', _tr('Operator', '<='), 0, 'DSB'),
-                ('>', _tr('Operator', '>'), 0, 'DSB'),
-                ('>=', _tr('Operator', '>='), 0, 'DSB'),
-                ('= ANY(%s)', _tr('Operator', 'In'), 2, 'LED'), # line edit decimal list
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
-            # boolean
-            'bool': [('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'CB'), # checkbox
-                ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
-            # string
-            'str': [('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', 'From list'), 0, 'LIST'), # list of reference values
-                ('=', _tr('Operator', '='), 0, 'LE'), # line edit
-                ("ilike '%%'||%s||'%%'", _tr('Operator', 'Contains'), 3, 'LE'),
-                ("ilike %s||'%%'", _tr('Operator', 'Starts with'), 3, 'LE'),
-                ("ilike '%%'||%s", _tr('Operator', 'Ends with'), 3, 'LE'),
-                ('ILIKE ANY(%s)', _tr('Operator', 'In'), 2, 'LES'), # line edit string list case insensitive
-                ('IS NULL', _tr('Operator', 'Is null'), 1, None)],
-            # date
-            'date': [('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'DE'), # date edit
-                ('<', _tr('Operator', '<'), 0, 'DE'),
-                ('<=', _tr('Operator', '<='), 0, 'DE'),
-                ('>', _tr('Operator', '>'), 0, 'DE'),
-                ('>=', _tr('Operator', '>='), 0, 'DE'),
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
-            # date time
-            'datetime': [('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'DTE'), # date time edit
-                ('<', _tr('Operator', '<'), 0, 'DTE'),
-                ('<=', _tr('Operator', '<='), 0, 'DTE'),
-                ('>', _tr('Operator', '>'), 0, 'DTE'),
-                ('>=', _tr('Operator', '>='), 0, 'DTE'),
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)],
-             # time
-            'time': [('', '', 0, None),  # first row means no data
-                ('=', _tr('Operator', '='), 0, 'TE'), # date time edit
-                ('<', _tr('Operator', '<'), 0, 'TE'),
-                ('<=', _tr('Operator', '<='), 0, 'TE'),
-                ('>', _tr('Operator', '>'), 0, 'TE'),
-                ('>=', _tr('Operator', '>='), 0, 'TE'),
-                ('IS NULL', _tr('Operator', 'Is Null'), 1, None)]}
-        
-        # omit ordering for reports as it is useless
-
+        # can't be a class variable for translation requirements
         self.PDFVERSION = [(QPagedPaintDevice.PdfVersion.PdfVersion_1_4, _tr('Dialog', 'Pdf 1.4')),
                            (QPagedPaintDevice.PdfVersion.PdfVersion_A1b, _tr('Dialog', 'Pdf A-1b')),
                            (QPagedPaintDevice.PdfVersion.PdfVersion_1_6, _tr('Dialog', 'Pdf 1.6'))]
@@ -1239,36 +715,10 @@ class PrintDialog(QDialog):
         self.ui.pushButtonUserDefault.clicked.connect(self.setUserDefault)
         self.ui.pushButtonClassDefault.clicked.connect(self.setClassDefault)
         # check authorization
-        self.ui.tabWidget.widget(pti.OPTION).setEnabled(session['can_edit_reports'] or
-                                            session['is_admin'])
-        # create filter comboboxes
-        for row in range(FILTER_ROWS):
-            # field combobox
-            field = RowComboBox(self)
-            field.row = row
-            field.currentIndexChanged.connect(self.fieldIndexChanged)
-            # negate checkbox
-            neg = RowCheckBox(self)
-            neg.setDisabled(True)
-            neg.row = row
-            neg.setToolTip(_tr('SoftFilterDialog','Not'))
-            # operator combobox
-            oper = RowComboBox(self)
-            oper.setDisabled(True)
-            oper.row = row
-            oper.currentIndexChanged.connect(self.operIndexChanged)
-            self.ui.layoutFilters.addWidget(field, row, ff.FIELD)
-            self.ui.layoutFilters.addWidget(neg, row, ff.NEGATE)
-            self.ui.layoutFilters.addWidget(oper, row, ff.OPERATOR)
-            # operand spacer widget (will be replaced by a widget if required)
-            sw = SpacerWidget(self)
-            self.ui.layoutFilters.addWidget(sw, row, ff.OPERAND) # position widget only
-        # set layout stretch
-        self.ui.layoutFilters.setColumnStretch(ff.FIELD, 2)
-        self.ui.layoutFilters.setColumnStretch(ff.NEGATE, 0)
-        self.ui.layoutFilters.setColumnStretch(ff.OPERATOR, 1)
-        self.ui.layoutFilters.setColumnStretch(ff.OPERAND, 1)
-        self.ui.layoutFilters.setRowStretch(row + 1, 1)
+        self.ui.tabWidget.widget(pti.CUSTOMIZE).setEnabled(session['can_edit_reports'] or
+                                                           session['is_admin'])
+        # filter rows
+        self.filters = FilterGrid(self.ui.layoutFilters, self)
         # disable parameters tab
         self.ui.tabWidget.setTabEnabled(pti.PARAMS, False)
         ## initial settings ##
@@ -1278,10 +728,8 @@ class PrintDialog(QDialog):
 
     def reset(self) -> None:
         "Clear all filters"
-        for i in range(self.ui.layoutFilters.rowCount()):
-            if self.ui.layoutFilters.itemAtPosition(i, 0):
-                self.ui.layoutFilters.itemAtPosition(i, 0).widget().setCurrentIndex(0)
-        
+        self.filters.reset()
+
     def show(self) -> None:
         "Show modal dialog if a report is available"
         # no report available, exit
@@ -1353,22 +801,10 @@ class PrintDialog(QDialog):
         if self.report.parameter:
             self.ui.layoutParameters.setColumnStretch(1, 1)
             self.ui.layoutParameters.setRowStretch(row + 1, 1)
-        # filters already created in init only fill the field comboboxes values
-        # initial reset
-        for row in range(FILTER_ROWS):
-            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentIndex(0)
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentIndex(0)
-        for row in range(FILTER_ROWS):
-            field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget()
-            field.currentIndexChanged.disconnect(self.fieldIndexChanged)
-            field.clear()
-            field.addItem('', None) # item 0 for clear/reset
-            for k, v in self.report.conditions.items():
-                    field.addItem(v.description, k)
-            field.currentIndexChanged.connect(self.fieldIndexChanged)
-        # fill available adaptations
-        #self.reportAdaptationList()
+        # set the fields of the new report
+        self.filters.setFields([(k, v.description, v.ftype,
+                                 referenceList[v.referenceList] if v.referenceList is not None else None)
+                                for k, v in self.report.conditions.items()])
 
     def reportAdaptationList(self) -> None:
         "Fill available adaptations"
@@ -1427,30 +863,7 @@ class PrintDialog(QDialog):
                     raise ReportPrintError("Unable to identify parameter type")
             columns.append((cid, None, None, None, None, 'P', row, None, None, None, str(wv)))
         # filters
-        for row in range(FILTER_ROWS):
-            if self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().currentIndex() != 0:
-                fn = self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().currentData()
-                neg = self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().currentOperatorKey()
-                widget = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
-                match widget:
-                    case QComboBox():
-                        wv = str(widget.currentData())      # il dato, non l'indice
-                    case QLineEdit():
-                        wv = widget.text()
-                    case (QSpinBox()|QDoubleSpinBox()):
-                        wv = widget.value()
-                    case QDateEdit():
-                        wv = widget.date().toString(Qt.DateFormat.ISODate)
-                    case QTimeEdit():                       # prima di QDateTimeEdit: ne è sottoclasse
-                        wv = widget.time().toString(Qt.DateFormat.ISODate)
-                    case QDateTimeEdit():
-                        wv = widget.dateTime().toString(Qt.DateFormat.ISODate)
-                    case QCheckBox():
-                        wv = widget.isChecked()
-                    case _:
-                        wv = None
-                columns.append((cid, None, None, None, None, 'F', row, fn, neg, op, str(wv)))
+        columns += [(cid, None, None, None, None, 'F', *setting) for setting in self.filters.settings()]
         success = False
         with gui_exception_context(self, _tr('ReportDialog', 'Save adaptation settings')):
             set_adapt_setting(cid, columns)
@@ -1540,7 +953,10 @@ class PrintDialog(QDialog):
         for t, row, fn, neg, op, wv in params:
             if not wv:  # this happens on report modification, old adaptation could refer to deleted objects
                 continue
-            widget = self.ui.layoutParameters.itemAtPosition(row, 1).widget()
+            item = self.ui.layoutParameters.itemAtPosition(row, 1)
+            if item is None:  # the parameter was removed from the report
+                continue
+            widget = item.widget()
             match widget:
                 case QLineEdit():
                     widget.setText(wv)
@@ -1558,43 +974,9 @@ class PrintDialog(QDialog):
                     widget.setCurrentText(wv)
                 case _:
                     pass
-        # reset filters: se il report non cambia, setReport non viene richiamato
-        # e resterebbero i filtri della personalizzazione precedente
-        for row in range(FILTER_ROWS):
-            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentIndex(0)
-        # set filters settings
-        for t, row, fn, neg, op, wv in filters:
-            if row >= FILTER_ROWS:
-                continue
-            wv = wv or ''
-            self.ui.layoutFilters.itemAtPosition(row, ff.FIELD).widget().setCurrentData(fn)
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(neg)
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().setCurrentOperatorKey(op)
-            widget = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
-            match widget:
-                case QComboBox():
-                    # salvato come dato; i vecchi salvataggi contengono l'indice
-                    idx = next((i for i in range(widget.count())
-                                if str(widget.itemData(i)) == wv), -1)
-                    if idx < 0 and wv.isdigit() and int(wv) < widget.count():
-                        idx = int(wv)
-                    widget.setCurrentIndex(idx)
-                case QLineEdit():
-                    widget.setText(wv)
-                case QSpinBox():
-                    widget.setValue(int(float(wv or 0)))
-                case QDoubleSpinBox():
-                    widget.setValue(float(wv or 0.0))
-                case QDateEdit():
-                    widget.setDate(QDate.fromString(wv, Qt.DateFormat.ISODate))
-                case QTimeEdit():                           # prima di QDateTimeEdit
-                    widget.setTime(QTime.fromString(wv, Qt.DateFormat.ISODate))
-                case QDateTimeEdit():
-                    widget.setDateTime(QDateTime.fromString(wv, Qt.DateFormat.ISODate))
-                case QCheckBox():
-                    widget.setChecked(wv == 'True')
-                case _:
-                    pass
+        # the report can be the same as before, setReport has not cleared the filters
+        self.filters.reset()
+        self.filters.restore(filters)
         # set pdf file name if a report exists
         if adaptId and self.report:
             self.ui.lineEditFileName.setText(self.report.options.get('documentName'))
@@ -1651,128 +1033,6 @@ class PrintDialog(QDialog):
                                 _tr("MessageDialog", "Information"),
                                 _tr("Dialog", "Current adaptation set as default for class"))
 
-    def fieldIndexChanged(self, index: int) -> None:
-        "Set combobox items (operator) and operand QWidget"
-        if index < 0:
-            return
-        if not self.report:
-            return
-        # get current row number
-        s = self.sender()        
-        if not isinstance(s, RowComboBox):
-            return
-        row = s.row
-        # clear if index is zero
-        if index == 0:
-            # reset operator
-            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setCurrentIndex(0)
-            self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setDisabled(True)
-            # reset negate
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
-            self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setDisabled(True)
-            return
-        # index != 0 enable negate
-        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setEnabled(True)
-        self.ui.layoutFilters.itemAtPosition(row, ff.NEGATE).widget().setChecked(False)
-        # get field type
-        ftype = self.report.conditions[self.sender().currentData()].ftype # type: ignore[attr-defined]
-        if not ftype:
-            return
-        # set operator alternatives
-        self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().setEnabled(True)
-        self.ui.layoutFilters.itemAtPosition(row,ff.OPERATOR).widget().clear()
-        data = cast(Any, self.sender()).currentData()
-        for item in self.FILTERING[ftype]:
-            o, d, r, w = item
-            if w == 'LIST' and self.report.conditions[data].referenceList is None:
-                continue # skip if no reference list available
-            self.ui.layoutFilters.itemAtPosition(row, ff.OPERATOR).widget().addItem(d, item)
-
-    def operIndexChanged(self, index: int) -> None:
-        "Create a widget for field and operator"
-        if index < 0:
-            return
-        if not self.report:
-            return
-        # get current row number
-        s = self.sender()        
-        if not isinstance(s, RowComboBox):
-            return
-        row = s.row
-        # clear if index is zero
-        if index == 0:
-            # delete previous widget (MANDATORY)
-            w = self.ui.layoutFilters.itemAtPosition(row,ff.OPERAND).widget()
-            self.ui.layoutFilters.removeWidget(w)
-            w.deleteLater()
-            # add spacer
-            sw = SpacerWidget(self) # spacer widget
-            self.ui.layoutFilters.addWidget(sw, row,ff.OPERAND)
-            return
-        # get field type
-        field = self.ui.layoutFilters.itemAtPosition(row,ff.FIELD).widget().currentData()
-        w = self.ui.layoutFilters.itemAtPosition(row, ff.OPERAND).widget()
-        op_tuple = s.currentData() 
-        if not op_tuple:
-            return
-        nwt = s.currentWidgetType()
-        # insert new operand widget
-        widget: QSpinBox|QDoubleSpinBox|QCheckBox|QDateEdit|QDateTimeEdit|QLineEdit|QComboBox|CheckableComboBox|QWidget
-        match nwt:
-            case 'SB': # spinbox
-                widget = QSpinBox(self)
-                widget.setRange(0, 2147483647)
-            case 'DSB': # double spinbox
-                widget = QDoubleSpinBox(self)
-                widget.setDecimals(2)
-                widget.setMaximum(99999999.99)
-            case 'CB': # check box
-                widget = QCheckBox(self)
-            case 'DE': # date edit
-                widget = QDateEdit(QDate.currentDate(), self)
-                widget.setCalendarPopup(True)
-                widget.setMinimumDate(QDate(1800, 1, 1))
-                widget.setMaximumDate(QDate(3000, 12, 31))
-                widget.setDate(QDate.currentDate())
-            case 'DTE': # date time edit
-                widget = QDateTimeEdit(self)
-                widget.setCalendarPopup(True)
-                widget.setMinimumDate(QDate(1800, 1, 1))
-                widget.setMaximumDate(QDate(3000, 12, 31))
-                widget.setDate(QDate.currentDate())
-            case 'TE': # time edit
-                widget = QTimeEdit(QTime.currentTime(), self)
-                #widget.setTime(QTime.currentTime())
-            case 'LE': # line edit
-                widget = QLineEdit(self)
-            case 'LES': # line edit string list
-                widget = LineEditStrings(self)
-            case 'LEI': # line edit int list
-                widget = LineEditInts(self)
-            case 'LED': # line edit decimal list
-                widget = LineEditDecimals(self)
-            # case 'SCB': # standard combo box
-            #     widget = QComboBox(self)
-                # for k, v in get_list(self.model.columns[fi][6]):
-                #     widget.addItem(v, k)
-            # case 'CCB': # chackable combo box
-            #     widget = CheckableComboBox(self)
-                # for k, v in get_list(self.model.columns[fi][6]):
-                #     widget.addItem(v, k)
-            case 'LIST':
-                if self.report.conditions[field].referenceList is not None:
-                    widget = QComboBox(self)
-                    for k, v in referenceList[self.report.conditions[field].referenceList]():
-                        widget.addItem(v, k)
-                else:
-                    widget = SpacerWidget(self)
-            case _: # no widget required (is null/is not null)
-                widget = SpacerWidget(self)
-        self.ui.layoutFilters.removeWidget(w)
-        w.deleteLater()
-        # new widget
-        self.ui.layoutFilters.addWidget(widget, row, ff.OPERAND)
-        
     def generateReport(self) -> bool:
         "Generate sql query, where condition, order by expression and report"
         # sanity check
@@ -1802,65 +1062,7 @@ class PrintDialog(QDialog):
                         case _:
                             raise ReportException("Unknown object type")
         # get filters
-        condition = []
-        argument = []
-        v: list|str|int|float|QDate|QDateTime|QTime|bool|None
-        for r in range(FILTER_ROWS):
-            if (hasattr(self.ui.layoutFilters.itemAtPosition(r,ff.FIELD), 'widget') and  # can happended if no filters
-                (self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentIndex() != 0 and  # field
-                 self.ui.layoutFilters.itemAtPosition(r,ff.OPERATOR).widget().currentIndex() != 0)):  # operator
-                fn = self.ui.layoutFilters.itemAtPosition(r,ff.FIELD).widget().currentData()
-                ty = self.report.conditions[fn].ftype
-                ng = self.ui.layoutFilters.itemAtPosition(r, ff.NEGATE).widget().isChecked()
-                op = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentOperator()
-                fmt = self.ui.layoutFilters.itemAtPosition(r, ff.OPERATOR).widget().currentFormat()
-                wd = self.ui.layoutFilters.itemAtPosition(r, ff.OPERAND).widget()
-                match wd:
-                    case CheckableComboBox():
-                        v = wd.currentData() # list
-                    case QComboBox():
-                        v = wd.currentData()
-                    case LineEditStrings()|LineEditInts()|LineEditDecimals(): # lists
-                        v = wd.value()
-                    case QLineEdit():
-                        v = wd.text()
-                    case QSpinBox()|QDoubleSpinBox():
-                        v = wd.value()
-                    case QDateEdit():
-                        v = wd.date()
-                    case QTimeEdit(): # time before datetime because is subclass of QDateTimeEdit
-                        v = wd.time()
-                    case QDateTimeEdit():
-                        v = wd.dateTime()
-                    case QCheckBox():
-                        if wd.checkState() == Qt.CheckState.Checked:
-                            v = True
-                        else:
-                            v = False
-                    case _:
-                        v = None
-                arg: Any
-                match fmt:
-                    case 0:
-                        cond = f"{fn} {op} %s"
-                        arg = v
-                    case 1:
-                        cond = f"{fn} {op}"
-                        arg = None
-                    case 2:
-                        cond = f"{fn} {op}"
-                        arg = v.split() if isinstance(v, str) else v
-                    case 3:
-                        cond = f"{fn} {op}"
-                        arg = v
-                    case _:
-                        raise ValueError(f"Unknown operator format: {fmt}")
-                if ng:
-                    cond = f"NOT {cond}"
-                condition.append(cond)
-                argument.append(arg)
-        self.where = list(zip(condition, argument))
-        #print("WHERE:", self.where)
+        self.where = self.filters.conditions()
         # create self.data
         if self.report.query:
             success = False
@@ -1875,9 +1077,11 @@ class PrintDialog(QDialog):
                                     _tr('Dialog', "No data to render"))
             return False
         # generate a report
+        success = False
         with gui_exception_context(self, _tr('ReportDialog', 'Generate report')):
             self.report.generate()
-        return True
+            success = True
+        return success
 
     def printPreview(self) -> None:
         "Generate report and show a print preview"

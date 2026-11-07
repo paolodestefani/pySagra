@@ -77,7 +77,6 @@ NULL_MAP: dict[str, Any] = {
             'int': 0,
             'str': "",
             'float': 0.0,
-            'decimal2': 0,
             'decimal': 0,
             'bool': False,
             'date': QDate(),

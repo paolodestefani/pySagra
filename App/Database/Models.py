@@ -59,7 +59,7 @@ class MenuItemTreeModel(TreeModel):
         super().__init__(parent)
         self.table = "system.menu_toolbar_item"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("parent", _tr('Models', 'Menu'), False, 'str'),
                         ("child", _tr('Models', 'User description'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
@@ -87,7 +87,7 @@ class ToolbarItemTreeModel(TreeModel):
         super().__init__(parent)
         self.table = "system.menu_toolbar_item"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("parent", _tr('Models', 'Menu'), False, 'str'),
                         ("child", _tr('Models', 'User description'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
@@ -128,7 +128,7 @@ SELECT
 FROM system.connection a
 LEFT JOIN system.company b ON a.company_id = b.company_id;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("a.session_id", _tr('Models', 'Session ID'), True, 'int'),
                         ("a.access_date", _tr('Models', 'Access Date'), True, 'datetime'),
                         ("a.db_user_name", _tr('Models', 'Database User'), True, 'str'),
@@ -197,7 +197,7 @@ SELECT
     updated_at
 FROM system.company;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("company_id", _tr('Models', 'Company ID'), True, 'int'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -218,7 +218,7 @@ class CompanyModel(TableModel):
         super().__init__(parent)
         self.table = "system.company"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("company_id", _tr('Models', 'Company ID'), True, 'int'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -261,7 +261,7 @@ SELECT
     updated_at
 FROM system.app_user;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("user_code", _tr('Models', 'User'), False, 'str'),
                         ("description", _tr('Models', 'User description'), False, 'str'),
                         ("user_image", _tr('Models', 'Image'), False, None),
@@ -289,7 +289,7 @@ class UserModel(TableModel):
         super().__init__(parent)
         self.table = "system.app_user"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("user_code", _tr('Models', 'User'), False, 'str'),
                         ("description", _tr('Models', 'User description'), False, 'str'),
                         ("user_image", _tr('Models', 'Image'), False, None),
@@ -326,7 +326,7 @@ class UserCompanyModel(TableModel):
         super().__init__(parent)
         self.table = "system.app_user_company"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("company_id", _tr('Models', 'Company ID'), False, 'int'),
                         ("app_user_code", _tr('Models', 'User'), False, 'str'),
                         ("profile_code", _tr('Models', 'Profile'), False, 'str'),
@@ -379,7 +379,7 @@ SELECT
     updated_at
 FROM system.profile;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("profile_code", _tr('Models', 'Profile'), True, 'int'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -399,7 +399,7 @@ class ProfileModel(TableModel):
         super().__init__(parent)
         self.table = "system.profile"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("profile_code", _tr('Models', 'Profile'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -431,7 +431,7 @@ class ProfileActionModel(TableModel):
         super().__init__(parent)
         self.table = "system.profile_action"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("profile_code", _tr('Models', 'Profile'), False, 'str'),
                         ("action", _tr('Models', 'Action'), False, 'str'),
                         ("read", _tr('Models', 'Read'), False, 'bool'),
@@ -467,7 +467,7 @@ SELECT
     updated_at
 FROM system.menu_toolbar;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("code", _tr('Models', 'Menu'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -488,7 +488,7 @@ class MenuModel(TableModel):
         super().__init__(parent)
         self.table = "system.menu_toolbar"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("code", _tr('Models', 'Menu'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -523,7 +523,7 @@ SELECT
     updated_at
 FROM system.menu_toolbar;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("code", _tr('Models', 'Toolbar'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -544,7 +544,7 @@ class ToolbarModel(TableModel):
         super().__init__(parent)
         self.table = "system.menu_toolbar"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("code", _tr('Models', 'Code'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("is_system_object", _tr('Models', 'System'), True, 'bool'),
@@ -585,7 +585,7 @@ SELECT
     updated_at
 FROM system.report;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (
             ("report_id", _tr('Models', 'ID'), True, 'int'),
             ("print_method", _tr('Models', 'Print method'), False, 'str'),
@@ -611,7 +611,7 @@ class ReportModel(TableModel):
         super().__init__(parent)
         self.table = "system.report"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (
             ("report_id", _tr('Models', 'ID'), True, 'int'),
             ("print_method", _tr('Models', 'Print method'), False, 'str'),
@@ -657,7 +657,7 @@ SELECT
     updated_at
 FROM system.python_scripting;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (
             ("script_id", _tr('Models', 'ID'), True, 'int'),
             ("class_name", _tr('Models', 'Class name'), False, 'str'),
@@ -685,7 +685,7 @@ class ScriptingModel(TableModel):
         super().__init__(parent)
         self.table = "system.python_scripting"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (
             ("script_id", _tr('Models', 'ID'), True, 'int'),
             ("class_name", _tr('Models', 'Class name'), False, 'str'),
@@ -721,7 +721,7 @@ class CashDeskModel(TableModel):
         super().__init__(parent)
         self.table = "company.cash_desk"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("cash_desk_id", _tr('Models', 'ID'), True, 'int'),
                         ("hostname", _tr('Models', 'Computer name'), False, 'str'),
                         ("cash_desk_description", _tr('Models', 'Cash desk description'), False, 'str'),
@@ -751,7 +751,7 @@ class EscposPrinterModel(TableModel):
         super().__init__(parent)
         self.table = "escpos_printer"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("escpos_printer_id", _tr('Models', 'ID'), True, 'int'),
                         ("hostname", _tr('Models', 'Computer name'), False, 'str'),
                         ("name", _tr('Models', 'Printer name'), False, 'str'),
@@ -796,7 +796,7 @@ class DepartmentModel(TableModel):
         super().__init__(parent)
         self.table = "company.department"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("department_id", _tr('Models', 'ID'), True, 'int'),
                         ("description", _tr('Models', 'Department description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
@@ -929,7 +929,7 @@ class SeatMapModel(TableModel):
         super().__init__(parent)
         self.table = "company.seat_map"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("seat_map_id", _tr('Models', 'ID'), True, 'int'),
                         ("table_code", _tr('Models', 'Table code'), False, 'str'),
                         ("pos_row", _tr('Models', 'Row'), False, 'int'),
@@ -1019,7 +1019,7 @@ class ItemModel(TableModel):
         super().__init__(parent)
         self.table = "company.item"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("item_id", _tr('Models', 'ID'), False, 'int'),
                         ("item_type", _tr('Models', 'Item type'), False, 'str'),
                         ("description", _tr('Models', 'Item description'), False, 'str'),
@@ -1061,12 +1061,12 @@ class ItemVariantModel(TableModel):
         super().__init__(parent)
         self.table = "company.item_variant"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("item_variant_id", _tr('Models', 'ID'), False, 'int'),
                         ("item_id", _tr('Models', 'Item'), False, None),
                         ("variant_description", _tr('Models', 'Variant description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
-                        ("price_delta", _tr('Models', 'Price delta'), False, 'decimal2'),
+                        ("price_delta", _tr('Models', 'Price delta'), False, 'decimal'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -1091,7 +1091,7 @@ class KitPartModel(TableModel):
         self.table = "company.item_part"
         self.recordType = {'item_type': 'K'}
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("item_part_id", _tr('Models', 'ID'), False, 'int'),
                         ("item_id", _tr('Models', 'Kit'), False, 'int'),
                         ("part_id", _tr('Models', 'Part'), False, 'int'),
@@ -1119,7 +1119,7 @@ class MenuPartModel(TableModel):
         self.table = "company.item_part"
         self.recordType = {'item_type': 'M'}
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("item_part_id", _tr('Models', 'ID'), False, 'int'),
                         ("item_id", _tr('Models', 'Menu'), False, 'int'),
                         ("part_id", _tr('Models', 'Part'), False, 'int'),
@@ -1173,7 +1173,7 @@ class PriceListModel(TableModel):
         super().__init__(parent)
         self.table = "company.price_list"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("price_list_id", _tr('Models', 'ID'), False, 'int'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -1196,11 +1196,11 @@ class PriceListItemModel(TableModel):
         super().__init__(parent)
         self.table = "company.price_list_item"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("price_list_item_id", _tr('Models', 'ID'), False, 'int'),
                         ("price_list_id", _tr('Models', 'Price list'), False, 'int'),
                         ("item_id", _tr('Models', 'Item'), False, 'int'),
-                        ("price", _tr('Models', 'Price'), False, 'decimal2'),
+                        ("price", _tr('Models', 'Price'), False, 'decimal'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -1251,7 +1251,7 @@ SELECT
     updated_by,
     updated_at
 FROM company.event;"""
-        # available types: int, bool, decimal2, str, date, datetime, None"""
+        # available types: int, bool, decimal, str, date, datetime, None"""
         # model columns: (field, description, readonly, type), tuple of tuples
         self.columns = (("event_id", _tr('Models', 'ID'), True, 'int'),
                         ("description", _tr('Models', 'Event description'), False, 'str'),
@@ -1276,7 +1276,7 @@ class EventModel(TableModel):
         super().__init__(parent)
         self.table = "company.event"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("event_id", _tr('Models', 'ID'), True, 'int'),
                         ("description", _tr('Models', 'Event description'), False, 'str'),
                         ("start_date", _tr('Models', 'Start date'), False, 'datetime'),
@@ -1303,7 +1303,7 @@ class OrderNumberingModel(TableModel):
         super().__init__(parent)
         self.table = "company.numbering"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("numbering_id", _tr('Models', 'ID'), True, 'int'),
                         ("event_id", _tr('Models', 'Event'), False, 'int'),
                         ("event_date", _tr('Models', 'Event date'), False, 'date'),
@@ -1334,16 +1334,16 @@ class InventoryModel(TableModel):
         super().__init__(parent)
         self.table = "company.inventory"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("inventory_id", _tr('Models', 'ID'), True, 'int'),
                         ("event_id", _tr('Models', 'Event'), False, 'int'),
                         ("item_id", _tr('Models', 'Item'), False, 'int'),
-                        ("loaded", _tr('Models', 'Load'), False, 'decimal2'),
-                        ("unloaded", _tr('Models', 'Unload'), True, 'decimal2'),
-                        ("stock", _tr('Models', 'Stock'), True, 'decimal2'),
-                        ("ordered", _tr('Models', 'Ordered'), True, 'decimal2'),
-                        ("available", _tr('Models', 'Available'), True, 'decimal2'),
-                        (None, _tr('Models', 'New stock'), False, 'decimal2'),
+                        ("loaded", _tr('Models', 'Load'), False, 'decimal'),
+                        ("unloaded", _tr('Models', 'Unload'), True, 'decimal'),
+                        ("stock", _tr('Models', 'Stock'), True, 'decimal'),
+                        ("ordered", _tr('Models', 'Ordered'), True, 'decimal'),
+                        ("available", _tr('Models', 'Available'), True, 'decimal'),
+                        (None, _tr('Models', 'New stock'), False, 'decimal'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -1380,7 +1380,7 @@ ORDER BY item_description;"""
         # available types: int, bool, float, str, date, datetime, None = no filter
         self.columns = (("item", _tr('Models', 'Kit ID'), True, 'int'),
                         ("description", _tr('Models', 'Kit description'), True, 'str'),
-                        ("available", _tr('Models', 'Available'), True, 'decimal2'))
+                        ("available", _tr('Models', 'Available'), True, 'decimal'))
         self.repr = 'Kit availability query with params model'
         
 
@@ -1402,7 +1402,7 @@ ORDER BY item_description;"""
         # available types: int, bool, float, str, date, datetime, None = no filter
         self.columns = (("item", _tr('Models', 'Menu ID'), True, 'int'),
                         ("description", _tr('Models', 'Menu description'), True, 'str'),
-                        ("available", _tr('Models', 'Available'), True, 'decimal2'))
+                        ("available", _tr('Models', 'Available'), True, 'decimal'))
         self.repr = 'Menu availability query with params model'
 
 
@@ -1422,14 +1422,14 @@ SELECT
 FROM ordered_delivered s
 JOIN item i ON s.item_id = i.item_id;"""
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("s.event_id", _tr('Models', 'Event'), False, 'int'),
                         ("s.event_date", _tr('Models', 'Event date'), False, 'date'),
                         ("s.day_part", _tr('Models', 'L/D'), True, 'str'),
                         ("s.item_id", _tr('Models', 'Item'), False, 'int'),
                         ("i.description", _tr('Models', 'Item description'), True, 'str'),
-                        ("s.ordered", _tr('Models', 'Ordered'), True, 'decimal2'),
-                        ("s.delivered", _tr('Models', 'Delivered'), True, 'decimal2'))
+                        ("s.ordered", _tr('Models', 'Ordered'), True, 'decimal'),
+                        ("s.delivered", _tr('Models', 'Delivered'), True, 'decimal'))
         self.isCompanyTable = True
         self.companyField = 's.company_id'
         # reference fields dictionary
@@ -1605,21 +1605,21 @@ class SalesSummaryModel(QueryWithParamsModel):
                         ("table_lunch", _tr('Models', 'Table L'), True, 'int'),
                         ("table_dinner", _tr('Models', 'Table D'), True, 'int'),
                         ("table", _tr('Models', 'Table'), True, 'int'),
-                        ("amount_lunch", _tr('Models', 'Total amount L'), True, 'decimal2'),
-                        ("amount_dinner", _tr('Models', 'Total amount D'), True, 'decimal2'),
-                        ("amount", _tr('Models', 'Total amount'), True, 'decimal2'),
-                        ("discount_lunch", _tr('Models', 'Discount L'), True, 'decimal2'),
-                        ("discount_dinner", _tr('Models', 'Discount D'), True, 'decimal2'),
-                        ("discount", _tr('Models', 'Discount'), True, 'decimal2'),
-                        ("electronic_lunch", _tr('Models', 'Total electronic L'), True, 'decimal2'),
-                        ("electronic_dinner", _tr('Models', 'Total electronic D'), True, 'decimal2'),
-                        ("electronic", _tr('Models', 'Total electronic'), True, 'decimal2'),
-                        ("cash_lunch", _tr('Models', 'Total cash L'), True, 'decimal2'),
-                        ("cash_dinner", _tr('Models', 'Total cash D'), True, 'decimal2'),
-                        ("cash", _tr('Models', 'Total cash'), True, 'decimal2'),
-                        ("total_lunch", _tr('Models', 'Total L'), True, 'decimal2'),
-                        ("total_dinner", _tr('Models', 'Total D'), True, 'decimal2'),
-                        ("total", _tr('Models', 'Total collected'), True, 'decimal2'))
+                        ("amount_lunch", _tr('Models', 'Total amount L'), True, 'decimal'),
+                        ("amount_dinner", _tr('Models', 'Total amount D'), True, 'decimal'),
+                        ("amount", _tr('Models', 'Total amount'), True, 'decimal'),
+                        ("discount_lunch", _tr('Models', 'Discount L'), True, 'decimal'),
+                        ("discount_dinner", _tr('Models', 'Discount D'), True, 'decimal'),
+                        ("discount", _tr('Models', 'Discount'), True, 'decimal'),
+                        ("electronic_lunch", _tr('Models', 'Total electronic L'), True, 'decimal'),
+                        ("electronic_dinner", _tr('Models', 'Total electronic D'), True, 'decimal'),
+                        ("electronic", _tr('Models', 'Total electronic'), True, 'decimal'),
+                        ("cash_lunch", _tr('Models', 'Total cash L'), True, 'decimal'),
+                        ("cash_dinner", _tr('Models', 'Total cash D'), True, 'decimal'),
+                        ("cash", _tr('Models', 'Total cash'), True, 'decimal'),
+                        ("total_lunch", _tr('Models', 'Total L'), True, 'decimal'),
+                        ("total_dinner", _tr('Models', 'Total D'), True, 'decimal'),
+                        ("total", _tr('Models', 'Total collected'), True, 'decimal'))
         self.repr = 'Sales summary query with params model'
         
     def rowCount(self, index=QModelIndex()):
@@ -1726,7 +1726,7 @@ class OrderHeaderModel(TableModel):
         super().__init__(parent)
         self.table = "company.order_header"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("order_header_id", _tr('Models', 'ID'), True, 'int'),
                         ("event_id", _tr('Models', 'Event'), True, 'int'),
                         ("order_date_time", _tr('Models', 'Order date/time'), False, 'date'),
@@ -1743,10 +1743,10 @@ class OrderHeaderModel(TableModel):
                         ("customer_name", _tr('Models', 'Customer name'), False, 'str'),
                         ("customer_contact", _tr('Models', 'Customer contact'), False, 'str'),
                         ("covers", _tr('Models', 'Covers'), False, 'int'),
-                        ("total_amount", _tr('Models', 'Total amount'), False, 'decimal2'),
-                        ("discount", _tr('Models', 'Discount'), False, 'decimal2'),
-                        ("cash", _tr('Models', 'Cash'), False, 'decimal2'),
-                        ("change", _tr('Models', 'Change'), False, 'decimal2'),
+                        ("total_amount", _tr('Models', 'Total amount'), False, 'decimal'),
+                        ("discount", _tr('Models', 'Discount'), False, 'decimal'),
+                        ("cash", _tr('Models', 'Cash'), False, 'decimal'),
+                        ("change", _tr('Models', 'Change'), False, 'decimal'),
                         ("status", _tr('Models', 'Status'), False, 'str'),
                         ("fulfillment_date", _tr('Models', 'Fulfillment date'), False, 'date'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -1772,7 +1772,7 @@ class OrderHeaderDepartmentModel(TableModel):
         super().__init__(parent)
         self.table = "company.order_header_department"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("order_header_department_id", _tr('Models', 'ID'), False, 'int'),
                         ("order_header_id", _tr('Models', 'ID header'), False, 'int'),
                         ("department_id", _tr('Models', 'Department'), False, 'int'),
@@ -1803,14 +1803,14 @@ class OrderLineModel(TableModel):
         super().__init__(parent)
         self.table = "company.order_line"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("order_line_id", _tr('Models', 'ID'), False, 'int'),
                         ("order_header_id", _tr('Models', 'ID header'), False, 'int'),
                         ("item_id", _tr('Models', 'Item'), False, 'int'),
                         ("variants", _tr('Models', 'Variants'), False, 'str'),
-                        ("quantity", _tr('Models', 'Quantity'), False, 'decimal2'),
-                        ("price", _tr('Models', 'Price'), False, 'decimal2'),
-                        ("amount", _tr('Models', 'Amount'), False, 'decimal2'),
+                        ("quantity", _tr('Models', 'Quantity'), False, 'decimal'),
+                        ("price", _tr('Models', 'Price'), False, 'decimal'),
+                        ("amount", _tr('Models', 'Amount'), False, 'decimal'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -1834,7 +1834,7 @@ class OrderLineDepartmentModel(TableModel):
         super().__init__(parent)
         self.table = "company.order_line_department"
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("order_line_department_id", _tr('Models', 'ID'), False, 'int'),
                         ("order_header_department_id", _tr('Models', 'ID header'), False, 'int'),
                         ("event_id", _tr('Models', 'Event'), False, 'int'),
@@ -1842,7 +1842,7 @@ class OrderLineDepartmentModel(TableModel):
                         ("day_part", _tr('Models', 'Day part'), False, 'str'),
                         ("item_id", _tr('Models', 'Item'), False, 'int'),
                         ("variants", _tr('Models', 'Variants'), False, 'str'),
-                        ("quantity", _tr('Models', 'Quantity'), False, 'decimal2'),
+                        ("quantity", _tr('Models', 'Quantity'), False, 'decimal'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -1890,7 +1890,7 @@ WHERE l.order_header_department_id = %s;""",
 SELECT Null
 WHERE Null = %s;"""]
         # model columns: (field, description, readonly, type), tuple of tuples
-        # available types: int, bool, decimal2, str, date, datetime, None = no filter
+        # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("department", _tr('Models', 'Department'), False, 'str'),
                         ("item", _tr('Models', 'Item'), False, 'str'),
                         ("variants", _tr('Models', 'Variants'), False, 'str'),
