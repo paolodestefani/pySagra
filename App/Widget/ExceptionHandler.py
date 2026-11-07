@@ -92,10 +92,16 @@ error_code_messages = {
 # Context manager to capture exceptions in GUI operations and show critical dialogs
 
 @contextmanager
-def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator[None, None, None]:
+def gui_exception_context(parent_widget: Any,
+                          operation_title: str,
+                          messages: dict[str, str] | None = None
+                          ) -> Generator[None, None, None]:
     """
     Catches PyAppDBError exceptions, translates PostgreSQL SQLSTATE codes 
     into user-friendly localized messages, and displays a critical dialog.
+    messages maps a constraint name or a SQLSTATE code to a translated
+    message for the user of a form, shown as a warning; the constraint
+    name is checked first because many constraints share the same code
     """
     QGuiApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
     try:
@@ -123,6 +129,14 @@ def gui_exception_context(parent_widget: Any, operation_title: str) -> Generator
                            er.detail)
         
     except PyAppDBError as er:
+        # message of the form for this constraint or code
+        messages = messages or {}
+        user_msg = messages.get(er.constraint) if er.constraint else None
+        user_msg = user_msg or messages.get(er.code)
+        if user_msg:
+            QMessageBox.warning(parent_widget, _tr('MessageDialog', 'Warning'), user_msg)
+            appconn.rollback()
+            return
         # Map standard PostgreSQL SQLSTATE error codes to clear messages
         msg = error_code_messages.get(er.code, _tr("PGError", "Undefined database error"))
         if er.code in ('PA004', 'PA005', 'PA006', 'PA007', 'PA008', 'CCER'):

@@ -115,6 +115,9 @@ class BaseFormManager[T](QWidget):
         self.read_perm, self.write_perm, self.execute_perm = auth
         self._is_navigating = False  # True while the form loads a record: changes are not user changes
         self.sortFilterDialog: SortFilterDialog | EventFilterDialog | None = None
+        # messages for the user on save and delete errors, by constraint name or SQLSTATE code
+        # ex. {'23503': _tr('Item', 'The item has been used, it can not be deleted')}
+        self.errorMessages: dict[str, str] = {}
 
     def __repr__(self) -> str:
         return self.repr
@@ -355,7 +358,7 @@ class FormManager[T](BaseFormManager[T]):
             self.mapper.setCurrentIndex(row)
             return
             
-        with gui_exception_context(self, _tr("Form", "Error on model submit all")):
+        with gui_exception_context(self, _tr("Form", "Error on model submit all"), self.errorMessages):
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
             self.mapper.setCurrentIndex(row)
@@ -376,7 +379,7 @@ class FormManager[T](BaseFormManager[T]):
         
         row = self.mapper.currentIndex()
         success = False
-        with gui_exception_context(self, _tr("Form", "model delete")):
+        with gui_exception_context(self, _tr("Form", "model delete"), self.errorMessages):
             # one transaction: a master that can not be deleted keeps its details
             with appconn.transaction():
                 for relation, masterColumn, detailColumn in self.detailRelations:
@@ -499,7 +502,7 @@ class FormViewManager[T](BaseFormManager[T]):
         if not self.model:
             return None
         self.commitPendingEdit()
-        with gui_exception_context(self, _tr("Form", "Error on model submit all")):
+        with gui_exception_context(self, _tr("Form", "Error on model submit all"), self.errorMessages):
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
             # mapper repositioning
@@ -517,7 +520,7 @@ class FormViewManager[T](BaseFormManager[T]):
         rows = self.view.selectionModel().selectedRows()
         row = rows[0].row() if rows else -1
         success = False
-        with gui_exception_context(self, _tr("Form", "Model submit all")):
+        with gui_exception_context(self, _tr("Form", "Model submit all"), self.errorMessages):
             if hasattr(self.view, 'remove'):
                 self.view.remove()
             if hasattr(self.model, 'submitAll'):
@@ -671,7 +674,7 @@ class FormIndexManager[T](BaseFormManager[T]):
                 _tr("Form", "Error on mapper submit")
             )
             return
-        with gui_exception_context(self, _tr("Form", "Master and detail model submit all")):
+        with gui_exception_context(self, _tr("Form", "Master and detail model submit all"), self.errorMessages):
             # save the main model record
             if hasattr(self.model, 'submitAll'):
                 self.model.submitAll()
@@ -694,7 +697,7 @@ class FormIndexManager[T](BaseFormManager[T]):
             return
         current_index = self.indexMapper.currentIndex()
         success = False
-        with gui_exception_context(self, _tr("Form", "Master and detail model delete")):
+        with gui_exception_context(self, _tr("Form", "Master and detail model delete"), self.errorMessages):
             # one transaction: a master that can not be deleted keeps its details
             with appconn.transaction():
                 for relation, masterColumn, detailColumn in self.detailRelations:

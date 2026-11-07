@@ -57,12 +57,15 @@ class PyAppDatabaseException(Exception):
     def __init__(self, 
                  code: Optional[str] = None,
                  message: Optional[str] = None,
-                 detail: Optional[str] = None) -> None:
+                 detail: Optional[str] = None,
+                 constraint: Optional[str] = None) -> None:
         # Passiamo il messaggio a Exception. str(error) eviterà cicli infiniti.
         super().__init__(message) 
         self.code: str = code or 'UNKNOWN'
         self.message: str = message or ''
         self.detail: str = detail or ''
+        # name of the violated constraint, it tells apart errors with the same code
+        self.constraint: str = constraint or ''
 
     def __str__(self) -> str:
         "Format the message if printed"
@@ -131,4 +134,6 @@ def db_exception_context(logger: Optional[logging.Logger] = None) -> Generator[N
             stacklevel=3
         )
         # Raise the custom exception for the GUI layer
-        raise PyAppDBError(code=sqlstate, message=primary_msg, detail=detail_msg) from er
+        constraint: str = diag.constraint_name if diag and diag.constraint_name else ''
+        raise PyAppDBError(code=sqlstate, message=primary_msg, detail=detail_msg,
+                           constraint=constraint) from er
