@@ -1003,10 +1003,6 @@ class TimeDelegate(QStyledItemDelegate):
         # sets alignment
         option.displayAlignment = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
-        
-class JasonDelegate(GenericDelegate):
-    """A Delegate for view that use a  """
-
 
 class HostNameDelegate(QStyledItemDelegate):
     "A delegate that optionally set the host name in a text edit"
@@ -1029,5 +1025,3 @@ class HostNameDelegate(QStyledItemDelegate):
                      ) -> None:
         editor = cast(HostNameLineEdit, editor)
         model.setData(index, editor.text(), Qt.ItemDataRole.EditRole)
-
-   

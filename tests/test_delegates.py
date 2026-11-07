@@ -215,7 +215,6 @@ class NoEditorTest(unittest.TestCase):
     def test_delegates_without_an_editor(self) -> None:
         parent = QWidget()
         for delegate in (Delegate.GenericDelegate(parent),
-                         Delegate.JasonDelegate(parent),
                          Delegate.BooleanDelegate(parent),
                          Delegate.ReadOnlyDelegate(parent),
                          Delegate.HideTextDelegate(parent, '***')):
