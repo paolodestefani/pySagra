@@ -9,6 +9,7 @@ Run from the project root with: python -m unittest discover tests
 """
 
 # standard library
+import gc
 import os
 import subprocess
 import sys
@@ -40,8 +41,16 @@ class ImportTest(unittest.TestCase):
     def test_every_module_imports_on_its_own(self) -> None:
         modules = app_modules()
         self.assertTrue(modules)
-        with ThreadPoolExecutor(max_workers=os.cpu_count()) as pool:
-            results = list(pool.map(import_module, modules))
+        # A collection in a worker thread could destroy a widget left by
+        # another test: Qt then waits for the main thread, which is waiting
+        # for the workers, and the suite hangs
+        gc.collect()
+        gc.disable()
+        try:
+            with ThreadPoolExecutor(max_workers=os.cpu_count()) as pool:
+                results = list(pool.map(import_module, modules))
+        finally:
+            gc.enable()
         for module, result in zip(modules, results):
             with self.subTest(module=module):
                 self.assertEqual(result.returncode, 0, result.stderr)
