@@ -640,6 +640,9 @@ class Summary(BaseRenderer):
             if self.lastValue == record[self.onRelatedField]:
                 return
             self.lastValue = record[self.onRelatedField]
+        # NULL values are not part of a sum, minimum, maximum or average, as in SQL
+        if self.function != 'count' and record[self.fieldName] is None:
+            return
 
         match self.function:
             case 'sum':
@@ -1293,7 +1296,8 @@ class Report():
         if sorting is not None:
             for sort in sorting.findall("sort"):
                 field = sort.attrib.get('field')
-                reverse = bool(sort.attrib.get('reverse'))
+                # bool('False') would be True: every sorting was descending
+                reverse = sort.attrib.get('reverse', 'False').lower() == 'true'
                 self.sortings.append(Sort(field, reverse))
 
         # groups headers/footers
