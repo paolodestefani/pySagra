@@ -51,6 +51,8 @@ from App.Widget.Delegate import QuantityDelegate
 from App.Widget.Delegate import NewStockDelegate
 from App.Widget.Delegate import StockLevelDelegate
 from App.Widget.Form import FormViewManager
+from App.Widget.Form import ev
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Widget.Dialog import EventFilterDialog
 from App.Widget.Dialog import PrintDialog
 from App.Database.Lookup import item_with_stock_control_lookup
@@ -126,6 +128,9 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
                                                                                      setting['inventory_warning_stock_level'],
                                                                                      setting['inventory_critical_stock_level']))
         self.ui.tableViewItem.setItemDelegateForColumn(inv.NEW_STOCK, NewStockDelegate(self))
+        # messages for the user on save errors, by constraint name
+        self.errorMessages = {
+            'inventory_event_item_unique': _tr('Inventory', 'The item is already in the inventory of this event')}
         # kit availability
         self.kitModel = KitAvailabilityModel(self)
         self.ui.tableViewKit.setModel(self.kitModel)
@@ -156,9 +161,13 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
     @scriptMethod
     def save(self) -> None:
         super().save()
+        if self.state != ev.VIEW:   # not saved: keep the changes on screen, the error is already shown
+            return
         logger.info('Saving inventory')
         # rebuild inventory for new items inserted an already sold
-        inventory_rebuild(self.selectedEvent)
+        if self.selectedEvent:
+            with gui_exception_context(self, _tr('Inventory', 'Inventory rebuild')):
+                inventory_rebuild(self.selectedEvent)
         self.updateFilterConditions(self.selectedEvent)
 
     @scriptMethod
@@ -170,9 +179,16 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
     @scriptMethod
     def new(self) -> None:
         # set event on new record
-        super().new()
+        if not self.selectedEvent:
+            QMessageBox.warning(self,
+                                _tr('MessageDialog', "Warning"),
+                                _tr('Inventory', 'Select an event first'))
+            return
         model = self.ui.tableViewItem.model()
-        newRow = model.rowCount() - 1
+        newRow = model.rowCount()
+        super().new()
+        if model.rowCount() == newRow:   # no row added: no right to write or insert failed
+            return
         newIndex = model.index(newRow, inv.EVENT)
         model.setData(newIndex, self.selectedEvent)
         # edit item cell
