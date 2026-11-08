@@ -58,7 +58,7 @@ from App.Common.L10n import _tr
 logger = logging.getLogger(__name__)
 
 
-class ord(IntEnum):
+class odv(IntEnum):
     EVENT       = 0
     DATE        = 1
     DAY_PART    = 2
@@ -110,10 +110,12 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         self.ui.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.ui.tableView.activateWindow()
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
-        self.ui.tableView.setItemDelegateForColumn(ord.EVENT, RelationDelegate(self, event_lookup))
-        self.ui.tableView.setItemDelegateForColumn(ord.DAY_PART, RelationDelegate(self, dayPartMapping))
-        self.ui.tableView.setItemDelegateForColumn(ord.ORDERED, QuantityDelegate(self, bold=True))
-        self.ui.tableView.setItemDelegateForColumn(ord.DELIVERED, QuantityDelegate(self, bold=True))
+        self.ui.tableView.setItemDelegateForColumn(odv.EVENT, RelationDelegate(self, event_lookup))
+        self.ui.tableView.setItemDelegateForColumn(odv.DAY_PART, RelationDelegate(self, dayPartMapping))
+        self.ui.tableView.setItemDelegateForColumn(odv.ORDERED, QuantityDelegate(self, bold=True))
+        self.ui.tableView.setItemDelegateForColumn(odv.DELIVERED, QuantityDelegate(self, bold=True))
+        # current filter, used on printing
+        self.eventParams: tuple = (None, None, None)
         # initial filtering
         self.sortFilterDialog = EventFilterDialog(self, show_date = True, show_daypart = True) # type: ignore
         # initial filter conditions to current event
@@ -136,14 +138,20 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         if dayPart:
             self.model.addWhere('s.day_part = %s', dayPart)
         self.model.select()
-        
-    def hideRows(self, checked: bool) -> None:
-        "Hide rows with no ordered"
-        state = True if checked == Qt.CheckState.Checked else False
+        self.hideRows()
+
+    def reload(self) -> None:
+        "Reload data, keep rows with no ordered hidden if required"
+        super().reload()
+        self.hideRows()
+
+    def hideRows(self, *args) -> None:
+        """Hide rows with no ordered when required, show all the others: the hidden
+        state belongs to row numbers, it must be set again on every new data"""
+        only_ordered = self.ui.checkBoxOnlyOrdered.isChecked()
         for row in range(self.model.rowCount()):
-            ordered = self.model.data(self.model.index(row, ord.ORDERED))
-            if not ordered or ordered == 0:
-                self.ui.tableView.setRowHidden(row, state)
+            ordered = self.model.data(self.model.index(row, odv.ORDERED), Qt.ItemDataRole.EditRole)
+            self.ui.tableView.setRowHidden(row, only_ordered and not ordered)
             
     def setAutomaticUpdate(self, state):
         if state:
@@ -158,6 +166,12 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
 
     def print(self):
         "Ordered delivered report"
+        event, eventDate, dayPart = self.eventParams
+        if not event:
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("OrderedDelivered", "Select an event first"))
+            return
         dialog = PrintDialog(self, 'ORDERED_DELIVERED')
         if not dialog.ui.layoutFilters.itemAtPosition(0, 0):
             QMessageBox.warning(self,
@@ -169,13 +183,14 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         # event
         dialog.ui.layoutFilters.itemAtPosition(0, 0).widget().setCurrentIndex(1)
         dialog.ui.layoutFilters.itemAtPosition(0, 2).widget().setCurrentIndex(1)
-        dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.eventParams[0])
-        # date
-        dialog.ui.layoutFilters.itemAtPosition(1, 0).widget().setCurrentIndex(2)
-        dialog.ui.layoutFilters.itemAtPosition(1, 2).widget().setCurrentIndex(1)
-        dialog.ui.layoutFilters.itemAtPosition(1, 3).widget().setDate(self.eventParams[1])
-        # day part
-        dialog.ui.layoutFilters.itemAtPosition(2, 0).widget().setCurrentIndex(3)
-        dialog.ui.layoutFilters.itemAtPosition(2, 2).widget().setCurrentIndex(1)
-        dialog.ui.layoutFilters.itemAtPosition(2, 3).widget().setText(self.eventParams[2])
+        dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(event)
+        # date and day part only when the form is filtered on them
+        if eventDate:
+            dialog.ui.layoutFilters.itemAtPosition(1, 0).widget().setCurrentIndex(2)
+            dialog.ui.layoutFilters.itemAtPosition(1, 2).widget().setCurrentIndex(1)
+            dialog.ui.layoutFilters.itemAtPosition(1, 3).widget().setDate(eventDate)
+        if dayPart:
+            dialog.ui.layoutFilters.itemAtPosition(2, 0).widget().setCurrentIndex(3)
+            dialog.ui.layoutFilters.itemAtPosition(2, 2).widget().setCurrentIndex(1)
+            dialog.ui.layoutFilters.itemAtPosition(2, 3).widget().setText(dayPart)
         dialog.show()
