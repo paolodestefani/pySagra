@@ -29,8 +29,8 @@ This module export event data di a web order server
 """
 
 # standard library
-import logging
 import ftplib
+import io
 import logging
 import xml.etree.ElementTree as ET
 
@@ -61,6 +61,9 @@ from App.Ui.UpdateWebOrderServerDialog import Ui_UpdateWebOrderServerDialog
 # logger
 logger = logging.getLogger(__name__)
 
+# seconds to wait for the ftp server before giving up
+FTP_TIMEOUT = 30
+
 
 def updateWOS(action: QAction, checked: bool = False) -> None:
     logger.info('Starting update web order server dialog')
@@ -81,7 +84,7 @@ def updateWOS(action: QAction, checked: bool = False) -> None:
 class UpdateWebOrderServerDialog(QDialog):
     "Customizations dialog"
 
-    def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: tuple) -> None:
         super().__init__(parent)
         self.ui = Ui_UpdateWebOrderServerDialog()
         self.ui.setupUi(self)
@@ -101,82 +104,50 @@ class UpdateWebOrderServerDialog(QDialog):
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Apply).clicked.connect(self.updateWebOrderServer)
         
     def updateWebOrderServer(self):
-        "Get and send web order server parameters"
+        "Create the event XML file and send it to the web order server"
         logger.info('Updating web order server')
         # current selected event
+        if self.ui.comboBoxEvent.currentData() is None:
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("UpdateWOS", "Select an event first"))
+            return
         event = int(self.ui.comboBoxEvent.currentData())
-        # file name
-        filename = self.ui.lineEditFileName.text()
-        # create XML file
-        root = ET.Element("event")
-        ed, ds, de, pli = get_event_data(event)
-        ET.SubElement(root, "title").text = ed
-        ET.SubElement(root, "start_date").text = ds.toString(Qt.ISODate)
-        ET.SubElement(root, "end_date").text = de.toString(Qt.ISODate)
-        # tables
-        tl = []
-        with gui_exception_context(self, _tr('UpdateWOS', "Loading tables from database")):
-            for table_code, row_pos, col_pos, text_color, bg_color, unavailable in table_list():
-                if row_pos is None or col_pos is None:
-                    continue
-                if not unavailable and not ',' in table_code:
-                    tl.append(table_code)
-            ET.SubElement(root, "tables").text = ",".join(tl)
-
-        items = ET.SubElement(root, "items")        
-        with gui_exception_context(self, _tr("UpdateWOS", "Generate items")):
-            for did, desc, ta in department_web_list():
-                    dep = ET.SubElement(items, "department")
-                    dep.set('description', desc)
-                    dep.set('is_for_takeaway', str(ta))
-                    for i, d, p, a, v in item_web_list(event, did):
-                        item = ET.SubElement(dep, "item")
-                        ET.SubElement(item, "id").text = str(i)
-                        ET.SubElement(item, "description").text = d
-                        ET.SubElement(item, "price").text = str(p)
-                        ET.SubElement(item, "active").text = str(a)
-                        ET.SubElement(item, "variants").text = str(v)
-        vars = ET.SubElement(root, "itemvariants")   
-        with gui_exception_context(self, _tr("UpdateWOS", "Generate item variants")):
-            for did, desc, ta in department_web_list():     
-                for i, d, p, a, v in item_web_list(event, did):
-                    if v:
-                        item = ET.SubElement(vars, "item")
-                        item.set('id', str(i))
-                        for vd, vp in get_variants(i):
-                            vr = ET.SubElement(item, "variant")
-                            ET.SubElement(vr, "description").text = vd
-                            ET.SubElement(vr, "price").text = str(vp)
+        # path of the file on the server, as the ftp user sees it: relative to its
+        # home folder or absolute, whatever the server allows
+        filename = self.ui.lineEditFileName.text().strip()
+        if not filename:
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("UpdateWOS", "The file name is required"))
+            return
+        # create XML file: any error stops here, an incomplete file is never sent
+        with gui_exception_context(self, _tr("UpdateWOS", "Generate the XML file")) as outcome:
+            root = self.eventXml(event)
+        if not outcome.ok:
+            return
         tree = ET.ElementTree(root)
         ET.indent(tree, space="    ", level=0)
-        with gui_exception_context(self, _tr("UpdateWOS", "Save XML file")) as outcome:
-            with open(filename, 'wb') as f:
-                tree.write(f, encoding='utf-8', xml_declaration=True)
-        if outcome.ok:
-            logger.info('XML file %s created successfully', filename)
-        else:
-            return
+        # the file is made in memory: no local file, its path is the one on the server only
+        xml = io.BytesIO()
+        tree.write(xml, encoding='utf-8', xml_declaration=True)
+        xml.seek(0)
+        logger.info('XML file for %s created successfully', filename)
         # UPLOAD FILE TO FTP SERVER
         logger.info('Uploading web order file to FTP server')
-        # Fill Required Information
-        server = self.ui.lineEditServer.text()
+        server = self.ui.lineEditServer.text().strip()
         port = self.ui.spinBoxPort.value()
-        encoding = self.ui.lineEditEncoding.text()
+        encoding = self.ui.lineEditEncoding.text().strip() or 'utf-8'
         user = self.ui.lineEditUser.text()
         password = self.ui.lineEditPassword.text()
-        filename = self.ui.lineEditFileName.text()
-        # Connect FTP Server
         with gui_exception_context(self, _tr("UpdateWOS", "Update ftp server")) as outcome:
-            # connect
-            ftp_server = ftplib.FTP(server, user, password)
-            # force encoding
-            ftp_server.encoding = encoding
-            # Read file in binary mode
-            with open(filename, "rb") as file:
+            # the port of the dialog, a timeout instead of a frozen window,
+            # the connection closed also on errors
+            with ftplib.FTP(encoding=encoding, timeout=FTP_TIMEOUT) as ftp_server:
+                ftp_server.connect(server, port)
+                ftp_server.login(user, password)
                 # Command for Uploading the file "STOR filename"
-                ftp_server.storbinary(f"STOR {filename}", file)
-            # Close the Connection
-            ftp_server.quit()
+                ftp_server.storbinary(f"STOR {filename}", xml)
             # store ftp settinggs to db
             set_web_order_server_params(server,
                                         port,
@@ -190,4 +161,43 @@ class UpdateWebOrderServerDialog(QDialog):
                                     _tr("MessageDialog", "Information"),
                                     _tr("UpdateWOS", "Web order server updated successfully."),
                                     QMessageBox.StandardButton.Ok)
-                
+
+    def eventXml(self, event: int) -> ET.Element:
+        "The XML of the event: dates, tables, items by department and item variants"
+        root = ET.Element("event")
+        if not (data := get_event_data(event)):
+            raise ValueError(_tr("UpdateWOS", "Event not found"))
+        ed, ds, de, pli = data
+        ET.SubElement(root, "title").text = ed
+        ET.SubElement(root, "start_date").text = ds.toString(Qt.DateFormat.ISODate)
+        ET.SubElement(root, "end_date").text = de.toString(Qt.DateFormat.ISODate)
+        # tables
+        tl = []
+        for table_code, row_pos, col_pos, text_color, bg_color, unavailable in table_list():
+            if row_pos is None or col_pos is None:
+                continue
+            if not unavailable and not ',' in table_code:
+                tl.append(table_code)
+        ET.SubElement(root, "tables").text = ",".join(tl)
+        # items by department, then the variants of the items that have them
+        items = ET.SubElement(root, "items")
+        variants = ET.SubElement(root, "itemvariants")
+        for did, desc, ta in department_web_list():
+            dep = ET.SubElement(items, "department")
+            dep.set('description', desc)
+            dep.set('is_for_takeaway', str(ta))
+            for i, d, p, a, v in item_web_list(event, did):
+                item = ET.SubElement(dep, "item")
+                ET.SubElement(item, "id").text = str(i)
+                ET.SubElement(item, "description").text = d
+                ET.SubElement(item, "price").text = str(p)
+                ET.SubElement(item, "active").text = str(a)
+                ET.SubElement(item, "variants").text = str(v)
+                if v:
+                    vitem = ET.SubElement(variants, "item")
+                    vitem.set('id', str(i))
+                    for vd, vp in get_variants(i):
+                        vr = ET.SubElement(vitem, "variant")
+                        ET.SubElement(vr, "description").text = vd
+                        ET.SubElement(vr, "price").text = str(vp)
+        return root
