@@ -43,7 +43,6 @@ from App.Common.L10n import _tr
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
 from App.Database.Models import DepartmentModel
-from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Form import FormViewManager
 from App.Ui.GenericFormViewWidget import Ui_GenericFormViewWidget
@@ -58,7 +57,7 @@ class dep(IntEnum):
     DESCRIPTION = 1
     SORTING     = 2
     OBSOLETE    = 3
-    NOMANAGE    = 4
+    MENU        = 4
     TAKEAWAY    = 5
     USER_INS    = 6
     DATE_INS    = 7
@@ -101,16 +100,23 @@ class DepartmentForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('Department')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        # messages for the user on save and delete errors, by constraint name
+        self.errorMessages = {
+            'department_description_unique': _tr('Department', 'A department with this description already exists'),
+            'item_department_fk': _tr('Department', 'The department has items, it can not be deleted'),
+            'order_header_department_department_fk': _tr('Department', 'The department is used in orders, it can not be deleted')}
         # scripting init
         self.script = scriptInit(self)
 
     @scriptMethod
     def new(self) -> None:
         "Edit second column of the view on new inserted rows"
-        super().new()
         model = self.ui.tableView.model()
-        row = model.rowCount() -1
-        index = model.index(row, dep.DESCRIPTION)
+        rows = model.rowCount()
+        super().new()
+        if model.rowCount() == rows:   # no row added: no right to write or insert failed
+            return
+        index = model.index(rows, dep.DESCRIPTION)
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 
