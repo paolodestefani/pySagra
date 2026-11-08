@@ -39,7 +39,6 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QDialogButtonBox
-from PySide6.QtWidgets import QPushButton
 
 # application modules
 from App import session
@@ -71,14 +70,16 @@ def settings(action: QAction, checked: bool = False) -> None:
                             _tr('Settings', 'No access right to this function'))
         return
     sd = SettingsDialog(mw, title, icon, auth)
-    sd.exec_()
+    if not sd.loaded:   # the error is already shown
+        return
+    sd.exec()
     logger.info('Settings dialog shown')
 
 
 class SettingsDialog(QDialog):
     "Application settings dialog box for set/get application parameters"
 
-    def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: str) -> None:
+    def __init__(self, parent: QWidget, title: str, icon: QIcon, auth: tuple) -> None:
         super().__init__(parent)
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)        
@@ -87,7 +88,8 @@ class SettingsDialog(QDialog):
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         with gui_exception_context(self, _tr("Settings", "Load settings")) as outcome:
             self.setting = Settings()
-        if not outcome.ok:
+        self.loaded = outcome.ok
+        if not self.loaded:
             return
         self.ui.spinBoxLunch.setValue(self.setting['lunch_start_time'])
         self.ui.horizontalSliderLunch.setValue(self.setting['lunch_start_time']) # initially slider/spinbox are not connected
@@ -158,7 +160,12 @@ class SettingsDialog(QDialog):
         self.ui.checkBoxMandatoryName.setChecked(self.setting['mandatory_name_for_takeaway'])
         self.ui.checkBoxInactivity.setChecked(self.setting['check_inactivity'])
         self.ui.spinBoxInactivityTime.setValue(self.setting['inactivity_time'])
+        # setChecked doesn't emit clicked, the time follows the check box only on user clicks
+        self.ui.spinBoxInactivityTime.setEnabled(self.setting['check_inactivity'])
+        self.ui.labelInactivity.setEnabled(self.setting['check_inactivity'])
         self.ui.checkBoxMenuItemDescription.setChecked(self.setting['menu_description_on_menu_items'])
+        self.ui.groupBoxAutomaticUpdate.setChecked(self.setting['ordered_delivered_automatic_update'])
+        self.ui.spinBoxAutomaticUpdateInterval.setValue(self.setting['ordered_delivered_update_interval'])
         self.ui.groupBoxOrderedDeliveredReport.setChecked(self.setting['print_ordered_delivered_report'])
         self.ui.spinBoxOrderedDeliveredCopies.setValue(self.setting['ordered_delivered_copies'] or 1)
         self.ui.comboBoxOrderedDeliveredReport.setFunction(stock_unload_report_lookup)
@@ -190,6 +197,8 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxDinner.valueChanged.connect(self.ui.horizontalSliderDinner.setValue)
         self.ui.spinBoxCriticalLevel.valueChanged.connect(self.criticalLevelChanged)
         self.ui.spinBoxWarningLevel.valueChanged.connect(self.warningLevelChanged)
+        self.ui.spinBoxInventoryCriticalLevel.valueChanged.connect(self.inventoryCriticalLevelChanged)
+        self.ui.spinBoxInventoryWarningLevel.valueChanged.connect(self.inventoryWarningLevelChanged)
         self.ui.colorComboBoxBackground.currentIndexChanged.connect(self.updateExampleNormalButton)
         self.ui.colorComboBoxText.currentIndexChanged.connect(self.updateExampleNormalButton)
         self.ui.colorComboBoxWB.currentIndexChanged.connect(self.updateExampleButtons)
@@ -213,6 +222,16 @@ class SettingsDialog(QDialog):
         criticalLevel = self.ui.spinBoxCriticalLevel.value()
         if criticalLevel >= value:
             self.ui.spinBoxCriticalLevel.setValue(value - 1)
+
+    def inventoryCriticalLevelChanged(self, value: float) -> None:
+        "The inventory warning level stays above the critical one"
+        if self.ui.spinBoxInventoryWarningLevel.value() <= value:
+            self.ui.spinBoxInventoryWarningLevel.setValue(value + 1)
+
+    def inventoryWarningLevelChanged(self, value: float) -> None:
+        "The inventory critical level stays below the warning one"
+        if self.ui.spinBoxInventoryCriticalLevel.value() >= value:
+            self.ui.spinBoxInventoryCriticalLevel.setValue(value - 1)
 
     def lunchSliderChanged(self, value: int) -> None:
         if value > self.ui.horizontalSliderDinner.value():
@@ -238,6 +257,11 @@ class SettingsDialog(QDialog):
         "Update example button with normal colors"
         self.ui.pushButtonExampleNL.setBackgroundColor(self.ui.colorComboBoxBackground.currentColor())
         self.ui.pushButtonExampleNL.setTextColor(self.ui.colorComboBoxText.currentColor())
+
+    def done(self, result: int) -> None:
+        "Save the geometry on every exit: OK, Cancel, Esc or the close button"
+        QSettings().setValue("Settings/Geometry", self.saveGeometry())
+        super().done(result)
 
     @scriptMethod
     def accept(self) -> None:
@@ -309,10 +333,6 @@ class SettingsDialog(QDialog):
         
         with gui_exception_context(self, _tr("Settings", "Save settings")) as outcome:
             self.setting.save()
-        if outcome.ok:    
-            # save geometry
-            st = QSettings()
-            st.setValue("Settings/Geometry", self.saveGeometry())
+        if outcome.ok:
             QDialog.accept(self)
-        else:
-            QDialog.reject(self)
+        # on error the dialog stays open: the changes are not lost, the user can retry or cancel
