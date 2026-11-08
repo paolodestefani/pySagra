@@ -314,11 +314,12 @@ class ItemForm(FormIndexManager):
             'order_line_item_fk': _tr('Item', 'The item is used in orders, it can not be deleted'),
             'order_line_department_item_fk': _tr('Item', 'The item is used in orders, it can not be deleted'),
             'inventory_item_fk': _tr('Item', 'The item has stock movements, it can not be deleted'),
-            'item_part_part_fk': _tr('Item', 'The item is a component of a kit or menu, it can not be deleted')
+            'item_part_part_fk': _tr('Item', 'The item is a component of a kit or menu, it can not be deleted'),
+            'item_description_unique': _tr('Item', 'An item with this description already exists'),
+            'item_customer_description_unique': _tr('Item', 'An item with this customer description already exists')
             }
         # scripting init
         self.script = scriptInit(self)
-        # scripting init
         
     def copyDescription(self):
         "Copy item description to item customer description on editingFinished of description lineEdit"
@@ -352,29 +353,35 @@ class ItemForm(FormIndexManager):
 
     @scriptMethod
     def copyVariants(self, checked: bool = False) -> None:
-        # ask for item to use for variantsa source
+        if not self.canSave():   # the variants of this item can not change
+            return
+        # ask for item to use for variants source
         dlg = ChooseItemDialog(self)
-        if dlg.exec_() == QDialog.DialogCode.Rejected:
+        if dlg.exec() == QDialog.DialogCode.Rejected:
             return
         # activate variants
         self.ui.checkBoxVariants.setChecked(True)
         # add variants
         model = self.ui.tableViewVariants.model()
         for so, (vd, pd) in enumerate(get_variants(dlg.ui.comboBoxItems.currentData()), 1):
-            model.insertRows(model.rowCount(), 1)
-            modelRow = model.rowCount() - 1
+            modelRow = model.rowCount()
+            if not model.insertRows(modelRow, 1):
+                return
             model.setData(model.index(modelRow, vnt.DESC), vd)
             model.setData(model.index(modelRow, vnt.SORT), so)
             model.setData(model.index(modelRow, vnt.PRICE), pd)
 
     def itemTypeChanged(self, index):
+        """Enable the options that make sense for the item type.
+        Inventory control stays on kits and menus: it is the switch that makes the
+        order entry check their availability, computed from the parts"""
         self.ui.comboBoxType.blockSignals(True)
         if self.ui.comboBoxType.modelDataStr == 'K':
             self.ui.tableViewComponents.setEnabled(True)
             self.ui.tableViewMenuItems.setDisabled(True)
             self.ui.tabWidget.setCurrentIndex(1)
-            self.ui.checkBoxDeliveredControl.setChecked(False)
-            self.ui.checkBoxDeliveredControl.setDisabled(False)
+            # a kit is delivered as a whole: its order lines keep the kit, the parts don't count
+            self.ui.checkBoxDeliveredControl.setEnabled(True)
             self.ui.checkBoxKitPart.setChecked(False)
             self.ui.checkBoxKitPart.setDisabled(True)
             self.ui.checkBoxMenuPart.setEnabled(True)
@@ -382,6 +389,7 @@ class ItemForm(FormIndexManager):
             self.ui.tableViewComponents.setDisabled(True)
             self.ui.tableViewMenuItems.setEnabled(True)
             self.ui.tabWidget.setCurrentIndex(2)
+            # a menu is split into its parts in the order: delivered is the one of the parts
             self.ui.checkBoxDeliveredControl.setChecked(False)
             self.ui.checkBoxDeliveredControl.setDisabled(True)
             self.ui.checkBoxKitPart.setChecked(False)
@@ -401,24 +409,43 @@ class ItemForm(FormIndexManager):
     @scriptMethod
     def new(self):
         "Set focus on item descriptionon new record"
+        rows = self.model.rowCount()
         super().new()
+        if self.model.rowCount() == rows:   # no row added: no right to write or insert failed
+            return
         self.ui.comboBoxNormalTextColor.setCurrentColor(self.setting['normal_text_color'])
         self.ui.comboBoxNormalBackgroundColor.setCurrentColor(self.setting['normal_background_color'])
         self.ui.lineEditDescription.setFocus()
 
     @scriptMethod
     def save(self):
+        # sanity checks: required fields
+        for widget, message in (
+                (self.ui.lineEditDescription, _tr('Item', 'The description field is mandatory')),
+                (self.ui.lineEditCustomerDescription, _tr('Item', 'The customer description field is mandatory'))):
+            if widget.text().strip() == "":
+                QMessageBox.warning(self, _tr('MessageDialog', "Warning"), message)
+                widget.setFocus()
+                return
+        if self.ui.comboBoxDepartment.currentData() is None:
+            QMessageBox.warning(self,
+                                _tr('MessageDialog', "Warning"),
+                                _tr('Item', 'The department field is mandatory'))
+            self.ui.comboBoxDepartment.setFocus()
+            return
         super().save()
 
     @scriptMethod
     def delete(self):
+        if not self.canDelete():   # no question for a delete that can not happen
+            return
         msg = _tr('Item', 'Delete this item ?')
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 f"{msg}\n{self.ui.lineEditDescription.text()}",
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 
