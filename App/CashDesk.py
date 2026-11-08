@@ -99,15 +99,21 @@ class CashDeskForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.setView(self.ui.tableView)  # required for formviewmanager
         self.ui.tableView.setLayoutName('CashDesk')
         self.ui.tableView.setItemDelegate(QStyledItemDelegate(self))
+        # messages for the user on save errors, by constraint name
+        self.errorMessages = {
+            'cash_desk_unique': _tr('CashDesk', 'This computer already has a cash desk')}
         # scripting init
         self.script = scriptInit(self)
         
     @scriptMethod
     def new(self) -> None:
         "Edit second column of the view on new inserted rows"
-        super().new()
         model = self.ui.tableView.model()
-        row = model.rowCount() - 1
+        rows = model.rowCount()
+        super().new()
+        if model.rowCount() == rows:   # no row added: no right to write or insert failed
+            return
+        row = rows
         index = model.index(row, cd.COMPUTER)
         # set the computer name
         model.setData(index, session['hostname'])

@@ -727,7 +727,7 @@ class CashDeskModel(TableModel):
         self.columns = (("cash_desk_id", _tr('Models', 'ID'), True, 'int'),
                         ("hostname", _tr('Models', 'Computer name'), False, 'str'),
                         ("cash_desk_description", _tr('Models', 'Cash desk description'), False, 'str'),
-                        ("note", _tr('Models', 'Note'), False, 'int'),
+                        ("note", _tr('Models', 'Note'), False, 'str'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
