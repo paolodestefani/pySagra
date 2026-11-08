@@ -57,7 +57,6 @@ from PySide6.QtWidgets import QDialogButtonBox
 
 # application modules
 from App import session
-from App.Database.Exceptions import PyAppDBError
 #from App.Database.AbstractModels.TableModel import PandasModel
 from App.Database.Lookup import event_lookup
 #from App.Database.Models import OrderHeaderPandasModel
@@ -68,6 +67,7 @@ from App.Widget.Dialog import PrintDialog
 #from App.Widget.Delegate import PandasDelegate
 from App.Database.Statistics import load_statistic_bi_data
 from App.Common.L10n import _tr
+from App.Widget.ExceptionHandler import gui_exception_context
 
 
 # logger
@@ -144,7 +144,6 @@ def statisticsPrint(action: QAction, checked: bool = False) -> None:
     "Print statistic reports"
     logger.info('Starting statistics consumption dialog')
     mw = session['mainwin']
-    title = action.text()
     auth = action.data()
     if not auth[2]: # no execute permission
         QMessageBox.warning(mw,
@@ -169,7 +168,7 @@ def statisticsExport(action: QAction, checked: bool = False) -> None:
                             _tr('Statistics', 'No access right to this function'))
         return
     dlg = StatisticsExportDialog(mw, title, icon, auth)
-    dlg.exec_()
+    dlg.exec()
     logger.info('Statistics  export dialog shown')
 
 
@@ -193,8 +192,8 @@ class StatisticsExportDialog(QDialog):
         self.ui.lineEditHeadersFileName.setText(st.value("StatisticsExport/HeadersFileName", ""))
         self.ui.lineEditDetailsFileName.setText(st.value("StatisticsExport/DetailsFileName", ""))
         self.ui.checkBoxIncludeAll.setChecked(st.value("StatisticsExport/IncludeAll", 'false') == 'true')
-        self.ui.comboBoxFromEvent.setCurrentIndex(int(str(st.value("StatisticsExport/FromEvent", '1')))) # int(str(obj)) for mypy
-        self.ui.comboBoxToEvent.setCurrentIndex(int(str(st.value("StatisticsExport/ToEvent", '1')))) # int(str(obj)) for mypy
+        self.ui.comboBoxFromEvent.setCurrentIndex(int(str(st.value("StatisticsExport/FromEvent", '0')))) # int(str(obj)) for mypy
+        self.ui.comboBoxToEvent.setCurrentIndex(int(str(st.value("StatisticsExport/ToEvent", '0')))) # int(str(obj)) for mypy
         # signal slot connections
         self.ui.checkBoxIncludeAll.toggled.connect(self.includeAllEvents)
         self.ui.pushButtonSelectHeaders.clicked.connect(self.selectHeadersClicked)
@@ -248,11 +247,24 @@ class StatisticsExportDialog(QDialog):
             fromEvent = 1
             toEvent = 999999
         else:
+            if self.ui.comboBoxFromEvent.currentData() is None or self.ui.comboBoxToEvent.currentData() is None:
+                QMessageBox.warning(self,
+                                    _tr('MessageDialog', 'Warning'),
+                                    _tr('Statistics', 'Select the events to export'))
+                return
             fromEvent = int(self.ui.comboBoxFromEvent.currentData())
             toEvent = int(self.ui.comboBoxToEvent.currentData())
-        fnameh = self.ui.lineEditHeadersFileName.text()
-        fnamel = self.ui.lineEditDetailsFileName.text()
-        try:
+        fnameh = self.ui.lineEditHeadersFileName.text().strip()
+        fnamel = self.ui.lineEditDetailsFileName.text().strip()
+        if not fnameh or not fnamel:
+            QMessageBox.warning(self,
+                                _tr('MessageDialog', 'Warning'),
+                                _tr('Statistics', 'Select the headers and the details file names'))
+            return
+        # decimal numbers written with the decimal separator of the user locale
+        decimalPoint = session['qlocale'].decimalPoint()
+        # database and file errors: the dialog stays open, the user can fix and retry
+        with gui_exception_context(self, _tr('Statistics', 'Statistics export')) as outcome:
             for view, fn, hfunc in (('bi_order_header', fnameh, csv_header), ('bi_order_line', fnamel, csv_line)):
                 # write to csv file
                 with open(fn, 'w', encoding="utf-8", newline='') as f:
@@ -269,21 +281,18 @@ class StatisticsExportDialog(QDialog):
                                 case bool():
                                     data = "I" if c else "O"
                                 case float() | decimal.Decimal():
-                                    data = str(c).replace(".", ",")
+                                    data = str(c).replace(".", decimalPoint)
                                 case None:
                                     data = ''
                                 case _:
                                     data = str(c)
                             row.append(data)
                         writer.writerow(row)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}")
-        else:
-            QMessageBox.information(self,
-                                    _tr('MessageDialog', 'Information'),
-                                    _tr('Statistics', 'Operation completed successfully'))
+        if not outcome.ok:
+            return
+        QMessageBox.information(self,
+                                _tr('MessageDialog', 'Information'),
+                                _tr('Statistics', 'Operation completed successfully'))
         # save settings
         st = QSettings()
         st.setValue("StatisticsExport/IncludeAll", self.ui.checkBoxIncludeAll.isChecked())
