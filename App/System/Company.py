@@ -357,7 +357,7 @@ class NewCompanyDialog(QDialog):
     def accept(self) -> None:
         "Create the new company with the specified data"
         # sanity checks
-        if self.ui.lineEditDescription.text() == "":
+        if self.ui.lineEditDescription.text().strip() == "":
             QMessageBox.warning(
                 self,
                 _tr('MessageDialog', "Warning"),

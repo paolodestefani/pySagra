@@ -245,14 +245,14 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
     def save(self) -> None:
         "Save and ask for password if null (new user)"
         # sanity checks
-        if self.ui.lineEditUser.text() == "":
+        if self.ui.lineEditUser.text().strip() == "":
             QMessageBox.warning(
                 self,
                 _tr('MessageDialog', "Warning"),
                 _tr('User', "The user code is required")
             )
             return
-        if self.ui.lineEditUserDescription.text() == "":
+        if self.ui.lineEditUserDescription.text().strip() == "":
             QMessageBox.warning(
                 self,
                 _tr('MessageDialog', "Warning"),
