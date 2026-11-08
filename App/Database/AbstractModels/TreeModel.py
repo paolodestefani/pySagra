@@ -48,6 +48,7 @@ from PySide6.QtCore import QDateTime
 from App.Database import OVFIELD
 from App.Database.Exceptions import db_exception_context
 from App.Database.Exceptions import PyAppDBConcurrencyError
+from App.Database.Exceptions import PyAppDBError
 from App.Database.Connect import appconn
 
 
@@ -278,6 +279,9 @@ class TreeModel(QAbstractItemModel):
         self.childField: Optional[str] = None
         self.childFieldColumn: Optional[int] = None
         self.isEditable = True
+        # codes whose children can't change, a subtree shared with a read only tree:
+        # the rows under them are read only, no row can be added or removed there
+        self.lockedCodes: set = set()
         self.isDirty = False
         self.rootItem: Optional[TreeItem] = None
         self.toDelete: list[TreeItem] = []
@@ -400,9 +404,20 @@ class TreeModel(QAbstractItemModel):
         col = index.column()
         item = self.getItem(index)
         if (not self.isEditable or self.columns[col][RO] or col == self.parentFieldColumn
+                or (item is not None and self._isLocked(item.parentItem))
                 or (col == self.childFieldColumn and item is not None and item.state != stt.INSERTED)):
             return flags
         return flags | Qt.ItemFlag.ItemIsEditable
+
+    def _isLocked(self, node: Optional[TreeItem]) -> bool:
+        """True when the children of the node can't change"""
+        if node is None or node is self.rootItem or self.childFieldColumn is None:
+            return False
+        return node.data(self.childFieldColumn) in self.lockedCodes
+
+    def isLocked(self, index: QModelIndex | QPersistentModelIndex) -> bool:
+        """True when the children of the node at index can't change"""
+        return self._isLocked(self.getItem(index)) if index.isValid() else False
 
     def getItem(self, index: QModelIndex | QPersistentModelIndex) -> Optional[TreeItem]:
         if index.isValid():
@@ -444,7 +459,8 @@ class TreeModel(QAbstractItemModel):
     def insertRows(self, position: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
         """Insert new rows under a node, their parent field shows the code of that node"""
         parentItem = self.getItem(parent)
-        if not self.isEditable or not parentItem or position < 0 or position > len(parentItem.childItems):
+        if (not self.isEditable or not parentItem or self._isLocked(parentItem)
+                or position < 0 or position > len(parentItem.childItems)):
             return False
         self.beginInsertRows(parent, position, position + count - 1)
         for _ in range(count):
@@ -461,7 +477,8 @@ class TreeModel(QAbstractItemModel):
     def removeRows(self, position: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
         """Remove rows with their subtree; the saved ones are deleted on submitAll"""
         parentItem = self.getItem(parent)
-        if not self.isEditable or not parentItem or position < 0 or position + count > len(parentItem.childItems):
+        if (not self.isEditable or not parentItem or self._isLocked(parentItem)
+                or position < 0 or position + count > len(parentItem.childItems)):
             return False
         self.beginRemoveRows(parent, position, position + count - 1)
         for _ in range(count):
@@ -507,6 +524,11 @@ class TreeModel(QAbstractItemModel):
         setFields = ", ".join([f"{f} = %({f})s" for _, f in updatable]) or f"{OVFIELD} = {OVFIELD}"
 
         def save(cur: Any, node: TreeItem) -> None:
+            # a new row can get a locked code as long as it has no children yet:
+            # what is under it would go into the shared subtree
+            if node.state != stt.SYNC and self._isLocked(node.parentItem):
+                raise PyAppDBError(code='LOCK', message='A shared read only subtree can not be changed',
+                                   detail=str(node.parentItem.data(childCol)))   # type: ignore[union-attr]
             if node.state == stt.UPDATED:
                 args = {f: node.data(i) for i, f in updatable} | node.pkey | {OVFIELD: node.objectVersion}
                 cur.execute(f"UPDATE {self.table} SET {setFields} WHERE {whereVersion};", args)

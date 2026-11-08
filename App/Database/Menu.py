@@ -81,3 +81,23 @@ WHERE parent = {from_code};"""
 
 
 
+
+
+def system_codes() -> set[str]:
+    "Codes of the system menus and toolbars and of every item under them, at any level"
+    # UNION, not UNION ALL: it drops repeated codes and stops on loops in the data
+    script = """
+WITH RECURSIVE tree(code) AS (
+    SELECT code
+    FROM system.menu_toolbar
+    WHERE is_system_object
+    UNION
+    SELECT i.child
+    FROM system.menu_toolbar_item i
+    JOIN tree t ON i.parent = t.code
+)
+SELECT code FROM tree;"""
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return {row[0] for row in cur.fetchall()}

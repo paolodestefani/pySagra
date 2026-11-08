@@ -53,6 +53,7 @@ from App.Widget.Form import FormIndexManager
 from App.Ui.MenuWidget import Ui_MenuWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
 from App.Database.Menu import duplicate_menu
+from App.Database.Menu import system_codes
 
 
 # logger
@@ -182,6 +183,9 @@ class MenusForm(FormIndexManager):
     def _insertItem(self, row: int, parent: QModelIndex) -> None:
         "Insert an item with sorting after the previous one, then edit its code"
         model = self.ui.treeViewMenuItems.model()
+        if model.isLocked(parent):
+            self._lockedWarning()
+            return
         if not model.insertRow(row, parent):
             return
         previous = model.index(row - 1, mt.SORTING, parent).data() if row > 0 else 0
@@ -195,7 +199,19 @@ class MenusForm(FormIndexManager):
         "Remove the current item with its subitems"
         index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
         if index.isValid():
-            self.ui.treeViewMenuItems.model().removeRow(index.row(), index.parent())
+            model = self.ui.treeViewMenuItems.model()
+            if model.isLocked(index.parent()):
+                self._lockedWarning()
+                return
+            model.removeRow(index.row(), index.parent())
+
+    def _lockedWarning(self) -> None:
+        "A submenu also used by a system menu can't change, here or anywhere"
+        QMessageBox.information(
+            self,
+            _tr('MessageDialog', "Information"),
+            _tr('Menu', "This submenu is also used by a system menu, it can not be changed")
+        )
 
     def mapperIndexChanged(self, row: int) -> None:
         "Make uneditable system menus"
@@ -246,6 +262,8 @@ class MenusForm(FormIndexManager):
     def reload(self) -> None:
         "Reload data, set widgets to default state"
         self.ui.lineEditCode.setDisabled(True)
+        # submenus also used by a system menu are read only in every menu
+        self.ui.treeViewMenuItems.model().lockedCodes = system_codes()
         super().reload()
         
     def duplicate(self) -> None:

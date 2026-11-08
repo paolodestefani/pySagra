@@ -21,6 +21,7 @@ from PySide6.QtWidgets import QApplication
 # application modules
 from App.Database.AbstractModels import TreeModel as T
 from App.Database.Exceptions import PyAppDBConcurrencyError
+from App.Database.Exceptions import PyAppDBError
 from App.Database.Models import MenuItemTreeModel
 
 
@@ -132,6 +133,41 @@ class TreeModelTest(unittest.TestCase):
         self.assertFalse(model.insertRow(0))
         self.assertFalse(model.removeRow(0))
         self.assertEqual(model.rowCount(), 1)
+
+
+    def test_locked_subtree(self) -> None:
+        "ffi is shared with a system menu: its rows are read only, nothing added or removed there"
+        model = menu()
+        model.lockedCodes = {'ffi'}
+        ffi = model.index(0, 0)
+        self.assertTrue(model.isLocked(ffi))
+        self.assertFalse(model.flags(model.index(0, 2, ffi)) & Qt.ItemFlag.ItemIsEditable)
+        self.assertFalse(model.insertRow(0, ffi))
+        self.assertFalse(model.removeRow(0, ffi))
+        self.assertEqual(model.rowCount(ffi), 1)
+
+    def test_locked_subtree_link_is_free(self) -> None:
+        "The row that links the shared submenu belongs to this menu: it can change or go"
+        model = menu()
+        model.lockedCodes = {'ffi'}
+        self.assertFalse(model.isLocked(model.index(-1, 0)))
+        self.assertTrue(model.flags(model.index(0, 2)) & Qt.ItemFlag.ItemIsEditable)
+        self.assertTrue(model.insertRow(1))
+        self.assertTrue(model.removeRow(0))
+        cursor = self.submit(model, FakeCursor(referenced=('ffi',)))
+        deletes = [s for s, _ in cursor.statements if s.startswith('DELETE')]
+        self.assertEqual(len(deletes), 1)   # the link only, the shared children stay
+
+    def test_locked_subtree_save_check(self) -> None:
+        "A row put under a locked code before it was locked never reaches the database"
+        model = menu()
+        ffi = model.index(0, 0)
+        self.assertTrue(model.insertRow(0, ffi))
+        model.lockedCodes = {'ffi'}
+        cursor = FakeCursor()
+        with self.assertRaises(PyAppDBError):
+            self.submit(model, cursor)
+        self.assertFalse([s for s, _ in cursor.statements if s.startswith('INSERT')])
 
 
 if __name__ == '__main__':
