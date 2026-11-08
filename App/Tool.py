@@ -41,7 +41,7 @@ from PySide6.QtWidgets import QMessageBox
 # application modules
 from App import session
 from App.Widget.ExceptionHandler import gui_exception_context
-from App.Database.Exceptions import PyAppDBError
+from App.Database.Connect import appconn
 from App.Database.Lookup import event_lookup
 from App.Database.Tool import delete_event_order
 from App.Database.Tool import inventory_rebuild
@@ -74,7 +74,7 @@ logger = logging.getLogger(__name__)
 
 def eventBasedTool(action: QAction, checked: bool = False) -> None:
     "Launch event based tool dialog"
-    logging.info('Starting event based tool dialog')
+    logger.info('Starting event based tool dialog')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
@@ -93,11 +93,11 @@ def eventBasedTool(action: QAction, checked: bool = False) -> None:
     if dlg.exec() == QDialog.DialogCode.Rejected:
         return
     dlg.close()
-    logging.info('Delete event based tool shown')
+    logger.info('Delete event based tool shown')
     
 def deleteTool(action: QAction, checked: bool = False) -> None:
     "Delete selected objects from current company"
-    logging.info('Starting delete tool dialog')
+    logger.info('Starting delete tool dialog')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
@@ -111,11 +111,11 @@ def deleteTool(action: QAction, checked: bool = False) -> None:
     if dlg.exec() == QDialog.DialogCode.Rejected:
         return
     dlg.close()
-    logging.info('Delete tool dialog shown')
+    logger.info('Delete tool dialog shown')
 
 def copyTool(action: QAction, checked: bool = False) -> None:
     "Copy selected objects from a selected company to the current company"
-    logging.info('Starting copy tool dialog')
+    logger.info('Starting copy tool dialog')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
@@ -129,7 +129,7 @@ def copyTool(action: QAction, checked: bool = False) -> None:
     if dlg.exec() == QDialog.DialogCode.Rejected:
         return
     dlg.close()
-    logging.info('Copy tool dialog shown')
+    logger.info('Copy tool dialog shown')
     
 
 
@@ -156,30 +156,28 @@ class EventToolDialog(QDialog):
        
     def updateWarning(self, index):
         "Update warning text according to selected utility"
-        utility_id = self.ui.comboBoxUtility.currentData()
-        if utility_id == 0:
-            self.ui.groupBoxWarning.setTitle(_tr('Utility', 'Warning'))
-            self.ui.labelWarning.setText(_tr('Utility', 
-                                             "This utility function delete ALL "
-                                             "orders of the selected event. It's not possible "
-                                             "to undo this operation."))
-        elif utility_id == 1:
-            self.ui.groupBoxWarning.setTitle(_tr('Utility', 'Information'))
-            self.ui.labelWarning.setText(_tr('Utility', 
-                                             "This utility function rebuild stock "
-                                             "unload from orders of the selected event. Use "
-                                             "this when changed item state/flags "
-                                             "or when manually altered orders."))
-        elif utility_id == 2:
-            self.ui.groupBoxWarning.setTitle(_tr('Utility', 'Information'))
-            self.ui.labelWarning.setText(_tr('Utility', 
-                                             "This utility function rebuild "
-                                             "numbering from orders of the selected event."))
-        elif utility_id == 3:
-            self.ui.groupBoxWarning.setTitle(_tr('Utility', 'Information'))
-            self.ui.labelWarning.setText(_tr('Utility', 
-                                             "This utility function mark all "
-                                             "orders as processed at the order date"))
+        texts = {
+            0: (_tr('Utility', 'Warning'),
+                _tr('Utility', "This utility function delete ALL "
+                               "orders of the selected event. It's not possible "
+                               "to undo this operation.")),
+            1: (_tr('Utility', 'Information'),
+                _tr('Utility', "This utility function rebuild stock "
+                               "unload from orders of the selected event. Use "
+                               "this when changed item state/flags "
+                               "or when manually altered orders.")),
+            2: (_tr('Utility', 'Information'),
+                _tr('Utility', "This utility function rebuild the ordered and "
+                               "delivered quantities from orders of the selected event.")),
+            3: (_tr('Utility', 'Information'),
+                _tr('Utility', "This utility function rebuild "
+                               "numbering from orders of the selected event.")),
+            4: (_tr('Utility', 'Information'),
+                _tr('Utility', "This utility function mark all "
+                               "orders as processed at the order date"))}
+        title, text = texts.get(self.ui.comboBoxUtility.currentData(), ('', ''))
+        self.ui.groupBoxWarning.setTitle(title)
+        self.ui.labelWarning.setText(text)
 
     def accept(self):
         "Proceed with the selected utility"
@@ -206,9 +204,9 @@ class EventToolDialog(QDialog):
         if QMessageBox.question(self,
                                 utilities[utility_id][DESC],
                                 utilities[utility_id][MESSAGE],
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
         with gui_exception_context(self, _tr('Utility', 'Execute event tool')):
             utilities[utility_id][FUNC](event_id)
@@ -235,38 +233,35 @@ class DeleteToolDialog(QDialog):
        
     def accept(self):
         "Proceed with the selected utility"
-        
+        deletes = [(self.ui.checkBoxOrder, delete_all_orders),
+                   (self.ui.checkBoxInventory, delete_all_inventory),
+                   (self.ui.checkBoxEvent, delete_all_events),
+                   (self.ui.checkBoxPriceList, delete_all_price_lists),
+                   (self.ui.checkBoxItem, delete_all_items),
+                   (self.ui.checkBoxDepartment, delete_all_departments),
+                   (self.ui.checkBoxTable, delete_all_tables),
+                   (self.ui.checkBoxCashDesk, delete_all_cash_desks)]
+        selected = [func for check, func in deletes if check.isChecked()]
+        if not selected:
+            QMessageBox.information(self,
+                                    _tr('MessageDialog', 'Information'),
+                                    _tr('Tool', 'Select the objects to delete'))
+            return
         if QMessageBox.question(self,
                                 _tr("MessageDialog","Question"),
                                 _tr("Tool", "Are you sure you want to delete all the records "
                                     "of the selected objects from the current company ?"),
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
-        try:
-            if self.ui.checkBoxOrder.isChecked():
-                delete_all_orders()
-            if self.ui.checkBoxInventory.isChecked():
-                delete_all_inventory()
-            if self.ui.checkBoxEvent.isChecked():
-                delete_all_events()
-            if self.ui.checkBoxPriceList.isChecked():
-                delete_all_price_lists()
-            if self.ui.checkBoxItem.isChecked():
-                delete_all_items()
-            if self.ui.checkBoxDepartment.isChecked():
-                delete_all_departments()
-            if self.ui.checkBoxTable.isChecked():
-                delete_all_tables()
-            if self.ui.checkBoxCashDesk.isChecked():
-                delete_all_cash_desks()
-                
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                 _tr('MessageDialog', 'Critical'),
-                                 f"Database error: {er.code}\n{er.message}")
-        else:
+        # one transaction: a delete that fails, as items still used by another
+        # object, leaves everything as it was
+        with gui_exception_context(self, _tr('Tool', 'Delete tool')) as outcome:
+            with appconn.transaction():
+                for func in selected:
+                    func()
+        if outcome.ok:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Tool', 'Operation completed successfully'))
@@ -295,28 +290,31 @@ class CopyToolDialog(QDialog):
         "Proceed with the selected utility"
         # selected company id
         company_id = self.ui.comboBoxCompany.currentData()
+        # departments before items: copied items look for them by description
+        copies = [(self.ui.checkBoxCashDesk, copy_cash_desk),
+                  (self.ui.checkBoxTable, copy_table),
+                  (self.ui.checkBoxDepartment, copy_department),
+                  (self.ui.checkBoxItem, copy_item)]
+        selected = [func for check, func in copies if check.isChecked()]
+        if company_id is None or not selected:
+            QMessageBox.information(self,
+                                    _tr('MessageDialog', 'Information'),
+                                    _tr('Tool', 'Select the company and the objects to copy'))
+            return
         if QMessageBox.question(self,
                                 _tr("MessageDialog","Question"),
                                 _tr("Tool", "Are you sure you want to copy all the records "
                                     "of the selected objects of the selected company to the current company ?"),
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
-        try:
-            if self.ui.checkBoxCashDesk.isChecked():
-                copy_cash_desk(company_id)
-            if self.ui.checkBoxTable.isChecked():
-                copy_table(company_id)
-            if self.ui.checkBoxDepartment.isChecked():
-                copy_department(company_id)
-            if self.ui.checkBoxItem.isChecked():
-                copy_item(company_id)
-        except PyAppDBError as er:
-            QMessageBox.critical(self,
-                                _tr('MessageDialog', 'Critical'),
-                                f"Database error: {er.code}\n{er.message}")
-        else:
+        # one transaction: a copy that fails, as a code already present, copies nothing
+        with gui_exception_context(self, _tr('Tool', 'Copy tool')) as outcome:
+            with appconn.transaction():
+                for func in selected:
+                    func(company_id)
+        if outcome.ok:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Tool', 'Operation completed successfully'))
