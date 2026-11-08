@@ -28,7 +28,7 @@ This module provides order entry dialog and required subcalsses/funtions
 """
 
 # standard library
-from enum import IntEnum, StrEnum
+from enum import IntEnum
 import logging
 import warnings 
 from decimal import Decimal 
@@ -89,9 +89,9 @@ from App.Report.Order import pc
 # logger
 logger = logging.getLogger(__name__)
 
-class vw(IntEnum):
-    TABLE = 0
-    ORDER = 1
+class vw(IntEnum):   # pages of stackedWidgetTableOrder
+    ORDER  = 0
+    TABLES = 1
 
 class two(IntEnum):
     ID = 0
@@ -113,7 +113,6 @@ def orderEntry(action: QAction, checked: bool = False) -> None:
     "Open order dialog"
     logger.info('Starting order entry dialog')
     mw = session['mainwin']
-    title = action.text()
     auth = action.data()
     if not auth[2]: # no execute permission
         QMessageBox.warning(mw,
@@ -237,7 +236,6 @@ class BaseOrderDialog(QDialog):
         self.ui.pushButtonTablesSwitch.setIcon(currentIcon['order_switch'])
         self.ui.pushButtonConfirm.setIcon(currentIcon['order_ok'])
         self.ui.pushButtonCancel.setIcon(currentIcon['order_cancel'])
-        self.ui.pushButtonTablesSwitch.setText(_tr('OrderDialog', 'Order'))
         
         # idle time control system
         if self.setting['check_inactivity']:
@@ -314,7 +312,6 @@ class BaseOrderDialog(QDialog):
         self.ui.doubleSpinBoxDiscount.valueChanged.connect(self.recalcTotals)
         self.ui.doubleSpinBoxCash.valueChanged.connect(self.recalcTotals)
         self.ui.lineEditBarCode.editingFinished.connect(self.processWebOrder)
-        self.ui.doubleSpinBoxDiscount.valueChanged.connect(self.onDiscountChanged)
 
         # system actions and keyboard shortcuts
         ced = QAction(_tr('OrderEntry', 'Change Event and date'), self)
@@ -376,13 +373,28 @@ class BaseOrderDialog(QDialog):
         if not ok:
             return
         # set datedifference for current date and selected date, to show correct time in order dialog and print correct date in order report
+        dateTimeDiff = self.dateTimeDiff
         if dateTime and dateTime.isValid():
             self.dateTimeDiff = QDateTime.currentDateTime().secsTo(dateTime)
         else:
             self.dateTimeDiff = None
         dt = QDateTime.currentDateTime()
         dt = dt.addSecs(self.dateTimeDiff or 0) # consider date time difference
-        session['event_id'], session['event_description'] = get_event_from_date(dt)
+        event_id, event_description = get_event_from_date(dt)
+        if not event_id:   # keep working on the current event
+            self.dateTimeDiff = dateTimeDiff
+            QMessageBox.warning(self,
+                                _tr('MessageDialog', 'Warning'),
+                                _tr('OrderEntry', 'No event for the selected date, the current event is kept'))
+            return
+        previous = session['event_id'], session['event_description']
+        session['event_id'], session['event_description'] = event_id, event_description
+        # prices and stock are the ones of the new event
+        self.resetDialog()
+        if self.order_lines:   # the user kept the order already entered: nothing changes
+            session['event_id'], session['event_description'] = previous
+            self.dateTimeDiff = dateTimeDiff
+            return
         self.updateWindowTitle()
 
     def tableTakeAway(self, state) -> None:
@@ -393,7 +405,7 @@ class BaseOrderDialog(QDialog):
             self.ui.spinBoxCovers.setDisabled(True)
             self.ui.pushButtonTablesSwitch.setDisabled(True)
             self.ui.lineEditCustomerName.setFocus()
-            self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
+            self._showPage(vw.ORDER)
             depta = department_takeaway_list()
             for i in range(self.ui.tabWidgetList.count()):
                 if self.ui.tabWidgetList.tabText(i) in depta:
@@ -406,7 +418,7 @@ class BaseOrderDialog(QDialog):
             self.ui.spinBoxCovers.setEnabled(True)
             if self.setting['use_table_list']:
                 self.ui.pushButtonTablesSwitch.setEnabled(True)
-                self.ui.stackedWidgetTableOrder.setCurrentIndex(1)
+                self._showPage(vw.TABLES)
             for i in range(self.ui.tabWidgetList.count()):
                 self.ui.tabWidgetList.setTabEnabled(i, True)
 
@@ -447,12 +459,18 @@ class BaseOrderDialog(QDialog):
         "Switch between tables grid and order list"
         if not self.setting['use_table_list']:
             return
-        if self.ui.stackedWidgetTableOrder.currentIndex() == 0:
-            self.ui.stackedWidgetTableOrder.setCurrentIndex(1)
-            self.ui.pushButtonTablesSwitch.setText(_tr('OrderEntry', 'Order'))
+        if self.ui.stackedWidgetTableOrder.currentIndex() == vw.ORDER:
+            self._showPage(vw.TABLES)
         else:
-            self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
+            self._showPage(vw.ORDER)
+
+    def _showPage(self, page: vw) -> None:
+        "Show the order list or the tables grid, the switch button names the other one"
+        self.ui.stackedWidgetTableOrder.setCurrentIndex(page)
+        if page == vw.ORDER:
             self.ui.pushButtonTablesSwitch.setText(_tr('OrderEntry', 'Tables'))
+        else:
+            self.ui.pushButtonTablesSwitch.setText(_tr('OrderEntry', 'Order'))
 
     def toggleLevel(self, toggled) -> None:
         "Hide/unhide stock level in list buttons"
@@ -564,7 +582,7 @@ class BaseOrderDialog(QDialog):
             self.ui.spinBoxCovers.setEnabled(True)
             self.ui.spinBoxCovers.setValue(0)
             self.ui.pushButtonTablesSwitch.setEnabled(self.setting['use_table_list'])
-            self.ui.stackedWidgetTableOrder.setCurrentIndex(vw.ORDER if self.setting['use_table_list'] else vw.TABLE)
+            self._showPage(vw.TABLES if self.setting['use_table_list'] else vw.ORDER)
         # takeaway
         else: 
             self.ui.radioButtonTakeAway.setChecked(True)
@@ -572,7 +590,7 @@ class BaseOrderDialog(QDialog):
             self.ui.spinBoxCovers.setEnabled(False)
             self.ui.spinBoxCovers.setValue(0)
             self.ui.pushButtonTablesSwitch.setDisabled(True)
-            self.ui.stackedWidgetTableOrder.setCurrentIndex(vw.TABLE)
+            self._showPage(vw.ORDER)
         
         # common default
         self.ui.lineEditTable.clear()
@@ -598,10 +616,8 @@ class BaseOrderDialog(QDialog):
         self.ui.tabWidgetOrder.setRowCount(0)
         
         # handle specific stock and variants setting combinations
-        if self.setting['automatic_show_variants']:
-            self.ui.pushButtonVariants.setDisabled(True)
-        if self.setting['always_show_stock_inventory']:
-            self.ui.pushButtonShowLevel.setDisabled(True)
+        self.ui.pushButtonVariants.setDisabled(self.setting['automatic_show_variants'])
+        self.ui.pushButtonShowLevel.setDisabled(self.setting['always_show_stock_inventory'])
             
         # reset totals and financial spinboxes
         self.ui.radioButton1.setChecked(True)
@@ -654,10 +670,8 @@ class BaseOrderDialog(QDialog):
                         
                         # CONVERT THE TRUE AVAILABLE QUANTITY TO INTEGER
                         # we read available_qty
+                        self._registerInventory(item_id, item_type, has_inventory, qty)
                         if has_inventory:
-                            self._original_inventory[item_id] = {'type': item_type, 'qty': qty, 'part':{}}
-                            if item_type != 'I':
-                                self._original_inventory[item_id]['part'] = {i: int(round(q * self._qty_factor)) for i, q in get_item_parts(item_id)}
                             btn_item.stockLevel = qty
                         
                         btn_item.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
@@ -665,10 +679,7 @@ class BaseOrderDialog(QDialog):
                         grid_layout.addWidget(btn_item, row_pos, col_pos)
                     else:
                         # not salable items are used for inventory
-                        if has_inventory:
-                            self._original_inventory[item_id] = {'type': item_type, 'qty': qty, 'part':{}}
-                            if item_type != 'I':
-                                self._original_inventory[item_id]['part'] = {i: int(round(q * self._qty_factor)) for i, q in get_item_parts(item_id)}                    
+                        self._registerInventory(item_id, item_type, has_inventory, qty)
                         
                 # fill the remaining empty layout grid cells with generic spacer widgets
                 for r in range(1, self.ui.list_rows + 1):
@@ -706,6 +717,18 @@ class BaseOrderDialog(QDialog):
         # establish window focus context on the primary table entry field
         self.ui.lineEditTable.setFocus()
         
+    def _registerInventory(self, item_id: int, item_type: str, has_inventory: bool, qty: int) -> None:
+        """Add an item to the inventory used for the availability checks.
+        Kits and menus go in even without inventory control, as the database does:
+        ordering them must use up their controlled parts, and a menu must reach the
+        parts of the kits it contains. Their own flag only decides if the button
+        shows and checks the availability"""
+        if not has_inventory and item_type == 'I':
+            return
+        self._original_inventory[item_id] = {'type': item_type, 'qty': qty, 'part': {}}
+        if item_type != 'I':
+            self._original_inventory[item_id]['part'] = {i: int(round(q * self._qty_factor)) for i, q in get_item_parts(item_id)}
+
     def _explode_to_parts(self, item_id: int, multiplier: int = 1, flat_recipe: dict | None = None) -> dict:
         """
         Helper method to break down items. Safely ignores untracked components.
@@ -858,7 +881,7 @@ class BaseOrderDialog(QDialog):
         
         # for variants, the quantity is determined by the variant dialog, not the radio buttons
         if iqty > 0:
-            qty_int = iqty
+            qty_int = iqty * self._qty_factor
         
         # VERIFY STOCK LEVEL ON THE BUTTON IN INTEGER SPACE
         if btn.hasInventory and (self._inventory[btn.id]['qty'] - qty_int < 0):
@@ -914,7 +937,7 @@ class BaseOrderDialog(QDialog):
                 actual_qty = item["qty_int"] / self._qty_factor
                 
                 # atomic multiplication using dynamic quantity factor to secure perfect math precision
-                line_amount = (item["qty_int"] * item["price_int"]) / self._qty_factor / self._price_factor
+                line_amount = self._lineAmount(item, self._amount_factor) / self._amount_factor
                 
                 # format quantity string: handles dynamic decimals configurations nicely (e.g., 1.5 shows "1,5")
                 qty_str = session['qlocale'].toString(float(actual_qty), 'f', self.setting['quantity_decimal_places'])
@@ -998,20 +1021,11 @@ class BaseOrderDialog(QDialog):
         # DECREMENT QUANTITY INSIDE MEMORY DICTIONARY MAP
         self.order_lines[dict_key]["qty_int"] -= actual_returned_qty_int
         
-        # RESTORE STOCK LEVEL ON THE CORRESPONDING COUNTER BUTTON
-        # explode the removed item to find which raw ingredients (type 'I') it actually returns
-        returned_ingredients = self._explode_to_parts(item_id, actual_returned_qty_int)
-        
-        # add quantities back ONLY to the raw ingredients inside the inventory
-        for ing_id, total_qty_to_restore in returned_ingredients.items():
-            if ing_id in self._inventory:
-                self._inventory[ing_id]['qty'] += total_qty_to_restore
-                
         # IF QUANTITY DROPS TO ZERO OR LESS, WIPE ITEM FROM CORE DICTIONARY STRUCTURE
         if self.order_lines[dict_key]["qty_int"] <= 0:
             del self.order_lines[dict_key]
             
-        # UPDATE STOCK LEVEL ON THE BUTTON GROUP
+        # UPDATE STOCK LEVEL ON THE BUTTON GROUP: rebuilt from the remaining lines
         self.refresh_inventory_and_ui()
         # REFRESH CENTRALIZED GRAPHICAL VIEW DATA PIPELINE FROM MEMORY
         self.renderOrderTable()
@@ -1087,8 +1101,7 @@ class BaseOrderDialog(QDialog):
                 return           
                 
             # move UI layout to order view widget
-            self.ui.stackedWidgetTableOrder.setCurrentIndex(0)
-            self.ui.pushButtonTablesSwitch.setText(_tr('OrderEntry', 'Tables'))
+            self._showPage(vw.ORDER)
             
             if qdelivery == 'T':
                 self.ui.radioButtonTable.setChecked(True)
@@ -1105,18 +1118,27 @@ class BaseOrderDialog(QDialog):
             
             # iterate through extracted order lines
             for i, v, p, q in zip(itm, var, prd, qty):
+                # an error halfway leaves no half order: the dialog is reset
                 if not i.isdigit():
                     msg = _tr('OrderEntry', "Unrecognized item id:") + f" {i}"
                     QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
+                    self.resetDialog()
                     return
                 if not q.isdigit():   
                     msg = _tr('OrderEntry', "Unrecognized quantity:") + f" {q}"
                     QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
+                    self.resetDialog()
                     return        
+                try:
+                    variant_float = float(p or '0.0')
+                except ValueError:
+                    msg = _tr('OrderEntry', "Unrecognized price:") + f" {p}"
+                    QMessageBox.critical(self, _tr("MessageDialog", "Critical"), msg)
+                    self.resetDialog()
+                    return
                     
-                # convert the incoming QR code price string safely into integer cents
-                variant_float = float(p or '0.0')
-                variant_price_cents = int(round(variant_float * 100))
+                # convert the incoming QR code price into the integer price space of the settings
+                variant_price_cents = int(round(variant_float * self._price_factor))
                 
                 # repeat item insertion loop based on QR code quantity requirements
                 for j in range(int(q)):
@@ -1125,6 +1147,7 @@ class BaseOrderDialog(QDialog):
                         QMessageBox.critical(self,
                                             _tr("MessageDialog", "Critical"),
                                             _tr('OrderEntry', "Item NOT available in buttons' grid, web order skipped."))
+                        self.resetDialog()
                         return 
                         
                     # cast to Any to prevent mypy exceptions on custom attributes
@@ -1166,15 +1189,12 @@ class BaseOrderDialog(QDialog):
             self.ui.doubleSpinBoxChange.setEnabled(True)
             
             
-    def onDiscountChanged(self, value: float) -> None:
-        """Triggered when the operator modifies the discount spinbox. 
-        Converts the float to pure integer cents and forces a recalculation."""
-        # update the internal state variable to integers before doing any calculations
-        self.current_discount_int = int(round(value * self._price_factor))
-        
-        # recalculates totals so the entire screen realigns
-        self.recalcTotals()
-
+    def _lineAmount(self, item: dict[str, Any], factor: int) -> int:
+        """Line amount as an integer with `factor` as unit, rounded half up.
+        Integers only: with floats 0.29 * 100 is 28.999999999999996"""
+        num = item["qty_int"] * item["price_int"] * factor
+        den = self._qty_factor * self._price_factor
+        return (2 * num + den) // (2 * den)
 
     def recalcTotals(self) -> None:
         """Recalculate order subtotal, total, and change indicators using dynamic integer memory mappings."""
@@ -1183,10 +1203,7 @@ class BaseOrderDialog(QDialog):
         
         # calculate the gross sum of all rows
         for item in self.order_lines.values():
-            line_amount_int = int((item["qty_int"] / self._qty_factor) * 
-                               (item["price_int"] / self._price_factor) *
-                               self._amount_factor)
-            subtotal_int += line_amount_int
+            subtotal_int += self._lineAmount(item, self._amount_factor)
         
         # freeze chart signals to avoid refresh loops
         self.ui.doubleSpinBoxSubTotal.blockSignals(True)
@@ -1288,7 +1305,7 @@ class BaseOrderDialog(QDialog):
                     nogood.append(get_item_desc(item_id))
             if nogood:
                 msg = _tr('OrderEntry', "Warning: the following items are not available for take away:\n"
-                                        "- {}\n\nDo i proceed anyway ?".format("\n- ".join(nogood)))
+                                        "- {}\n\nDo i proceed anyway ?").format("\n- ".join(nogood))
                 if QMessageBox.question(self,
                                         _tr("MessageDialog", "Question"),
                                         msg,
@@ -1335,8 +1352,7 @@ class BaseOrderDialog(QDialog):
             
             # direct atomic price calculations converted safely using dynamic factors
             price_decimal = Decimal(item['price_int']) / Decimal(self._price_factor)
-            line_amount_cents = (item['qty_int'] * item['price_int']) // self._qty_factor
-            amount_decimal = Decimal(line_amount_cents) / Decimal(self._price_factor)
+            amount_decimal = Decimal(self._lineAmount(item, self._amount_factor)) / Decimal(self._amount_factor)
             
             line['price'] = price_decimal
             line['amount'] = amount_decimal
@@ -1344,7 +1360,10 @@ class BaseOrderDialog(QDialog):
             order.lines.append(line)
             
         # handle real-time stock allocation checks
-        ofsi = order.out_of_stock()
+        with gui_exception_context(self, _tr('OrderEntry', "Checking stock availability")) as outcome:
+            ofsi = order.out_of_stock()
+        if not outcome.ok:
+            return
         if ofsi:
             items = [str(item) for item in ofsi]
             msg = (_tr('OrderEntry', "Warning: these items are unavailable "
