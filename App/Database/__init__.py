@@ -48,4 +48,5 @@ MRV_PGSQL   = 130000  # postgres minimum compatible version
 # other parameters
 
 OVFIELD = 'object_version' # object versione field name for concurrency
+SYSFIELD = 'is_system_object'  # system record field name: system records are protected by forms
 COMPANYFIELD = 'company_id'  # default company id field name

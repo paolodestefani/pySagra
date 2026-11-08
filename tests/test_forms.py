@@ -23,6 +23,7 @@ from PySide6.QtWidgets import QAbstractItemView, QApplication, QLineEdit, QTable
 from App import session
 from App.Widget import ExceptionHandler
 from App.Widget import Form
+from App.Database import SYSFIELD
 
 
 app = QApplication.instance() or QApplication([])
@@ -196,6 +197,76 @@ class FormManagerTest(FormTestCase):
             form.delete()
         self.assertEqual(calls, ['begin', 'details', 'end ValueError'])
         form.reload.assert_called()
+
+
+class RecordProtectionTest(FormTestCase):
+    "System records: the user's right and the record protection are separate"
+
+    def status(self, write: bool = True, readOnly: bool = False, undeletable: bool = False,
+               editing: bool = False) -> list[bool]:
+        "New and Delete as shown while viewing, Save while editing"
+        model = Model(['a'])
+        with mock.patch.object(Form, 'SortFilterDialog'):
+            form = ViewForm(model)
+        form.write_perm = write
+        if editing:
+            form.state = Form.ev.EDIT
+        form.recordReadOnly, form.recordUndeletable = readOnly, undeletable
+        form.updateEditStatus()
+        status = self.mainwin.updateEditStatus.call_args.args[0]
+        return [status[Form.es.NEW], status[Form.es.SAVE], status[Form.es.DELETE]]
+
+    def test_system_record_still_allows_new(self) -> None:
+        "One system company only: New must stay available"
+        self.assertEqual(self.status(readOnly=True), [True, False, False])
+        self.assertFalse(self.status(readOnly=True, editing=True)[1])
+
+    def test_undeletable_record_can_be_saved(self) -> None:
+        self.assertEqual(self.status(undeletable=True), [True, False, False])
+        self.assertTrue(self.status(undeletable=True, editing=True)[1])
+        self.assertTrue(self.status()[2])
+
+    def test_read_only_user(self) -> None:
+        self.assertEqual(self.status(write=False), [False, False, False])
+
+    def system_form(self, system: bool, policy: str | None = 'readonly') -> ViewForm:
+        "A model with the SYSFIELD column, its only row selected"
+        model = Model(['a'])
+        model.setColumnCount(2)
+        model.setData(model.index(0, 1), system, Qt.ItemDataRole.EditRole)
+        model.columns = (('code', 'Code', False, 'str'), (SYSFIELD, 'System', True, 'bool'))
+        with mock.patch.object(Form, 'SortFilterDialog'):
+            form = ViewForm(model)
+        form.systemRecords = policy
+        form.view.selectRow(0)
+        return form
+
+    def test_system_flag_is_read_from_the_model(self) -> None:
+        "No code in the form: the SYSFIELD column protects the record"
+        self.assertTrue(self.system_form(True).isSystemRecord())
+        self.assertEqual((self.system_form(True).canSave(), self.system_form(True).canDelete()), (False, False))
+        self.assertEqual((self.system_form(False).canSave(), self.system_form(False).canDelete()), (True, True))
+
+    def test_system_policies(self) -> None:
+        form = self.system_form(True, 'undeletable')
+        self.assertEqual((form.canSave(), form.canDelete()), (True, False))
+        form = self.system_form(True, None)
+        self.assertEqual((form.canSave(), form.canDelete()), (True, True))
+
+    def test_model_without_system_column(self) -> None:
+        model = Model(['a'])
+        with mock.patch.object(Form, 'SortFilterDialog'):
+            form = ViewForm(model)
+        self.assertFalse(form.isSystemRecord())
+
+    def test_delete_refused_on_protected_record(self) -> None:
+        model = Model(['a'])
+        with mock.patch.object(Form, 'SortFilterDialog'):
+            form = ViewForm(model)
+        form.recordUndeletable = True
+        with mock.patch.object(model, 'removeRows') as remove:
+            form.delete()
+        remove.assert_not_called()
 
 
 if __name__ == '__main__':

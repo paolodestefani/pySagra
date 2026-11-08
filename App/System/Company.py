@@ -120,7 +120,6 @@ class CompanyForm(FormIndexManager):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
-        self._writePerm = self.write_perm   # the user's right, system records are read only
         model = CompanyModel()
         idxModel = CompanyIndexModel()
         model2 = UserCompanyModelReferenceCompany()
@@ -165,10 +164,6 @@ class CompanyForm(FormIndexManager):
         self.ui.pushButtonDownload.clicked.connect(self.download)
         self.ui.pushButtonDelete.clicked.connect(self.removeImage)
         
-    def mapperIndexChanged(self, index):
-        "System companies can not be changed, the others only with the write right of the user"
-        super().mapperIndexChanged(index)
-        self.write_perm = self._writePerm and not self.ui.checkBoxSystem.isChecked()
 
     def add(self) -> None:
         "Add a new user company relation"
@@ -248,7 +243,7 @@ class CompanyForm(FormIndexManager):
 
     def new(self) -> None:
         "Create a new company"
-        if not self._writePerm:
+        if not self.write_perm:
             return
         dlg = NewCompanyDialog(self)
         if dlg.exec() == QDialog.DialogCode.Accepted:
@@ -256,7 +251,7 @@ class CompanyForm(FormIndexManager):
 
     def delete(self) -> None:
         "Delete the current selected company"
-        if not self._writePerm:
+        if not self.write_perm:
             return
         companyId = self.ui.spinBoxId.value()
         companyDescription = self.ui.lineEditDescription.text()
@@ -361,6 +356,14 @@ class NewCompanyDialog(QDialog):
 
     def accept(self) -> None:
         "Create the new company with the specified data"
+        # sanity checks
+        if self.ui.lineEditDescription.text() == "":
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('Company', "The company description is required")
+            )
+            return
         if QMessageBox.question(
             self,
             _tr('MessageDialog', "Question"),

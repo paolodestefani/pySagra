@@ -129,7 +129,6 @@ class ProfileForm(FormIndexManager):
     
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
-        self._writePerm = self.write_perm   # the user's right, system records are read only
         model = ProfileModel(self)
         idxModel = ProfileIndexModel(self)
         paModel = ProfileActionModel(self)
@@ -203,10 +202,6 @@ class ProfileForm(FormIndexManager):
                           value=Qt.CheckState.Checked, 
                           role=Qt.ItemDataRole.CheckStateRole)
             
-    def mapperIndexChanged(self, index):
-        "System profiles can not be changed, the others only with the write right of the user"
-        super().mapperIndexChanged(index)
-        self.write_perm = self._writePerm and not self.ui.checkBoxSystem.isChecked()
             
 
     def delete(self) -> None:
@@ -232,7 +227,6 @@ class ProfileForm(FormIndexManager):
 
     def new(self) -> None:
         "Insert a new profile"
-        self.write_perm = self._writePerm   # a new record is never a system one
         super().new()
         self.ui.lineEditCode.setEnabled(True)
         self.ui.lineEditCode.setFocus()

@@ -171,6 +171,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         ucModel = UserCompanyModelReferenceUser(self)
         self.setModel(model, idxModel)
         self.addDetailRelation(ucModel, 0, 1)
+        self.systemRecords = 'undeletable'   # system users can be changed, not deleted
         self.tabName = title
         self.helpLink = None
         # available status
@@ -243,6 +244,21 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
 
     def save(self) -> None:
         "Save and ask for password if null (new user)"
+        # sanity checks
+        if self.ui.lineEditUser.text() == "":
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('User', "The user code is required")
+            )
+            return
+        if self.ui.lineEditUserDescription.text() == "":
+            QMessageBox.warning(
+                self,
+                _tr('MessageDialog', "Warning"),
+                _tr('User', "The user description is required")
+            )
+            return
         if self.model.data(self.model.index(self.mapper.currentIndex(), usr.PASSWORD)) is None:
             userIndex = self.model.index(self.mapper.currentIndex(), usr.CODE)
             passwordIndex = self.model.index(self.mapper.currentIndex(), usr.PASSWORD)
@@ -261,13 +277,13 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         "Delete current user"
         userId = self.ui.lineEditUser.text()
         userDescription = self.ui.lineEditUserDescription.text()
-        # if self.ui.checkBoxSystem.isChecked():
-        #     QMessageBox.information(
-        #         self,
-        #         _tr('MessageDialog', "Information"),
-        #         _tr('User', "It is not possible to delete a system user")
-        #     )
-        #     return
+        if self.ui.checkBoxSystem.isChecked():
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "Information"),
+                _tr('User', "It is not possible to delete a system user")
+            )
+            return
         msg = _tr('User', "Are you sure you want to delete this user ?")
         if QMessageBox.question(
             self,
@@ -282,7 +298,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
 
     def mapperIndexChanged(self, row: int) -> None:
         "Change settings on change record"
-        super().mapperIndexChanged(row)         
+        super().mapperIndexChanged(row)
         if self.ui.checkBoxSystem.isChecked():
             #self.ui.lineEditUserDescription.setReadOnly(True)
             self.ui.comboBoxL10n.setDisabled(True)

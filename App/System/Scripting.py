@@ -187,7 +187,6 @@ class ScriptingForm(FormIndexManager):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
-        self._writePerm = self.write_perm   # the user's right, system records are read only
         model = ScriptingModel(self)
         idxModel = ScriptingIndexModel(self)
         self.setModel(model, idxModel)
@@ -247,10 +246,6 @@ class ScriptingForm(FormIndexManager):
         self.ui.comboBoxMethod.clear()
         self.ui.comboBoxMethod.addItems(SCRIPTABLE.get(self.ui.comboBoxClass.currentText()) or [])  # on New text is empty
 
-    def mapperIndexChanged(self, index):
-        "System scripts can not be changed, the others only with the write right of the user"
-        super().mapperIndexChanged(index)
-        self.write_perm = self._writePerm and not self.ui.checkBoxSystem.isChecked()
             
     def activateScript(self, checked: bool) -> None:
         "Activate/Deactivate script"
@@ -283,7 +278,6 @@ class ScriptingForm(FormIndexManager):
 
     def new(self) -> None:
         "New script"
-        self.write_perm = self._writePerm   # a new record is never a system one
         super().new()
         self.ui.comboBoxClass.setCurrentIndex(-1)
         self.ui.comboBoxTrigger.setCurrentIndex(-1)

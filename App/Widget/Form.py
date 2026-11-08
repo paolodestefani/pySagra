@@ -49,6 +49,7 @@ from App import session
 from App.Common.L10n import _tr
 from App.Common.Gui import wait_cursor_context
 from App.Widget.ExceptionHandler import gui_exception_context
+from App.Database import SYSFIELD
 from App.Database.Connect import appconn
 from App.Database.AbstractModels.TableModel import QueryModel
 from App.Database.AbstractModels.TableModel import TableModel
@@ -112,6 +113,12 @@ class BaseFormManager[T](QWidget):
         self.reloadConfirmation = True  # ask confirmation on reload
         self.repr = 'Generic form manager'
         self.read_perm, self.write_perm, self.execute_perm = auth
+        # how system records (SYSFIELD true) are protected whatever the rights of the user:
+        # 'readonly' no save and no delete, 'undeletable' no delete, None not protected
+        self.systemRecords: str | None = 'readonly'
+        # the same protections set by a form for its own reasons, new() clears them
+        self.recordReadOnly = False      # no save, no delete
+        self.recordUndeletable = False   # can be changed, not deleted
         self._is_navigating = False  # True while the form loads a record: changes are not user changes
         self.sortFilterDialog: SortFilterDialog | EventFilterDialog | None = None
         # messages for the user on save and delete errors, by constraint name or SQLSTATE code
@@ -164,6 +171,40 @@ class BaseFormManager[T](QWidget):
         last = current < total
         return first, first, last, last
 
+    def recordRow(self) -> int:
+        "Zero based row of the current record in the main model, < 0 if there is none"
+        return self.position()[0] - 1
+
+    def isSystemRecord(self) -> bool:
+        "The current record has the system flag, if the model has the SYSFIELD column"
+        columns = getattr(getattr(self, 'model', None), 'columns', None)
+        if not isinstance(columns, (tuple, list)) or not columns:   # models without column definitions
+            return False
+        fields = [c[0] for c in columns]
+        if SYSFIELD not in fields:
+            return False
+        row = self.recordRow()
+        if row < 0:
+            return False
+        return bool(self.model.index(row, fields.index(SYSFIELD)).data(Qt.ItemDataRole.EditRole))
+
+    def _protection(self) -> tuple[bool, bool]:
+        "(read only, undeletable) for the current record"
+        system = bool(self.systemRecords) and self.isSystemRecord()
+        readOnly = self.recordReadOnly or (system and self.systemRecords == 'readonly')
+        undeletable = self.recordUndeletable or (system and self.systemRecords == 'undeletable')
+        return readOnly, undeletable
+
+    def canSave(self) -> bool:
+        "The user has the write right and the current record can be changed"
+        readOnly, _ = self._protection()
+        return self.write_perm and not readOnly
+
+    def canDelete(self) -> bool:
+        "The user has the write right and the current record can be deleted"
+        readOnly, undeletable = self._protection()
+        return self.write_perm and not (readOnly or undeletable)
+
     def updateEditStatus(self) -> None:
         "Update main window edit status based on current record and state"
         if not getattr(self, 'model', None):
@@ -181,10 +222,13 @@ class BaseFormManager[T](QWidget):
         # disable Delete if no record
         if self.state != ev.EDIT and self.availableStatus[es.DELETE]:
             status[es.DELETE] = total > 0
-        # disable unavailable actions for Read only auth
+        # disable unavailable actions for Read only auth and protected records
         if not self.write_perm:
-            for i in (es.NEW, es.SAVE, es.DELETE):
-                status[i] = False
+            status[es.NEW] = False
+        if not self.canSave():
+            status[es.SAVE] = False
+        if not self.canDelete():
+            status[es.DELETE] = False
         self.extraStatus(status, total)
         session['mainwin'].updateEditStatus(status, current, total, self.limit())
 
@@ -331,6 +375,7 @@ class FormManager[T](BaseFormManager[T]):
         "Create a new record on model"
         if not self.write_perm or not self.model.isEditable: 
             return
+        self.recordReadOnly = self.recordUndeletable = False   # a new record is never protected
         # enable widget, in case it's disabled)
         if hasattr(self.ui, 'stackedWidget'):
             self.ui.stackedWidget.setEnabled(True)
@@ -346,7 +391,7 @@ class FormManager[T](BaseFormManager[T]):
             
     def save(self) -> None:
         "Save data to db and commit"
-        if not self.write_perm:
+        if not self.canSave():
             return
         self.commitPendingEdit()
         row = self.mapper.currentIndex()
@@ -373,7 +418,7 @@ class FormManager[T](BaseFormManager[T]):
                 
     def delete(self) -> None:
         "Delete current record and commit"
-        if not self.write_perm:
+        if not self.canDelete():
             return
         
         row = self.mapper.currentIndex()
@@ -494,7 +539,7 @@ class FormViewManager[T](BaseFormManager[T]):
 
     def save(self) -> None:
         "Save data to db and commit"
-        if not self.write_perm:
+        if not self.canSave():
             return
         if not self.model:
             return None
@@ -508,7 +553,7 @@ class FormViewManager[T](BaseFormManager[T]):
 
     def delete(self) -> None:
         "Delete current record and commit"
-        if not self.write_perm:
+        if not self.canDelete():
             return
         if not self.model:
             return
@@ -633,6 +678,7 @@ class FormIndexManager[T](BaseFormManager[T]):
         "Create a new record on model deleting the current one"
         if not self.write_perm or not self.model.isEditable:
             return
+        self.recordReadOnly = self.recordUndeletable = False   # a new record is never protected
         self._new = True
         self._is_navigating = True
         try:
@@ -657,7 +703,7 @@ class FormIndexManager[T](BaseFormManager[T]):
 
     def save(self) -> None:
         "Save data to db and commit"
-        if not self.write_perm:
+        if not self.canSave():
             return
         self.commitPendingEdit()
         if not self.model.isEditable:
@@ -686,7 +732,7 @@ class FormIndexManager[T](BaseFormManager[T]):
             
     def delete(self) -> None:
         "Delete current record and commit. Resets the index mapper to the previous value -1"
-        if not self.write_perm:
+        if not self.canDelete():
             return
         if not self.model.isEditable:
             return
@@ -771,6 +817,10 @@ class FormIndexManager[T](BaseFormManager[T]):
         
     def position(self):
         return self.indexMapper.currentIndex() + 1, self.indexModel.rowCount()
+
+    def recordRow(self):
+        # the main model holds only the record selected in the index
+        return self.mapper.currentIndex()
 
     def goto(self, row):
         self.indexMapper.setCurrentIndex(row)
