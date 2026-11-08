@@ -86,6 +86,9 @@ CREATE TABLE order_print_settings (
         CHECK (print_type IN ('C', 'V', 'D', 'O')), -- (C)ustomer/Co(V)er/(D)epartment/(O)rdered delivered
     CONSTRAINT order_print_settings_print_method_check 
         CHECK (print_method IN ('D', 'E')),
+    -- the department copy has a department, the other copies none
+    CONSTRAINT order_print_settings_department_check 
+        CHECK ((print_type = 'D') = (department_id IS NOT NULL)),
     CONSTRAINT order_print_settings_department_fk 
         FOREIGN KEY (department_id)
         REFERENCES department (department_id) 
@@ -103,6 +106,13 @@ ALTER TABLE order_print_settings
     OWNER TO {pyAppPgOwnerRole};
     
 CREATE INDEX order_print_settings_idx ON order_print_settings (company_id, order_print_settings_id, hostname);
+
+-- one row for each copy type of a computer: order_print_settings_unique can't
+-- tell apart rows without department, NULL values are all different
+-- (NULLS NOT DISTINCT needs PostgreSQL 15)
+CREATE UNIQUE INDEX order_print_settings_unique_no_department 
+    ON order_print_settings (company_id, hostname, print_type) 
+    WHERE department_id IS NULL;
 
 CREATE TRIGGER t99_update_company_user_date 
     BEFORE INSERT OR UPDATE ON order_print_settings  

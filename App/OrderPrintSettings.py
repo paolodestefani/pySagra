@@ -34,43 +34,28 @@ from functools import partial
 import logging
 
 # PySide6
-from PySide6.QtCore import QObject
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QVBoxLayout
-from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtPrintSupport import QPrinterInfo
-from PySide6.QtNetwork import QHostInfo
 
 # application modules
 from App import session
-from App import currentIcon
 from App.Common.L10n import _tr
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
-from App.Database.Models import OrderPrintSettingsIndexModel
 from App.Database.Models import OrderPrintSettingsModel
-#from App.Database.Models import OrderPrintDepartmentSettingstModel
 from App.Database.Lookup import order_driver_report_lookup
 from App.Database.Lookup import order_escpos_report_lookup
-from App.Database.Lookup import cover_order_driver_report_lookup
-from App.Database.Lookup import cover_order_escpos_report_lookup
-from App.Database.Lookup import department_order_driver_report_lookup
-from App.Database.Lookup import department_order_escpos_report_lookup
-from App.Database.Lookup import escpos_printer_lookup
 from App.Database.Lookup import department_lookup
 from App.Database.OrderPrintSettings import copy_order_print_settings
 from App.Database.Escpos import get_escpos_printers
-
 from App.Widget.Dialog import PrintDialog
-from App.Widget.Form import FormIndexManager
-from App.Widget.Delegate import ReadOnlyDelegate
 from App.Widget.Delegate import PrintersDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import HostNameDelegate
-#from App.Ui.OrderPrintSettingsWidget import Ui_OrderPrintSettingsWidget
+from App.Widget.ExceptionHandler import gui_exception_context
 from App.Widget.Form import FormViewManager
 from App.Ui.OrderPrintSettingsWidget import Ui_OrderPrintSettingsWidget
 
@@ -112,8 +97,8 @@ def available_driver_printers() -> list:
 
 
 def orderPrintSettings(action: QAction, checked: bool = False) -> None:
-    "Show/Edit printer classes"
-    logger.info('Starting printers Form')
+    "Show/Edit the order print settings of each computer"
+    logger.info('Starting order print settings Form')
     mw = session['mainwin']
     title = action.text()
     auth = action.data()
@@ -125,7 +110,7 @@ def orderPrintSettings(action: QAction, checked: bool = False) -> None:
     pf = OrderPrintSettingsForm(mw, title, auth)
     pf.reload()
     mw.addTab(title, pf)
-    logger.info('Printers Form added to main window')
+    logger.info('Order print settings Form added to main window')
 
 
 class OrderPrintSettingsForm(FormViewManager[Ui_OrderPrintSettingsWidget]):
@@ -155,6 +140,11 @@ class OrderPrintSettingsForm(FormViewManager[Ui_OrderPrintSettingsWidget]):
         self.ui.tableView.setItemDelegateForColumn(ops.ESCPOS_REPORT, RelationDelegate(self, order_escpos_report_lookup, null=True))
         self.ui.tableView.setItemDelegateForColumn(ops.DRIVER_PRINTER, PrintersDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ops.ESCPOS_PRINTER, RelationDelegate(self, get_escpos_printers, null=True))
+        # messages for the user on save errors, by constraint name
+        self.errorMessages = {
+            'order_print_settings_unique': _tr('OrderPrintSettings', 'This computer already has a setting for this print type and department'),
+            'order_print_settings_unique_no_department': _tr('OrderPrintSettings', 'This computer already has a setting for this print type'),
+            'order_print_settings_department_check': _tr('OrderPrintSettings', 'The department is required for the department copy only')}
         # signal / slot
         self.ui.pushButtonCopySettings.clicked.connect(self.copyHostSettings)
         # scripting init
@@ -162,33 +152,47 @@ class OrderPrintSettingsForm(FormViewManager[Ui_OrderPrintSettingsWidget]):
         
     def setFromHostName(self, index: int | None) -> None:
         "Fill the combobox of host name already present"
-        hosts = set()
-        for r in range(self.model.rowCount()):
-            hosts.add(self.model.createIndex(r, ops.HOSTNAME).data())
+        hosts = {self.model.index(r, ops.HOSTNAME).data() for r in range(self.model.rowCount())}
         self.ui.comboBoxFromHostName.clear()
-        #print("Hosts", hosts)
-        self.ui.comboBoxFromHostName.addItems(list(hosts))
+        self.ui.comboBoxFromHostName.addItems(sorted(h for h in hosts if h))
             
     def copyHostSettings(self):
         "Copy all settings from another hostname"
+        if not self.write_perm:
+            return
         from_host = self.ui.comboBoxFromHostName.currentText()
-        to_host   = self.ui.lineEditNewHostName.text()
-        msg = _tr('OrderPrintSettings', f'Copy ALL settings from {from_host} to {to_host} ?')
+        to_host   = self.ui.lineEditNewHostName.text().strip()
+        if not from_host or not to_host or from_host == to_host:
+            QMessageBox.warning(self,
+                                _tr('MessageDialog', "Warning"),
+                                _tr('OrderPrintSettings', 'Choose the computer to copy from and a different new computer name'))
+            return
+        msg = _tr('OrderPrintSettings', 'Copy ALL settings from {} to {} ?').format(from_host, to_host)
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 msg,
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
-        copy_order_print_settings(from_host, to_host)
-        self.reload()
+        with gui_exception_context(self, _tr('OrderPrintSettings', 'Copy settings'), self.errorMessages) as outcome:
+            copy_order_print_settings(from_host, to_host)
+        if outcome.ok:
+            self.ui.lineEditNewHostName.clear()
+            self.reload()
         
     @scriptMethod
     def new(self) -> None:
-        "Insert a neew printer, focus on description"
+        "Insert a new setting for this computer"
+        model = self.ui.tableView.model()
+        row = model.rowCount()
         super().new()
-        #self.ui.lineEditHostName.setFocus()
+        if model.rowCount() == row:   # no row added: no right to write or insert failed
+            return
+        model.setData(model.index(row, ops.HOSTNAME), session['hostname'])
+        index = model.index(row, ops.PRINT_TYPE)
+        self.ui.tableView.setCurrentIndex(index)
+        self.ui.tableView.edit(index)
 
     @scriptMethod
     def save(self) -> None:
@@ -208,6 +212,6 @@ class OrderPrintSettingsForm(FormViewManager[Ui_OrderPrintSettingsWidget]):
 
     @scriptMethod
     def print(self) -> None:
-        "Printer report"
+        "Order print settings report"
         dialog = PrintDialog(self, 'PRINT_SETTINGS')
         dialog.show()

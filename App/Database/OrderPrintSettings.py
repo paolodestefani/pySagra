@@ -43,44 +43,24 @@ logger = logging.getLogger(__name__)
 
 def order_print_settings(print_type: str,
                          department_id: int | None ) -> Any | None:
-    "Order print settings for customer/Department/Cover copy, include settings parameter"
-    if department_id is None:
-        script = t"""
-    SELECT 
-        (o.print_copy AND 
-            s.print_customer_copy) AS print_customer_copy,
-        o.print_method,
-        o.number_of_copies,
-        o.driver_report,
-        o.driver_printer,
-        o.escpos_report,
-        o.escpos_printer
-    FROM order_print_settings o
-    JOIN settings s ON o.company_id = s.company_id
-    WHERE 
-            s.company_id = system.pa_current_company()
-        AND o.hostname = {session['hostname']}
-        AND o.print_type = {print_type};
-    """
-    else:
-        script = t"""
-            SELECT 
-                (o.print_copy AND 
-                    s.print_customer_copy) AS print_customer_copy,
-                o.print_method,
-                o.number_of_copies,
-                o.driver_report,
-                o.driver_printer,
-                o.escpos_report,
-                o.escpos_printer
-            FROM order_print_settings o
-            JOIN settings s ON o.company_id = s.company_id
-            WHERE 
-                    s.company_id = system.pa_current_company()
-                AND o.hostname = {session['hostname']}
-                AND o.print_type = {print_type}
-                AND o.department_id = {department_id};
-            """
+    """Order print settings of this computer for a print type and department (None for
+    customer, cover and ordered/delivered copies). The company settings that switch a
+    copy type on or off are checked by the caller"""
+    script = t"""
+SELECT 
+    o.print_copy,
+    o.print_method,
+    o.number_of_copies,
+    o.driver_report,
+    o.driver_printer,
+    o.escpos_report,
+    o.escpos_printer
+FROM order_print_settings o
+WHERE 
+        o.company_id = system.pa_current_company()
+    AND o.hostname = {session['hostname']}
+    AND o.print_type = {print_type}
+    AND o.department_id IS NOT DISTINCT FROM {department_id};"""
     # Unified context managers in the recommended evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
