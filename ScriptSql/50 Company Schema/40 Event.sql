@@ -94,3 +94,34 @@ CREATE INDEX event_keys_idx ON event (company_id, event_id, price_list_id);
 CREATE TRIGGER t99_update_company_user_date 
     BEFORE INSERT OR UPDATE ON event  
     FOR EACH ROW EXECUTE PROCEDURE system.update_company_user_date();
+
+
+-- function: delete the data of an event before the event itself
+-- The cascade alone fails: deleting the order lines their triggers update the
+-- inventory and the ordered/delivered rows of the event being deleted.
+-- Orders go first, while inventory and ordered/delivered still exist.
+CREATE FUNCTION event_delete_data() 
+    RETURNS trigger AS 
+$$
+BEGIN
+    -- order lines, departments and headers by cascade
+    DELETE FROM company.order_header 
+    WHERE event_id = OLD.event_id;
+    DELETE FROM company.ordered_delivered 
+    WHERE event_id = OLD.event_id;
+    DELETE FROM company.inventory 
+    WHERE event_id = OLD.event_id;
+    DELETE FROM company.numbering 
+    WHERE event_id = OLD.event_id;
+    RETURN OLD;
+END;
+$$ 
+LANGUAGE plpgsql;
+COMMENT ON FUNCTION event_delete_data() IS
+    'Delete orders, ordered/delivered, inventory and numbering of a deleted event';
+ALTER FUNCTION event_delete_data() 
+    OWNER TO {pyAppPgOwnerRole};
+
+CREATE TRIGGER t10_event_delete_data 
+    BEFORE DELETE ON event  
+    FOR EACH ROW EXECUTE PROCEDURE event_delete_data();

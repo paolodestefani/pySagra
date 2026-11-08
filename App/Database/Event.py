@@ -70,8 +70,22 @@ SELECT EXISTS(
         cur.execute(script)
         result = cur.fetchone()
         return result[0] if result else False
-    
-    
+
+
+
+def has_inventory(event: int) -> bool:
+    "Returns True if have stock inventory data for the given event"
+    script = t"""
+SELECT EXISTS(
+    SELECT inventory_id 
+    FROM inventory 
+    WHERE event_id = {event});"""
+    # Unified context managers ensuring proper evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return cur.fetchone()[0]
+
+
 def get_event_from_date(date: Any) -> tuple[int | None, str | None]:
     "Get event id from date time"
     script = t"""

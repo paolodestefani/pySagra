@@ -99,7 +99,7 @@ CREATE TABLE inventory (
     CONSTRAINT inventory_event_fk 
         FOREIGN KEY (event_id) 
         REFERENCES event (event_id)
-        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
     CONSTRAINT inventory_item_fk 
         FOREIGN KEY (item_id) 
         REFERENCES item (item_id)

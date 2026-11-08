@@ -51,6 +51,7 @@ from App.Database.Connect import get_current_event
 from App.Database.Models import EventIndexModel
 from App.Database.Models import EventModel
 from App.Database.Event import is_used
+from App.Database.Event import has_inventory
 from App.Database.Lookup import price_list_lookup
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ImageDelegate
@@ -128,6 +129,10 @@ class EventForm(FormIndexManager):
         self.ui.comboBoxPriceList.setNullable(True)
         self.mapper.addMapping(self.ui.comboBoxPriceList, evn.PRICELIST)
         self.mapper.addMapping(self.ui.labelEventImage, evn.IMAGE)
+        # messages for the user on save and delete errors, by constraint name
+        self.errorMessages = {
+            'event_dates_check': _tr('Event', 'The end date can not be before the start date'),
+            'event_exclude_date_overlap_exclude': _tr('Event', 'The dates overlap another event')}
         # scripting init
         self.script = scriptInit(self)
 
@@ -159,11 +164,16 @@ class EventForm(FormIndexManager):
         if not f:
             return
         pix = QPixmap(f)
+        if pix.isNull():
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr('Event', "The selected file is not a valid image"))
+            return
         if pix.width() > 640 or pix.height() > 480:
             pix = pix.scaled(640, 480, Qt.AspectRatioMode.KeepAspectRatio)
             QMessageBox.warning(self,
                                 _tr("MessageDialog", "Warning"),
-                                _tr('Event', "The selected image is too big, it was"
+                                _tr('Event', "The selected image is too big, it was "
                                     "automatically resized to the max allowed size of 640x480 pixels"))
         self.ui.labelEventImage.setPixmap(pix)
         # save path
@@ -176,7 +186,7 @@ class EventForm(FormIndexManager):
     @scriptMethod
     def download(self) -> None:
         "Download event image to file"
-        if not self.ui.labelEventImage.pixmap():
+        if self.ui.labelEventImage.pixmap().isNull():
             return
         st = QSettings()
         path = st.value("Event/PathImages", QDir.current().path())
@@ -198,7 +208,7 @@ class EventForm(FormIndexManager):
 
     @scriptMethod
     def removeImage(self) -> None:
-        "Remove company image"
+        "Remove event image"
         self.ui.labelEventImage.clear()
         if hasattr(self.model, 'isDirty'):
             self.model.isDirty = True
@@ -207,7 +217,10 @@ class EventForm(FormIndexManager):
 
     @scriptMethod
     def new(self) -> None:
+        rows = self.model.rowCount()
         super().new()
+        if self.model.rowCount() == rows:   # no row added: no right to write or insert failed
+            return
         currentRow = self.mapper.currentIndex()
         startDate = QDateTime.currentDateTime()
         endDate = startDate.addDays(7)
@@ -236,6 +249,8 @@ class EventForm(FormIndexManager):
     @scriptMethod
     def delete(self) -> None:
         "Delete and update current event"
+        if not self.canDelete():   # no question for a delete that can not happen
+            return
         msg = _tr('Event', "Are you sure you want to delete this event ?")
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
@@ -244,6 +259,23 @@ class EventForm(FormIndexManager):
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
+        # the database deletes everything of the event with it: ask again
+        event = self.model.index(self.mapper.currentIndex(), evn.ID).data()
+        lost = []
+        if is_used(event):
+            lost.append(_tr('Event', "all the orders of the event, with ordered/delivered and numbering"))
+        if has_inventory(event):
+            lost.append(_tr('Event', "the stock inventory data of the event"))
+        if lost:
+            msg = _tr('Event', "Deleting the event also deletes, without any possible recovery:")
+            question = _tr('Event', "Delete the event anyway ?")
+            if QMessageBox.question(self,
+                                    _tr('MessageDialog', "Question"),
+                                    msg + "\n- " + "\n- ".join(lost) + "\n\n" + question,
+                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                    QMessageBox.StandardButton.No
+                                    ) == QMessageBox.StandardButton.No:
+                return
         super().delete()
         get_current_event()
 
