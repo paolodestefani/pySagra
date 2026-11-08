@@ -24,7 +24,7 @@ class Ui_DeleteToolDialog(object):
     def setupUi(self, DeleteToolDialog):
         if not DeleteToolDialog.objectName():
             DeleteToolDialog.setObjectName(u"DeleteToolDialog")
-        DeleteToolDialog.resize(432, 356)
+        DeleteToolDialog.resize(431, 327)
         self.verticalLayout_5 = QVBoxLayout(DeleteToolDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout = QHBoxLayout()
@@ -95,11 +95,6 @@ class Ui_DeleteToolDialog(object):
 
         self.gridLayout.addWidget(self.checkBoxInventory, 1, 0, 1, 1)
 
-        self.checkBoxEvent = QCheckBox(self.groupBoxDelete)
-        self.checkBoxEvent.setObjectName(u"checkBoxEvent")
-
-        self.gridLayout.addWidget(self.checkBoxEvent, 4, 0, 1, 1)
-
         self.checkBoxDepartment = QCheckBox(self.groupBoxDelete)
         self.checkBoxDepartment.setObjectName(u"checkBoxDepartment")
 
@@ -108,7 +103,12 @@ class Ui_DeleteToolDialog(object):
         self.checkBoxPriceList = QCheckBox(self.groupBoxDelete)
         self.checkBoxPriceList.setObjectName(u"checkBoxPriceList")
 
-        self.gridLayout.addWidget(self.checkBoxPriceList, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.checkBoxPriceList, 2, 0, 1, 1)
+
+        self.checkBoxEvent = QCheckBox(self.groupBoxDelete)
+        self.checkBoxEvent.setObjectName(u"checkBoxEvent")
+
+        self.gridLayout.addWidget(self.checkBoxEvent, 3, 0, 1, 1)
 
 
         self.verticalLayout_2.addLayout(self.gridLayout)
@@ -154,8 +154,8 @@ class Ui_DeleteToolDialog(object):
         self.checkBoxTable.setText(QCoreApplication.translate("DeleteToolDialog", u"Tables", None))
         self.checkBoxCashDesk.setText(QCoreApplication.translate("DeleteToolDialog", u"Cash desks", None))
         self.checkBoxInventory.setText(QCoreApplication.translate("DeleteToolDialog", u"Inventory", None))
-        self.checkBoxEvent.setText(QCoreApplication.translate("DeleteToolDialog", u"Events", None))
         self.checkBoxDepartment.setText(QCoreApplication.translate("DeleteToolDialog", u"Departments", None))
         self.checkBoxPriceList.setText(QCoreApplication.translate("DeleteToolDialog", u"Price lists", None))
+        self.checkBoxEvent.setText(QCoreApplication.translate("DeleteToolDialog", u"Events", None))
     # retranslateUi
 

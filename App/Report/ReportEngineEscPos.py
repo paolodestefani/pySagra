@@ -256,7 +256,7 @@ class BaseInlineRenderer():
     def render(self) -> str:
         "Print text"
         if not self.is_visible:
-            return '' # Row class fill the line in case of invisible elements 
+            return '' # Row class fill the line in case of invisible elements
         # create the output string
         text: str = ''
         match (self.value, self.field_format):

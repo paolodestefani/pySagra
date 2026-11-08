@@ -201,12 +201,12 @@ class ToolbarForm(FormIndexManager):
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', "Information"),
-                _tr('Toolbar', "Is not possible to delete a system shortcut scheme")
+                _tr('Toolbar', "Is not possible to delete a system toolbar")
             )
             return
         scheme = self.ui.lineEditCode.text()
         description = self.ui.lineEditDescription.text()
-        msg = _tr('Toolbar', "Are you sure you want to delete this scheme ?")
+        msg = _tr('Toolbar', "Are you sure you want to delete this toolbar ?")
         if QMessageBox.question(
             self,
             _tr('MessageDialog', "Question"),
