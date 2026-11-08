@@ -129,6 +129,10 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.mapper.setCurrentModelIndex)
         self.mapper.currentIndexChanged.connect(self.ui.tableView.selectRow)
         self.setting = Settings()
+        # messages for the user on save errors, by constraint name
+        self.errorMessages = {
+            'seat_map_unique': _tr('SeatMap', 'A table with this code already exists'),
+            'seat_map_grid_position_unique': _tr('SeatMap', 'Another table is already in this row and column')}
         # generate tables
         self.bgcolor = '#007f00' # default background color for generated tables
         self.txcolor = '#FFFFFF' # default text color for generated tables
@@ -172,10 +176,12 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
     @scriptMethod
     def delete(self) -> None:
         "Delete and update current table"
+        if not self.canDelete():   # no question for a delete that can not happen
+            return
         table = self.model.data(self.model.index(self.mapper.currentIndex(), sm.TABLE_CODE))
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
-                                _tr('SeatMap', "Are you sure you want to delete table {} ?".format(table)),
+                                _tr('SeatMap', "Are you sure you want to delete table {} ?").format(table),
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
@@ -185,6 +191,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
     @scriptMethod
     def deleteAll(self, checked: bool = False) -> None:
         "Delete all tables"
+        if not self.write_perm:
+            return
         if QMessageBox.question(self,
                                 _tr("MessageDialog", "Question"),
                                 _tr("SeatMap", "Are you sure you want to delete ALL tables ?"),
@@ -204,12 +212,14 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         "Show/Hide preview of the tables/Buttons available in the model"
         # switch to preview
         self.ui.stackedWidget.setCurrentIndex(vw.PREVIEW)
-        # save geometry
-        self.setting['table_list_rows'] = self.ui.spinBoxRows.value()
-        self.setting['table_list_columns'] = self.ui.spinBoxColumns.value()
-        self.setting['table_list_spacing'] = self.ui.spinBoxSpacing.value()
-        with gui_exception_context(self, _tr("SeatMap", "Save settings")):
-            self.setting.save()
+        # save geometry: settings read again, they may have changed since the form opened
+        if self.write_perm:
+            with gui_exception_context(self, _tr("SeatMap", "Save settings")):
+                self.setting.reload()
+                self.setting['table_list_rows'] = self.ui.spinBoxRows.value()
+                self.setting['table_list_columns'] = self.ui.spinBoxColumns.value()
+                self.setting['table_list_spacing'] = self.ui.spinBoxSpacing.value()
+                self.setting.save()
         # create preview buttons for tables
         # clean first
         while self.ui.gridLayoutPreview.count():
@@ -218,7 +228,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                 w.setParent(None)
                 w.deleteLater()
         # new widets from model, don't need to save before preview
-        for r in range(self.model.rowCount() + 1):
+        for r in range(self.model.rowCount()):
             cod = self.model.index(r, sm.TABLE_CODE).data()
             row = self.model.index(r, sm.ROW).data()
             col = self.model.index(r, sm.COLUMN).data()
@@ -226,6 +236,10 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
             bc = self.model.index(r, sm.BKG_COLOR).data()
             un = True if self.model.index(r, sm.UNAVAILABLE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
             ob = True if self.model.index(r, sm.OBSOLETE).data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked else False
+            # show only not obsolete tables with a position: a button made and not
+            # placed would stay a hidden child of the form, never deleted
+            if row is None or col is None or ob is True:
+                continue
             b = ButtonSeat(self, 
                            cod, 
                            QFont(self.setting['table_list_font_family'] or "Arial",
@@ -234,9 +248,6 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                            tc, 
                            bc,
                            un)
-            # show only not obsolete tables
-            if row is None or col is None or ob is True:
-                continue
             self.ui.gridLayoutPreview.addWidget(b, row, col)
         # fill the remaining cells of gl with an empty widget
         for r in range(1, int(self.setting['table_list_rows'] or 0) + 1):
@@ -283,6 +294,8 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
     @scriptMethod
     def generateTableNumbers(self) -> None:
         "Generate tables code and position and add to table list"
+        if not self.write_perm:
+            return
         startRow = self.ui.spinBoxStartRow.value()
         rows = self.ui.spinBoxNumRows.value()
         columns = self.ui.spinBoxNumColumns.value()
@@ -307,8 +320,9 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                         colorIndex = 0
                 for c in range(1, columns + 1):
                     code = prefix + str(r).zfill(rowPadding) + str(c).zfill(columnPadding) + suffix
-                    self.model.insertRow(self.model.rowCount())
-                    modelRow = self.model.rowCount() - 1
+                    modelRow = self.model.rowCount()
+                    if not self.model.insertRow(modelRow):
+                        return
                     self.model.setData(self.model.index(modelRow, sm.TABLE_CODE), code)
                     self.model.setData(self.model.index(modelRow, sm.ROW), r)
                     self.model.setData(self.model.index(modelRow, sm.COLUMN), c)
@@ -324,10 +338,11 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     colorIndex += 1
                     if colorIndex == 10:
                         colorIndex = 0
-                for r in range(startRow, rows + 1):
+                for r in range(startRow, startRow + rows):
                     code = prefix + str(c).zfill(columnPadding) + str(r).zfill(rowPadding) + suffix
-                    self.model.insertRows(self.model.rowCount(), 1)
-                    modelRow = self.model.rowCount() - 1
+                    modelRow = self.model.rowCount()
+                    if not self.model.insertRow(modelRow):
+                        return
                     self.model.setData(self.model.index(modelRow, sm.TABLE_CODE), code)
                     self.model.setData(self.model.index(modelRow, sm.ROW), r)
                     self.model.setData(self.model.index(modelRow, sm.COLUMN), c)
