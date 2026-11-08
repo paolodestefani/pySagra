@@ -123,7 +123,6 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         self.ui = Ui_SalesSummaryWidget()
         self.ui.setupUi(self)
         self.setView(self.ui.tableView)  # required for formviewmanager
-        self.view = self.ui.tableView # required for formviewmanager
         self.ui.tableView.setLayoutName('SalesSummary')
         self.ui.tableView.horizontalHeader().setSectionsMovable(True)
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
@@ -143,47 +142,20 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
             self.model.select()
 
     def showDetails(self, state) -> None:
-        if state == Qt.CheckState.Unchecked:
-            self.ui.tableView.setColumnHidden(ss.ORDERS_L, True)
-            self.ui.tableView.setColumnHidden(ss.ORDERS_D, True)
-            self.ui.tableView.setColumnHidden(ss.COVERS_L, True)
-            self.ui.tableView.setColumnHidden(ss.COVERS_D, True)
-            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_L, True)
-            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_D, True)
-            self.ui.tableView.setColumnHidden(ss.TABLE_L, True)
-            self.ui.tableView.setColumnHidden(ss.TABLE_D, True)
-            self.ui.tableView.setColumnHidden(ss.AMOUNT_L, True)
-            self.ui.tableView.setColumnHidden(ss.AMOUNT_D, True)
-            self.ui.tableView.setColumnHidden(ss.DISCOUNT_L, True)
-            self.ui.tableView.setColumnHidden(ss.DISCOUNT_D, True)
-            self.ui.tableView.setColumnHidden(ss.ELECT_L, True)
-            self.ui.tableView.setColumnHidden(ss.ELECT_D, True)
-            self.ui.tableView.setColumnHidden(ss.CASH_L, True)
-            self.ui.tableView.setColumnHidden(ss.CASH_D, True)
-            self.ui.tableView.setColumnHidden(ss.TOTAL_L, True)
-            self.ui.tableView.setColumnHidden(ss.TOTAL_D, True)
-        else:
-            self.ui.tableView.setColumnHidden(ss.ORDERS_L, False)
-            self.ui.tableView.setColumnHidden(ss.ORDERS_D, False)
-            self.ui.tableView.setColumnHidden(ss.COVERS_L, False)
-            self.ui.tableView.setColumnHidden(ss.COVERS_D, False)
-            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_L, False)
-            self.ui.tableView.setColumnHidden(ss.TAKEAWAY_D, False)
-            self.ui.tableView.setColumnHidden(ss.TABLE_L, False)
-            self.ui.tableView.setColumnHidden(ss.TABLE_D, False)
-            self.ui.tableView.setColumnHidden(ss.AMOUNT_L, False)
-            self.ui.tableView.setColumnHidden(ss.AMOUNT_D, False)
-            self.ui.tableView.setColumnHidden(ss.DISCOUNT_L, False)
-            self.ui.tableView.setColumnHidden(ss.DISCOUNT_D, False)
-            self.ui.tableView.setColumnHidden(ss.ELECT_L, False)
-            self.ui.tableView.setColumnHidden(ss.ELECT_D, False)
-            self.ui.tableView.setColumnHidden(ss.CASH_L, False)
-            self.ui.tableView.setColumnHidden(ss.CASH_D, False)
-            self.ui.tableView.setColumnHidden(ss.TOTAL_L, False)
-            self.ui.tableView.setColumnHidden(ss.TOTAL_D, False)
+        "Show or hide the lunch and dinner columns"
+        hidden = state == Qt.CheckState.Unchecked
+        for column in ss:
+            if column.name.endswith(('_L', '_D')):
+                self.ui.tableView.setColumnHidden(column, hidden)
 
     def print(self) -> None:
         "Sales summary report"
+        event = self.model.parameter.get('event_id') if hasattr(self.model, 'parameter') else None
+        if not event:
+            QMessageBox.warning(self,
+                                _tr("MessageDialog", "Warning"),
+                                _tr("SalesSummary", "Select an event first"))
+            return
         dialog = PrintDialog(self, 'SALES_SUMMARY')
         if not dialog.ui.layoutFilters.itemAtPosition(0, 0):
             QMessageBox.warning(self,
@@ -195,6 +167,5 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         # filter on current selected event
         dialog.ui.layoutFilters.itemAtPosition(0, 0).widget().setCurrentIndex(1)
         dialog.ui.layoutFilters.itemAtPosition(0, 2).widget().setCurrentIndex(1)
-        if hasattr(self.model, 'parameter'):
-            dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(self.model.parameter['event_id'])
+        dialog.ui.layoutFilters.itemAtPosition(0, 3).widget().setValue(event)
         dialog.show()
