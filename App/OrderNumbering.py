@@ -103,11 +103,15 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.ui.tableView.setLayoutName('OrderNumbering')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ordn.EVENT, RelationDelegate(self, event_lookup))
+        # messages for the user on save errors, by constraint name
+        self.errorMessages = {
+            'numbering_unique': _tr('OrderNumbering', 'A numbering for this event, date and day part already exists')}
         # event filter overwrite standard sort and filter dialog
         self.sortFilterDialog = EventFilterDialog(self, show_date = True, show_daypart = True) # type: ignore
         # scripting init
         self.script = scriptInit(self)
         # initial filter conditions to current event
+        self.selectedEvent = None
         if session['event_id']:
             self.updateFilterConditions(session['event_id'])
         else:
@@ -115,6 +119,9 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         
     def updateFilterConditions(self, event, eventDate=None, dayPart=None):
         "Update model for new event id, date and day part"
+        # the conditions of the previous filter go
+        self.model.whereCondition = []
+        self.selectedEvent = event
         self.model.addWhere('event_id = %s', event)
         if eventDate:
             self.model.addWhere('event_date = %s', eventDate)
@@ -124,11 +131,14 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
 
     @scriptMethod
     def new(self) -> None:
-        "Edit second column of the view on new inserted rows"
-        super().new()
+        "New row on the filtered event, edit its date"
         model = self.ui.tableView.model()
-        row = model.rowCount() -1
-        index = model.index(row, ordn.EVENT)
+        row = model.rowCount()
+        super().new()
+        if model.rowCount() == row:   # no row added: no right to write or insert failed
+            return
+        model.setData(model.index(row, ordn.EVENT), self.selectedEvent)
+        index = model.index(row, ordn.EVENT_DATE if self.selectedEvent else ordn.EVENT)
         self.ui.tableView.setCurrentIndex(index)
         self.ui.tableView.edit(index)
 
