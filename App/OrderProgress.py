@@ -128,8 +128,6 @@ def orderProgress(action: QAction, checked: bool = False) -> None:
                             _tr('OrderProgress', 'No event available, for order progress '
                                 'is necessary to setup an event for the current date'))
         return
-    title = action.text()
-    auth = action.data()
     opf = OrderProgressForm(mw, title, auth)
     opf.reload()
     mw.addTab(title, opf)
@@ -236,13 +234,11 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         if not barcode:  # could be an empty string
             return
         # get order header department details
-        try:
+        with gui_exception_context(self, _tr("OrderProgress", "Error on getting order details")) as outcome:
             result = get_order_header_department_details(barcode)
-        except Exception as er:
-            msg = _tr("OrderProgress", "Errore on getting order details")
-            QMessageBox.critical(self,
-                                 msg,
-                                 f"{er}")
+        if not outcome.ok:
+            self.ui.lineEditBarcode.clear()
+            self.ui.lineEditBarcode.setFocus()
             return
         if not result:  # no order dep fuond for that id
             QMessageBox.warning(self,
@@ -259,9 +255,9 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
             if QMessageBox.question(self,
                                     _tr('MessageDialog', 'Question'),
                                     _tr('OrderProgress', 'Order already processed, process again ?'),
-                                    QMessageBox.Yes | QMessageBox.No,  # butons
-                                    QMessageBox.No  # default botton
-                                    ) == QMessageBox.No:
+                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                    QMessageBox.StandardButton.No  # default botton
+                                    ) == QMessageBox.StandardButton.No:
                 self.ui.lineEditBarcode.clear()
                 self.ui.lineEditBarcode.setFocus()
                 return
@@ -269,43 +265,45 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.lineEditBarcode.clear()
         self.ui.lineEditBarcode.setFocus()
         # update order header department status, mark as processed order header department
-        with gui_exception_context(self, _tr("OrderProgress", "Update order status")):
+        with gui_exception_context(self, _tr("OrderProgress", "Update order status")) as outcome:
             update_order_header_department_status(ohdid, True)
+        if not outcome.ok:   # not processed: no row in the scans history
+            return
         # insert new row in scans history
         row = self.ui.tableWidgetScans.rowCount()
         self.ui.tableWidgetScans.insertRow(row)
         cell = QTableWidgetItem(str(ohdid))
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.ID, cell)
         cell = QTableWidgetItem(barcode)
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.BARCODE, cell)
         cell = QTableWidgetItem(str(onum))
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.NUMBER, cell)
         cell = QTableWidgetItem(odate.toString())
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.DATE, cell)
         cell = QTableWidgetItem(otime.toString())
-        cell.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.TIME, cell)
         cell = QTableWidgetItem(odelivery)
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
-        cell.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
+        cell.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.ui.tableWidgetScans.setItem(row, ordp.DELIVERY, cell)
         cell = QTableWidgetItem(otable)
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.TABLE, cell)
         cell = QTableWidgetItem(ocustomer)
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.CUSTOMER, cell)
         cell = QTableWidgetItem(odepdesc)
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.DEPARTMENT, cell)
         # datetime shows is current because apdated anyway even if already processed
         dt = session['qlocale'].toString(QDateTime.currentDateTime(), QLocale.FormatType.ShortFormat)
         cell = QTableWidgetItem(dt)
-        cell.setFlags(Qt.ItemIsEnabled|Qt.ItemIsSelectable)
+        cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.FULFILLMENT, cell)
         self.ui.tableWidgetScans.scrollToBottom()
         self.updateFilterConditions()
@@ -315,20 +313,23 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         row = self.ui.tableWidgetScans.currentRow()
         if row < 0: # no row selected
             return
-        orderId = int(self.ui.tableWidgetScans.item(row, ordp.ID).data(Qt.EditRole))
+        orderId = int(self.ui.tableWidgetScans.item(row, ordp.ID).data(Qt.ItemDataRole.EditRole))
         if orderId < 0:  # no item selected
             return
         if QMessageBox.question(self,
                                 _tr('MessageDialog', 'Question'),
                                 _tr('OrderProgress', 'Set current selected order as unprocessed ?'),
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             self.ui.lineEditBarcode.setFocus()
             return
         # update order header department status
-        with gui_exception_context(self, _tr("OrderProgress", "Update order status")):
+        with gui_exception_context(self, _tr("OrderProgress", "Update order status")) as outcome:
             update_order_header_department_status(orderId, False)
+        if not outcome.ok:   # still processed: the row stays
+            self.ui.lineEditBarcode.setFocus()
+            return
         # delete row from tablewidget
         self.ui.tableWidgetScans.removeRow(row)
         self.ui.lineEditBarcode.setFocus()
