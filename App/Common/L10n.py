@@ -31,18 +31,61 @@ and currency formatting
 # standard library
 import decimal
 
+# standard library
+import logging
+
 # PySide6
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QLocale
+from PySide6.QtCore import QOperatingSystemVersion
+from PySide6.QtCore import QTranslator
 from PySide6.QtGui import QIcon
 
 # application modules
+from App import APPNAME
 from App import session
+
+
+# logger
+logger = logging.getLogger(__name__)
 
 
 # translate function
 
 def _tr(context: str, text: str, disambig: str | None = None) -> str:
     return QCoreApplication.translate(context, text, disambig)
+
+
+def system_language() -> str:
+    "Two letters code of the language of the operating system user interface"
+    lang = QLocale.system().name()[:2]
+    # on macOS the user interface language can differ from the system locale
+    if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
+        ui_langs = QLocale().uiLanguages(QLocale.TagSeparator.Underscore)
+        if ui_langs:
+            lang = ui_langs[0][:2]
+    return lang
+
+
+def install_translators(lang: str) -> None:
+    """Replace the Qt and application translators with the ones of a language,
+    English needs none: it is the language of the source strings"""
+    for name in ('qtbase', APPNAME):
+        key = name + '_translator'
+        current = session.get(key)
+        if current is not None:
+            QCoreApplication.removeTranslator(current)
+        session[key] = None
+        if lang == 'en':
+            continue
+        translator = QTranslator()
+        if not translator.load(f"{name}_{lang}", ":/"):
+            logger.warning("No %s translation for language %s", name, lang)
+        elif not QCoreApplication.installTranslator(translator):
+            logger.error("Error installing the %s translator for language %s", name, lang)
+        else:
+            session[key] = translator
+            logger.info("Installed the %s translator for language %s", name, lang)
 
 
 def fromCurrency(val: str) -> decimal.Decimal:

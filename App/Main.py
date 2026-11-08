@@ -32,6 +32,7 @@ run(), after check_requirements() has confirmed they can work.
 
 # standard library
 import logging
+import re
 import sys
 import traceback
 import types
@@ -42,8 +43,6 @@ from psycopg import __version__ as psycopg_version
 # PySide6
 from PySide6 import __version__ as pyside6_version
 from PySide6.QtCore import QLocale
-from PySide6.QtCore import QOperatingSystemVersion
-from PySide6.QtCore import QTranslator
 from PySide6.QtCore import qVersion
 from PySide6.QtGui import QIcon
 from PySide6.QtNetwork import QHostInfo
@@ -72,10 +71,17 @@ def log_unhandled_exception(ex_cls: type[BaseException],
                             ex: BaseException,
                             tb: types.TracebackType | None) -> None:
     "Function to get and log unhandled exceptions"
+    # Ctrl+C from a terminal: the default behaviour, no error box
+    if issubclass(ex_cls, KeyboardInterrupt):
+        sys.__excepthook__(ex_cls, ex, tb)
+        return
     from App.Widget.MessageBox import MessageBoxCritical
     logger.critical(''.join(traceback.format_tb(tb)))
     logger.critical('%s', ex_cls)
     logger.critical('%s', ex)
+    # no QApplication yet: no widget can be shown, the log is all
+    if QApplication.instance() is None:
+        return
     # normal cursor
     QApplication.restoreOverrideCursor() # good in any case
     MessageBoxCritical(session.get('mainwin'),
@@ -91,7 +97,9 @@ def check_requirements() -> str | None:
                 ('Qt', qVersion(), MRV_QT),
                 ('psycopg', psycopg_version, MRV_PSYCOPG))
     for name, version, minimum in required:
-        if tuple(map(int, version.split('.')[:3])) < minimum:
+        # leading digits only: pre-releases like 6.12.0a1 or 3.3.4.dev1 are fine
+        numbers = tuple(int(m.group()) for m in (re.match(r'\d+', part) for part in version.split('.')[:3]) if m)
+        if numbers < minimum:
             return (f"This program requires {name} {'.'.join(map(str, minimum))} "
                     f"or later, detected {version}")
     return None
@@ -101,6 +109,8 @@ def run() -> None:
     "Run the application until the user quits, ImportError means a missing library"
     # imported before the translators are installed: messages translated at
     # import time stay in English
+    from App.Common.L10n import install_translators
+    from App.Common.L10n import system_language
     from App.System.Login import LoginDialog
     from App.System.MainWindow import MainWindow
 
@@ -123,30 +133,13 @@ def run() -> None:
     logger.info('Computer hostname has been set to %s', session['hostname'])
     # l10n
     logger.info('Setting up QLocale to system locale')
-    # set system language
-    lang = QLocale.system().name()[:2]
-    # different behaviour on macOS
-    if QOperatingSystemVersion.currentType() == QOperatingSystemVersion.OSType.MacOS:
-        ui_langs = QLocale().uiLanguages(QLocale.TagSeparator.Underscore)
-        if ui_langs:
-            lang = ui_langs[0][:2]
+    lang = system_language()
     # set default locale even if it is not stricly necessary
     session['qlocale'] = QLocale(lang)
     QLocale.setDefault(session['qlocale'])
     # install translators for qt and main application
     logger.info('Installing translators')
-    for i in ('qtbase', APPNAME):
-        tr_key = i + '_translator'
-        session[tr_key] = QTranslator()
-        if session[tr_key].load(f"{i}_{lang}", ":/"):
-            if app.installTranslator(session[tr_key]):
-                logger.info("Successfully installed translator for %s", i)
-            else:
-                logger.error("Error installing application translator for %s", i)
-                session[tr_key] = None
-        else:
-            logger.error("Error loading application translator for %s", i)
-            session[tr_key] = None
+    install_translators(lang)
     # set basic parameters
     logger.info('Setting QApplication name, version, domain and icon')
     app.setApplicationName(APPNAME)

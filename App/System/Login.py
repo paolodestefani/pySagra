@@ -37,8 +37,6 @@ from cryptography.fernet import InvalidToken
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QLocale
-from PySide6.QtCore import QTranslator
-from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QMovie
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
@@ -58,6 +56,8 @@ from App import currentIcon
 from App.Common.Cryptography import local_encode
 from App.Common.Cryptography import local_decode
 from App.Common.L10n import _tr
+from App.Common.L10n import install_translators
+from App.Common.L10n import system_language
 from App.Widget.ExceptionHandler import gui_exception_context
 from App.Common.Gui import setTheme
 from App.Common.Gui import setColorScheme
@@ -191,34 +191,10 @@ class LoginDialog(QDialog):
         else:
             session['qlocale'] = QLocale.system()
             logger.info("Localization set to system default %s", QLocale.system().name())
-        # remove login translator if any
-        logger.info("Removing login translations")
-        for i in ('qtbase', APPNAME):
-            current_tr = session.get(i + '_translator')
-            if current_tr is not None:
-                QCoreApplication.removeTranslator(current_tr)
-            session[i + '_translator'] = None
-        # install user's translators if lang != 'en'
-        if session['l10n']:
-            lang = session['l10n'][:2]
-            if lang != 'en':
-                logger.info("Setting user translations to %s", lang)
-                for i in ('qtbase', APPNAME):
-                    tr_key = i + '_translator'
-                    session[tr_key] = QTranslator()
-                    if session[tr_key].load(f"{i}_{lang}", ":/"):
-                        if QCoreApplication.installTranslator(session[tr_key]):
-                            logger.info("Successfully installed translator for %s", i)
-                        else:
-                            logger.error("Error installing application translator for %s", i)
-                            session[tr_key] = None
-                    else:
-                        logger.error("Error loading application translator for %s", i)
-                        session[tr_key] = None
-            else:
-                logger.info("User language is English, native strings will be used")
-        else:
-            logger.info("No translation required for user %s", session['app_user_code'])
+        # user's translators, the system language when the user has none
+        lang = session['l10n'][:2] if session['l10n'] else system_language()
+        logger.info("Setting user translations to %s", lang)
+        install_translators(lang)
         
         # set working company
         if session['current_company'] and can_use_company(session['app_user_code'], session['current_company']):
