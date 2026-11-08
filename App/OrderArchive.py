@@ -49,7 +49,6 @@ from App.Database.Models import OrderLineModel
 from App.Database.Models import OrderDepartmentTreeModel
 from App.Database.Lookup import item_all_lookup
 from App.Database.Lookup import department_lookup
-from App.Widget.MessageBox import MessageBoxCritical
 from App.Widget.Dialog import PrintDialog
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import QuantityDelegate
@@ -207,6 +206,10 @@ class OrderForm(FormIndexManager):
         modelHeaDep = OrderHeaderDepartmentModel(self)
         modelDet = OrderLineModel(self)
         modelTreeDep = OrderDepartmentTreeModel(self)
+        # lines and department headers are read only: the order entry splits the lines
+        # by department, a change here would leave department lines and inventory behind
+        modelHeaDep.isEditable = False
+        modelDet.isEditable = False
         #modelTreeDep.select()
         self.setModel(model, idxModel)
         self.addDetailRelation(modelHeaDep, ordi.ID, ordhd.ID_HEADER)
@@ -217,7 +220,8 @@ class OrderForm(FormIndexManager):
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
-        self.availableStatus = (True, True, True, True, True, True, True, True,
+        # no NEW: only the order entry creates orders, with department lines and inventory
+        self.availableStatus = (False, True, True, True, True, True, True, True,
                                 True, True, True, True)
         self.ui = Ui_OrderWidget()
         self.ui.setupUi(self)
@@ -310,7 +314,8 @@ class OrderForm(FormIndexManager):
 
     @scriptMethod
     def new(self):
-        super().new()
+        "Orders are created by the order entry only"
+        return
 
     @scriptMethod
     def save(self):
@@ -318,12 +323,14 @@ class OrderForm(FormIndexManager):
 
     @scriptMethod
     def delete(self):
+        if not self.canDelete():   # no question for a delete that can not happen
+            return
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
                                 _tr('OrderArchive', "Delete current order ?"),
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 
@@ -352,17 +359,18 @@ class OrderForm(FormIndexManager):
         if self.ui.checkBoxPrintCustomerCopy.isChecked():
             with report_exception_context(self):
                 printOrderReport(pc.CUSTOMER, None, ti)
-        self.ui.checkBoxPrintCustomerCopy.setChecked(False)
-        no_print = False
+            self.ui.checkBoxPrintCustomerCopy.setChecked(False)
+            no_print = False
         # covers copy
         if self.ui.checkBoxPrintCoverCopy.isChecked():
+            # no covers: skip this copy, the department copies still print
             if self.ui.spinBoxCovers.value() == 0:
                 QMessageBox.information(self,
                                         _tr('MessageDialog', "Information"),
                                         _tr('OrderArchive', "No covers, not print required"))
-                return
-            with report_exception_context(self):
-                printOrderReport(pc.COVER, None, ti)
+            else:
+                with report_exception_context(self):
+                    printOrderReport(pc.COVER, None, ti)
             self.ui.checkBoxPrintCoverCopy.setChecked(False)
             no_print = False
         # departments copies
