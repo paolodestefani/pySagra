@@ -223,6 +223,13 @@ class EventForm(FormIndexManager):
     @scriptMethod
     def save(self) -> None:
         "Save and update current event"
+        # sanity checks
+        if self.ui.lineEditDescription.text().strip() == "":
+            QMessageBox.warning(self,
+                                _tr('MessageDialog', "Warning"),
+                                _tr('Event', 'The description field is mandatory'))
+            self.ui.lineEditDescription.setFocus()
+            return
         super().save()
         get_current_event()
 
