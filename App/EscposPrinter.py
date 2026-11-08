@@ -108,7 +108,7 @@ class EscposPrinterForm(FormViewManager[Ui_GenericFormViewWidget]):
         model = EscposPrinterModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = "help/cash_desk.html"
+        self.helpLink = None
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
@@ -121,15 +121,21 @@ class EscposPrinterForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ep.COMPUTER, HostNameDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ep.TYPE, RelationDelegate(self, printer_type))
+        # messages for the user on save errors, by constraint name
+        self.errorMessages = {
+            'escpos_printer_unique': _tr('EscposPrinter', 'A printer with this name already exists')}
         # scripting init
         self.script = scriptInit(self)
         
     @scriptMethod
     def new(self) -> None:
         "Edit second column of the view on new inserted rows"
-        super().new()
         model = self.ui.tableView.model()
-        row = model.rowCount() - 1
+        rows = model.rowCount()
+        super().new()
+        if model.rowCount() == rows:   # no row added: no right to write or insert failed
+            return
+        row = rows
         index = model.index(row, ep.COMPUTER)
         # set the computer name
         model.setData(index, session['hostname'])

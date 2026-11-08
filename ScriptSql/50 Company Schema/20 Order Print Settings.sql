@@ -93,7 +93,8 @@ CREATE TABLE order_print_settings (
     CONSTRAINT order_print_settings_escpos_printer_fk 
         FOREIGN KEY (escpos_printer)
         REFERENCES escpos_printer(escpos_printer_id) 
-        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE
+        -- a deleted printer leaves the setting without printer: print preview
+        MATCH SIMPLE ON UPDATE NO ACTION ON DELETE SET NULL
 	
 ) TABLESPACE {pyAppPgTablesTS};
 COMMENT ON TABLE order_print_settings IS 
