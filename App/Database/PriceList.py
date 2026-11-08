@@ -71,3 +71,16 @@ SELECT
 FROM price_list_item
 WHERE price_list_id = {from_id};"""
         cur.execute(script2)
+
+
+def events_using(price_list_id: int) -> list[str]:
+    "Descriptions of the events that use the given price list"
+    script = t"""
+SELECT description
+FROM event
+WHERE price_list_id = {price_list_id}
+ORDER BY start_date;"""
+    # Unified context managers in the recommended evaluation order
+    with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
+        cur.execute(script)
+        return [row[0] for row in cur.fetchall()]

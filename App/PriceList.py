@@ -45,6 +45,7 @@ from App.Database.Models import PriceListIndexModel
 from App.Database.Models import PriceListModel
 from App.Database.Models import PriceListItemModel
 from App.Database.PriceList import duplicate_price_list
+from App.Database.PriceList import events_using
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import PriceDelegate
 from App.Widget.Form import FormIndexManager
@@ -104,13 +105,6 @@ def priceList(action: QAction, checked: bool = False) -> None:
     logger.info('Price list Form added to main window')
 
 
-class PriceListWidget(QWidget, Ui_PriceListWidget):
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setupUi(self)
-
-
 class PriceListForm(FormIndexManager):
 
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
@@ -141,6 +135,9 @@ class PriceListForm(FormIndexManager):
         self.ui.tableViewPrices.setLayoutName('PriceListDetail')
         self.ui.tableViewPrices.setItemDelegateForColumn(prc.ITEM, RelationDelegate(self, item_all_lookup))
         self.ui.tableViewPrices.setItemDelegateForColumn(prc.PRICE, PriceDelegate(self))
+        # messages for the user on save errors, by constraint name
+        self.errorMessages = {
+            'price_list_item_unique': _tr('PriceList', 'The item already has a price in this price list')}
         # signal slot
         self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)
         self.ui.pushButtonAdd.clicked.connect(self.add)
@@ -150,23 +147,41 @@ class PriceListForm(FormIndexManager):
 
     @scriptMethod
     def new(self):
+        rows = self.model.rowCount()
         super().new()
+        if self.model.rowCount() == rows:   # no row added: no right to write or insert failed
+            return
         self.ui.lineEditDescription.setFocus()
 
     @scriptMethod
     def save(self):
+        # sanity checks
+        if self.ui.lineEditDescription.text().strip() == "":
+            QMessageBox.warning(self,
+                                _tr('MessageDialog', "Warning"),
+                                _tr('PriceList', 'The description field is mandatory'))
+            self.ui.lineEditDescription.setFocus()
+            return
         super().save()
 
     @scriptMethod
     def delete(self):
         "Delete and update current price list"
+        if not self.canDelete():   # no question for a delete that can not happen
+            return
         msg = _tr('PriceList', "Are you sure you want to delete this price list ?")
+        text = f"{msg}\n{self.ui.lineEditDescription.text()}"
+        # the events keep no price list: their order entry shows price 0
+        priceList = self.model.index(self.mapper.currentIndex(), pls.ID).data()
+        events = events_using(priceList) if priceList else []
+        if events:
+            text += "\n\n" + _tr('PriceList', "These events use it and will have no price list:") + "\n- " + "\n- ".join(events)
         if QMessageBox.question(self,
                                 _tr('MessageDialog', "Question"),
-                                f"{msg}\n{self.ui.lineEditDescription.text()}",
-                                QMessageBox.Yes | QMessageBox.No,  # butons
-                                QMessageBox.No  # default botton
-                                ) == QMessageBox.No:
+                                text,
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
+                                QMessageBox.StandardButton.No  # default botton
+                                ) == QMessageBox.StandardButton.No:
             return
         super().delete()
 
@@ -176,29 +191,39 @@ class PriceListForm(FormIndexManager):
 
     @scriptMethod
     def add(self):
-        "Edit second column of the view on new inserted rows"
-        self.ui.tableViewPrices.add()
+        "Add a price, edit its item"
+        if not self.canSave():
+            return
+        row = self.ui.tableViewPrices.add()
+        if row is None:   # insert failed, the view already told the user
+            return
         model = self.ui.tableViewPrices.model()
-        row = model.rowCount() - 1
-        index = model.index(row, 1)
+        index = model.index(row, prc.ITEM)
         self.ui.tableViewPrices.setCurrentIndex(index)
         self.ui.tableViewPrices.edit(index)
 
     @scriptMethod
     def remove(self):
+        if not self.canSave():
+            return
         self.ui.tableViewPrices.remove()
 
     @scriptMethod
     def duplicate(self, checked=False):
         "Duplicate current price list"
+        if not self.write_perm:
+            return
         # ask for the new price list description
         text, ok = QInputDialog.getText(self,
                                         _tr('PriceList', 'Duplicate price list'),
                                         _tr('PriceList', 'Name of the new price list'))
-        if not ok:
+        text = text.strip()
+        if not ok or not text:
             return
         # get the current price list id
         currentPriceList = self.model.index(self.mapper.currentIndex(), pls.ID).data()
+        if not currentPriceList:   # no saved price list to copy
+            return
         with gui_exception_context(self, _tr("PriceList", "Duplicate price list")):
             duplicate_price_list(currentPriceList, text)
             QMessageBox.information(self,
