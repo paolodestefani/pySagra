@@ -48,7 +48,7 @@ from PySide6.QtWidgets import QApplication
 from App import session
 from App.Common.L10n import _tr
 from App.Common.Gui import wait_cursor_context
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Database import SYSFIELD
 from App.Database.Connect import appconn
 from App.Database.AbstractModels.TableModel import QueryModel

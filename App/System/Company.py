@@ -71,7 +71,7 @@ from App.Widget.Dialog import PrintDialog
 from App.Ui.CompanyWidget import Ui_CompanyWidget
 from App.Ui.NewCompanyDialog import Ui_NewCompanyDialog
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 
 
 # logger

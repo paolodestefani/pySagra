@@ -55,7 +55,7 @@ from App.Widget.Delegate import PrintersDelegate
 from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import GenericDelegate
 from App.Widget.Delegate import HostNameDelegate
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Widget.Form import FormViewManager
 from App.Ui.OrderPrintSettingsWidget import Ui_OrderPrintSettingsWidget
 

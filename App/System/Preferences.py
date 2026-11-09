@@ -48,7 +48,7 @@ from PySide6.QtWidgets import QPushButton
 from App import APPNAME
 from App import session
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.Gui import get_color_scheme
 from App.Common.Gui import get_icon_themes
 from App.Common.Gui import get_toolbutton_styles

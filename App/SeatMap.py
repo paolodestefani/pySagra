@@ -47,7 +47,7 @@ from App.Database.SeatMap import table_delete
 from App.Database.Models import SeatMapModel
 from App.Database.Settings import Settings
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
 from App.Ui.SeatMapWidget import Ui_SeatMapWidget

@@ -19,7 +19,7 @@ from PySide6.QtWidgets import QApplication
 # application modules
 from App import session
 from App.Database.Exceptions import PyAppDBError
-from App.Widget import ExceptionHandler
+from App.Common import ExceptionHandler
 from App.Widget import Form
 
 

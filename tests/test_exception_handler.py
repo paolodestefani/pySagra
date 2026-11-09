@@ -22,7 +22,7 @@ from PySide6.QtWidgets import QApplication
 from App import session
 from App.Database.Exceptions import PyAppDBConnectionError, PyAppDBError
 from App.Report import ReportNoDataError
-from App.Widget import ExceptionHandler as EH
+from App.Common import ExceptionHandler as EH
 
 
 app = QApplication.instance() or QApplication([])

@@ -21,7 +21,7 @@ from PySide6.QtWidgets import QApplication, QLineEdit, QWidget
 # application modules
 from App import session
 from App.Widget import Dialog
-from App.Widget import ExceptionHandler
+from App.Common import ExceptionHandler
 from App.Widget import FilterGrid
 
 

@@ -74,7 +74,7 @@ from PySide6.QtWidgets import QPushButton
 from App import session
 from App import currentIcon
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Ui.SelectImageDialog import Ui_SelectImageDialog
 from App.Ui.PrintDialog import Ui_PrintDialog
 from App.Ui.SortFilterDialog import Ui_SortFilterDialog

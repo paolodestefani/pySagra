@@ -59,8 +59,8 @@ from PySide6.QtWidgets import QSizePolicy
 # application modules
 from App import session
 from App import currentIcon
-from App.Widget.ExceptionHandler import gui_exception_context
-from App.Widget.ExceptionHandler import report_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import report_exception_context
 from App.Common.Gui import get_tab_positions
 from App.Database.Settings import Settings
 from App.Database.Event import get_event_from_date

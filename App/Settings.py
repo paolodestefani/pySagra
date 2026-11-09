@@ -46,7 +46,7 @@ from App.Database.Settings import Settings
 from App.Database.Lookup import stock_unload_report_lookup
 from App.Ui.SettingsDialog import Ui_SettingsDialog
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
 from App.Common.Gui import get_colors

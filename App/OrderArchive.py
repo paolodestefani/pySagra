@@ -61,7 +61,7 @@ from App.Ui.OrderWidget import Ui_OrderWidget
 from App.Common.L10n import _tr
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
-from App.Widget.ExceptionHandler import report_exception_context
+from App.Common.ExceptionHandler import report_exception_context
 from App.Report.Order import printOrderReport
 
 

@@ -21,7 +21,7 @@ from PySide6.QtWidgets import QAbstractItemView, QApplication, QLineEdit, QTable
 
 # application modules
 from App import session
-from App.Widget import ExceptionHandler
+from App.Common import ExceptionHandler
 from App.Widget import Form
 from App.Database import SYSFIELD
 

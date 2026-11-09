@@ -73,7 +73,7 @@ from App.System.Help import HelpDialog
 from App.Ui.UserWidget import Ui_UserWidget
 from App.Ui.ChangePasswordDialog import Ui_ChangePasswordDialog
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.L10n import langCountry
 from App.Common.L10n import langCountryFlags
 

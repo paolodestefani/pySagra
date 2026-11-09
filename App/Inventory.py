@@ -52,7 +52,7 @@ from App.Widget.Delegate import NewStockDelegate
 from App.Widget.Delegate import StockLevelDelegate
 from App.Widget.Form import FormViewManager
 from App.Widget.Form import ev
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Widget.Dialog import EventFilterDialog
 from App.Widget.Dialog import PrintDialog
 from App.Database.Lookup import item_with_stock_control_lookup

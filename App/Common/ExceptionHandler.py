@@ -72,7 +72,7 @@ error_code_messages = {
     'PA012': _tr("PGError", "Company id already exists (create company sp)"),
     'PA013': _tr("PGError", "Company is in use (drop company sp)"),
 
-    'CCER': _tr("PGError", "Row modified before update/delete, roaload records"),
+    'CCER': _tr("PGError", "Row modified before update/delete, data must be reloaded"),
     
     # data exceptions
     '22000': _tr("PGError", "Generic data exception"),
@@ -140,10 +140,6 @@ def _showError(parent_widget: Any,
                 QMessageBox.warning(parent_widget,
                                     _tr('MessageDialog', 'Warning'),
                                     _tr("PGError", msg))
-            elif "item_grid_position" in str(error):
-                QMessageBox.warning(parent_widget,
-                                    _tr('MessageDialog', 'Warning'),
-                                    _tr('MessageError', "Is not possible to set the same row and column of a salable item"))
             else:
                 # Display the custom PySide6 critical dialog box
                 MessageBoxCritical(parent_widget, operation_title, error.code, msg, error.message)

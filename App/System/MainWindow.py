@@ -68,7 +68,7 @@ from App import currentAction
 from App import currentIcon
 from App import APPNAME
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.Gui import get_toolbutton_styles
 from App.Common.Gui import get_tab_positions
 from App.System.Login import ChangeCompanyDialog

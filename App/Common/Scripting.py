@@ -36,7 +36,7 @@ from PySide6.QtWidgets import QMessageBox
 # application modules
 from App import session
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Database.Scripting import get_script
 
 

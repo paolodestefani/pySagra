@@ -67,7 +67,7 @@ from App.Widget.Dialog import PrintDialog
 #from App.Widget.Delegate import PandasDelegate
 from App.Database.Statistics import load_statistic_bi_data
 from App.Common.L10n import _tr
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 
 
 # logger

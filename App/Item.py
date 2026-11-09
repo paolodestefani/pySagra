@@ -316,7 +316,8 @@ class ItemForm(FormIndexManager):
             'inventory_item_fk': _tr('Item', 'The item has stock movements, it can not be deleted'),
             'item_part_part_fk': _tr('Item', 'The item is a component of a kit or menu, it can not be deleted'),
             'item_description_unique': _tr('Item', 'An item with this description already exists'),
-            'item_customer_description_unique': _tr('Item', 'An item with this customer description already exists')
+            'item_customer_description_unique': _tr('Item', 'An item with this customer description already exists'),
+            'item_grid_position': _tr('Item', 'Another salable item of the department is already in this row and column')
             }
         # scripting init
         self.script = scriptInit(self)

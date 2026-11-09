@@ -58,7 +58,7 @@ from App.Common.Cryptography import local_decode
 from App.Common.L10n import _tr
 from App.Common.L10n import install_translators
 from App.Common.L10n import system_language
-from App.Widget.ExceptionHandler import gui_exception_context
+from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.Gui import setTheme
 from App.Common.Gui import setColorScheme
 from App.Common.Gui import setFont
