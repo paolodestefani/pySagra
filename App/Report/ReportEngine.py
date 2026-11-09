@@ -58,6 +58,9 @@ import collections
 import decimal
 import itertools
 import xml.etree.ElementTree as ET
+
+# barcodes
+import barcode as pybarcode
 import operator
 from typing import Any
 from contextlib import contextmanager
@@ -305,70 +308,20 @@ defaultOptions = {'documentName':                   'pyReportEngine document',
 
 
 
-### CODE 39 BARCODE ENCODING FUNCTION ###
+### BARCODES ###
 
-# code39 barcode characters
-CODE39CHRS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%'
+# barcode types of a report field and their python-barcode name
+BARCODE_TYPES = {'Code39': 'code39', 'Code128': 'code128'}
 
-def code39encode(text: str, checksum: bool = False) -> str|None:
-    "Calculate code39 barcode string with optional checksum"
-    # sanity check
-    if not text:
-        return None
-    chkchar = ''
-    # sanity checks
-    for i in text:
-        if i not in CODE39CHRS:
-            raise ReportException('Not valid code39 chars')
-    # calc checksum if required
-    if checksum:
-        chknum = 0
-        for i in text:
-            try:
-                chknum += CODE39CHRS.index(i)
-            except ValueError:
-                raise ReportException('Not valid code39 chars')
-        chkchar = CODE39CHRS[chknum % 43]
-    return '*' + text + chkchar + '*'
-
-
-### CODE 128 BARCODE ENCODING FUNCTION ###
-
-# Source - https://stackoverflow.com/a
-# Posted by Mark Ransom, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-01-03, License - CC BY-SA 4.0
-
-def code128encode(s: str) -> str|None:
-    ''' Code 128 conversion for a font as described at
-        https://en.wikipedia.org/wiki/Code_128 and downloaded
-        from http://www.barcodelink.net/barcode-font.php
-        Only encodes ASCII characters, does not take advantage of
-        FNC4 for bytes with the upper bit set.
-        It does not attempt to optimize the length of the string,
-        Code B is the default to prefer lower case over control characters.
-        Coded for https://stackoverflow.com/q/52710760/5987
-    '''
-    # sanity check
-    if not s:
-        return None
-    s = s.encode('ascii').decode('ascii')
-    if s.isdigit() and len(s) % 2 == 0:
-        # use Code 128C, pairs of digits
-        codes = [105]
-        for i in range(0, len(s), 2):
-            codes.append(int(s[i:i+2], 10))
-    else:
-        # use Code 128B and shift for Code 128A
-        mapping = dict((chr(c), [98, c + 64] if c < 32 else [c - 32]) for c in range(128))
-        codes = [104]
-        for c in s:
-            codes.extend(mapping[c])
-    check_digit = (codes[0] + sum(i * x for i,x in enumerate(codes))) % 103
-    codes.append(check_digit)
-    codes.append(106) # stop code
-    chars = (b'\xd4' + bytes(range(33,126+1)) + bytes(range(200,211+1))).decode('latin-1')
-    return ''.join(chars[x] for x in codes)
-
+def barcode_modules(barcode_type: str, text: str) -> str:
+    """The modules of a barcode, one character each: '1' a black bar, '0' a white space.
+    Start, stop and check characters included; Code 39 with no check character"""
+    try:
+        cls = pybarcode.get_barcode_class(BARCODE_TYPES[barcode_type])
+        code = cls(text, add_checksum=False) if barcode_type == 'Code39' else cls(text)
+        return code.build()[0]
+    except Exception as er:   # invalid characters for the barcode type
+        raise ReportException(f'Not valid {barcode_type} barcode "{text}": {er}') from er
 
 
 ### BASE RENDER OBJECTS ###
@@ -468,13 +421,6 @@ class BaseRenderer():
             case (QDate() | QDateTime() | QTime(), _):
                 text = session['qlocale'].toString(self.value, QLocale.FormatType.ShortFormat)
 
-            # --- BARCODE STRING ---
-            case (str(), _) if self.barcode == 'Code39':
-                text = code39encode(self.value)
-                
-            case (str(), _) if self.barcode == 'Code128':
-                text = code128encode(self.value)
-
             # --- GENERAL FALLBACK ---
             case _:
                 text = str(self.value or '')
@@ -489,7 +435,7 @@ class BaseRenderer():
                               else self.report.parameter.get(self.isVisibleParameter))
         if not self.isVisible:
             return bandHeight
-        if not self.canGrow:
+        if not self.canGrow or self.isBarcode():   # barcodes never grow
             return max(self.top + self.height, bandHeight)
 
         if isinstance(self.value, QImage) and not self.value.isNull():
@@ -520,8 +466,31 @@ class BaseRenderer():
             return max(self.top + rect.height(), bandHeight)
         return bandHeight
 
+    def isBarcode(self) -> bool:
+        "True when the value is painted as barcode bars"
+        return self.barcode in BARCODE_TYPES and isinstance(self.value, str) and bool(self.value)
+
+    def renderBarcode(self, painter: QPainter, rect: QRectF) -> None:
+        """Paint the barcode bars filling the rectangle of the field, no text: a human
+        readable text is another field of the report, with its own font and size.
+        Vector bars drawn at the printer resolution, no image and no barcode font"""
+        modules = barcode_modules(self.barcode, self.value)   # type: ignore[arg-type]
+        width = rect.width() / len(modules)
+        color = QColor(self.color)
+        brush = QBrush(color if color.isValid() else QColor(Qt.GlobalColor.black))
+        # sharp edges: no antialiasing between bars
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+        start = None
+        for i, module in enumerate(modules + '0'):   # a final space closes the last bar
+            if module == '1' and start is None:
+                start = i
+            elif module == '0' and start is not None:
+                painter.fillRect(QRectF(rect.left() + start * width, rect.top(),
+                                        (i - start) * width, rect.height()), brush)
+                start = None
+
     def render(self, bandHeight:float) -> None:
-        "Paint an image or text"
+        "Paint an image, a barcode or text"
         # do nothing (but script) if not visible
         if not self.isVisible:
             return
@@ -561,6 +530,8 @@ class BaseRenderer():
                                         Qt.TransformationMode.SmoothTransformation)
                 painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
                 painter.drawImage(target_rect, img)
+        elif self.isBarcode():
+            self.renderBarcode(painter, target_rect)
         else:
             text = self.textFormat()
             if text:

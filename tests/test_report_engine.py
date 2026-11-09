@@ -104,5 +104,24 @@ class FormatNumberTest(unittest.TestCase):
         self.assertEqual(R.format_number(Decimal('1234567.891'), 2, ',', '.'), '1,234,567.89')
 
 
+class BarcodeTest(unittest.TestCase):
+    "Driver reports draw barcodes as bars from python-barcode, no barcode font"
+
+    def test_code128_modules(self) -> None:
+        "Start code B, then the stop pattern 1100011101011 at the end"
+        modules = R.barcode_modules('Code128', 'PS001000000123')
+        self.assertTrue(modules.startswith('11010010000'))
+        self.assertTrue(modules.endswith('1100011101011'))
+        self.assertEqual(set(modules), {'0', '1'})
+
+    def test_code39_has_no_check_character(self) -> None:
+        "Like the old font encoding: start, the text, stop"
+        self.assertEqual(len(R.barcode_modules('Code39', 'ORD-15')), (len('ORD-15') + 2) * 16 - 1)
+
+    def test_invalid_characters(self) -> None:
+        with self.assertRaises(R.ReportException):
+            R.barcode_modules('Code39', 'A#B')
+
+
 if __name__ == '__main__':
     unittest.main()
