@@ -132,7 +132,7 @@ def main() -> None:
               f"detected {sys.version.split()[0]}")
     try:
         # App modules are imported here so that a failure can be reported
-        from App.Main import check_requirements, run
+        from App.System.Main import check_requirements, run
         problem = check_requirements()
         if problem:
             fatal(problem)

@@ -1532,7 +1532,7 @@ FROM company.vw_order_status;"""
                 return None
             
             if role == Qt.ItemDataRole.BackgroundRole:
-                status = self.dataSet.get((index.row(), 15))  # status column index
+                status = self.dataSet[index.row()][15]  # status column index
                 # color selection based on system color scheme
                 if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Light:
                     bgp = QColorConstants.Svg.lightgreen

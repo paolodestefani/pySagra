@@ -814,14 +814,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>EnhancedTableView</class>
-   <extends>QTableView</extends>
-   <header>App.Widget.View</header>
-  </customwidget>
-  <customwidget>
    <class>ButtonItemExample</class>
    <extends>QPushButton</extends>
    <header>App.Widget.Control</header>
+  </customwidget>
+  <customwidget>
+   <class>EnhancedTableView</class>
+   <extends>QTableView</extends>
+   <header>App.Widget.View</header>
   </customwidget>
   <customwidget>
    <class>ButtonColor</class>
