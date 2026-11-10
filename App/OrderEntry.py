@@ -1236,9 +1236,9 @@ class BaseOrderDialog(QDialog):
     
     def accept(self) -> None:
         """Validate, generate, save, and print the completed order using memory data mapping."""
-        # ----------------------------------------------------------
-        # SANITY CHECKS FIRST
-        # ----------------------------------------------------------
+        # --------------------------------------------------------- #
+        # SANITY CHECKS FIRST                                       #
+        # --------------------------------------------------------- #
         # check if the order contains at least one item
         if len(self.order_lines) == 0:
             msg = _tr('OrderEntry', "No item inserted!")
@@ -1312,10 +1312,7 @@ class BaseOrderDialog(QDialog):
                                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
                                         ) == QMessageBox.StandardButton.No:
                     return
-                    
-        # ---------------------------------------------------------------------
-        # VALIDATIONS PASSED: EXECUTE ORDER SUBMISSION
-        # --------------------------------------------------------------------- 
+                     
         # DISCOUNT CHECK: The discount cannot be greater than the order amount
         if self.current_discount_int > self.current_subtotal_int:
             msg = _tr("OrderEntry", "Discount amount greater than the total amount!")
@@ -1323,7 +1320,10 @@ class BaseOrderDialog(QDialog):
             self.ui.doubleSpinBoxDiscount.setFocus()
             self.ui.doubleSpinBoxDiscount.selectAll()
             return
-
+        
+        # --------------------------------------------------------- #
+        # VALIDATIONS PASSED: EXECUTE ORDER SUBMISSION              #
+        # --------------------------------------------------------- #
         # create the Order
         order = Order()
         order.header['order_date_time'] = QDateTime.currentDateTime().addSecs(self.dateTimeDiff or 0)
@@ -1378,16 +1378,16 @@ class BaseOrderDialog(QDialog):
         # Mmp department situational notes context directly from UI widgets
         order.depnote.update(self.ui.depnote)
         
-        # ---------------------------------------------------------------------
-        # DATABASE COMMIT OPERATION
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------- #
+        # DATABASE COMMIT OPERATION                                 #
+        # --------------------------------------------------------- #
         with gui_exception_context(self, _tr('OrderEntry', "Saving order to database")) as outcome:
             ti, used_dep = order.insert()  # ti = order header reference key ID
         if not outcome.ok:
             return
-        # ---------------------------------------------------------------------
-        # ASYNC ORDER PRINT REPORTS DISPATCH
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------- #
+        # ASYNC ORDER PRINT REPORTS DISPATCH                        #
+        # --------------------------------------------------------- #
         # print customer receipt copy
         with report_exception_context(self):
             printOrderReport(pc.CUSTOMER, None, ti)
@@ -1395,17 +1395,17 @@ class BaseOrderDialog(QDialog):
         if order.header['delivery'] == 'T' and order.header['covers']:
             with report_exception_context(self):
                 printOrderReport(pc.COVER, None, ti)
-        # ---------------------------------------------------------------------
-        # SEPARATE DEPARTMENT COPIES PRINT DISPATCH
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------- #
+        # SEPARATE DEPARTMENT COPIES PRINT DISPATCH                 #
+        # --------------------------------------------------------- #
         for dept_id in used_dep:
             if dept_id is None:
                 continue  # skip if department ID is not valid
             with report_exception_context(self):
                 printOrderReport(pc.DEPARTMENT, dept_id, ti)
-        # ---------------------------------------------------------------------
-        # STOCK UNLOAD / ORDERED DELIVERED REPORT SYSTEM
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------- #
+        # STOCK UNLOAD / ORDERED DELIVERED REPORT SYSTEM            #
+        # --------------------------------------------------------- #
         if self.setting['print_ordered_delivered_report']:
             with gui_exception_context(self, _tr('OrderDialog', "Printing ordered delivered report")):
                 #printer = get_printer_name(self.setting['ordered_delivered_printer_class'], session['hostname'])
@@ -1415,9 +1415,9 @@ class BaseOrderDialog(QDialog):
                                        order.header['event'],
                                        order.header['stat_order_date'],
                                        order.header['stat_order_day_part'])
-        # ---------------------------------------------------------------------
-        # INTERFACE RESET AND CLEANUP
-        # ---------------------------------------------------------------------
+        # --------------------------------------------------------- #
+        # INTERFACE RESET AND CLEANUP                               #
+        # --------------------------------------------------------- #
         # fast, safe and clean squashing of all rows in the order table
         self.ui.tabWidgetOrder.setRowCount(0)
         # Trigger full interface and button grids rejuvenation

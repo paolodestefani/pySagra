@@ -482,7 +482,7 @@ class BaseRenderer():
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
         start = None
         for i, module in enumerate(modules + '0'):   # a final space closes the last bar
-            if module == '1' and start is None:
+            if module == '1' and start is None: # group the bars to avoid drawing each bar separately
                 start = i
             elif module == '0' and start is not None:
                 painter.fillRect(QRectF(rect.left() + start * width, rect.top(),
@@ -2282,8 +2282,10 @@ else:
     </pageBackground>
     <pageHeader>
         <band height="120.0">
-            <label left="0.0" top="0.0" width="585.0" height="50.0" fontFamily="Archon Code 39 Barcode" fontSize="36" textAlign="AlignLeft" barcodeType="Code39">ABCD12345</label>
-            <label left="0.0" top="0.0" width="585.0" height="50.0" fontFamily="Code 128" fontSize="36" textAlign="AlignRight" barcodeType="Code128">ABCD12345</label>
+            <label left="10.0" top="0.0" width="250.0" height="40.0" textAlign="AlignHCenter" barcodeType="Code39">ABCD12345</label>
+            <label left="10.0" top="40.0" width="250.0" height="10.0" textAlign="AlignHCenter" fontSize="6">ABCD12345 in Code39</label>
+            <label left="325.0" top="0.0" width="250.0" height="40.0" textAlign="AlignHCenter" barcodeType="Code128">ABCD12345</label>
+            <label left="325.0" top="40.0" width="250.0" height="10.0" textAlign="AlignHCenter" fontSize="6">ABCD12345 in Code128</label>
             <label left="0.0" top="50.0" width="585.0" height="40.0" color="blue" fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24" textAlign="AlignHCenter">Test report Barcode</label>
             <label left="0.0" top="90.0" width="28.0" height="15.0" fontWeight="Bold">R.N.</label>
             <label left="30.0" top="90.0" width="110.0" height="15.0" fontWeight="Bold">Code128</label>
@@ -2298,8 +2300,8 @@ else:
     <details>
         <band height="35.0" canGrow="True">
             <special left="2.0" top="3.0" width="28.0" height="30.0" textAlign="AlignLeft" color="red" format="{:0>3d}">recordNumber</special>
-            <field left="30.0" top="3" width="110" height="30.0" fontFamily="Code 128" fontSize="20" textAlign="AlignLeft" barcodeType="Code128">code</field>
-            <field left="140.0" top="3" width="110" height="30.0" fontFamily="Archon Code 39 Barcode" fontSize="20" textAlign="AlignLeft" barcodeType="Code39">code</field>
+            <field left="30.0" top="3" width="100" height="30.0" textAlign="AlignLeft" barcodeType="Code128">code</field>
+            <field left="140.0" top="3" width="100" height="30.0" textAlign="AlignLeft" barcodeType="Code39">code</field>
             <field left="250.0" top="3" width="60" height="30.0">code</field>
             <field left="310.0" top="3" width="150.0" height="30.0" canGrow="True">description</field>
             <field left="460.0" top="3" width="60.0" height="30.0" textAlign="AlignRight">quantity</field>
