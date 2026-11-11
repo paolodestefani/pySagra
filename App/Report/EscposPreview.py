@@ -107,12 +107,12 @@ class CutLine(Line):
     def paint(self, p, y, m):
         cy = y + self.h / 2
         p.setPen(QPen(QColor("#888"), 1, Qt.PenStyle.DashLine))
-        p.drawLine(QPointF(28, cy), QPointF(m.dots, cy))     # The line starts after the scissors
+        p.drawLine(QPointF(32, cy), QPointF(m.dots, cy))     # The line starts after the scissors
         p.setPen(QColor("#888"))
         f = QFont(FONT)
-        f.setPixelSize(48)
+        f.setPixelSize(32)
         p.setFont(f)
-        p.drawText(QRectF(0, y, 28, self.h), Qt.AlignmentFlag.AlignCenter, "\u2702") # scissors character
+        p.drawText(QRectF(0, y, 32, self.h), Qt.AlignmentFlag.AlignCenter, "\u2702") # scissors character
 
 
 @dataclass

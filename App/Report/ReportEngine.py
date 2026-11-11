@@ -311,7 +311,10 @@ defaultOptions = {'documentName':                   'pyReportEngine document',
 ### BARCODES ###
 
 # barcode types of a report field and their python-barcode name
-BARCODE_TYPES = {'Code39': 'code39', 'Code128': 'code128'}
+BARCODE_TYPES = {'Code39': 'code39',
+                 'Code128': 'code128',
+                 'EAN13': 'ean13',      # 12 characters, if less Error, if more truncated to 12 characters, automatic check digit
+                 'EAN8': 'ean8'}        # 7  characters, if less Error, if more truncated to 7  characters, automatic check digit
 
 def barcode_modules(barcode_type: str, text: str) -> str:
     """The modules of a barcode, one character each: '1' a black bar, '0' a white space.
@@ -2282,8 +2285,8 @@ else:
     </pageBackground>
     <pageHeader>
         <band height="120.0">
-            <label left="10.0" top="0.0" width="250.0" height="40.0" textAlign="AlignHCenter" barcodeType="Code39">ABCD12345</label>
-            <label left="10.0" top="40.0" width="250.0" height="10.0" textAlign="AlignHCenter" fontSize="6">ABCD12345 in Code39</label>
+            <label left="10.0" top="0.0" width="250.0" height="40.0" textAlign="AlignHCenter" barcodeType="EAN13">812345321081</label>
+            <label left="10.0" top="40.0" width="250.0" height="10.0" textAlign="AlignHCenter" fontSize="6">812345321081 in EAN13</label>
             <label left="325.0" top="0.0" width="250.0" height="40.0" textAlign="AlignHCenter" barcodeType="Code128">ABCD12345</label>
             <label left="325.0" top="40.0" width="250.0" height="10.0" textAlign="AlignHCenter" fontSize="6">ABCD12345 in Code128</label>
             <label left="0.0" top="50.0" width="585.0" height="40.0" color="blue" fontFamily="Impact" fontWeight="Bold" fontItalic="True" fontSize="24" textAlign="AlignHCenter">Test report Barcode</label>

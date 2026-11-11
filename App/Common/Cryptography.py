@@ -64,7 +64,7 @@ def string_decode(token: str|object) -> str:
 def _local_fernet() -> Fernet:
     "Return the Fernet instance of this computer, creating its key on first use"
     st = QSettings()
-    key = st.value(LOCAL_KEY_SETTING, "")
+    key = str(st.value(LOCAL_KEY_SETTING, ""))
     try:
         return Fernet(key)
     except ValueError:  # missing or corrupted key
