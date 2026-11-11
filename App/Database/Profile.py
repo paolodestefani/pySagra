@@ -54,13 +54,13 @@ VALUES (
     script2 = t"""
 INSERT INTO system.profile_action (
     profile_code,
-    action,
+    action_code,
     read,
     write,
     execute)
 SELECT 
     {new_code},
-    action,
+    action_code,
     read,
     write,
     execute

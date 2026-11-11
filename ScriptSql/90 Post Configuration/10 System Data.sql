@@ -62,7 +62,7 @@ VALUES
 ('full', 'Full privileges profile', true);
 
 -- system.profile_actions
-INSERT INTO profile_action (profile_code, action, read, write, execute) 
+INSERT INTO profile_action (profile_code, action_code, read, write, execute) 
 VALUES
 -- full profile
 ('full', 'sys_change_company', false, false, true),
@@ -132,7 +132,7 @@ VALUES
 ('M', 'm_default_it', 'Menu predefinito', true);
 
 -- MENU ITEMS
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 -- full system menu
 ('m_full_en', 'fs', 'System', 1, 'M', Null),
@@ -224,7 +224,7 @@ VALUES
 ('T', 't_default_it', 'Predefinita', True);
 
 -- TOOLBAR ITEMS
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 -- full toolbars
 ('t_full_en', 'tae', 'Edit', 2, 'T', Null),

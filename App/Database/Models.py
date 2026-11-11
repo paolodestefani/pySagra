@@ -64,8 +64,8 @@ class MenuItemTreeModel(TreeModel):
                         ("child", _tr('Models', 'User description'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
-                        ("item_type", _tr('Models', 'Item type'), False, 'str'),
-                        ("action", _tr('Models', 'Action'), False, 'str'),
+                        ("node_type", _tr('Models', 'Node type'), False, 'str'),
+                        ("action_code", _tr('Models', 'Action'), False, 'str'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -93,8 +93,8 @@ class ToolbarItemTreeModel(TreeModel):
                         ("child", _tr('Models', 'User description'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
-                        ("item_type", _tr('Models', 'Item type'), False, 'str'),
-                        ("action", _tr('Models', 'Action'), False, 'str'),
+                        ("node_type", _tr('Models', 'Node type'), False, 'str'),
+                        ("action_code", _tr('Models', 'Action'), False, 'str'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -435,7 +435,7 @@ class ProfileActionModel(TableModel):
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (("profile_code", _tr('Models', 'Profile'), False, 'str'),
-                        ("action", _tr('Models', 'Action'), False, 'str'),
+                        ("action_code", _tr('Models', 'Action'), False, 'str'),
                         ("read", _tr('Models', 'Read'), False, 'bool'),
                         ("write", _tr('Models', 'Write'), False, 'bool'),
                         ("execute", _tr('Models', 'Execute'), False, 'bool'),
@@ -446,11 +446,11 @@ class ProfileActionModel(TableModel):
         # True if is a company table
         self.isCompanyTable = False
         # primary key fields, tuple or list
-        self.primaryKey = ("profile_code", "action")
+        self.primaryKey = ("profile_code", "action_code")
         # master/detail relation {table field: reference field}
         self.foreignKey = {'profile_code': 'profile_code'}
         # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("action")
+        self.addOrderBy("action_code")
         self.repr = 'Profile action table model'
 
 

@@ -83,13 +83,13 @@ CREATE TABLE profile_action (
     object_version          integer NOT NULL,
     --
     profile_code            varchar(48),
-    action                  varchar(48),
+    action_code             varchar(48),
     read                    boolean NOT NULL DEFAULT True,
     write                   boolean NOT NULL DEFAULT True,
     execute                 boolean NOT NULL DEFAULT True,
     --
     CONSTRAINT profile_action_pk 
-        PRIMARY KEY (profile_code, action) 
+        PRIMARY KEY (profile_code, action_code) 
         USING INDEX TABLESPACE {pyAppPgIndexesTS},
     CONSTRAINT profile_action_profile_fk 
         FOREIGN KEY (profile_code) 
@@ -149,15 +149,15 @@ CREATE TABLE menu_toolbar_item(
     child                   varchar(48),
     description             text,
     sorting                 integer NOT NULL,
-    item_type               char(1) NOT NULL,   -- (A)ction, (M)enu, (S)eparator for menu 
+    node_type               char(1) NOT NULL,   -- (A)ction, (M)enu, (S)eparator for menu 
                                                 -- (T)oolbar, (A)ction, (S)eparator,  (W)idget for toolbar
-    action                  varchar(48),
+    action_code             varchar(48),
     --
     CONSTRAINT menu_item_pk 
         PRIMARY KEY (parent, child) 
         USING INDEX TABLESPACE {pyAppPgIndexesTS},
-    CONSTRAINT menu_item_item_type_check 
-        CHECK (item_type IN ('A', 'M', 'S', 'T', 'W')) -- Action, Menu, Separator, Toolbar, Widget
+    CONSTRAINT menu_item_node_type_check 
+        CHECK (node_type IN ('A', 'M', 'S', 'T', 'W')) -- Action, Menu, Separator, Toolbar, Widget
 )
 TABLESPACE {pyAppPgTablesTS};
 COMMENT ON TABLE menu_toolbar_item IS 

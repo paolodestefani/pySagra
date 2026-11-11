@@ -70,7 +70,7 @@ class mt(IntEnum):
     CHILD           = 1 
     ITEMDESCRIPTION = 2
     SORTING         = 3
-    ITEMTYPE        = 4
+    NODETYPE        = 4
     ACTION          = 5
 
 
@@ -190,7 +190,7 @@ class MenusForm(FormIndexManager):
             return
         previous = model.index(row - 1, mt.SORTING, parent).data() if row > 0 else 0
         model.setData(model.index(row, mt.SORTING, parent), (previous or 0) + 1)
-        model.setData(model.index(row, mt.ITEMTYPE, parent), 'A')
+        model.setData(model.index(row, mt.NODETYPE, parent), 'A')
         child = model.index(row, mt.CHILD, parent)
         self.ui.treeViewMenuItems.selectionModel().setCurrentIndex(child, QItemSelectionModel.SelectionFlag.ClearAndSelect)
         self.ui.treeViewMenuItems.edit(child)

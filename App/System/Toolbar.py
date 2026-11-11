@@ -67,7 +67,7 @@ class tbt(IntEnum):
     CHILD           = 1
     ITEMDESCRIPTION = 2
     SORTING         = 3
-    ITEMTYPE        = 4
+    NODETYPE        = 4
     ACTION          = 5
 
 
@@ -159,7 +159,7 @@ class ToolbarForm(FormIndexManager):
             return
         previous = model.index(row - 1, tbt.SORTING, parent).data() if row > 0 else 0
         model.setData(model.index(row, tbt.SORTING, parent), (previous or 0) + 1)
-        model.setData(model.index(row, tbt.ITEMTYPE, parent), 'T')
+        model.setData(model.index(row, tbt.NODETYPE, parent), 'T')
         child = model.index(row, tbt.CHILD, parent)
         self.ui.treeViewMenuItems.selectionModel().setCurrentIndex(child, QItemSelectionModel.SelectionFlag.ClearAndSelect)
         self.ui.treeViewMenuItems.edit(child)

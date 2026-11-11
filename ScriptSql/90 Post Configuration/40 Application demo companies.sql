@@ -58,7 +58,7 @@ VALUES
 ('cashier', 'Solo cassa', false);
 
 -- profile actions
-INSERT INTO profile_action (profile_code, action, read, write, execute) 
+INSERT INTO profile_action (profile_code, action_code, read, write, execute) 
 VALUES
 ('cashier', 'sys_change_company', false, false, true),
 ('cashier', 'sys_change_password', false, false, true),
@@ -97,7 +97,7 @@ VALUES
 ('M', 'm_cashier_it', 'Solo cassa', false);
 
 -- menu items
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 ('m_cashier_it', 'cs', 'Sistema', 10, 'M', Null),
 ('m_cashier_it', 'cfi', 'Archivi', 20, 'M', Null),
@@ -135,7 +135,7 @@ VALUES
 ('T', 't_cashier_it', 'Solo cassa', false);
 
 -- toolbar items
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 ('t_cashier_it', 'tae', 'Modifica', 2, 'T', Null),
 ('t_cashier_it', 'tsqa', 'Accesso rapido', 4, 'T', Null),
@@ -150,7 +150,7 @@ VALUES
 ('progress', 'Solo avanzamento ordini', false);
 
 -- profile actions
-INSERT INTO profile_action (profile_code, action, read, write, execute) 
+INSERT INTO profile_action (profile_code, action_code, read, write, execute) 
 VALUES
 ('progress', 'sys_change_company', false, false, true),
 ('progress', 'sys_change_password', false, false, true),
@@ -184,7 +184,7 @@ VALUES
 ('M', 'm_progress_it', 'Solo avanzamento ordini', false);
 
 -- menu items
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 ('m_progress_it', 'ps', 'Sistema', 10, 'M', Null),
 ('m_progress_it', 'pfi', 'Archivi', 20, 'M', Null),
@@ -219,7 +219,7 @@ VALUES
 ('T', 't_progress_it', 'Solo avanzamento ordini', false);
 
 -- toolbar items
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 ('t_progress_it', 'tae', 'Modifica', 2, 'T', Null),
 ('t_progress_it', 'tpqa', 'Accesso rapido', 4, 'T', Null),

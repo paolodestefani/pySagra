@@ -43,7 +43,7 @@ def get_actions() -> list[tuple]:
     "Returns all actions definition for current user/profile"
     script = """
 SELECT 
-    pa.action,
+    pa.action_code,
     pa.read,
     pa.write,
     pa.execute
@@ -62,9 +62,9 @@ def get_menu(item: str) -> list[tuple]:
     script = t"""
 SELECT 
     m.child,
-    m.item_type,
+    m.node_type,
     m.description,
-    m.action
+    m.action_code
 FROM system.menu_toolbar_item m
 WHERE m.parent = {item}
 ORDER BY m.sorting;"""
@@ -79,9 +79,9 @@ def get_toolbar(item: str) -> list[tuple]:
     script = t"""
 SELECT 
     t.child,
-    t.item_type,
+    t.node_type,
     t.description,
-    t.action
+    t.action_code
 FROM system.menu_toolbar_item t
 WHERE t.parent = {item}
 ORDER BY t.sorting;"""

@@ -60,15 +60,15 @@ INSERT INTO system.menu_toolbar_item (
     child,
     description,
     sorting,
-    item_type,
-    action)
+    node_type,
+    action_code)
 SELECT 
     {new_code},
     child,
     description,
     sorting,
-    item_type,
-    action
+    node_type,
+    action_code
 FROM system.menu_toolbar_item
 WHERE parent = {from_code};"""
     # Unified context managers in the recommended evaluation order

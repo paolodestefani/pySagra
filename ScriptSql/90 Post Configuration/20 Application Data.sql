@@ -49,7 +49,7 @@ SET search_path = system;
 
 -- APPLICATION PROFILE ACTIONS
 
-INSERT INTO profile_action (profile_code, action, read, write, execute) 
+INSERT INTO profile_action (profile_code, action_code, read, write, execute) 
 VALUES
 -- full
 ('full', 'app_file_cash_desk', true, true, true),
@@ -104,7 +104,7 @@ VALUES
 -- APPLICATION MENU
 
 -- FULL MENU
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 ('m_full_en', 'ffi', 'File', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
 ('m_full_en', 'fac', 'Activity', 20, 'M', Null),
@@ -194,7 +194,7 @@ VALUES
 ('dtl', 'dtlcpy', Null, 3, 'A', 'app_tool_copy');
 
 -- TOOLBAR ITEMS
-INSERT INTO menu_toolbar_item (parent, child, description, sorting, item_type, action) 
+INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 -- full toolbars
 ('tfqa', 'tfqaord', Null, 1, 'T', 'app_activity_order_entry'),
