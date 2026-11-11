@@ -122,6 +122,23 @@ class BarcodeTest(unittest.TestCase):
         with self.assertRaises(R.ReportException):
             R.barcode_modules('Code39', 'A#B')
 
+    def test_qrcode_square_in_the_field(self) -> None:
+        "A QR code field paints the matrix as the largest square that fits, centered"
+        from PySide6.QtCore import Qt, QRectF
+        from PySide6.QtGui import QImage, QPainter
+        renderer = R.BaseRenderer.__new__(R.BaseRenderer)
+        renderer.barcode, renderer.value, renderer.color = 'QRCode', 'PS001000000123', '???'
+        self.assertTrue(renderer.isBarcode())
+        image = QImage(200, 100, QImage.Format.Format_RGB32)
+        image.fill(Qt.GlobalColor.white)
+        painter = QPainter(image)
+        renderer.renderBarcode(painter, QRectF(0, 0, 200, 100))
+        painter.end()
+        dark = lambda x, y: image.pixelColor(x, y).lightness() < 128
+        # finder patterns: dark top left corner of the 100x100 square at x 50
+        self.assertTrue(dark(51, 1) and dark(148, 1) and dark(51, 98))
+        self.assertFalse(any(dark(x, 50) for x in range(0, 49)))
+
 
 if __name__ == '__main__':
     unittest.main()

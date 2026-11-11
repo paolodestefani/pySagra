@@ -61,6 +61,7 @@ import xml.etree.ElementTree as ET
 
 # barcodes
 import barcode as pybarcode
+import qrcode
 import operator
 from typing import Any
 from contextlib import contextmanager
@@ -315,6 +316,8 @@ BARCODE_TYPES = {'Code39': 'code39',
                  'Code128': 'code128',
                  'EAN13': 'ean13',      # 12 characters, if less Error, if more truncated to 12 characters, automatic check digit
                  'EAN8': 'ean8'}        # 7  characters, if less Error, if more truncated to 7  characters, automatic check digit
+# QR code field type, made by the qrcode library as the ESC/POS preview does
+QRCODE_TYPE = 'QRCode'
 
 def barcode_modules(barcode_type: str, text: str) -> str:
     """The modules of a barcode, one character each: '1' a black bar, '0' a white space.
@@ -470,27 +473,45 @@ class BaseRenderer():
         return bandHeight
 
     def isBarcode(self) -> bool:
-        "True when the value is painted as barcode bars"
-        return self.barcode in BARCODE_TYPES and isinstance(self.value, str) and bool(self.value)
+        "True when the value is painted as barcode bars or QR code"
+        return ((self.barcode in BARCODE_TYPES or self.barcode == QRCODE_TYPE)
+                and isinstance(self.value, str) and bool(self.value))
 
     def renderBarcode(self, painter: QPainter, rect: QRectF) -> None:
         """Paint the barcode bars filling the rectangle of the field, no text: a human
         readable text is another field of the report, with its own font and size.
-        Vector bars drawn at the printer resolution, no image and no barcode font"""
-        modules = barcode_modules(self.barcode, self.value)   # type: ignore[arg-type]
-        width = rect.width() / len(modules)
+        A QR code is the largest square that fits the field, centered.
+        Vector modules drawn at the printer resolution, no image and no barcode font"""
+        if self.barcode == QRCODE_TYPE:
+            try:
+                qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, border=0)
+                qr.add_data(self.value)
+                qr.make(fit=True)
+            except Exception as er:   # too much data for a QR code
+                raise ReportException(f'Not valid QR code "{self.value}": {er}') from er
+            # one row of modules for each line of the matrix, True a black module
+            rows = [''.join('1' if m else '0' for m in line) for line in qr.get_matrix()]
+            side = min(rect.width(), rect.height())
+            left = rect.left() + (rect.width() - side) / 2
+            top = rect.top() + (rect.height() - side) / 2
+            width = height = side / len(rows)
+        else:
+            rows = [barcode_modules(self.barcode, self.value)]   # type: ignore[arg-type]
+            left, top = rect.left(), rect.top()
+            width, height = rect.width() / len(rows[0]), rect.height()
         color = QColor(self.color)
         brush = QBrush(color if color.isValid() else QColor(Qt.GlobalColor.black))
-        # sharp edges: no antialiasing between bars
+        # sharp edges: no antialiasing between modules
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
-        start = None
-        for i, module in enumerate(modules + '0'):   # a final space closes the last bar
-            if module == '1' and start is None: # group the bars to avoid drawing each bar separately
-                start = i
-            elif module == '0' and start is not None:
-                painter.fillRect(QRectF(rect.left() + start * width, rect.top(),
-                                        (i - start) * width, rect.height()), brush)
-                start = None
+        for r, modules in enumerate(rows):
+            start = None
+            for i, module in enumerate(modules + '0'):   # a final space closes the last bar
+                if module == '1' and start is None: # group the modules to avoid drawing each one separately
+                    start = i
+                elif module == '0' and start is not None:
+                    painter.fillRect(QRectF(left + start * width, top + r * height,
+                                            (i - start) * width, height), brush)
+                    start = None
 
     def render(self, bandHeight:float) -> None:
         "Paint an image, a barcode or text"
@@ -2318,6 +2339,13 @@ else:
             <special left="0.0" top="4.0" width="550.0" height="16.0" textAlign="AlignHCenter">pageNumber</special>
         </band>
     </pageFooter>
+    <reportFooter>
+        <band height="100.0">
+            <label left="10.0" top="0.0" width="100.0" height="100.0" barcodeType="QRCode">this;is;a;qrcode;example</label>
+            <label left="110.0" top="50.0" width="365.0" height="30.0" textAlign="AlignHCenter">A couple of example QR Code</label>
+            <label left="475.0" top="0.0" width="100.0" height="100.0" barcodeType="QRCode">this;is;another;more;complex;qrcode;example</label>
+        </band>
+    </reportFooter>
 </report>
 """
     xml_string4 = """<?xml version="1.0" encoding="UTF-8"?>
