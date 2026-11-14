@@ -55,6 +55,7 @@ from App.Database.Adaptation import clear_adaptation
 from App.Widget.MessageBox import MessageBoxCritical
 
 from App.Ui.AdaptationsDialog import Ui_AdaptationsDialog
+from App.System.Help import addHelpAction
 
 
 # logger
@@ -102,6 +103,7 @@ class AdaptationsDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_AdaptationsDialog()
         self.ui.setupUi(self)
+        addHelpAction(self, "help/adaptation.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         # signal/slot

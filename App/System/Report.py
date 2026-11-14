@@ -123,7 +123,7 @@ class ReportForm(FormIndexManager):
         idxModel = ReportIndexModel(self)
         self.setModel(model, idxModel)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/report.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

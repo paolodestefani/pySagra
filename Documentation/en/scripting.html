@@ -1,0 +1,24 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Python scripting</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Python scripting</h1>
+    <p>Small Python programs that change the behavior of the forms without changing the program: for example one more check
+    when an item is saved.</p>
+    <p><img src="img/scripting.png" /></p>
+    <ul>
+      <li><i>Class</i>: the form or window the script applies to.</li>
+      <li><i>Method</i>: the operation of the form, for example save, delete or new; <i>__init__</i> is the opening of the form.</li>
+      <li><i>Trigger</i>: <i>Before</i>, <i>After</i> or <i>Instead</i> of that operation. Opening scripts (<i>__init__</i>)
+      run only with <i>After</i>.</li>
+      <li><i>Company</i>: the company the script is valid in.</li>
+      <li><i>Active</i>: only active scripts run. It can be changed with no write right too, to turn off a script that gives problems.</li>
+      <li><i>System</i>: a script of the program, which can not be changed nor deleted.</li>
+      <li><i>Python script</i> and <i>Note</i>: the code and a description of it. In the code <i>self</i> is the form and
+      <i>session</i> the session data.</li>
+    </ul>
+    <p>Scripts are saved and loaded to and from files with <i>Download ...</i>, <i>Upload ...</i>, <i>Download all scripts...</i>
+    and <i>Upload all scripts ...</i>. An error in a script is shown with a message, and the operation of the form goes on.</p>
+  </body>
+</html>

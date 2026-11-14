@@ -103,7 +103,7 @@ class ConnectionForm(FormViewManager):
         model = ConnectionModel()
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/connection.html"
         self.reloadConfirmation = False
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
@@ -165,7 +165,7 @@ class ConnectionHistoryForm(FormViewManager):
         model = ConnectionHistoryModel()
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/connection.html"
         self.reloadConfirmation = False
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST

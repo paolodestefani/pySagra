@@ -135,7 +135,7 @@ class ProfileForm(FormIndexManager):
         self.setModel(model, idxModel)
         self.addDetailRelation(paModel, 0, 0)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/profile.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

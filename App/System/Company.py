@@ -72,6 +72,7 @@ from App.Ui.CompanyWidget import Ui_CompanyWidget
 from App.Ui.NewCompanyDialog import Ui_NewCompanyDialog
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
+from App.System.Help import addHelpAction
 
 
 # logger
@@ -126,7 +127,7 @@ class CompanyForm(FormIndexManager):
         self.setModel(model, idxModel)
         self.addDetailRelation(model2, 0, 0)
         self.tabName = title
-        self.helpLink = "help/main.html#gui"
+        self.helpLink = "help/company.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
@@ -314,6 +315,7 @@ class NewCompanyDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_NewCompanyDialog()
         self.ui.setupUi(self)
+        addHelpAction(self, "help/company.html")
         self.ui.spinBoxCode.setValue(max_company_code() + 10)
         self.ui.comboBoxProfile.setFunction(profile_lookup)
         self.ui.comboBoxMenu.setFunction(menu_lookup)

@@ -1,0 +1,38 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Settings</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Settings</h1>
+    <p>The settings of the current company, valid for all the computers.</p>
+    <p><img src="img/settings.png" /></p>
+    <h2>Main</h2>
+    <ul>
+      <li><i>Formats</i>: the decimals of quantities, prices and amounts, and the currency symbol.</li>
+      <li><i>New item normal stock level colors</i>: the colors proposed for the buttons of salable items.</li>
+      <li><i>Items inventory stock threshold levels</i>: below the warning level and below the critical one the stock of the
+      inventory items changes color; the warning level always stays above the critical one.</li>
+      <li><i>Order progress management (ordered delivered)</i>: when on, the department copies have a barcode and the order
+      becomes processed when the departments read it in <i>Order progress</i>; when off, every order is processed as soon as it
+      is saved.</li>
+    </ul>
+    <h2>Order entry UI</h2>
+    <p>The look of the order entry window: the layout, the <i>Department tab position</i>, rows, columns, spacing and font of
+    the item grid and of the table grid, and the button colors for warning, critical and sold out stock.</p>
+    <h2>Order entry control and print</h2>
+    <ul>
+      <li><i>Lunch / Dinner</i>: the order day goes from 8:00 to 8:00 of the day after. The slider, or the field next to it,
+      chooses the dinner start, between 9:00 and 23:00: before it is lunch, after it is dinner. The orders after midnight belong
+      to the dinner of the day before.</li>
+      <li><i>Default delivery</i> and <i>Default payment</i>: the values proposed for every new order.</li>
+      <li><i>Form parameters</i>: table list, stock always shown, automatic variants, required table and name, max covers
+      value; see the <a href="order_entry.html">Order entry</a> page.</li>
+      <li><i>Order number based on</i>: <i>Event</i>, <i>Day</i> or <i>Day part</i>, that is when the numbers start again from 1;
+      see <a href="order_numbering.html">Order numbers</a>.</li>
+      <li><i>Order print copy</i>: turns the customer copy, the department copies and the cover copy on or off for all the computers.</li>
+      <li><i>Menu description on menu items</i>: on the department copies, the menu name appears next to the items of a menu.</li>
+      <li><i>Check inactivity after</i>: after how many seconds with no orders the window proposes to refresh.</li>
+    </ul>
+    <p>When saving fails, the window stays open with the changes.</p>
+  </body>
+</html>

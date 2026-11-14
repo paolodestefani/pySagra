@@ -191,7 +191,7 @@ class ScriptingForm(FormIndexManager):
         idxModel = ScriptingIndexModel(self)
         self.setModel(model, idxModel)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/scripting.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

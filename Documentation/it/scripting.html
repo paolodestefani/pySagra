@@ -1,0 +1,26 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Scripting python</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Scripting python</h1>
+    <p>Piccoli programmi in Python che cambiano il comportamento delle schede senza modificare il programma: per esempio
+    un controllo in pi&ugrave; al salvataggio di un articolo.</p>
+    <p><img src="img/scripting.png" /></p>
+    <ul>
+      <li><i>Classe</i>: la scheda o la finestra a cui si applica lo script.</li>
+      <li><i>Metodo</i>: l'operazione della scheda, per esempio salvataggio, cancellazione o nuovo; <i>__init__</i> &egrave;
+      l'apertura della scheda.</li>
+      <li><i>Scatta</i>: <i>Prima</i>, <i>Dopo</i> o <i>Al posto di</i> quell'operazione. Gli script di apertura
+      (<i>__init__</i>) vengono eseguiti solo con <i>Dopo</i>.</li>
+      <li><i>Azienda</i>: l'azienda in cui vale lo script.</li>
+      <li><i>Attivo</i>: solo gli script attivi vengono eseguiti. Lo si pu&ograve; cambiare anche senza diritto di scrittura,
+      per spegnere uno script che d&agrave; problemi.</li>
+      <li><i>Sistema</i>: uno script del programma, che non si pu&ograve; modificare n&eacute; cancellare.</li>
+      <li><i>Script python</i> e <i>Nota</i>: il codice e una sua descrizione. Nel codice <i>self</i> &egrave; la scheda e
+      <i>session</i> i dati della sessione.</li>
+    </ul>
+    <p>Gli script si salvano e caricano su file con <i>Scarica ...</i>, <i>Carica ...</i>, <i>Scarica tutti gli script...</i>
+    e <i>Carica tutti gli script ...</i>. Un errore in uno script viene mostrato con un messaggio, e l'operazione della scheda continua.</p>
+  </body>
+</html>

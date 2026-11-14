@@ -173,7 +173,7 @@ class UsersForm(FormIndexManager[Ui_UserWidget]):
         self.addDetailRelation(ucModel, 0, 1)
         self.systemRecords = 'undeletable'   # system users can be changed, not deleted
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/user.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

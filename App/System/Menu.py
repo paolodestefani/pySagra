@@ -133,7 +133,7 @@ class MenusForm(FormIndexManager):
         self.setModel(model, idxModel)
         self.addDetailRelation(treeModel, 0, 0)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/menu.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

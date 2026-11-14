@@ -50,6 +50,7 @@ from App.Common.ExceptionHandler import gui_exception_context
 from App.Common.Scripting import scriptInit
 from App.Common.Scripting import scriptMethod
 from App.Common.Gui import get_colors
+from App.System.Help import addHelpAction
 
 
 # logger
@@ -83,6 +84,7 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)        
+        addHelpAction(self, "help/settings.html")
         self.setWindowTitle(title)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
