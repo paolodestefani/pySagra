@@ -1,0 +1,92 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Articoli</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Articoli</h1>
+    <p>Questa scheda contiene tutto ci&ograve; che si vende o che serve a comporre quello che si vende:
+    piatti, bevande, ma anche ingredienti e componenti che non compaiono mai nella finestra degli ordini.</p>
+    <p><img src="img/item.png" /></p>
+
+    <h2>Tipo articolo</h2>
+    <ul>
+      <li><i>Articolo</i>: un prodotto singolo, per esempio una bibita o una porzione di patatine.</li>
+      <li><i>Kit</i>: un prodotto fatto di pi&ugrave; componenti e consegnato come un'unica cosa,
+      per esempio il piatto <i>salsicce e polenta</i>. Nell'ordine resta un'unica riga; l'inventario
+      scala invece i suoi componenti.</li>
+      <li><i>Menu</i>: un insieme di articoli o kit venduti a un prezzo unico. Quando l'ordine viene
+      salvato, il menu viene sostituito dai suoi componenti, e ciascuno va alla copia del proprio reparto.</li>
+    </ul>
+    <p>Il tipo scelto attiva la scheda che serve: <i>Componenti</i> per i kit, <i>Articoli menu</i> per i menu.</p>
+
+    <h2>Dati principali</h2>
+    <ul>
+      <li><i>Descrizione articolo</i>: il nome usato nel programma. &Egrave; obbligatoria e non pu&ograve;
+      essere uguale a quella di un altro articolo.</li>
+      <li><i>Descrizione per il cliente</i>: il nome che vede il cliente, sulla copia cliente e negli
+      ordini dal web. &Egrave; obbligatoria e unica; se &egrave; vuota, quando si esce dalla descrizione
+      articolo viene copiata da quella.</li>
+      <li><i>Reparto</i>: il reparto che prepara l'articolo. &Egrave; obbligatorio: decide in quale scheda
+      della finestra degli ordini compare il pulsante e su quale copia reparto viene stampato.</li>
+      <li><i>Obsoleto</i>: l'articolo non si usa pi&ugrave;. Non compare nella finestra degli ordini
+      e negli elenchi, ma resta negli ordini gi&agrave; fatti e nelle statistiche.</li>
+    </ul>
+
+    <h2>Vendita nella finestra degli ordini</h2>
+    <ul>
+      <li><i>Vendibile</i>: l'articolo ha un pulsante nella finestra degli ordini. Un ingrediente
+      che serve solo a comporre un kit, come la salsiccia da cuocere, non &egrave; vendibile.</li>
+      <li><i>Riga</i> e <i>Colonna</i>: la posizione del pulsante nella griglia del reparto.
+      Due articoli vendibili dello stesso reparto non possono occupare la stessa posizione.
+      Un articolo vendibile senza riga e colonna non ha pulsante: all'apertura della finestra degli
+      ordini un messaggio lo segnala.</li>
+      <li><i>Ordinamento</i>: l'ordine in cui l'articolo compare nelle stampe, all'interno del suo reparto.
+      &Egrave; facoltativo: senza ordinamento le stampe funzionano lo stesso.</li>
+      <li><i>Colore di sfondo normale</i> e <i>Colore del testo normale</i>: i colori del pulsante.
+      Quando si spunta <i>Vendibile</i> vengono proposti quelli impostati nelle <i>Impostazioni</i>;
+      quando lo si toglie vengono cancellati, perch&eacute; un articolo che non si vende non ha pulsante.</li>
+    </ul>
+    <p>Riga, colonna, ordinamento e colori si possono modificare solo se l'articolo &egrave; vendibile.</p>
+
+    <h2>Controlli</h2>
+    <ul>
+      <li><i>Controllo inventario</i>
+        <ul>
+          <li>per un <i>articolo</i>: le sue scorte si gestiscono nella scheda <i>Inventario</i> e diminuiscono con gli ordini.</li>
+          <li>per un <i>kit</i> o un <i>menu</i>: attiva il controllo della disponibilit&agrave; nella finestra degli ordini.
+          La quantit&agrave; disponibile non &egrave; propria, viene calcolata dai componenti che hanno il controllo inventario;
+          quelli senza controllo non la limitano. Se un menu contiene un kit, conviene spuntare il controllo anche sul kit.</li>
+        </ul>
+      </li>
+      <li><i>Controllo consegnato</i>: l'articolo compare nella gestione <i>Ordinato consegnato</i>.
+      Per un <i>kit</i> vale per il kit intero, per esempio quanti piatti di salsicce e polenta sono stati consegnati.
+      Per un <i>menu</i> non &egrave; disponibile: il menu viene scomposto nei suoi componenti, e contano i loro controlli.</li>
+      <li><i>Componente di kit</i> e <i>Componente di menu</i>: l'articolo si pu&ograve; scegliere fra i componenti
+      di un kit o di un menu. I componenti di un kit sono articoli; quelli di un menu possono essere articoli o kit.</li>
+    </ul>
+
+    <h2>Ordini dal web</h2>
+    <ul>
+      <li><i>Disponibile sul web</i>: l'articolo viene inviato al server degli ordini web.</li>
+      <li><i>Ordinamento web</i>: l'ordine in cui l'articolo compare nell'elenco degli ordini web, sempre all'interno
+      del suo reparto. Pu&ograve; essere diverso dall'<i>Ordinamento</i> delle stampe.</li>
+    </ul>
+
+    <h2>Schede di dettaglio</h2>
+    <ul>
+      <li><i>Varianti</i>, attiva con <i>Gestione varianti</i>: le aggiunte o modifiche che il cliente pu&ograve;
+      chiedere, ciascuna con la sua <i>Variazione di prezzo</i>. Con <i>Copia varianti da...</i> si copiano le varianti
+      di un altro articolo. Nella finestra degli ordini la scelta delle varianti si apre da sola o con il pulsante
+      <i>Varianti</i>, secondo l'opzione <i>Mostra le varianti automaticamente</i> delle <i>Impostazioni</i>.</li>
+      <li><i>Componenti</i>, per i kit: gli articoli che compongono il kit e la quantit&agrave; di ciascuno.</li>
+      <li><i>Articoli menu</i>, per i menu: gli articoli o kit del menu e la quantit&agrave; di ciascuno.</li>
+      <li><i>Prezzi</i>: il prezzo dell'articolo in ciascun listino. L'evento usa il listino impostato nella
+      scheda <i>Eventi</i>.</li>
+    </ul>
+
+    <h2>Cancellazione</h2>
+    <p>Un articolo non si pu&ograve; cancellare se &egrave; usato negli ordini, se &egrave; presente in inventario
+    o se &egrave; componente di un kit o di un menu: il programma lo segnala con un messaggio. In questi casi
+    conviene spuntare <i>Obsoleto</i>.</p>
+  </body>
+</html>

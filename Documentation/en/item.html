@@ -1,0 +1,89 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Items</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Items</h1>
+    <p>This form holds everything that is sold or that makes up what is sold:
+    dishes and drinks, but also ingredients and components that never appear in the order entry window.</p>
+    <p><img src="img/item.png" /></p>
+
+    <h2>Item type</h2>
+    <ul>
+      <li><i>Item</i>: a single product, for example a soft drink or a portion of chips.</li>
+      <li><i>Kit</i>: a product made of several components and delivered as one thing,
+      for example the dish <i>sausages and polenta</i>. In the order it stays one line;
+      the inventory uses up its components instead.</li>
+      <li><i>Menu</i>: a set of items or kits sold at one price. When the order is saved,
+      the menu is replaced by its components, and each one goes to the copy of its own department.</li>
+    </ul>
+    <p>The chosen type enables the tab it needs: <i>Components</i> for kits, <i>Menu items</i> for menus.</p>
+
+    <h2>Main data</h2>
+    <ul>
+      <li><i>Item description</i>: the name used in the program. It is required and can not be the same
+      as the one of another item.</li>
+      <li><i>Customer description</i>: the name the customer sees, on the customer copy and in web orders.
+      It is required and unique; when it is empty, leaving the item description copies it from there.</li>
+      <li><i>Department</i>: the department that prepares the item. It is required: it decides in which tab
+      of the order entry window the button appears and on which department copy the item is printed.</li>
+      <li><i>Obsolete</i>: the item is no longer used. It does not appear in the order entry window and
+      in the lists, but it stays in the orders already made and in the statistics.</li>
+    </ul>
+
+    <h2>Sale in the order entry window</h2>
+    <ul>
+      <li><i>Salable</i>: the item has a button in the order entry window. An ingredient that only
+      makes up a kit, as the sausage to cook, is not salable.</li>
+      <li><i>Row</i> and <i>Column</i>: the position of the button in the grid of the department.
+      Two salable items of the same department can not take the same position. A salable item with no
+      row and column has no button: a message says so when the order entry window opens.</li>
+      <li><i>Sorting</i>: the order in which the item appears in the prints, within its department.
+      It is optional: with no sorting the prints work all the same.</li>
+      <li><i>Normal background color</i> and <i>Normal text color</i>: the colors of the button.
+      Checking <i>Salable</i> proposes the ones set in the <i>Settings</i>; unchecking it clears them,
+      because an item that is not sold has no button.</li>
+    </ul>
+    <p>Row, column, sorting and colors can be changed only when the item is salable.</p>
+
+    <h2>Controls</h2>
+    <ul>
+      <li><i>Inventory control</i>
+        <ul>
+          <li>for an <i>item</i>: its stock is managed in the <i>Inventory</i> form and goes down with the orders.</li>
+          <li>for a <i>kit</i> or a <i>menu</i>: it turns on the availability check in the order entry window.
+          The available quantity is not its own, it is computed from the components with inventory control;
+          the ones without control do not limit it. When a menu contains a kit, check the control on the kit too.</li>
+        </ul>
+      </li>
+      <li><i>Delivered control</i>: the item appears in the <i>Ordered delivered</i> form.
+      For a <i>kit</i> it counts the whole kit, for example how many dishes of sausages and polenta were delivered.
+      For a <i>menu</i> it is not available: the menu is split into its components, and their controls count.</li>
+      <li><i>Kit part</i> and <i>Menu part</i>: the item can be chosen among the components of a kit or a menu.
+      The components of a kit are items; the ones of a menu can be items or kits.</li>
+    </ul>
+
+    <h2>Web orders</h2>
+    <ul>
+      <li><i>Web available</i>: the item is sent to the web order server.</li>
+      <li><i>Web sorting</i>: the order in which the item appears in the web order list, still within its
+      department. It can differ from the <i>Sorting</i> of the prints.</li>
+    </ul>
+
+    <h2>Detail tabs</h2>
+    <ul>
+      <li><i>Variants</i>, enabled by <i>Has variants</i>: the additions or changes the customer can ask for,
+      each one with its <i>Price delta</i>. <i>Copy variants from ...</i> copies the variants of another item.
+      In the order entry window the variant choice opens by itself or with the <i>Variants</i> button,
+      depending on the <i>Show variants automatically</i> option of the <i>Settings</i>.</li>
+      <li><i>Components</i>, for kits: the items that make up the kit and the quantity of each one.</li>
+      <li><i>Menu items</i>, for menus: the items or kits of the menu and the quantity of each one.</li>
+      <li><i>Prices</i>: the price of the item in each price list. The event uses the price list set in the
+      <i>Events</i> form.</li>
+    </ul>
+
+    <h2>Deleting</h2>
+    <p>An item can not be deleted when it is used in orders, when it has stock in the inventory or when it is
+    a component of a kit or a menu: the program shows a message. In these cases check <i>Obsolete</i> instead.</p>
+  </body>
+</html>
