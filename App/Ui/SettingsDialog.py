@@ -18,11 +18,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboBox,
     QDialog, QDialogButtonBox, QDoubleSpinBox, QFontComboBox,
     QGridLayout, QGroupBox, QHBoxLayout, QLabel,
-    QLineEdit, QRadioButton, QSizePolicy, QSlider,
-    QSpacerItem, QSpinBox, QTabWidget, QVBoxLayout,
-    QWidget)
+    QLineEdit, QRadioButton, QSizePolicy, QSpacerItem,
+    QSpinBox, QTabWidget, QVBoxLayout, QWidget)
 
-from App.Widget.Control import (ButtonItemExample, ColorComboBox)
+from App.Widget.Control import (ButtonItemExample, ColorComboBox, DayPartSlider)
 
 class Ui_SettingsDialog(object):
     def setupUi(self, SettingsDialog):
@@ -742,68 +741,6 @@ class Ui_SettingsDialog(object):
         self.verticalLayout_25.setObjectName(u"verticalLayout_25")
         self.gridLayout_9 = QGridLayout()
         self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.groupBox_6 = QGroupBox(self.tab3)
-        self.groupBox_6.setObjectName(u"groupBox_6")
-        self.verticalLayout_6 = QVBoxLayout(self.groupBox_6)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.verticalLayout_6.setContentsMargins(5, 5, 5, 5)
-        self.gridLayout_3 = QGridLayout()
-        self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.label_3 = QLabel(self.groupBox_6)
-        self.label_3.setObjectName(u"label_3")
-
-        self.gridLayout_3.addWidget(self.label_3, 0, 0, 1, 1)
-
-        self.horizontalSliderDinner = QSlider(self.groupBox_6)
-        self.horizontalSliderDinner.setObjectName(u"horizontalSliderDinner")
-        self.horizontalSliderDinner.setMaximum(24)
-        self.horizontalSliderDinner.setPageStep(8)
-        self.horizontalSliderDinner.setValue(18)
-        self.horizontalSliderDinner.setSliderPosition(18)
-        self.horizontalSliderDinner.setOrientation(Qt.Orientation.Horizontal)
-        self.horizontalSliderDinner.setInvertedAppearance(False)
-        self.horizontalSliderDinner.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self.horizontalSliderDinner.setTickInterval(1)
-
-        self.gridLayout_3.addWidget(self.horizontalSliderDinner, 1, 2, 1, 1)
-
-        self.label_6 = QLabel(self.groupBox_6)
-        self.label_6.setObjectName(u"label_6")
-
-        self.gridLayout_3.addWidget(self.label_6, 1, 0, 1, 1)
-
-        self.horizontalSliderLunch = QSlider(self.groupBox_6)
-        self.horizontalSliderLunch.setObjectName(u"horizontalSliderLunch")
-        self.horizontalSliderLunch.setMaximum(24)
-        self.horizontalSliderLunch.setPageStep(8)
-        self.horizontalSliderLunch.setValue(11)
-        self.horizontalSliderLunch.setTracking(True)
-        self.horizontalSliderLunch.setOrientation(Qt.Orientation.Horizontal)
-        self.horizontalSliderLunch.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self.horizontalSliderLunch.setTickInterval(1)
-
-        self.gridLayout_3.addWidget(self.horizontalSliderLunch, 0, 2, 1, 1)
-
-        self.spinBoxLunch = QSpinBox(self.groupBox_6)
-        self.spinBoxLunch.setObjectName(u"spinBoxLunch")
-        self.spinBoxLunch.setMaximum(24)
-        self.spinBoxLunch.setValue(11)
-
-        self.gridLayout_3.addWidget(self.spinBoxLunch, 0, 1, 1, 1)
-
-        self.spinBoxDinner = QSpinBox(self.groupBox_6)
-        self.spinBoxDinner.setObjectName(u"spinBoxDinner")
-        self.spinBoxDinner.setMaximum(24)
-        self.spinBoxDinner.setValue(18)
-
-        self.gridLayout_3.addWidget(self.spinBoxDinner, 1, 1, 1, 1)
-
-
-        self.verticalLayout_6.addLayout(self.gridLayout_3)
-
-
-        self.gridLayout_9.addWidget(self.groupBox_6, 0, 0, 2, 1)
-
         self.groupBox_11 = QGroupBox(self.tab3)
         self.groupBox_11.setObjectName(u"groupBox_11")
         self.verticalLayout_7 = QVBoxLayout(self.groupBox_11)
@@ -851,6 +788,46 @@ class Ui_SettingsDialog(object):
 
 
         self.gridLayout_9.addWidget(self.groupBox_9, 1, 1, 1, 1)
+
+        self.groupBox_6 = QGroupBox(self.tab3)
+        self.groupBox_6.setObjectName(u"groupBox_6")
+        self.verticalLayout_6 = QVBoxLayout(self.groupBox_6)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.dayPartSlider = DayPartSlider(self.groupBox_6)
+        self.dayPartSlider.setObjectName(u"dayPartSlider")
+
+        self.verticalLayout_6.addWidget(self.dayPartSlider)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalSpacer_11 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_11)
+
+        self.label_6 = QLabel(self.groupBox_6)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_4.addWidget(self.label_6)
+
+        self.spinBoxDinner = QSpinBox(self.groupBox_6)
+        self.spinBoxDinner.setObjectName(u"spinBoxDinner")
+        self.spinBoxDinner.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.spinBoxDinner.setMinimum(9)
+        self.spinBoxDinner.setMaximum(23)
+        self.spinBoxDinner.setValue(18)
+
+        self.horizontalLayout_4.addWidget(self.spinBoxDinner)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout_4)
+
+
+        self.gridLayout_9.addWidget(self.groupBox_6, 0, 0, 2, 1)
 
 
         self.verticalLayout_25.addLayout(self.gridLayout_9)
@@ -1060,8 +1037,6 @@ class Ui_SettingsDialog(object):
         self.retranslateUi(SettingsDialog)
         self.buttonBox.accepted.connect(SettingsDialog.accept)
         self.buttonBox.rejected.connect(SettingsDialog.reject)
-        self.horizontalSliderLunch.valueChanged.connect(self.spinBoxLunch.setValue)
-        self.horizontalSliderDinner.valueChanged.connect(self.spinBoxDinner.setValue)
         self.checkBoxInactivity.clicked["bool"].connect(self.spinBoxInactivityTime.setEnabled)
         self.checkBoxInactivity.clicked["bool"].connect(self.labelInactivity.setEnabled)
 
@@ -1129,15 +1104,15 @@ class Ui_SettingsDialog(object):
         self.labelRed_2.setText(QCoreApplication.translate("SettingsDialog", u"Stock level", None))
         self.pushButtonExampleWL.setText(QCoreApplication.translate("SettingsDialog", u"Warning", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab2), QCoreApplication.translate("SettingsDialog", u"Order entry UI", None))
-        self.groupBox_6.setTitle(QCoreApplication.translate("SettingsDialog", u"Lunch / Dinner start time", None))
-        self.label_3.setText(QCoreApplication.translate("SettingsDialog", u"Lunch", None))
-        self.label_6.setText(QCoreApplication.translate("SettingsDialog", u"Dinner", None))
         self.groupBox_11.setTitle(QCoreApplication.translate("SettingsDialog", u"Default delivery", None))
         self.radioButtonTable.setText(QCoreApplication.translate("SettingsDialog", u"Table", None))
         self.radioButtonTakeaway.setText(QCoreApplication.translate("SettingsDialog", u"Takeaway", None))
         self.groupBox_9.setTitle(QCoreApplication.translate("SettingsDialog", u"Default payment", None))
         self.radioButtonCash.setText(QCoreApplication.translate("SettingsDialog", u"Cash", None))
         self.radioButtonElectronic.setText(QCoreApplication.translate("SettingsDialog", u"Electronic", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("SettingsDialog", u"Lunch / Dinner", None))
+        self.label_6.setText(QCoreApplication.translate("SettingsDialog", u"Dinner from", None))
+        self.spinBoxDinner.setSuffix(QCoreApplication.translate("SettingsDialog", u":00", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("SettingsDialog", u"Form parameters", None))
         self.checkBoxUseTableList.setText(QCoreApplication.translate("SettingsDialog", u"Use table list", None))
         self.checkBoxShowInventory.setText(QCoreApplication.translate("SettingsDialog", u"Always show inventory", None))

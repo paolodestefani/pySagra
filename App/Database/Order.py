@@ -56,6 +56,9 @@ from App.Database.Event import get_event_from_date
 # logger
 logger = logging.getLogger(__name__)
 
+# hour the order day starts: earlier orders belong to the dinner of the day before
+DAY_START = 8
+
 
 def get_order_number(event_id: int,
                      event_date: QDate | None = None,
@@ -283,12 +286,12 @@ class Order():
         self.header['order_time'] = self.header['order_date_time'].time()
         # set date, statistical date and date part
         setting = Settings()
-        # if time between 0.0.0 and lunch start time stat date is the day before date part is dinner
-        if QTime(0, 0) <= self.header['order_time'] < QTime(setting['lunch_start_time'], 0):
+        # if time between 0.0.0 and the day start stat date is the day before date part is dinner
+        if QTime(0, 0) <= self.header['order_time'] < QTime(DAY_START, 0):
             # dinner of the day before
             self.header['stat_order_date'] = self.header['order_date'].addDays(-1)
             self.header['stat_order_day_part'] = 'D'
-        elif QTime(setting['lunch_start_time'], 0) <= self.header['order_time'] < QTime(setting['dinner_start_time'], 0):
+        elif QTime(DAY_START, 0) <= self.header['order_time'] < QTime(setting['dinner_start_time'], 0):
             # lunch
             self.header['stat_order_date'] = self.header['order_date']
             self.header['stat_order_day_part'] = 'L'

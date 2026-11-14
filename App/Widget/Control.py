@@ -52,6 +52,7 @@ from PySide6.QtCore import QRectF
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtGui import QPaintEvent
+from PySide6.QtGui import QWheelEvent
 from PySide6.QtGui import QResizeEvent
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QPixmap
@@ -77,8 +78,8 @@ from PySide6.QtWidgets import QDateTimeEdit
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QDataWidgetMapper
 from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QStyleOptionButton
 from PySide6.QtWidgets import QStyle
 from PySide6.QtCore import QRect
@@ -1016,3 +1017,146 @@ class HostNameLineEdit(QLineEdit):
         if event.type() == event.Type.PaletteChange:
             self.update_icon()
         super().changeEvent(event)
+
+
+class DayPartSlider(QWidget):
+    """Split of a day in two parts, as lunch and dinner: a bar of 24 hours from the day
+    start, one handle at the start of the second part. The first part is painted left
+    of the handle, the second right of it, each with its own color and name"""
+
+    valueChanged = Signal(int)
+
+    LUNCH_COLOR = QColor('#f0b94a')     # day part colors, readable on light and dark themes
+    LUNCH_TEXT = QColor('#000000')
+    DINNER_COLOR = QColor('#34508a')
+    DINNER_TEXT = QColor('#ffffff')
+    BAR_HEIGHT = 24
+    MARGIN = 14                          # room for the handle and the hour labels at the ends
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self._dayStart = 8               # the bar covers 24 hours from this hour
+        self._minimum = 9
+        self._maximum = 23
+        self._value = 18
+        self._names = (_tr('Controls', 'Lunch'), _tr('Controls', 'Dinner'))
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+    def sizeHint(self) -> QSize:
+        return QSize(400, self.minimumSizeHint().height())
+
+    def minimumSizeHint(self) -> QSize:
+        return QSize(200, self.BAR_HEIGHT + 8 + self.fontMetrics().height() + 6)
+
+    # --- value ---
+
+    def value(self) -> int:
+        return self._value
+
+    def setValue(self, value: int) -> None:
+        "Hour of the start of the second part, kept inside the range"
+        value = max(self._minimum, min(self._maximum, int(value)))
+        if value != self._value:
+            self._value = value
+            self.update()
+            self.valueChanged.emit(value)
+
+    def setRange(self, minimum: int, maximum: int) -> None:
+        "Hours the handle can take"
+        self._minimum, self._maximum = minimum, maximum
+        self.setValue(self._value)
+        self.update()
+
+    def setDayStart(self, hour: int) -> None:
+        "Hour of the left end of the bar"
+        self._dayStart = hour
+        self.update()
+
+    def setPartNames(self, first: str, second: str) -> None:
+        self._names = (first, second)
+        self.update()
+
+    # --- geometry: hours from the day start mapped on the bar width ---
+
+    def _barRect(self) -> QRectF:
+        return QRectF(self.MARGIN, 4, self.width() - 2 * self.MARGIN, self.BAR_HEIGHT)
+
+    def _x(self, hour: float) -> float:
+        bar = self._barRect()
+        return bar.left() + (hour - self._dayStart) / 24 * bar.width()
+
+    def _hourAt(self, x: float) -> int:
+        bar = self._barRect()
+        return round(self._dayStart + (x - bar.left()) / bar.width() * 24)
+
+    # --- painting ---
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        bar = self._barRect()
+        split = self._x(self._value)
+        enabled = self.isEnabled()
+        # the two parts, the second ends 24 hours after the day start
+        for left, right, fill, text, name in (
+                (bar.left(), split, self.LUNCH_COLOR, self.LUNCH_TEXT, self._names[0]),
+                (split, bar.right(), self.DINNER_COLOR, self.DINNER_TEXT, self._names[1])):
+            part = QRectF(left, bar.top(), right - left, bar.height())
+            p.setPen(Qt.PenStyle.NoPen)
+            p.setBrush(fill if enabled else QColor(fill.red(), fill.green(), fill.blue(), 90))
+            p.drawRect(part)
+            if self.fontMetrics().horizontalAdvance(name) + 8 < part.width():
+                p.setPen(text)
+                p.drawText(part, Qt.AlignmentFlag.AlignCenter, name)
+        # hours below the bar: a tick each hour, a label every two hours
+        p.setPen(self.palette().color(self.foregroundRole()))
+        label_top = bar.bottom() + 6
+        for step in range(25):
+            x = self._x(self._dayStart + step)
+            p.drawLine(int(x), int(bar.bottom()), int(x), int(bar.bottom() + (4 if step % 2 else 6)))
+            if step % 2 == 0:
+                text = str((self._dayStart + step) % 24)
+                width = self.fontMetrics().horizontalAdvance(text)
+                p.drawText(QRectF(x - width, label_top, 2 * width, self.fontMetrics().height()),
+                           Qt.AlignmentFlag.AlignCenter, text)
+        # handle on the split
+        handle = QRectF(split - 5, bar.top() - 3, 10, bar.height() + 6)
+        p.setBrush(self.palette().color(self.palette().ColorRole.Button))
+        border = self.palette().color(self.palette().ColorRole.Highlight if self.hasFocus()
+                                      else self.palette().ColorRole.WindowText)
+        p.setPen(QPen(border, 2 if self.hasFocus() else 1))
+        p.drawRoundedRect(handle, 3, 3)
+        p.end()
+
+    # --- interaction: mouse, keyboard and wheel move the handle by whole hours ---
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.setValue(self._hourAt(event.position().x()))
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        if event.buttons() & Qt.MouseButton.LeftButton:
+            self.setValue(self._hourAt(event.position().x()))
+        else:
+            super().mouseMoveEvent(event)
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        steps = {Qt.Key.Key_Left: -1, Qt.Key.Key_Down: -1, Qt.Key.Key_Right: 1, Qt.Key.Key_Up: 1,
+                 Qt.Key.Key_PageDown: -3, Qt.Key.Key_PageUp: 3}
+        if event.key() in steps:
+            self.setValue(self._value + steps[event.key()])
+        elif event.key() == Qt.Key.Key_Home:
+            self.setValue(self._minimum)
+        elif event.key() == Qt.Key.Key_End:
+            self.setValue(self._maximum)
+        else:
+            super().keyPressEvent(event)
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        delta = event.angleDelta().y() or event.angleDelta().x()
+        if delta:
+            self.setValue(self._value + (1 if delta > 0 else -1))
+        event.accept()

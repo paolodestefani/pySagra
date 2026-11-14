@@ -61,7 +61,8 @@ CREATE TABLE settings (
     normal_background_color             char(7) DEFAULT '#4169E1',
     normal_text_color                   char(7) DEFAULT '#FFFFFF',
     -- order behavior 
-    lunch_start_time                    integer NOT NULL DEFAULT 11,
+    -- the order day starts at 8:00 (DAY_START in App/Database/Order.py): lunch until
+    -- the dinner start, dinner until 8:00 of the day after
     dinner_start_time                   integer NOT NULL DEFAULT 18,
     order_number_based_on               char(1) NOT NULL DEFAULT 'E', -- (E)vent, (D)ay, Day (P)art  
     menu_description_on_menu_items      boolean NOT NULL DEFAULT false,

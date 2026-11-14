@@ -43,6 +43,7 @@ from PySide6.QtWidgets import QDialogButtonBox
 # application modules
 from App import session
 from App.Database.Settings import Settings
+from App.Database.Order import DAY_START
 from App.Ui.SettingsDialog import Ui_SettingsDialog
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
@@ -90,10 +91,13 @@ class SettingsDialog(QDialog):
         self.loaded = outcome.ok
         if not self.loaded:
             return
-        self.ui.spinBoxLunch.setValue(self.setting['lunch_start_time'])
-        self.ui.horizontalSliderLunch.setValue(self.setting['lunch_start_time']) # initially slider/spinbox are not connected
+        # the order day: lunch from DAY_START to the dinner start, dinner until DAY_START
+        # of the day after; the dinner starts at 23:00 at the latest
+        self.ui.dayPartSlider.setDayStart(DAY_START)
+        self.ui.dayPartSlider.setRange(DAY_START + 1, 23)
+        self.ui.spinBoxDinner.setRange(DAY_START + 1, 23)
         self.ui.spinBoxDinner.setValue(self.setting['dinner_start_time'])
-        self.ui.horizontalSliderDinner.setValue(self.setting['dinner_start_time']) # initially slider/spinbox are not connected
+        self.ui.dayPartSlider.setValue(self.setting['dinner_start_time'])
         self.ui.comboBoxOrderUI.addItems([_tr('Settings', 'Standard'),
                                           _tr('Settings', 'Totals in one column'),
                                           _tr('Settings', 'Maximize items room')])
@@ -183,11 +187,9 @@ class SettingsDialog(QDialog):
         if st.value("Settings/Geometry"):
             self.restoreGeometry(st.value("Settings/Geometry"))
         # signal/slot
-        # slider/spinbox sincro
-        self.ui.horizontalSliderLunch.valueChanged.connect(self.lunchSliderChanged)
-        self.ui.spinBoxLunch.valueChanged.connect(self.ui.horizontalSliderLunch.setValue)
-        self.ui.horizontalSliderDinner.valueChanged.connect(self.dinnerSliderChanged)
-        self.ui.spinBoxDinner.valueChanged.connect(self.ui.horizontalSliderDinner.setValue)
+        # slider and spin box show the same dinner start
+        self.ui.dayPartSlider.valueChanged.connect(self.ui.spinBoxDinner.setValue)
+        self.ui.spinBoxDinner.valueChanged.connect(self.ui.dayPartSlider.setValue)
         self.ui.spinBoxCriticalLevel.valueChanged.connect(self.criticalLevelChanged)
         self.ui.spinBoxWarningLevel.valueChanged.connect(self.warningLevelChanged)
         self.ui.spinBoxInventoryCriticalLevel.valueChanged.connect(self.inventoryCriticalLevelChanged)
@@ -226,14 +228,6 @@ class SettingsDialog(QDialog):
         if self.ui.spinBoxInventoryCriticalLevel.value() >= value:
             self.ui.spinBoxInventoryCriticalLevel.setValue(value - 1)
 
-    def lunchSliderChanged(self, value: int) -> None:
-        if value > self.ui.horizontalSliderDinner.value():
-            self.ui.horizontalSliderDinner.setValue(value)
-
-    def dinnerSliderChanged(self, value: int) -> None:
-        if value < self.ui.horizontalSliderLunch.value():
-            self.ui.horizontalSliderLunch.setValue(value)
-
     def updateExampleButtons(self) -> None:
         "Update example buttons with new selected colors"
         # warning level
@@ -258,7 +252,6 @@ class SettingsDialog(QDialog):
 
     @scriptMethod
     def accept(self) -> None:
-        self.setting['lunch_start_time'] = self.ui.spinBoxLunch.value()
         self.setting['dinner_start_time'] = self.ui.spinBoxDinner.value()
         if self.ui.radioButtonTable.isChecked():
             self.setting['default_delivery_type'] = 'T'

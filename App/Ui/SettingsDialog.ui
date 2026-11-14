@@ -1138,118 +1138,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_25">
          <item>
           <layout class="QGridLayout" name="gridLayout_9">
-           <item row="0" column="0" rowspan="2">
-            <widget class="QGroupBox" name="groupBox_6">
-             <property name="title">
-              <string>Lunch / Dinner start time</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
-               <number>5</number>
-              </property>
-              <item>
-               <layout class="QGridLayout" name="gridLayout_3">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>Lunch</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QSlider" name="horizontalSliderDinner">
-                  <property name="maximum">
-                   <number>24</number>
-                  </property>
-                  <property name="pageStep">
-                   <number>8</number>
-                  </property>
-                  <property name="value">
-                   <number>18</number>
-                  </property>
-                  <property name="sliderPosition">
-                   <number>18</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="invertedAppearance">
-                   <bool>false</bool>
-                  </property>
-                  <property name="tickPosition">
-                   <enum>QSlider::TickPosition::TicksBelow</enum>
-                  </property>
-                  <property name="tickInterval">
-                   <number>1</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_6">
-                  <property name="text">
-                   <string>Dinner</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QSlider" name="horizontalSliderLunch">
-                  <property name="maximum">
-                   <number>24</number>
-                  </property>
-                  <property name="pageStep">
-                   <number>8</number>
-                  </property>
-                  <property name="value">
-                   <number>11</number>
-                  </property>
-                  <property name="tracking">
-                   <bool>true</bool>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="tickPosition">
-                   <enum>QSlider::TickPosition::TicksBelow</enum>
-                  </property>
-                  <property name="tickInterval">
-                   <number>1</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QSpinBox" name="spinBoxLunch">
-                  <property name="maximum">
-                   <number>24</number>
-                  </property>
-                  <property name="value">
-                   <number>11</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QSpinBox" name="spinBoxDinner">
-                  <property name="maximum">
-                   <number>24</number>
-                  </property>
-                  <property name="value">
-                   <number>18</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
            <item row="0" column="1">
             <widget class="QGroupBox" name="groupBox_11">
              <property name="title">
@@ -1328,6 +1216,77 @@
                    <string>Electronic</string>
                   </property>
                  </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0" rowspan="2">
+            <widget class="QGroupBox" name="groupBox_6">
+             <property name="title">
+              <string>Lunch / Dinner</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="DayPartSlider" name="dayPartSlider" native="true"/>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <spacer name="horizontalSpacer_11">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Dinner from</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBoxDinner">
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+                  </property>
+                  <property name="suffix">
+                   <string>:00</string>
+                  </property>
+                  <property name="minimum">
+                   <number>9</number>
+                  </property>
+                  <property name="maximum">
+                   <number>23</number>
+                  </property>
+                  <property name="value">
+                   <number>18</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </item>
@@ -1616,6 +1575,11 @@
    <extends>QComboBox</extends>
    <header>App.Widget.Control</header>
   </customwidget>
+  <customwidget>
+   <class>DayPartSlider</class>
+   <extends>QWidget</extends>
+   <header>App.Widget.Control</header>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
@@ -1648,38 +1612,6 @@
     <hint type="destinationlabel">
      <x>208</x>
      <y>155</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSliderLunch</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBoxLunch</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>291</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>518</x>
-     <y>98</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSliderDinner</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBoxDinner</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>291</x>
-     <y>144</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>518</x>
-     <y>144</y>
     </hint>
    </hints>
   </connection>
