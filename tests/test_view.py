@@ -124,7 +124,7 @@ class SettingsDialogTest(ViewTestCase):
     def test_show_a_hidden_column(self) -> None:
         view = self.view()
         view.hideColumn(2)
-        dialog = View.TableViewSettingsDialog(view)
+        dialog = View.ViewSettingsDialog(view)
         # through the model, as the check box delegate does
         model = dialog.ui.tableWidget.model()
         for row in range(model.rowCount()):

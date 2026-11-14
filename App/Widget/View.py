@@ -24,7 +24,7 @@
 """Views
 
 This module contains general custom views and related dialogs, 
-such as the enhanced table view with layout customizations
+such as the enhanced table and tree views with layout customizations
 
 """
 
@@ -49,11 +49,13 @@ from PySide6.QtCore import QTimer
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QTableView
+from PySide6.QtWidgets import QTreeView
 from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QActionGroup
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QInputDialog
@@ -83,10 +85,10 @@ from App.Ui.ViewSettingsDialog import Ui_ViewSettingsDialog
 
 
 
-class TableViewSettingsDialog(QDialog):
-    """Dialog to manage advanced table view layouts such as column sorting orders, visibility, and size rules."""
+class ViewSettingsDialog(QDialog):
+    """Dialog to manage the column layout of an enhanced table or tree view: order, visibility and width."""
 
-    def __init__(self, parent: "EnhancedTableView") -> None:
+    def __init__(self, parent: "LayoutViewMixin") -> None:
         super().__init__(parent)
         self._parent = parent
         self.ui = Ui_ViewSettingsDialog()
@@ -110,7 +112,7 @@ class TableViewSettingsDialog(QDialog):
             return
         column_count = model.columnCount()
         table_widget.setRowCount(column_count)
-        header = parent.horizontalHeader()
+        header = parent.header()
         # build layout customization dataset rows
         for i in range(column_count):
             # extract real core configuration elements from current parent state
@@ -146,11 +148,11 @@ class TableViewSettingsDialog(QDialog):
     def accept(self) -> None:
         """Applies user layout parameters downstream to the parent table view grid canvas."""
         # cache primary initial clean interface layout geometry mapping
-        if self._parent.horizontal_header_state:
-            self._parent.horizontalHeader().restoreState(self._parent.horizontal_header_state)
+        if self._parent.header_state:
+            self._parent.header().restoreState(self._parent.header_state)
         else:
-            self._parent.horizontal_header_state = self._parent.horizontalHeader().saveState()
-        header = self._parent.horizontalHeader()
+            self._parent.header_state = self._parent.header().saveState()
+        header = self._parent.header()
         # deactivate signal pipelines temporarily to block visual layout stuttering
         header.blockSignals(True)
         def get_val(row_idx: int, col_idx: int) -> Any:
@@ -182,39 +184,22 @@ class TableViewSettingsDialog(QDialog):
         super().accept()
 
 
-class EnhancedTableView(QTableView):
-    """Generic but enhanced QTableView custom implementation for modern PySide6 workflows."""
+class LayoutViewMixin:
+    """Column layouts of a view stored in the database: visibility, width and position
+    of every column, set from the context menu. Shared by the enhanced table and tree
+    views, it works on the header of the view returned by header()"""
 
-    def __init__(self, parent: QWidget) -> None:
-        super().__init__(parent)
+    def _initLayout(self, view_actions: list, resize_actions: list, output_actions: list) -> None:
+        "Set up the layout state and the context menu, called by the view constructor"
         self.layout_name: str | None = None
-        self.horizontal_header_state: QByteArray | None = None
-        # apply secure, production-ready UX view defaults
-        self.setEditTriggers(
-            QAbstractItemView.EditTrigger.DoubleClicked | 
-            QAbstractItemView.EditTrigger.SelectedClicked
-        )
-        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
-        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.setAlternatingRowColors(True)
-        self.setWordWrap(False)
-        vertical_hdr = self.verticalHeader()
-        horizontal_hdr = self.horizontalHeader()
-        vertical_hdr.hide()
-        vertical_hdr.setDefaultAlignment(Qt.AlignmentFlag.AlignVCenter)
-        horizontal_hdr.setSortIndicatorShown(True)
-        horizontal_hdr.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
-        horizontal_hdr.setSectionsMovable(False)
-        # assign localized dynamic read-only default item delegates
-        self.setItemDelegate(GenericReadOnlyDelegate(self))
-        # initialize context menu engine
-        self._create_context_menu()
-        # configure standard modern context menu signals
+        self.header_state: QByteArray | None = None
+        self._create_context_menu(view_actions, resize_actions, output_actions)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.showContextMenu)
 
-    def _create_context_menu(self) -> None:
-        """Helper function to isolate setup logic for clean action mapping pipelines."""
+    def _create_context_menu(self, view_actions: list, resize_actions: list, output_actions: list) -> None:
+        """Build the context menu: sorting, movable columns and layouts are common,
+        the actions of each kind of view are added to their group"""
         # visual tuning toggles
         self.cm_sorting = QAction(_tr("View", "Column sorting"), self)
         self.cm_sorting.setCheckable(True)
@@ -223,18 +208,11 @@ class EnhancedTableView(QTableView):
         self.cm_movable = QAction(_tr("View", "Column movable"), self)
         self.cm_movable.setCheckable(True)
         self.cm_movable.triggered.connect(self.activateMovableColumns)
-        self.cm_vheader = QAction(_tr("View", "Show vertical header"), self)
-        self.cm_vheader.setCheckable(True)
-        self.cm_vheader.setChecked(False)
-        self.cm_vheader.triggered.connect(self.showVerticalHeader)
         # content resize triggers
         self.cm_resize_cols = QAction(_tr("View", "Resize columns to contents"), self)
-        self.cm_resize_cols.triggered.connect(self.resizeColumnsToContents)
-        self.cm_resize_rows = QAction(_tr("View", "Resize rows to contents"), self)
-        self.cm_resize_rows.triggered.connect(self.resizeRowsToContents)
-        # reporting / output actions
-        self.cm_export = QAction(_tr("View", "Export to CSV file"), self)
-        self.cm_export.triggered.connect(self.exportView)
+        # resizeColumnToContents exists in tables and trees, resizeColumnsToContents in tables only
+        self.cm_resize_cols.triggered.connect(
+            lambda: [self.resizeColumnToContents(c) for c in range(self.header().count())])
         # layout management containers
         self.cm_user_default = QAction(_tr("View", "Set current layout as user default"), self)
         self.cm_user_default.triggered.connect(self.setUserDefaultLayout)
@@ -261,12 +239,13 @@ class EnhancedTableView(QTableView):
             self.cm_manage.triggered.connect(self.manageSettings)
         # build the final physical menu tree structure
         self.context_menu = QMenu(self)
-        self.context_menu.addActions([self.cm_sorting, self.cm_movable, self.cm_vheader])
+        self.context_menu.addActions([self.cm_sorting, self.cm_movable] + view_actions)
         self.context_menu.addSeparator()
-        self.context_menu.addActions([self.cm_resize_cols, self.cm_resize_rows])
+        self.context_menu.addActions([self.cm_resize_cols] + resize_actions)
         self.context_menu.addSeparator()
-        self.context_menu.addActions([self.cm_export])
-        self.context_menu.addSeparator()
+        if output_actions:
+            self.context_menu.addActions(output_actions)
+            self.context_menu.addSeparator()
         self.context_menu.addMenu(self.cm_customizations)
         self.context_menu.addAction(self.cm_user_default)
         self.context_menu.addSeparator()
@@ -283,8 +262,7 @@ class EnhancedTableView(QTableView):
     def syncContextMenuStates(self) -> None:
         """Synchronize the state of menu items with the actual state of the widget"""
         self.cm_sorting.setChecked(self.isSortingEnabled())
-        self.cm_movable.setChecked(self.horizontalHeader().sectionsMovable())
-        self.cm_vheader.setChecked(self.verticalHeader().isVisible())
+        self.cm_movable.setChecked(self.header().sectionsMovable())
 
     def fillCustomizationMenu(self) -> None:
         """Populate the customizations context menu with database layouts."""
@@ -316,10 +294,10 @@ class EnhancedTableView(QTableView):
                     action.setChecked(True)
 
     def setModel(self, model: QAbstractItemModel | None) -> None:
-        """Override setModel to reset core configuration flags cleanly."""
+        """Set the model, no sorting and no moving while editing."""
         super().setModel(model)
         self.setSortingEnabled(False)  # better not to sort when editing/resetting
-        self.horizontalHeader().setSectionsMovable(False)  # better not to move when editing
+        self.header().setSectionsMovable(False)  # better not to move when editing
 
     def setLayoutName(self, name: str) -> None:
         """Set the layout identifier name after instantiation to trigger database sync."""
@@ -336,12 +314,12 @@ class EnhancedTableView(QTableView):
         if action is None:  # safe boundary protection against PySide6 checkedAction() race-conditions
             return
         view_id = int(action.data())
-        header = self.horizontalHeader()
+        header = self.header()
         # reset layout first (or store the initial state on the first run)
-        if self.horizontal_header_state:
-            header.restoreState(self.horizontal_header_state)
+        if self.header_state:
+            header.restoreState(self.header_state)
         else:
-            self.horizontal_header_state = header.saveState()
+            self.header_state = header.saveState()
         title: str = _tr("Menu", "Error applying stored layout")
         sorting = self.isSortingEnabled()
         with gui_exception_context(self, title):
@@ -376,10 +354,237 @@ class EnhancedTableView(QTableView):
 
     def activateMovableColumns(self) -> None:
         """Activate/deactivate movable columns and sync action check state."""
-        header = self.horizontalHeader()
+        header = self.header()
         is_movable = self.cm_movable.isChecked()
         header.setSectionsMovable(is_movable)
         self.syncContextMenuStates()
+
+    def hideCurrentColumn(self) -> None:
+        """Hide the currently selected column layout index."""
+        current_idx = self.currentIndex()
+        if current_idx.isValid():
+            self.hideColumn(current_idx.column())
+
+    def showAllColumns(self) -> None:
+        """Unhide all dataset columns and restore default layout grid widths."""
+        header = self.header()
+        for i in range(header.count()):
+            if self.isColumnHidden(i):
+                self.showColumn(i)
+                self.setColumnWidth(i, 120)
+
+    def resetViewState(self) -> None:
+        """Reset the horizontal header orientation to its initial cached layout state."""
+        if self.header_state:
+            self.header().restoreState(self.header_state)
+            # uncheck any active layout configuration in the menu group context
+            active_action = self.action_group.checkedAction()
+            if active_action:
+                active_action.setChecked(False)
+
+    def manageSettings(self) -> None:
+        """Open the administrative dialog layout box to manage advanced table view parameters."""
+        dialog = ViewSettingsDialog(self)
+        title = _tr('view', 'View settings')
+        title = f'{title} (layout: {self.layout_name})'
+        dialog.ui.groupBoxViewSettings.setTitle(title)
+        dialog.exec()
+
+    def updateViewLayout(self) -> None:
+        """Save the exact active column widths, visibility, and sorting indexes to the database."""
+        if not self.layout_name:
+            return
+        checked_action = self.action_group.checkedAction()
+        if not checked_action:  # out of boundary safety check
+            return
+        view_id = int(checked_action.data())
+        if not view_id:
+            return 
+        header = self.header()
+        # build layout positioning schema structure natively
+        columns = [
+            (
+                view_id,
+                col_idx,
+                header.visualIndex(col_idx),
+                not self.isColumnHidden(col_idx),
+                self.columnWidth(col_idx),
+                None, None, None, None, None, None  # database structural padding definitions
+            )
+            for col_idx in range(header.count())
+        ]
+        title: str = _tr("Menu", "Error saving view layout")
+        with gui_exception_context(self, title) as outcome:
+            set_adapt_setting(view_id, columns)
+        if outcome.ok:  # messages outside of the context, it shows the wait cursor
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Layout customization saved")
+            )
+
+    def saveViewLayoutAs(self) -> None:
+        """Create a new distinct database layout customization record from current workspace shapes."""
+        if not self.layout_name:
+            return
+        view_desc, ok = QInputDialog.getText(
+            self,
+            _tr("View", "New layout customization"),
+            _tr("View", "Insert new customization description")
+        )
+        # sanitize and validate target context input strings securely
+        if not ok or not view_desc.strip():
+            return
+        title: str = _tr("Menu", "Error creating new layout")
+        with gui_exception_context(self, title) as outcome:
+            # write entity and extract generated master view table ID reference
+            view_id = create_adaptation('I', self.layout_name, view_desc.strip())
+        if not outcome.ok:
+            return
+        # rebuild structural elements on context menus safely
+        self.fillCustomizationMenu()
+        # map state adjustments dynamically across newly instantiated actions
+        for action in self.action_group.actions():
+            if action.data() == str(view_id):
+                action.setChecked(True)
+                break
+        # perform instant schema sync to serialize configurations downstream
+        self.updateViewLayout()
+
+    def deleteViewLayout(self, action: QAction | None = None) -> None:
+        """Remove the active layout mapping definition safely after validation gates clear."""
+        checked_action = self.action_group.checkedAction()
+        if not checked_action:
+            return
+        view_id = int(checked_action.data())
+        title: str = _tr("Menu", "Error deleting layout")
+        system = None
+        with gui_exception_context(self, title):
+            system = is_system_object(view_id)
+        if system is None:
+            return
+        # restrict core system-level objects against destructive user operations
+        if system:
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "Warning"),
+                _tr("View", "System layout cannot be deleted")
+            )
+            return
+        confirm = QMessageBox.question(
+            self,
+            _tr("MessageDialog", "Question"),
+            _tr("View", "Are you sure you want to delete the current layout?"),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        if confirm == QMessageBox.StandardButton.No:
+            return
+        with gui_exception_context(self, title) as outcome:
+            # fire structural drop commands at database layers
+            delete_adaptation(view_id)
+        if outcome.ok:
+            # re-render system structures to clear lingering pointers cleanly
+            self.fillCustomizationMenu()
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Current layout deleted")
+            )
+
+    def setUserDefaultLayout(self) -> None:
+        """Set the current layout customization as the default for the logged-in user."""
+        if not self.layout_name:
+            return
+        checked_action = self.action_group.checkedAction()
+        if not checked_action:  # safe fallback warning check
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "Warning"),
+                _tr("View", "No configuration has been set")
+            )
+            return
+        view_id = int(checked_action.data())
+        title: str = _tr("Menu", "Error setting user default layout")
+        # safe transaction pipeline wrapped in the exception handler boundary
+        with gui_exception_context(self, title) as outcome:
+            set_adapt_user_default('I', self.layout_name, session['user'], view_id)
+        if outcome.ok:
+            # rebuild structural elements on context menus safely
+            self.fillCustomizationMenu()
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Current layout set as user default")
+            )
+
+    def setClassDefaultLayout(self) -> None:
+        """Set the current layout customization as the global default for this view class."""
+        if not self.layout_name:
+            return
+        checked_action = self.action_group.checkedAction()
+        if not checked_action:  # safe fallback warning check
+            QMessageBox.warning(
+                self,
+                _tr("MessageDialog", "Warning"),
+                _tr("View", "No configuration has been set")
+            )
+            return
+        view_id = int(checked_action.data())
+        title: str = _tr("Menu", "Error setting class default layout")
+        with gui_exception_context(self, title) as outcome:
+            set_adapt_class_default(view_id)
+        if outcome.ok:
+            # rebuild structural elements on context menus safely
+            self.fillCustomizationMenu()
+            QMessageBox.information(
+                self,
+                _tr("MessageDialog", "Information"),
+                _tr("View", "Current layout set as class default")
+            )
+
+
+class EnhancedTableView(LayoutViewMixin, QTableView):
+    """Generic but enhanced QTableView: stored column layouts, CSV export, row add/remove."""
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        # apply secure, production-ready UX view defaults
+        self.setEditTriggers(
+            QAbstractItemView.EditTrigger.DoubleClicked | 
+            QAbstractItemView.EditTrigger.SelectedClicked
+        )
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setAlternatingRowColors(True)
+        self.setWordWrap(False)
+        vertical_hdr = self.verticalHeader()
+        horizontal_hdr = self.horizontalHeader()
+        vertical_hdr.hide()
+        vertical_hdr.setDefaultAlignment(Qt.AlignmentFlag.AlignVCenter)
+        horizontal_hdr.setSortIndicatorShown(True)
+        horizontal_hdr.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
+        horizontal_hdr.setSectionsMovable(False)
+        # assign localized dynamic read-only default item delegates
+        self.setItemDelegate(GenericReadOnlyDelegate(self))
+        # table only actions, then the layout context menu
+        self.cm_vheader = QAction(_tr("View", "Show vertical header"), self)
+        self.cm_vheader.setCheckable(True)
+        self.cm_vheader.setChecked(False)
+        self.cm_vheader.triggered.connect(self.showVerticalHeader)
+        self.cm_resize_rows = QAction(_tr("View", "Resize rows to contents"), self)
+        self.cm_resize_rows.triggered.connect(self.resizeRowsToContents)
+        self.cm_export = QAction(_tr("View", "Export to CSV file"), self)
+        self.cm_export.triggered.connect(self.exportView)
+        self._initLayout([self.cm_vheader], [self.cm_resize_rows], [self.cm_export])
+
+    def header(self) -> QHeaderView:
+        "The header of the column layouts, as QTreeView.header()"
+        return self.horizontalHeader()
+
+    def syncContextMenuStates(self) -> None:
+        """Synchronize the state of menu items with the actual state of the widget"""
+        super().syncContextMenuStates()
+        self.cm_vheader.setChecked(self.verticalHeader().isVisible())
 
     def showVerticalHeader(self) -> None:
         """Toggle the visibility layout of the table vertical line numbers."""
@@ -523,185 +728,18 @@ class EnhancedTableView(QTableView):
             case _:
                 return data
 
-    def hideCurrentColumn(self) -> None:
-        """Hide the currently selected column layout index."""
-        current_idx = self.currentIndex()
-        if current_idx.isValid():
-            self.hideColumn(current_idx.column())
 
-    def showAllColumns(self) -> None:
-        """Unhide all dataset columns and restore default layout grid widths."""
-        header = self.horizontalHeader()
-        for i in range(header.count()):
-            if self.isColumnHidden(i):
-                self.showColumn(i)
-                self.setColumnWidth(i, 120)
+class EnhancedTreeView(LayoutViewMixin, QTreeView):
+    """QTreeView with the stored column layouts of the enhanced table view"""
 
-    def resetViewState(self) -> None:
-        """Reset the horizontal header orientation to its initial cached layout state."""
-        if self.horizontal_header_state:
-            self.horizontalHeader().restoreState(self.horizontal_header_state)
-            # uncheck any active layout configuration in the menu group context
-            active_action = self.action_group.checkedAction()
-            if active_action:
-                active_action.setChecked(False)
-
-    def manageSettings(self) -> None:
-        """Open the administrative dialog layout box to manage advanced table view parameters."""
-        dialog = TableViewSettingsDialog(self)
-        title = _tr('view', 'View settings')
-        title = f'{title} (layout: {self.layout_name})'
-        dialog.ui.groupBoxViewSettings.setTitle(title)
-        dialog.exec()
-
-    def updateViewLayout(self) -> None:
-        """Save the exact active column widths, visibility, and sorting indexes to the database."""
-        if not self.layout_name:
-            return
-        checked_action = self.action_group.checkedAction()
-        if not checked_action:  # out of boundary safety check
-            return
-        view_id = int(checked_action.data())
-        if not view_id:
-            return 
-        header = self.horizontalHeader()
-        # build layout positioning schema structure natively
-        columns = [
-            (
-                view_id,
-                col_idx,
-                header.visualIndex(col_idx),
-                not self.isColumnHidden(col_idx),
-                self.columnWidth(col_idx),
-                None, None, None, None, None, None  # database structural padding definitions
-            )
-            for col_idx in range(header.count())
-        ]
-        title: str = _tr("Menu", "Error saving view layout")
-        with gui_exception_context(self, title) as outcome:
-            set_adapt_setting(view_id, columns)
-        if outcome.ok:  # messages outside of the context, it shows the wait cursor
-            QMessageBox.information(
-                self,
-                _tr("MessageDialog", "Information"),
-                _tr("View", "Layout customization saved")
-            )
-
-    def saveViewLayoutAs(self) -> None:
-        """Create a new distinct database layout customization record from current workspace shapes."""
-        if not self.layout_name:
-            return
-        view_desc, ok = QInputDialog.getText(
-            self,
-            _tr("View", "New layout customization"),
-            _tr("View", "Insert new customization description")
-        )
-        # sanitize and validate target context input strings securely
-        if not ok or not view_desc.strip():
-            return
-        title: str = _tr("Menu", "Error creating new layout")
-        with gui_exception_context(self, title) as outcome:
-            # write entity and extract generated master view table ID reference
-            view_id = create_adaptation('I', self.layout_name, view_desc.strip())
-        if not outcome.ok:
-            return
-        # rebuild structural elements on context menus safely
-        self.fillCustomizationMenu()
-        # map state adjustments dynamically across newly instantiated actions
-        for action in self.action_group.actions():
-            if action.data() == str(view_id):
-                action.setChecked(True)
-                break
-        # perform instant schema sync to serialize configurations downstream
-        self.updateViewLayout()
-
-    def deleteViewLayout(self, action: QAction | None = None) -> None:
-        """Remove the active layout mapping definition safely after validation gates clear."""
-        checked_action = self.action_group.checkedAction()
-        if not checked_action:
-            return
-        view_id = int(checked_action.data())
-        title: str = _tr("Menu", "Error deleting layout")
-        system = None
-        with gui_exception_context(self, title):
-            system = is_system_object(view_id)
-        if system is None:
-            return
-        # restrict core system-level objects against destructive user operations
-        if system:
-            QMessageBox.warning(
-                self,
-                _tr("MessageDialog", "Warning"),
-                _tr("View", "System layout cannot be deleted")
-            )
-            return
-        confirm = QMessageBox.question(
-            self,
-            _tr("MessageDialog", "Question"),
-            _tr("View", "Are you sure you want to delete the current layout?"),
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
-        if confirm == QMessageBox.StandardButton.No:
-            return
-        with gui_exception_context(self, title) as outcome:
-            # fire structural drop commands at database layers
-            delete_adaptation(view_id)
-        if outcome.ok:
-            # re-render system structures to clear lingering pointers cleanly
-            self.fillCustomizationMenu()
-            QMessageBox.information(
-                self,
-                _tr("MessageDialog", "Information"),
-                _tr("View", "Current layout deleted")
-            )
-
-    def setUserDefaultLayout(self) -> None:
-        """Set the current layout customization as the default for the logged-in user."""
-        if not self.layout_name:
-            return
-        checked_action = self.action_group.checkedAction()
-        if not checked_action:  # safe fallback warning check
-            QMessageBox.warning(
-                self,
-                _tr("MessageDialog", "Warning"),
-                _tr("View", "No configuration has been set")
-            )
-            return
-        view_id = int(checked_action.data())
-        title: str = _tr("Menu", "Error setting user default layout")
-        # safe transaction pipeline wrapped in the exception handler boundary
-        with gui_exception_context(self, title) as outcome:
-            set_adapt_user_default('I', self.layout_name, session['user'], view_id)
-        if outcome.ok:
-            # rebuild structural elements on context menus safely
-            self.fillCustomizationMenu()
-            QMessageBox.information(
-                self,
-                _tr("MessageDialog", "Information"),
-                _tr("View", "Current layout set as user default")
-            )
-
-    def setClassDefaultLayout(self) -> None:
-        """Set the current layout customization as the global default for this view class."""
-        if not self.layout_name:
-            return
-        checked_action = self.action_group.checkedAction()
-        if not checked_action:  # safe fallback warning check
-            QMessageBox.warning(
-                self,
-                _tr("MessageDialog", "Warning"),
-                _tr("View", "No configuration has been set")
-            )
-            return
-        view_id = int(checked_action.data())
-        title: str = _tr("Menu", "Error setting class default layout")
-        with gui_exception_context(self, title) as outcome:
-            set_adapt_class_default(view_id)
-        if outcome.ok:
-            # rebuild structural elements on context menus safely
-            self.fillCustomizationMenu()
-            QMessageBox.information(
-                self,
-                _tr("MessageDialog", "Information"),
-                _tr("View", "Current layout set as class default")
-            )
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setAlternatingRowColors(True)
+        header = self.header()
+        header.setSortIndicatorShown(True)
+        header.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
+        header.setSectionsMovable(False)
+        # as in a table: the last column keeps its width, a tree stretches it by default
+        header.setStretchLastSection(False)
+        self._initLayout([], [], [])

@@ -126,6 +126,7 @@ class ToolbarForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
+        self.ui.treeViewMenuItems.setLayoutName('ToolbarItems')
         self.ui.treeViewMenuItems.setItemDelegateForColumn(tbt.ACTION, ActionDelegate(self))
         # signal/slot
         self.ui.pushButtonAddChild.clicked.connect(self.addChild)

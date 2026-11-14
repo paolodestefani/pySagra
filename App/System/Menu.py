@@ -156,6 +156,7 @@ class MenusForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
+        self.ui.treeViewMenuItems.setLayoutName('MenuItems')
         self.ui.treeViewMenuItems.setItemDelegateForColumn(mt.ACTION, ActionDelegate(self))
         # signal and slot
         self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)

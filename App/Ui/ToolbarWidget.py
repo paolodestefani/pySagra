@@ -17,10 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QGroupBox, QHBoxLayout,
     QHeaderView, QLineEdit, QPushButton, QSizePolicy,
-    QSpacerItem, QStackedWidget, QTreeView, QVBoxLayout,
-    QWidget)
+    QSpacerItem, QStackedWidget, QVBoxLayout, QWidget)
 
-from App.Widget.View import EnhancedTableView
+from App.Widget.View import (EnhancedTableView, EnhancedTreeView)
 
 class Ui_ToolbarWidget(object):
     def setupUi(self, ToolbarWidget):
@@ -81,7 +80,7 @@ class Ui_ToolbarWidget(object):
 
         self.verticalLayout.addWidget(self.groupBox_4)
 
-        self.treeViewMenuItems = QTreeView(self.page1)
+        self.treeViewMenuItems = EnhancedTreeView(self.page1)
         self.treeViewMenuItems.setObjectName(u"treeViewMenuItems")
 
         self.verticalLayout.addWidget(self.treeViewMenuItems)
