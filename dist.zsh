@@ -19,6 +19,7 @@ pyinstaller \
     --exclude-module PySide6.QtGraphs \
 	--collect-data escpos \
 	--collect-data barcode \
+	--add-data Documentation:Documentation \
 	pySagra.py
 	
 # remove security issue on macos

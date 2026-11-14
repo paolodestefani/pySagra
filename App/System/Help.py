@@ -29,13 +29,13 @@ Definition and management of Help and Faq dialogs
 
 # standard library
 import logging
+from pathlib import Path
 
 # PySide6
 from PySide6.QtCore import QUrl
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QSettings
 from PySide6.QtCore import QEvent
-from PySide6.QtCore import QFile
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QTextCursor
 from PySide6.QtGui import QAction
@@ -53,6 +53,12 @@ from App.Ui.HelpDialog import Ui_HelpDialog
 
 # logger
 logger = logging.getLogger(__name__)
+
+# the documentation folder: in the project root, or in the data folder of the PyInstaller
+# bundle where the App package is too; one subfolder for each language, English is
+# used for the languages with no documentation
+DOCUMENTATION = Path(__file__).resolve().parents[2] / 'Documentation'
+DEFAULT_LANGUAGE = 'en'
 
 
 def help(action: QAction, checked: bool = False) -> None:
@@ -119,21 +125,24 @@ class HelpDialog(QDialog):
         self.loadHelpPage(source)
         
     def loadHelpPage(self, page_name: str) -> None:
-        "Load an html source file from resources"
-        # fallback to the main help page if page_name isn't available
-        if not QFile.exists(f":/{page_name}"):
-            page_name = "help/main.html"
-        # by setting Search Paths to "qrc:/", Qt will search for images directly in the QRC aliases.
-        self.ui.textBrowserContent.setSearchPaths(["qrc:/"])
-        # build the canonical URL using the correct prefix
-        qrc_url = QUrl.fromUserInput(f"qrc:/{page_name}")
-        # start browsing
-        self.ui.textBrowserContent.setSource(qrc_url)
-        
+        """Load a page of the documentation folder of the user language, page_name as
+        "help/login.html" or "help/main.html#gui"; the main page if it doesn't exist.
+        Links and images are relative to the page, as in a browser"""
+        page, _, anchor = page_name.removeprefix('help/').partition('#')
+        folder = DOCUMENTATION / session['qlocale'].name()[:2]
+        if not folder.is_dir():
+            folder = DOCUMENTATION / DEFAULT_LANGUAGE
+        path = folder / page
+        if not path.is_file():
+            path, anchor = folder / 'main.html', ''
+        url = QUrl.fromLocalFile(str(path))
+        if anchor:
+            url.setFragment(anchor)
+        self.ui.textBrowserContent.setSource(url)
+
     def goToCustomHome(self) -> None:
         "Go to the main help page"
-        qrc_url = QUrl.fromUserInput(f"qrc:/help/main.html")
-        self.ui.textBrowserContent.setSource(qrc_url)
+        self.loadHelpPage('main.html')
         
     def sliderChangedValue(self, value: int) -> None:
         "Update zoom based on slider"
