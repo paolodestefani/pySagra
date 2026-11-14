@@ -1,0 +1,35 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Mappa dei tavoli</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Mappa dei tavoli</h1>
+    <p>La mappa dei tavoli contiene i tavoli della sala e la loro posizione. Se nelle <i>Impostazioni</i>
+    &egrave; attiva l'opzione <i>Utilizza la lista dei tavoli</i>, nella finestra degli ordini il tavolo si sceglie
+    con un clic sulla mappa invece di scriverlo.</p>
+    <p><img src="img/seat_map.png" /></p>
+    <h2>I tavoli</h2>
+    <ul>
+      <li><i>Codice tavolo</i>: il nome del tavolo, quello che si scrive nell'ordine. Due tavoli non possono avere lo stesso codice.</li>
+      <li><i>Riga</i> e <i>Colonna</i>: la posizione del tavolo nella mappa. Due tavoli non possono occupare la stessa posizione.</li>
+      <li><i>Colore testo</i> e <i>Colore sfondo</i>: i colori del pulsante del tavolo.</li>
+      <li><i>Non disponibile</i>: il tavolo compare nella mappa ma non si pu&ograve; scegliere, per esempio perch&eacute; &egrave; riservato.</li>
+      <li><i>Obsoleto</i>: il tavolo non si usa pi&ugrave; e non compare nella mappa.</li>
+    </ul>
+    <h2>Generare i tavoli</h2>
+    <p>Con <i>Genera numeri dei tavoli</i> si crea in un colpo solo un blocco di tavoli:</p>
+    <ul>
+      <li><i>Riga di inizio</i>, <i>Righe</i> e <i>Colonne</i>: dove comincia il blocco e quanto &egrave; grande.</li>
+      <li><i>Codice tavolo</i>: il codice &egrave; fatto da <i>Prefisso</i>, numero di riga e numero di colonna
+      (<i>riga + colonna</i>) oppure il contrario (<i>colonna + riga</i>), e <i>Suffisso</i>.
+      <i>Riempimento riga</i> e <i>Riempimento colonna</i> aggiungono zeri davanti ai numeri, per esempio 01 invece di 1.</li>
+      <li><i>Colore tasto</i>: i colori dei tavoli generati. Con <i>Cambia il colore di sfondo al cambio di riga/colonna</i>
+      ogni riga, o colonna, prende uno dei dieci colori dei pulsanti colorati, che si possono cambiare con un clic.</li>
+    </ul>
+    <p>I tavoli generati si aggiungono a quelli che ci sono e vanno salvati. <i>Cancella tutto</i> elimina tutti i tavoli dell'azienda.</p>
+    <h2>Geometria e anteprima</h2>
+    <p><i>Geometria di base</i> imposta righe, colonne e spaziatura della mappa nella finestra degli ordini; <i>Misura minima</i>
+    &egrave; la misura delle celle vuote nell'anteprima. <i>Anteprima</i> mostra la mappa come apparir&agrave; e salva la geometria;
+    <i>Modifica</i> torna all'elenco dei tavoli.</p>
+  </body>
+</html>

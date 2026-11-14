@@ -1,0 +1,27 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Departments</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Departments</h1>
+    <p>Departments are the parts of the organization that prepare and deliver the items:
+    kitchen, grill, bar, pizzeria and so on. Every item belongs to a department.</p>
+    <p><img src="img/department.png" /></p>
+    <ul>
+      <li><i>Department description</i>: the name of the department. It can not be the same as the one of another
+      department. It is the name of the tab in the order entry window and it is printed on the department copy.</li>
+      <li><i>Sorting</i>: the order of the departments, for the tabs of the order entry window and for the prints.</li>
+      <li><i>Menu</i>: the department holds the menus. It has its own tab in the order entry window, but no
+      department copy: when the order is saved, every menu is split into its items, which go to the copies
+      of their departments.</li>
+      <li><i>Takeaway</i>: the department prepares for takeaway too. In a takeaway order only the tabs of the
+      departments with this check are active.</li>
+      <li><i>Obsolete</i>: the department is no longer used and does not appear in the order entry window and in the lists.</li>
+    </ul>
+    <p>For every department, the <i>Order print settings</i> form sets on which printer and with which report
+    the department copy of each computer is printed.</p>
+    <h2>Deleting</h2>
+    <p>A department can not be deleted when it has items or when it is used in orders: the program shows a message.
+    In these cases check <i>Obsolete</i> instead.</p>
+  </body>
+</html>

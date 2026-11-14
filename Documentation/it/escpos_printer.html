@@ -1,0 +1,34 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Stampanti ESC/POS</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Stampanti ESC/POS</h1>
+    <p>Le stampanti ESC/POS sono le stampanti termiche per scontrini, che il programma comanda direttamente, senza
+    passare dal driver del sistema operativo. Si collegano in USB o in rete; in questa scheda si descrive ciascuna
+    stampante, che poi si sceglie nella scheda <i>Impostazione stampa ordini</i>.</p>
+    <p><img src="img/escpos_printer.png" /></p>
+    <ul>
+      <li><i>Nome computer</i>: il computer a cui &egrave; collegata la stampante USB; viene proposto quello corrente.
+      Una stampante di rete non dipende dal computer.</li>
+      <li><i>Nome stampante</i>: il nome con cui la stampante si sceglie nelle impostazioni di stampa. Non pu&ograve;
+      essere uguale a quello di un'altra stampante.</li>
+      <li><i>Tipo stampante</i>: <i>USB</i> o <i>Rete</i>.</li>
+    </ul>
+    <p>Per una stampante di rete:</p>
+    <ul>
+      <li><i>Indirizzo host</i>: l'indirizzo IP della stampante.</li>
+      <li><i>Porta</i>: di solito 9100.</li>
+      <li><i>Timeout connessione</i>: quanti secondi aspettare la stampante prima di dare errore.</li>
+    </ul>
+    <p>Per una stampante USB:</p>
+    <ul>
+      <li><i>Id Vendor</i> e <i>Id Product</i>: i due numeri che identificano il modello di stampante; si trovano nel
+      manuale o nelle informazioni del sistema sui dispositivi USB.</li>
+      <li><i>Timeout USB</i>, <i>Input endpoint</i> e <i>Output endpoint</i>: parametri della comunicazione USB;
+      i valori proposti vanno bene per la maggior parte delle stampanti.</li>
+    </ul>
+    <p>Cancellare una stampante non cancella le impostazioni di stampa che la usano: restano senza stampante, e
+    quella copia va in anteprima finch&eacute; non se ne sceglie un'altra.</p>
+  </body>
+</html>

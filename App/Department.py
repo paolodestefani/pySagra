@@ -89,7 +89,7 @@ class DepartmentForm(FormViewManager[Ui_GenericFormViewWidget]):
         model = DepartmentModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/department.html"
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

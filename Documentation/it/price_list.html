@@ -1,0 +1,24 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Listini</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Listini</h1>
+    <p>Un listino &egrave; un elenco di prezzi degli articoli. Si possono avere pi&ugrave; listini, per esempio uno per la
+    sagra d'estate e uno per quella d'autunno: ogni evento usa il listino scelto nella scheda <i>Eventi</i>, e nella
+    finestra degli ordini i prezzi sono quelli di quel listino.</p>
+    <p><img src="img/price_list.png" /></p>
+    <ul>
+      <li><i>Descrizione listino</i>: il nome del listino, obbligatorio.</li>
+      <li><i>Prezzi di listino</i>: gli articoli e il loro prezzo. Un articolo pu&ograve; comparire una sola volta
+      in ogni listino. I prezzi si possono vedere e modificare anche nella scheda <i>Prezzi</i> degli <i>Articoli</i>.</li>
+    </ul>
+    <p>Un articolo vendibile senza prezzo nel listino dell'evento compare nella finestra degli ordini con prezzo zero.</p>
+    <h2>Duplicare un listino</h2>
+    <p><i>Duplica</i> crea un nuovo listino con tutti i prezzi di quello corrente: &egrave; il modo pi&ugrave; veloce per
+    preparare il listino di un nuovo evento e poi cambiare solo i prezzi che servono.</p>
+    <h2>Cancellazione</h2>
+    <p>Prima di cancellare un listino il programma elenca gli eventi che lo usano: dopo la cancellazione restano senza
+    listino, e nella finestra degli ordini i loro prezzi diventano zero.</p>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Order print settings</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Order print settings</h1>
+    <p>When an order is saved the program prints its copies: the customer copy, the cover copy and one copy for each
+    department with items in the order. This form says, for each computer, how and where each copy is printed.</p>
+    <p><img src="img/order_print_settings.png" /></p>
+    <ul>
+      <li><i>Computer name</i>: the computer the setting is for; adding a row proposes the current one.</li>
+      <li><i>Print type</i>: <i>Customer</i>, <i>Cover</i> or <i>Department</i>.</li>
+      <li><i>Department</i>: for the <i>Department</i> type only, the department of the copy; empty for the other types.</li>
+      <li><i>Print copy</i>: whether the copy is printed.</li>
+      <li><i>Print method</i>: <i>Driver</i> (a printer of the operating system) or <i>ESC/POS</i> (a thermal printer driven
+      directly, see the <i>ESC/POS printers</i> form).</li>
+      <li><i>Copies</i>: how many copies to print.</li>
+      <li><i>Driver report</i> and <i>Driver printer</i>: the report and the printer used with the <i>Driver</i> method.</li>
+      <li><i>Esc/Pos report</i> and <i>Esc/Pos printer</i>: the report and the printer used with the <i>ESC/POS</i> method.</li>
+    </ul>
+    <p>Each computer has one row for each print type and, for department copies, for each department. Each row can hold
+    the parameters of both methods: when a printer breaks, changing the <i>Print method</i> switches to the other one
+    with nothing to type again.</p>
+    <p>With no printer the copy goes to the preview. The <i>Order print copy</i> options of the <i>Settings</i> turn
+    each copy type on or off for all the computers.</p>
+    <h2>Copying the settings</h2>
+    <p><i>Copy settings</i> copies all the rows of a computer (<i>Copy from</i>) to a new computer (<i>to</i>): it is the
+    quickest way to prepare a new cash desk like another one. When the target computer already has a setting of the same type
+    and department, nothing is copied.</p>
+  </body>
+</html>

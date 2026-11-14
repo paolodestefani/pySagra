@@ -1,0 +1,34 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Seat map</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Seat map</h1>
+    <p>The seat map holds the tables of the hall and their position. When the <i>Use table list</i> option of the
+    <i>Settings</i> is on, in the order entry window the table is chosen with a click on the map instead of typing it.</p>
+    <p><img src="img/seat_map.png" /></p>
+    <h2>The tables</h2>
+    <ul>
+      <li><i>Table code</i>: the name of the table, the one written in the order. Two tables can not have the same code.</li>
+      <li><i>Row</i> and <i>Column</i>: the position of the table in the map. Two tables can not take the same position.</li>
+      <li><i>Text color</i> and <i>Background color</i>: the colors of the table button.</li>
+      <li><i>Unavailable</i>: the table appears in the map but can not be chosen, for example because it is reserved.</li>
+      <li><i>Obsolete</i>: the table is no longer used and does not appear in the map.</li>
+    </ul>
+    <h2>Generating the tables</h2>
+    <p><i>Generate table numbers</i> creates a whole block of tables at once:</p>
+    <ul>
+      <li><i>Start row</i>, <i>Rows</i> and <i>Columns</i>: where the block starts and how big it is.</li>
+      <li><i>Table code</i>: the code is made of <i>Prefix</i>, row number and column number (<i>row + column</i>) or the
+      other way round (<i>column + row</i>), and <i>Suffix</i>. <i>Row padding</i> and <i>Column padding</i> add zeros in front
+      of the numbers, for example 01 instead of 1.</li>
+      <li><i>Button color</i>: the colors of the generated tables. With <i>Change background color on change row/column</i>
+      every row, or column, takes one of the ten colored buttons, which can be changed with a click.</li>
+    </ul>
+    <p>The generated tables are added to the existing ones and must be saved. <i>Delete All</i> deletes all the tables of the company.</p>
+    <h2>Geometry and preview</h2>
+    <p><i>Base geometry</i> sets rows, columns and spacing of the map in the order entry window; <i>Minimum size</i>
+    is the size of the empty cells in the preview. <i>Preview</i> shows the map as it will look and saves the geometry;
+    <i>Edit</i> goes back to the table list.</p>
+  </body>
+</html>

@@ -108,7 +108,7 @@ class EscposPrinterForm(FormViewManager[Ui_GenericFormViewWidget]):
         model = EscposPrinterModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/escpos_printer.html"
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

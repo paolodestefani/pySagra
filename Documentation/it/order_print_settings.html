@@ -1,0 +1,31 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Impostazione stampa ordini</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Impostazione stampa ordini</h1>
+    <p>Quando si salva un ordine il programma stampa le sue copie: la copia per il cliente, la copia coperti e una copia
+    per ogni reparto che ha articoli nell'ordine. Questa scheda dice, per ogni computer, come e dove stampare ciascuna copia.</p>
+    <p><img src="img/order_print_settings.png" /></p>
+    <ul>
+      <li><i>Nome computer</i>: il computer a cui vale l'impostazione; quando si aggiunge una riga viene proposto quello corrente.</li>
+      <li><i>Tipo stampa</i>: <i>Cliente</i>, <i>Coperti</i> o <i>Reparto</i>.</li>
+      <li><i>Reparto</i>: solo per il tipo <i>Reparto</i>, il reparto della copia; per gli altri tipi resta vuoto.</li>
+      <li><i>Stampa copia</i>: se la copia va stampata.</li>
+      <li><i>Metodo di stampa</i>: <i>Driver</i> (una stampante del sistema operativo) o <i>ESC/POS</i> (una stampante
+      termica comandata direttamente, vedi la scheda <i>Stampanti ESC/POS</i>).</li>
+      <li><i>Copie</i>: quante copie stampare.</li>
+      <li><i>Report driver</i> e <i>Stampante driver</i>: il report e la stampante usati con il metodo <i>Driver</i>.</li>
+      <li><i>Report Esc/Pos</i> e <i>Stampanti Esc/Pos</i>: il report e la stampante usati con il metodo <i>ESC/POS</i>.</li>
+    </ul>
+    <p>Ogni computer ha una sola riga per tipo di stampa e, per le copie reparto, per reparto. Ogni riga pu&ograve; avere
+    i parametri di tutti e due i metodi: se una stampante si guasta, basta cambiare il <i>Metodo di stampa</i> per
+    passare all'altra senza riscrivere nulla.</p>
+    <p>Senza stampante la copia va in anteprima. Le opzioni di <i>Copia di stampa dell'ordine</i> delle <i>Impostazioni</i>
+    accendono o spengono ciascun tipo di copia per tutti i computer.</p>
+    <h2>Copiare le impostazioni</h2>
+    <p>Con <i>Copia impostazioni</i> si copiano tutte le righe di un computer (<i>Copia da</i>) su un computer nuovo
+    (<i>a</i>): &egrave; il modo pi&ugrave; veloce per preparare una nuova cassa uguale a un'altra. Se il computer di destinazione
+    ha gi&agrave; un'impostazione dello stesso tipo e reparto, non viene copiato nulla.</p>
+  </body>
+</html>

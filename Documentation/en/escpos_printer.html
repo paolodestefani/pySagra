@@ -1,0 +1,34 @@
+<html lang="en">
+  <head>
+    <title>pySagra - ESC/POS printers</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>ESC/POS printers</h1>
+    <p>ESC/POS printers are the thermal receipt printers, that the program drives directly, without the driver of the
+    operating system. They are connected by USB or by network; this form describes each printer, which is then chosen
+    in the <i>Order print settings</i> form.</p>
+    <p><img src="img/escpos_printer.png" /></p>
+    <ul>
+      <li><i>Computer name</i>: the computer the USB printer is connected to; the current one is proposed.
+      A network printer does not depend on the computer.</li>
+      <li><i>Printer name</i>: the name used to choose the printer in the print settings. It can not be the same
+      as the one of another printer.</li>
+      <li><i>Printer type</i>: <i>USB</i> or <i>Network</i>.</li>
+    </ul>
+    <p>For a network printer:</p>
+    <ul>
+      <li><i>Host address</i>: the IP address of the printer.</li>
+      <li><i>Port</i>: usually 9100.</li>
+      <li><i>Connection timeout</i>: how many seconds to wait for the printer before giving an error.</li>
+    </ul>
+    <p>For a USB printer:</p>
+    <ul>
+      <li><i>Id Vendor</i> and <i>Id Product</i>: the two numbers that identify the printer model; they are in the manual
+      or in the system information about USB devices.</li>
+      <li><i>USB timeout</i>, <i>Input endpoint</i> and <i>Output endpoint</i>: parameters of the USB communication;
+      the proposed values suit most printers.</li>
+    </ul>
+    <p>Deleting a printer does not delete the print settings that use it: they stay with no printer, and that copy
+    goes to the preview until another printer is chosen.</p>
+  </body>
+</html>

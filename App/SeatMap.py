@@ -106,7 +106,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         model = SeatMapModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/seat_map.html"
         self.reloadConfirmation = False
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST

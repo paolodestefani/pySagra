@@ -119,7 +119,7 @@ class OrderPrintSettingsForm(FormViewManager[Ui_OrderPrintSettingsWidget]):
         model = OrderPrintSettingsModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/order_print_settings.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

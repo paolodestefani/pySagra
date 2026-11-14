@@ -1,0 +1,27 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Events</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Events</h1>
+    <p>An event is a festival or a show with its dates. Every order belongs to the running event: the order entry
+    window works only when an event includes the date and time of now.</p>
+    <p><img src="img/event.png" /></p>
+    <ul>
+      <li><i>Event description</i>: the name of the event, required.</li>
+      <li><i>Start date</i> and <i>End date</i>: the dates of the event, with the time. The end can not be before the start,
+      and the dates can not overlap the ones of another event. A new event proposes now as start and seven days later,
+      at 23:59, as end. When the event already has orders its dates can not be changed any more.</li>
+      <li><i>Price list</i>: the price list with the prices of the event, see the <i>Price lists</i> form.</li>
+      <li><i>Event image</i>: a PNG image, 640x480 pixels at most (a bigger one is resized). It is the background of the
+      main window during the event and it can be used in the reports. <i>Upload...</i>, <i>Download...</i> and <i>Delete</i>
+      load it from a file, save it to a file and remove it.</li>
+    </ul>
+    <p>In the order reports and statistics the orders are split by event and, within the event, by day and day part:
+    lunch goes from 8:00 to the dinner start set in the <i>Settings</i>; dinner from that hour to 8:00 of the day after.</p>
+    <h2>Deleting</h2>
+    <p>Deleting an event deletes all its data too: the orders with ordered/delivered and numbering, and the inventory.
+    When the event has orders or inventory, the program asks a second time and lists what will be lost. There is no way
+    to recover them, but from a backup of the database.</p>
+  </body>
+</html>

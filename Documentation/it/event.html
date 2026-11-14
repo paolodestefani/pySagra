@@ -1,0 +1,28 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Eventi</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Eventi</h1>
+    <p>Un evento &egrave; una sagra o una manifestazione con le sue date. Ogni ordine appartiene all'evento in corso:
+    nella finestra degli ordini si pu&ograve; lavorare solo se c'&egrave; un evento che comprende la data e l'ora di oggi.</p>
+    <p><img src="img/event.png" /></p>
+    <ul>
+      <li><i>Descrizione dell'evento</i>: il nome dell'evento, obbligatorio.</li>
+      <li><i>Data inizio</i> e <i>Data fine</i>: le date dell'evento, con l'ora. La fine non pu&ograve; essere prima dell'inizio,
+      e le date non possono sovrapporsi a quelle di un altro evento. Un evento nuovo propone come inizio adesso e come fine
+      sette giorni dopo, alle 23:59. Quando l'evento ha gi&agrave; degli ordini le date non si possono pi&ugrave; cambiare.</li>
+      <li><i>Listino</i>: il listino con i prezzi dell'evento, vedi la scheda <i>Listini</i>.</li>
+      <li><i>Immagine dell'evento</i>: un'immagine PNG, al massimo 640x480 pixel (una pi&ugrave; grande viene ridotta).
+      Compare come sfondo della finestra principale durante l'evento e si pu&ograve; usare nei report.
+      <i>Carica...</i>, <i>Scarica...</i> e <i>Cancella</i> la caricano da un file, la salvano su un file e la tolgono.</li>
+    </ul>
+    <p>Nei report degli ordini e nelle statistiche gli ordini sono divisi per evento e, dentro l'evento, per giorno e
+    turno: il pranzo va dalle 8:00 all'ora di inizio della cena, scelta nelle <i>Impostazioni</i>; la cena da quell'ora
+    alle 8:00 del giorno dopo.</p>
+    <h2>Cancellazione</h2>
+    <p>Cancellare un evento elimina anche tutti i suoi dati: gli ordini con il consegnato e la numerazione, e l'inventario.
+    Se l'evento ha ordini o inventario, il programma chiede una seconda conferma ed elenca cosa verr&agrave; perso.
+    Non c'&egrave; modo di recuperarli, se non da una copia di sicurezza del database.</p>
+  </body>
+</html>

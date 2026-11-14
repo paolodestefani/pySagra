@@ -115,7 +115,7 @@ class PriceListForm(FormIndexManager):
         self.setModel(model, idxModel)
         self.addDetailRelation(priModel, pli.ID, prc.ID_PL)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/price_list.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

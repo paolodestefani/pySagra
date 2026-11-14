@@ -1,0 +1,24 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Price lists</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Price lists</h1>
+    <p>A price list is a list of item prices. There can be several price lists, for example one for the summer festival
+    and one for the autumn one: every event uses the price list chosen in the <i>Events</i> form, and the order entry
+    window uses the prices of that list.</p>
+    <p><img src="img/price_list.png" /></p>
+    <ul>
+      <li><i>Price list description</i>: the name of the price list, required.</li>
+      <li><i>Price list prices</i>: the items and their price. An item can appear only once in each price list.
+      The prices can be seen and changed in the <i>Prices</i> tab of the <i>Items</i> too.</li>
+    </ul>
+    <p>A salable item with no price in the price list of the event appears in the order entry window with price zero.</p>
+    <h2>Duplicating a price list</h2>
+    <p><i>Duplicate</i> creates a new price list with all the prices of the current one: it is the quickest way to prepare
+    the price list of a new event and then change only the prices that need it.</p>
+    <h2>Deleting</h2>
+    <p>Before deleting a price list the program lists the events that use it: after the delete they have no price list,
+    and in the order entry window their prices become zero.</p>
+  </body>
+</html>

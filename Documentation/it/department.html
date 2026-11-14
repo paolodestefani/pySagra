@@ -1,0 +1,27 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Reparti</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Reparti</h1>
+    <p>I reparti sono le parti dell'organizzazione che preparano e consegnano gli articoli:
+    cucina, griglia, bar, pizzeria e cos&igrave; via. Ogni articolo appartiene a un reparto.</p>
+    <p><img src="img/department.png" /></p>
+    <ul>
+      <li><i>Descrizione reparto</i>: il nome del reparto. Non pu&ograve; essere uguale a quello di un altro reparto.
+      &Egrave; il nome della scheda nella finestra degli ordini e compare sulla copia reparto.</li>
+      <li><i>Ordinamento</i>: l'ordine dei reparti, per le schede della finestra degli ordini e per le stampe.</li>
+      <li><i>Menu</i>: il reparto raccoglie i menu. Nella finestra degli ordini ha la sua scheda, ma non ha
+      una copia reparto: quando l'ordine viene salvato, ogni menu viene scomposto nei suoi articoli,
+      che vanno alle copie dei loro reparti.</li>
+      <li><i>Asporto</i>: il reparto prepara anche per l'asporto. In un ordine da asporto sono attive solo
+      le schede dei reparti con questa spunta.</li>
+      <li><i>Obsoleto</i>: il reparto non si usa pi&ugrave; e non compare nella finestra degli ordini e negli elenchi.</li>
+    </ul>
+    <p>Per ogni reparto, nella scheda <i>Impostazione stampa ordini</i> si sceglie su quale stampante
+    e con quale report esce la copia reparto di ogni computer.</p>
+    <h2>Cancellazione</h2>
+    <p>Un reparto non si pu&ograve; cancellare se ha articoli o se &egrave; usato negli ordini: il programma lo
+    segnala con un messaggio. In questi casi conviene spuntare <i>Obsoleto</i>.</p>
+  </body>
+</html>

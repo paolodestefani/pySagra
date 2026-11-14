@@ -104,7 +104,7 @@ class EventForm(FormIndexManager):
         idxModel = EventIndexModel(self)
         self.setModel(model, idxModel)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/event.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT
