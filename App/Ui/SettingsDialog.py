@@ -28,7 +28,7 @@ class Ui_SettingsDialog(object):
         if not SettingsDialog.objectName():
             SettingsDialog.setObjectName(u"SettingsDialog")
         SettingsDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        SettingsDialog.resize(804, 620)
+        SettingsDialog.resize(838, 670)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -791,24 +791,24 @@ class Ui_SettingsDialog(object):
 
         self.groupBox_6 = QGroupBox(self.tab3)
         self.groupBox_6.setObjectName(u"groupBox_6")
-        self.verticalLayout_6 = QVBoxLayout(self.groupBox_6)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayout_14 = QVBoxLayout(self.groupBox_6)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.verticalLayout_12 = QVBoxLayout()
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.dayPartSlider = DayPartSlider(self.groupBox_6)
         self.dayPartSlider.setObjectName(u"dayPartSlider")
 
-        self.verticalLayout_6.addWidget(self.dayPartSlider)
+        self.horizontalLayout_4.addWidget(self.dayPartSlider)
 
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalSpacer_11 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_11)
-
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.label_6 = QLabel(self.groupBox_6)
         self.label_6.setObjectName(u"label_6")
         self.label_6.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
-        self.horizontalLayout_4.addWidget(self.label_6)
+        self.verticalLayout_6.addWidget(self.label_6)
 
         self.spinBoxDinner = QSpinBox(self.groupBox_6)
         self.spinBoxDinner.setObjectName(u"spinBoxDinner")
@@ -817,14 +817,21 @@ class Ui_SettingsDialog(object):
         self.spinBoxDinner.setMaximum(23)
         self.spinBoxDinner.setValue(18)
 
-        self.horizontalLayout_4.addWidget(self.spinBoxDinner)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
+        self.verticalLayout_6.addWidget(self.spinBoxDinner)
 
 
-        self.verticalLayout_6.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_4.addLayout(self.verticalLayout_6)
+
+        self.horizontalLayout_4.setStretch(0, 1)
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_4)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_12.addItem(self.verticalSpacer)
+
+
+        self.verticalLayout_14.addLayout(self.verticalLayout_12)
 
 
         self.gridLayout_9.addWidget(self.groupBox_6, 0, 0, 2, 1)
@@ -882,6 +889,10 @@ class Ui_SettingsDialog(object):
         self.spinBoxMaxCovers.setValue(0)
 
         self.horizontalLayout_5.addWidget(self.spinBoxMaxCovers)
+
+        self.horizontalSpacer_11 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_11)
 
 
         self.verticalLayout_8.addLayout(self.horizontalLayout_5)

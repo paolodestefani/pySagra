@@ -294,6 +294,7 @@ class ItemForm(FormIndexManager):
         self.ui.pushButtonCopyVariants.clicked.connect(self.copyVariants)
         self.ui.lineEditDescription.editingFinished.connect(self.copyDescription)
         self.ui.checkBoxSalable.toggled.connect(self.salableToggled)
+        self.ui.checkBoxSalable.clicked.connect(self.salableClicked)
         self.ui.checkBoxWebAvailable.toggled.connect(self.ui.spinBoxWebSorting.setEnabled)
         # set colors
         self.ui.comboBoxNormalTextColor.setColorList(get_colors())
@@ -351,6 +352,18 @@ class ItemForm(FormIndexManager):
             self.ui.spinBoxRow.setValue(0)
             self.ui.spinBoxColumn.setValue(0)
             self.ui.spinBoxSorting.setValue(0)
+
+    def salableClicked(self, checked: bool) -> None:
+        """Button colors only for salable items, set by the user (clicked, not toggled:
+        moving to another item must not change it). In the model, not only in the
+        combo boxes: the mapper fills the widgets again from the model"""
+        row = self.mapper.currentIndex()
+        for column, key in ((itm.TXT_COLOR, 'normal_text_color'), (itm.BCK_COLOR, 'normal_background_color')):
+            index = self.model.index(row, column)
+            if not checked:
+                self.model.setData(index, None)
+            elif index.data() is None:   # colors of the settings, the ones set by the user stay
+                self.model.setData(index, self.setting[key])
 
     @scriptMethod
     def copyVariants(self, checked: bool = False) -> None:
@@ -410,15 +423,13 @@ class ItemForm(FormIndexManager):
     @scriptMethod
     def new(self):
         "Set focus on item descriptionon new record"
-        rows = self.model.rowCount()
-        super().new()
-        if self.model.rowCount() == rows:   # no row added: no right to write or insert failed
+        # the index form replaces its only row with the new one, the row count doesn't
+        # change: no right to write is checked first, a failed insert clears _new
+        if not self.write_perm or not self.model.isEditable:
             return
-        # default colors in the model, not only in the combo boxes: the mapper fills the
-        # widgets again from the model and would show the first color of the list
-        row = self.mapper.currentIndex()
-        self.model.setData(self.model.index(row, itm.TXT_COLOR), self.setting['normal_text_color'])
-        self.model.setData(self.model.index(row, itm.BCK_COLOR), self.setting['normal_background_color'])
+        super().new()
+        if not self._new:
+            return
         self.ui.lineEditDescription.setFocus()
 
     @scriptMethod

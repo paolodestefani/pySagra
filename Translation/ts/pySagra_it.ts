@@ -1905,22 +1905,22 @@ Proseguire ugualmente ?</translation>
         <translation>L&apos;immagine selezionata è troppo grande, è stata automaticamente ridimensionata alla dimesione massima permessa di 640x480 pixel</translation>
     </message>
     <message>
-        <location filename="../../App/Event.py" line="266"/>
+        <location filename="../../App/Event.py" line="269"/>
         <source>all the orders of the event, with ordered/delivered and numbering</source>
         <translation>tutti gli ordini dell&apos;evento, con ordinato/consegnato e numerazioni</translation>
     </message>
     <message>
-        <location filename="../../App/Event.py" line="268"/>
+        <location filename="../../App/Event.py" line="271"/>
         <source>the stock inventory data of the event</source>
         <translation>i dati di inventario dell&apos;evento</translation>
     </message>
     <message>
-        <location filename="../../App/Event.py" line="270"/>
+        <location filename="../../App/Event.py" line="273"/>
         <source>Deleting the event also deletes, without any possible recovery:</source>
         <translation>Cancellare l&apos;evento elimina anche, senza possibilità di ripristino:</translation>
     </message>
     <message>
-        <location filename="../../App/Event.py" line="271"/>
+        <location filename="../../App/Event.py" line="274"/>
         <source>Delete the event anyway ?</source>
         <translation>Cancello comunque l&apos;evento ?</translation>
     </message>
@@ -1940,12 +1940,12 @@ Proseguire ugualmente ?</translation>
         <translation>Errore in salvataggio dell&apos;immagine</translation>
     </message>
     <message>
-        <location filename="../../App/Event.py" line="243"/>
+        <location filename="../../App/Event.py" line="246"/>
         <source>The description field is mandatory</source>
         <translation>Il campo descrizione è obbligatorio</translation>
     </message>
     <message>
-        <location filename="../../App/Event.py" line="254"/>
+        <location filename="../../App/Event.py" line="257"/>
         <source>Are you sure you want to delete this event ?</source>
         <translation>Sei sicuro di voler cancellare questo evento ?</translation>
     </message>
@@ -2332,53 +2332,53 @@ Proseguire ugualmente ?</translation>
         <translation>Predefinito</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="314"/>
         <location filename="../../App/Item.py" line="315"/>
+        <location filename="../../App/Item.py" line="316"/>
         <source>The item is used in orders, it can not be deleted</source>
         <translation>L&apos;articolo è usato negli ordini, non può essere cancellato</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="316"/>
+        <location filename="../../App/Item.py" line="317"/>
         <source>The item has stock movements, it can not be deleted</source>
         <translation>L&apos;articolo è presente in inventario, non può essere cancellato</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="317"/>
+        <location filename="../../App/Item.py" line="318"/>
         <source>The item is a component of a kit or menu, it can not be deleted</source>
         <translation>L&apos;articolo è componente di un kit o menu, non può essere cancellato</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="318"/>
+        <location filename="../../App/Item.py" line="319"/>
         <source>An item with this description already exists</source>
         <translation>Un articolo con la stessa descrizione esiste già</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="319"/>
+        <location filename="../../App/Item.py" line="320"/>
         <source>An item with this customer description already exists</source>
         <translation>Un articolo con la stessa descrizione cliente esiste già</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="320"/>
+        <location filename="../../App/Item.py" line="321"/>
         <source>Another salable item of the department is already in this row and column</source>
         <translation>Un altro articolo vendibile del reparto è già presente in questa riga e colonna</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="428"/>
+        <location filename="../../App/Item.py" line="439"/>
         <source>The description field is mandatory</source>
         <translation>Il campo descrizione è obbligatorio</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="429"/>
+        <location filename="../../App/Item.py" line="440"/>
         <source>The customer description field is mandatory</source>
         <translation>Il campo descrizione cliente è obbligatorio</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="437"/>
+        <location filename="../../App/Item.py" line="448"/>
         <source>The department field is mandatory</source>
         <translation>Il campo reparto è obbligatorio</translation>
     </message>
     <message>
-        <location filename="../../App/Item.py" line="446"/>
+        <location filename="../../App/Item.py" line="457"/>
         <source>Delete this item ?</source>
         <translation>Cancello questo articolo ?</translation>
     </message>
@@ -2868,12 +2868,12 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Event.py" line="90"/>
         <location filename="../../App/Event.py" line="169"/>
         <location filename="../../App/Event.py" line="175"/>
-        <location filename="../../App/Event.py" line="242"/>
+        <location filename="../../App/Event.py" line="245"/>
         <location filename="../../App/Inventory.py" line="90"/>
         <location filename="../../App/Inventory.py" line="184"/>
         <location filename="../../App/Item.py" line="183"/>
-        <location filename="../../App/Item.py" line="431"/>
-        <location filename="../../App/Item.py" line="436"/>
+        <location filename="../../App/Item.py" line="442"/>
+        <location filename="../../App/Item.py" line="447"/>
         <location filename="../../App/OrderArchive.py" line="191"/>
         <location filename="../../App/OrderedDelivered.py" line="83"/>
         <location filename="../../App/OrderedDelivered.py" line="160"/>
@@ -2894,7 +2894,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderProgress.py" line="127"/>
         <location filename="../../App/OrderProgress.py" line="245"/>
         <location filename="../../App/PriceList.py" line="99"/>
-        <location filename="../../App/PriceList.py" line="161"/>
+        <location filename="../../App/PriceList.py" line="164"/>
         <location filename="../../App/SalesSummary.py" line="99"/>
         <location filename="../../App/SalesSummary.py" line="156"/>
         <location filename="../../App/SalesSummary.py" line="162"/>
@@ -3010,9 +3010,9 @@ Proseguire ugualmente ?</translation>
         <translation>Informazione</translation>
     </message>
     <message>
-        <location filename="../../App/Event.py" line="256"/>
-        <location filename="../../App/Event.py" line="273"/>
-        <location filename="../../App/Item.py" line="448"/>
+        <location filename="../../App/Event.py" line="259"/>
+        <location filename="../../App/Event.py" line="276"/>
+        <location filename="../../App/Item.py" line="459"/>
         <location filename="../../App/OrderArchive.py" line="329"/>
         <location filename="../../App/OrderEntry.py" line="498"/>
         <location filename="../../App/OrderEntry.py" line="1263"/>
@@ -3026,7 +3026,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderProgress.py" line="320"/>
         <location filename="../../App/OrderProgress.py" line="344"/>
         <location filename="../../App/OrderProgress.py" line="362"/>
-        <location filename="../../App/PriceList.py" line="180"/>
+        <location filename="../../App/PriceList.py" line="183"/>
         <location filename="../../App/SeatMap.py" line="183"/>
         <location filename="../../App/SeatMap.py" line="197"/>
         <location filename="../../App/System/Adaptation.py" line="145"/>
@@ -6111,38 +6111,38 @@ Devo procedere comunque?</translation>
         <translation>L&apos;articolo è già presente in quessto listino</translation>
     </message>
     <message>
-        <location filename="../../App/PriceList.py" line="162"/>
+        <location filename="../../App/PriceList.py" line="165"/>
         <source>The description field is mandatory</source>
         <translation>Il campo descrizione è obbligatorio</translation>
     </message>
     <message>
-        <location filename="../../App/PriceList.py" line="172"/>
+        <location filename="../../App/PriceList.py" line="175"/>
         <source>Are you sure you want to delete this price list ?</source>
         <translation>Sei sicuro di voler cancellare questo listino ?</translation>
     </message>
     <message>
-        <location filename="../../App/PriceList.py" line="178"/>
+        <location filename="../../App/PriceList.py" line="181"/>
         <source>These events use it and will have no price list:</source>
         <translation>Qusto eventi lo usano e non avranno un prezzo di listino:</translation>
     </message>
     <message>
-        <location filename="../../App/PriceList.py" line="218"/>
-        <location filename="../../App/PriceList.py" line="227"/>
+        <location filename="../../App/PriceList.py" line="221"/>
+        <location filename="../../App/PriceList.py" line="230"/>
         <source>Duplicate price list</source>
         <translation>Duplica listino</translation>
     </message>
     <message>
-        <location filename="../../App/PriceList.py" line="219"/>
+        <location filename="../../App/PriceList.py" line="222"/>
         <source>Name of the new price list</source>
         <translation>Nome del nuovo listino</translation>
     </message>
     <message>
-        <location filename="../../App/PriceList.py" line="230"/>
+        <location filename="../../App/PriceList.py" line="233"/>
         <source>Price list duplicated</source>
         <translation>Il listino è stato duplicato</translation>
     </message>
     <message>
-        <location filename="../../App/PriceList.py" line="231"/>
+        <location filename="../../App/PriceList.py" line="234"/>
         <source>The price list has been duplicated successfully</source>
         <translation>Il listino è stato duplicato correttamente</translation>
     </message>
@@ -7465,97 +7465,97 @@ Devo procedere comunque?</translation>
         <translation>Elettronico</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1303"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1298"/>
         <source>Form parameters</source>
         <translation>Parametri della form</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1309"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1304"/>
         <source>Use table list</source>
         <translation>Utilizza la lista dei tavoli</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1316"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1311"/>
         <source>Always show inventory</source>
         <translation>Visualizza sempre l&apos;inventario</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1323"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1318"/>
         <source>Show variants automatically</source>
         <translation>Mostra le varianti automaticamente</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1330"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1325"/>
         <source>Mandatory table number</source>
         <translation>Numero del tavolo obbligatorio</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1337"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1332"/>
         <source>Mandatory name for takeaway</source>
         <translation>Nome obbligatorio per l&apos;asporto</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1346"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1341"/>
         <source>Max covers value</source>
         <translation>Valore massimo di coperti</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1379"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1387"/>
         <source>Order number based on</source>
         <translation>Numero dell&apos;ordine basato su</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1387"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1395"/>
         <source>Event</source>
         <translation>Evento</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1397"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1405"/>
         <source>Day</source>
         <translation>Giorno</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1404"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1412"/>
         <source>Day part</source>
         <translation>Parte del giorno</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1413"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1421"/>
         <source>Order number will restart from 1 on change Event/Day/Day part</source>
         <translation>Il numero dell&apos;ordine riparte da 1 al cambio di Evento/Giorno/Parte del giorno</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1426"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1434"/>
         <source>Order print copy</source>
         <translation>Copia di stampa dell&apos;ordine</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1475"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1483"/>
         <source>Other parmeters</source>
         <translation>Altri parametri</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1481"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1489"/>
         <source>Menu description on menu items</source>
         <translation>Descrizione menu su elementi del menu</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1491"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1499"/>
         <source>Window inactivity</source>
         <translation>Inattività della finestra</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1499"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1507"/>
         <source>Check inactivity after</source>
         <translation>Controlla inattività dopo</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1522"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1530"/>
         <source>Seconds</source>
         <translation>Secondi</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1434"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1442"/>
         <source>Customer</source>
         <translation>Cliente</translation>
     </message>
@@ -7565,22 +7565,22 @@ Devo procedere comunque?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1252"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1243"/>
         <source>Dinner from</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1265"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1256"/>
         <source>:00</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1444"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1452"/>
         <source>Department</source>
         <translation>Reparto</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/SettingsDialog.ui" line="1454"/>
+        <location filename="../../App/Ui/SettingsDialog.ui" line="1462"/>
         <source>Cover</source>
         <translation>Coperti</translation>
     </message>

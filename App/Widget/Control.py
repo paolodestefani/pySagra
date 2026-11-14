@@ -513,8 +513,8 @@ class ColorComboBox(QComboBox):
         """
         if data:
             self.setCurrentColor(data)
-        else:
-            self.setCurrentIndex(0)
+        else:   # no color: empty combo box, as the color delegate does
+            self.setCurrentIndex(-1)
 
     # this property is used by the mapper to get/set the color as a hex string, 
     # while the combo box internally works with QColor objects

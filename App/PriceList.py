@@ -147,9 +147,12 @@ class PriceListForm(FormIndexManager):
 
     @scriptMethod
     def new(self):
-        rows = self.model.rowCount()
+        # the index form replaces its only row with the new one, the row count doesn't
+        # change: no right to write is checked first, a failed insert clears _new
+        if not self.write_perm or not self.model.isEditable:
+            return
         super().new()
-        if self.model.rowCount() == rows:   # no row added: no right to write or insert failed
+        if not self._new:
             return
         self.ui.lineEditDescription.setFocus()
 
