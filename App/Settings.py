@@ -43,7 +43,6 @@ from PySide6.QtWidgets import QDialogButtonBox
 # application modules
 from App import session
 from App.Database.Settings import Settings
-from App.Database.Lookup import stock_unload_report_lookup
 from App.Ui.SettingsDialog import Ui_SettingsDialog
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
@@ -164,12 +163,6 @@ class SettingsDialog(QDialog):
         self.ui.spinBoxInactivityTime.setEnabled(self.setting['check_inactivity'])
         self.ui.labelInactivity.setEnabled(self.setting['check_inactivity'])
         self.ui.checkBoxMenuItemDescription.setChecked(self.setting['menu_description_on_menu_items'])
-        self.ui.groupBoxAutomaticUpdate.setChecked(self.setting['ordered_delivered_automatic_update'])
-        self.ui.spinBoxAutomaticUpdateInterval.setValue(self.setting['ordered_delivered_update_interval'])
-        self.ui.groupBoxOrderedDeliveredReport.setChecked(self.setting['print_ordered_delivered_report'])
-        self.ui.spinBoxOrderedDeliveredCopies.setValue(self.setting['ordered_delivered_copies'] or 1)
-        self.ui.comboBoxOrderedDeliveredReport.setFunction(stock_unload_report_lookup)
-        self.ui.comboBoxOrderedDeliveredReport.setCurrentIndex(self.ui.comboBoxOrderedDeliveredReport.findData(self.setting['ordered_delivered_report']))
         # # items inventory
         self.ui.spinBoxInventoryWarningLevel.setDecimals(self.setting['quantity_decimal_places'])
         self.ui.spinBoxInventoryWarningLevel.setValue(self.setting['inventory_warning_stock_level'])
@@ -319,11 +312,6 @@ class SettingsDialog(QDialog):
         self.setting['check_inactivity'] = self.ui.checkBoxInactivity.isChecked()
         self.setting['inactivity_time'] = self.ui.spinBoxInactivityTime.value()
         self.setting['menu_description_on_menu_items'] = self.ui.checkBoxMenuItemDescription.isChecked()
-        self.setting['ordered_delivered_automatic_update'] = self.ui.groupBoxAutomaticUpdate.isChecked()
-        self.setting['ordered_delivered_update_interval'] = self.ui.spinBoxAutomaticUpdateInterval.value()
-        self.setting['print_ordered_delivered_report'] = self.ui.groupBoxOrderedDeliveredReport.isChecked()
-        self.setting['ordered_delivered_copies'] = self.ui.spinBoxOrderedDeliveredCopies.value() if self.ui.spinBoxOrderedDeliveredCopies.isEnabled() else None
-        self.setting['ordered_delivered_report'] = self.ui.comboBoxOrderedDeliveredReport.currentData() if self.ui.comboBoxOrderedDeliveredReport.isEnabled() else None
         self.setting['inventory_warning_stock_level'] = self.ui.spinBoxInventoryWarningLevel.value()
         self.setting['inventory_critical_stock_level'] = self.ui.spinBoxInventoryCriticalLevel.value()
         self.setting['quantity_decimal_places'] = self.ui.spinBoxQuantityDecimals.value()

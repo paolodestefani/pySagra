@@ -60,8 +60,8 @@ class MenuItemTreeModel(TreeModel):
         self.table = "system.menu_toolbar_item"
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal, str, date, datetime, None = no filter
-        self.columns = (("parent", _tr('Models', 'Menu'), False, 'str'),
-                        ("child", _tr('Models', 'User description'), False, 'str'),
+        self.columns = (("parent", _tr('Models', 'Parent'), False, 'str'),
+                        ("child", _tr('Models', 'Child'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
                         ("node_type", _tr('Models', 'Node type'), False, 'str'),
@@ -89,8 +89,8 @@ class ToolbarItemTreeModel(TreeModel):
         self.table = "system.menu_toolbar_item"
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal, str, date, datetime, None = no filter
-        self.columns = (("parent", _tr('Models', 'Menu'), False, 'str'),
-                        ("child", _tr('Models', 'User description'), False, 'str'),
+        self.columns = (("parent", _tr('Models', 'Parent'), False, 'str'),
+                        ("child", _tr('Models', 'Child'), False, 'str'),
                         ("description", _tr('Models', 'Description'), False, 'str'),
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
                         ("node_type", _tr('Models', 'Node type'), False, 'str'),
@@ -804,7 +804,7 @@ class DepartmentModel(TableModel):
                         ("sorting", _tr('Models', 'Sorting'), False, 'int'),
                         ("is_obsolete", _tr('Models', 'Obsolete'), False, 'bool'),
                         ("is_menu_container", _tr('Models', 'Menu'), False, 'bool'),
-                        ("is_for_takeaway", _tr('Models', 'For takeaway'), False, 'bool'),
+                        ("is_for_takeaway", _tr('Models', 'Takeaway'), False, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -864,7 +864,7 @@ class OrderPrintSettingsModel(TableModel):
         self.columns = (("order_print_settings_id", _tr('Models', 'ID'), True, 'int'),
                         ("hostname", _tr('Models', 'Computer name'), False, 'str'),
                         ("print_type", _tr('Models', 'Print type'), False, 'str'),
-                        ("department_id", _tr('Models', 'Department ID'), False, 'int'),
+                        ("department_id", _tr('Models', 'Department'), False, 'int'),
                         ("print_copy", _tr('Models', 'Print copy'), False, 'bool'),
                         ("print_method", _tr('Models', 'Print method'), False, 'str'),
                         ("number_of_copies", _tr('Models', 'Copies'), False, 'int'),
@@ -872,13 +872,6 @@ class OrderPrintSettingsModel(TableModel):
                         ("driver_printer", _tr('Models', 'Driver printer'), False, 'str'),
                         ("escpos_report", _tr('Models', 'Esc/Pos report'), False, 'str'),
                         ("escpos_printer", _tr('Models', 'Esc/Pos printer'), False, 'str'),
-                        #("print_cover_copy", _tr('Models', 'Print covers copy'), False, 'bool'),
-                        #("cover_print_method", _tr('Models', 'Covers print method'), False, 'str'),
-                        #("cover_copies", _tr('Models', 'Covers copies'), False, 'int'),
-                        #("cover_driver_report", _tr('Models', 'Covers driver report'), False, 'str'),
-                        #("cover_driver_printer", _tr('Models', 'Covers driver printer'), False, 'str'),
-                        #("cover_escpos_report", _tr('Models', 'Covers esc/pos report'), False, 'str'),
-                        #("cover_escpos_printer", _tr('Models', 'Covers esc/pos printer'), False, 'str'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),

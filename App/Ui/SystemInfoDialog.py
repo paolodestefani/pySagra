@@ -48,28 +48,49 @@ class Ui_SystemInfoDialog(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.labelCompany = QLabel(SystemInfoDialog)
-        self.labelCompany.setObjectName(u"labelCompany")
+        self.labelProfile = QLabel(SystemInfoDialog)
+        self.labelProfile.setObjectName(u"labelProfile")
         font = QFont()
         font.setBold(True)
+        self.labelProfile.setFont(font)
+
+        self.gridLayout.addWidget(self.labelProfile, 2, 2, 1, 1)
+
+        self.lineEditServer = QLineEdit(SystemInfoDialog)
+        self.lineEditServer.setObjectName(u"lineEditServer")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEditServer.sizePolicy().hasHeightForWidth())
+        self.lineEditServer.setSizePolicy(sizePolicy)
+        font1 = QFont()
+        font1.setBold(False)
+        self.lineEditServer.setFont(font1)
+        self.lineEditServer.setReadOnly(True)
+
+        self.gridLayout.addWidget(self.lineEditServer, 0, 1, 1, 1)
+
+        self.lineEditDatabase = QLineEdit(SystemInfoDialog)
+        self.lineEditDatabase.setObjectName(u"lineEditDatabase")
+        sizePolicy.setHeightForWidth(self.lineEditDatabase.sizePolicy().hasHeightForWidth())
+        self.lineEditDatabase.setSizePolicy(sizePolicy)
+        self.lineEditDatabase.setFont(font1)
+        self.lineEditDatabase.setReadOnly(True)
+
+        self.gridLayout.addWidget(self.lineEditDatabase, 0, 3, 1, 4)
+
+        self.lineEditCompany = QLineEdit(SystemInfoDialog)
+        self.lineEditCompany.setObjectName(u"lineEditCompany")
+        self.lineEditCompany.setFont(font1)
+        self.lineEditCompany.setReadOnly(True)
+
+        self.gridLayout.addWidget(self.lineEditCompany, 1, 1, 1, 6)
+
+        self.labelCompany = QLabel(SystemInfoDialog)
+        self.labelCompany.setObjectName(u"labelCompany")
         self.labelCompany.setFont(font)
 
         self.gridLayout.addWidget(self.labelCompany, 1, 0, 1, 1)
-
-        self.lineEditProfile = QLineEdit(SystemInfoDialog)
-        self.lineEditProfile.setObjectName(u"lineEditProfile")
-        font1 = QFont()
-        font1.setBold(False)
-        self.lineEditProfile.setFont(font1)
-        self.lineEditProfile.setReadOnly(True)
-
-        self.gridLayout.addWidget(self.lineEditProfile, 2, 3, 1, 1)
-
-        self.labelServer = QLabel(SystemInfoDialog)
-        self.labelServer.setObjectName(u"labelServer")
-        self.labelServer.setFont(font)
-
-        self.gridLayout.addWidget(self.labelServer, 0, 0, 1, 1)
 
         self.labelUser = QLabel(SystemInfoDialog)
         self.labelUser.setObjectName(u"labelUser")
@@ -77,19 +98,14 @@ class Ui_SystemInfoDialog(object):
 
         self.gridLayout.addWidget(self.labelUser, 2, 0, 1, 1)
 
-        self.lineEditDatabase = QLineEdit(SystemInfoDialog)
-        self.lineEditDatabase.setObjectName(u"lineEditDatabase")
-        self.lineEditDatabase.setFont(font1)
-        self.lineEditDatabase.setReadOnly(True)
+        self.lineEditProfile = QLineEdit(SystemInfoDialog)
+        self.lineEditProfile.setObjectName(u"lineEditProfile")
+        sizePolicy.setHeightForWidth(self.lineEditProfile.sizePolicy().hasHeightForWidth())
+        self.lineEditProfile.setSizePolicy(sizePolicy)
+        self.lineEditProfile.setFont(font1)
+        self.lineEditProfile.setReadOnly(True)
 
-        self.gridLayout.addWidget(self.lineEditDatabase, 0, 3, 1, 1)
-
-        self.lineEditUser = QLineEdit(SystemInfoDialog)
-        self.lineEditUser.setObjectName(u"lineEditUser")
-        self.lineEditUser.setFont(font1)
-        self.lineEditUser.setReadOnly(True)
-
-        self.gridLayout.addWidget(self.lineEditUser, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.lineEditProfile, 2, 3, 1, 1)
 
         self.labelDatabase = QLabel(SystemInfoDialog)
         self.labelDatabase.setObjectName(u"labelDatabase")
@@ -97,25 +113,33 @@ class Ui_SystemInfoDialog(object):
 
         self.gridLayout.addWidget(self.labelDatabase, 0, 2, 1, 1)
 
-        self.labelProfile = QLabel(SystemInfoDialog)
-        self.labelProfile.setObjectName(u"labelProfile")
-        self.labelProfile.setFont(font)
+        self.labelPID = QLabel(SystemInfoDialog)
+        self.labelPID.setObjectName(u"labelPID")
 
-        self.gridLayout.addWidget(self.labelProfile, 2, 2, 1, 1)
+        self.gridLayout.addWidget(self.labelPID, 2, 4, 1, 1)
 
-        self.lineEditServer = QLineEdit(SystemInfoDialog)
-        self.lineEditServer.setObjectName(u"lineEditServer")
-        self.lineEditServer.setFont(font1)
-        self.lineEditServer.setReadOnly(True)
+        self.lineEditPID = QLineEdit(SystemInfoDialog)
+        self.lineEditPID.setObjectName(u"lineEditPID")
+        sizePolicy.setHeightForWidth(self.lineEditPID.sizePolicy().hasHeightForWidth())
+        self.lineEditPID.setSizePolicy(sizePolicy)
+        self.lineEditPID.setReadOnly(True)
 
-        self.gridLayout.addWidget(self.lineEditServer, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.lineEditPID, 2, 5, 1, 1)
 
-        self.lineEditCompany = QLineEdit(SystemInfoDialog)
-        self.lineEditCompany.setObjectName(u"lineEditCompany")
-        self.lineEditCompany.setFont(font1)
-        self.lineEditCompany.setReadOnly(True)
+        self.lineEditUser = QLineEdit(SystemInfoDialog)
+        self.lineEditUser.setObjectName(u"lineEditUser")
+        sizePolicy.setHeightForWidth(self.lineEditUser.sizePolicy().hasHeightForWidth())
+        self.lineEditUser.setSizePolicy(sizePolicy)
+        self.lineEditUser.setFont(font1)
+        self.lineEditUser.setReadOnly(True)
 
-        self.gridLayout.addWidget(self.lineEditCompany, 1, 1, 1, 3)
+        self.gridLayout.addWidget(self.lineEditUser, 2, 1, 1, 1)
+
+        self.labelServer = QLabel(SystemInfoDialog)
+        self.labelServer.setObjectName(u"labelServer")
+        self.labelServer.setFont(font)
+
+        self.gridLayout.addWidget(self.labelServer, 0, 0, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout)
@@ -151,11 +175,12 @@ class Ui_SystemInfoDialog(object):
     def retranslateUi(self, SystemInfoDialog):
         SystemInfoDialog.setWindowTitle(QCoreApplication.translate("SystemInfoDialog", u"System Info", None))
         self.labelIcon.setText("")
-        self.labelCompany.setText(QCoreApplication.translate("SystemInfoDialog", u"Company", None))
-        self.labelServer.setText(QCoreApplication.translate("SystemInfoDialog", u"Server", None))
-        self.labelUser.setText(QCoreApplication.translate("SystemInfoDialog", u"User", None))
-        self.labelDatabase.setText(QCoreApplication.translate("SystemInfoDialog", u"Database", None))
         self.labelProfile.setText(QCoreApplication.translate("SystemInfoDialog", u"Profile", None))
         self.lineEditServer.setText("")
+        self.labelCompany.setText(QCoreApplication.translate("SystemInfoDialog", u"Company", None))
+        self.labelUser.setText(QCoreApplication.translate("SystemInfoDialog", u"User", None))
+        self.labelDatabase.setText(QCoreApplication.translate("SystemInfoDialog", u"Database", None))
+        self.labelPID.setText(QCoreApplication.translate("SystemInfoDialog", u"Client PID", None))
+        self.labelServer.setText(QCoreApplication.translate("SystemInfoDialog", u"Server", None))
     # retranslateUi
 

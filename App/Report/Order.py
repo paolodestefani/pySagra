@@ -33,7 +33,6 @@ from typing import Any
 from enum import StrEnum
 
 # PySide6
-from PySide6.QtCore import QDate
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 from PySide6.QtPrintSupport import QPrinterInfo
@@ -50,7 +49,6 @@ from App.Common.Escpos import escpos_printer
 from App.Database.Settings import Settings
 from App.Database.OrderPrintSettings import order_print_settings
 from App.Database.Report import get_report_xml
-from App.Database.Report import report_xml
 from App.Database.Report import report_query
 from App.Report import OrderReportException, NoOrderReportParameters, NotEnoughtReportParameters
 from App.Report.ReportEngine import Report
@@ -146,39 +144,3 @@ def printOrderReport(print_type: pc, department_id: int | None, order_id: int | 
                 dialog.paintRequested.connect(report_esc.print)
                 with no_wait_cursor_context():  # the order is printed inside a wait cursor context
                     dialog.exec()
-    
-
-def printStockUnloadReport(report_id: int,
-                           printer: str|None = None,
-                           copies: int = 1,
-                           event: int|None = None,
-                           day: QDate|None = None,
-                           daypart: str|None = None) -> None:
-    report = Report(report_xml(report_id))
-    # create condition
-    # report definition on condition fields must have a code for event, day, day_part and unload_control
-    where: list[tuple[str, Any]] = []
-    for i in report.conditions:
-        match report.conditions[i].code:
-            case 'event' if event is not None:
-                where.append((f"{i} = %s", event))
-            case 'event_date' if day is not None:
-                where.append((f"{i} = %s", day))
-            case 'day_part' if daypart is not None:
-                where.append((f"{i} = %s", daypart))
-            case _:
-                pass
-        if report.conditions[i].code == 'unload_control':
-            where.append((f"{i} IS %s", True))
-    report.data = report_query(report, where)
-    report.generate()
-    if printer:
-        prnt = QPrinter(QPrinterInfo.printerInfo(printer))
-        prnt.setCopyCount(copies)
-        report.print(prnt)
-    else:
-        # print preview
-        dialog = QPrintPreviewDialog(session['mainwin'])
-        # start
-        dialog.paintRequested.connect(report.print)
-        dialog.exec()

@@ -220,13 +220,6 @@ def order_escpos_report_lookup(null: bool = False) -> list[tuple]:
             cover_order_escpos_report_lookup(null) +
             ordered_delivered_escpos_report_lookup(null))
 
-def stock_unload_report_lookup(null: bool = False) -> list[tuple]:
-    "Get a list of all reports of stock unload class"
-    if null:
-        return [(None, None)] + [(c, d) for m, i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
-    else:
-        return [(c, d) for m, i, c, d in get_report_list('STOCK_UNLOAD', session['l10n'])]
-    
 
 def escpos_printer_lookup(null: bool = False) -> list[tuple]:
     "Get departments list"

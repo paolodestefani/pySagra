@@ -15,9 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDateTimeEdit, QHBoxLayout,
-    QHeaderView, QLabel, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QHBoxLayout, QHeaderView,
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 from App.Widget.View import EnhancedTableView
 
@@ -46,24 +45,6 @@ class Ui_OrderedDeliveredWidget(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
-        self.checkBoxAutomaticUpdate = QCheckBox(OrderedDeliveredWidget)
-        self.checkBoxAutomaticUpdate.setObjectName(u"checkBoxAutomaticUpdate")
-
-        self.horizontalLayout.addWidget(self.checkBoxAutomaticUpdate)
-
-        self.label = QLabel(OrderedDeliveredWidget)
-        self.label.setObjectName(u"label")
-
-        self.horizontalLayout.addWidget(self.label)
-
-        self.dateTimeEdit = QDateTimeEdit(OrderedDeliveredWidget)
-        self.dateTimeEdit.setObjectName(u"dateTimeEdit")
-        self.dateTimeEdit.setEnabled(False)
-        self.dateTimeEdit.setReadOnly(True)
-        self.dateTimeEdit.setCurrentSectionIndex(0)
-
-        self.horizontalLayout.addWidget(self.dateTimeEdit)
-
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
@@ -72,7 +53,6 @@ class Ui_OrderedDeliveredWidget(object):
 
 
         self.retranslateUi(OrderedDeliveredWidget)
-        self.checkBoxAutomaticUpdate.clicked["bool"].connect(self.dateTimeEdit.setEnabled)
 
         QMetaObject.connectSlotsByName(OrderedDeliveredWidget)
     # setupUi
@@ -80,8 +60,5 @@ class Ui_OrderedDeliveredWidget(object):
     def retranslateUi(self, OrderedDeliveredWidget):
         OrderedDeliveredWidget.setWindowTitle(QCoreApplication.translate("OrderedDeliveredWidget", u"Ordered delivered", None))
         self.checkBoxOnlyOrdered.setText(QCoreApplication.translate("OrderedDeliveredWidget", u"Only Ordered > 0", None))
-        self.checkBoxAutomaticUpdate.setText(QCoreApplication.translate("OrderedDeliveredWidget", u"Automatic update", None))
-        self.label.setText(QCoreApplication.translate("OrderedDeliveredWidget", u"Last update:", None))
-        self.dateTimeEdit.setDisplayFormat(QCoreApplication.translate("OrderedDeliveredWidget", u"MM/dd/yyyy HH:mm", None))
     # retranslateUi
 

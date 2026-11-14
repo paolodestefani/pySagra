@@ -187,6 +187,7 @@ class SystemInfoDialog(QDialog):
         self.ui.lineEditCompany.setText(f"{session['current_company']} {session['company_description']}")
         self.ui.lineEditUser.setText(session['user'])
         self.ui.lineEditProfile.setText(session['profile'])
+        self.ui.lineEditPID.setText(str(session['session_id']))
         text = f"<table>"
         for i in (('Application', APPNAME),
                   ('Version', f"{APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}"),

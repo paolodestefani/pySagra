@@ -105,9 +105,6 @@ CREATE TABLE settings (
     -- ordered delivered report and view
     ordered_delivered_automatic_update  boolean NOT NULL DEFAULT false,
     ordered_delivered_update_interval   integer NOT NULL DEFAULT 0,
-    print_ordered_delivered_report      boolean NOT NULL DEFAULT false,
-	ordered_delivered_copies            integer DEFAULT 1,
-    ordered_delivered_report            varchar(48),
     -- items inventory
     inventory_warning_stock_level       numeric(12, 2) NOT NULL DEFAULT 12,
     inventory_critical_stock_level      numeric(12, 2) NOT NULL DEFAULT 4,

@@ -173,7 +173,7 @@ def createToolBar(mainWindow: QMainWindow) -> None:
     with gui_exception_context(mainWindow, _tr('MainWindow', 'Create toolbars')):
         for child, node_type, description, action in get_toolbar(session['toolbar']):
             toolBar = QToolBar(description)
-            toolBar.setObjectName(description)
+            toolBar.setObjectName(description or child) # for saving/restoring state an object name is required
             toolBar.setToolButtonStyle(get_toolbutton_styles()[session['tool_button_style'] or 'I'][1])
             for child2, node_type2, description2, action2 in get_toolbar(child):
                 if node_type2 == 'S':
@@ -375,7 +375,8 @@ class MainWindow(QMainWindow):
         # scheduler for escpos printing
         sched = print_scheduler()
         sched.jobFailed.connect(self.showPrintError)
-        QApplication.instance().aboutToQuit.connect(sched.shutdown)
+        if app := QApplication.instance():
+            app.aboutToQuit.connect(sched.shutdown)
         # and set initial edit status
         self.updateEditStatus(NSEMPTY, -1, -1, None)
         

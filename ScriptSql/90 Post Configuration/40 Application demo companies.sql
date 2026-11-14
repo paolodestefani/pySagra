@@ -85,9 +85,9 @@ VALUES
 ('cashier', 'app_file_cash_desk', true, false, false),
 ('cashier', 'app_file_order', false, false, true),
 ('cashier', 'app_activity_order_entry', false, false, true),
-('cashier', 'app_activity_stock_inventory', true, false, false),
+('cashier', 'app_activity_inventory', true, false, false),
 ('cashier', 'app_activity_order_progress', true, false, false),
-('cashier', 'app_activity_stock_unload', true, false, false),
+('cashier', 'app_activity_ordered_delivered', true, false, false),
 ('cashier', 'app_activity_sales_summary', false, false, true);
 
 -- menu

@@ -331,8 +331,7 @@ SELECT
     inet_server_addr() AS "Server IP",
     inet_server_port() AS "Server Port",
     CAST(pg_postmaster_start_time() AS varchar) AS "Start time",
-    pg_database_size(current_database()) AS "DB Size",
-    pg_backend_pid() AS "PID"
+    pg_database_size(current_database()) AS "DB Size"
 FROM system.version
 ORDER BY installed_at DESC
 LIMIT 1;"""

@@ -77,7 +77,6 @@ from App.Database.Item import get_item_parts
 from App.Database.Item import get_variants
 from App.Database.Order import Order
 from App.Report.Order import printOrderReport
-from App.Report.Order import printStockUnloadReport
 from App.Common.L10n import _tr
 from App.Widget.Dialog import DateTimeInputDialog
 from App.Widget.Control import ButtonSeat
@@ -1403,18 +1402,6 @@ class BaseOrderDialog(QDialog):
                 continue  # skip if department ID is not valid
             with report_exception_context(self):
                 printOrderReport(pc.DEPARTMENT, dept_id, ti)
-        # --------------------------------------------------------- #
-        # STOCK UNLOAD / ORDERED DELIVERED REPORT SYSTEM            #
-        # --------------------------------------------------------- #
-        if self.setting['print_ordered_delivered_report']:
-            with gui_exception_context(self, _tr('OrderDialog', "Printing ordered delivered report")):
-                #printer = get_printer_name(self.setting['ordered_delivered_printer_class'], session['hostname'])
-                printStockUnloadReport(self.setting['ordered_delivered_report'],
-                                       printer,
-                                       self.setting['ordered_delivered_copies'],
-                                       order.header['event'],
-                                       order.header['stat_order_date'],
-                                       order.header['stat_order_day_part'])
         # --------------------------------------------------------- #
         # INTERFACE RESET AND CLEANUP                               #
         # --------------------------------------------------------- #

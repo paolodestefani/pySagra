@@ -33,7 +33,6 @@ from enum import IntEnum
 import logging
 
 # PySide6
-from PySide6.QtCore import QDateTime
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
@@ -69,8 +68,8 @@ class odv(IntEnum):
 
 
 def dayPartMapping():
-    return [('L', _tr('StockUnload', 'L')),
-            ('D', _tr('StockUnload', 'D'))]
+    return [('L', _tr('OrderedDelivered', 'L')),
+            ('D', _tr('OrderedDelivered', 'D'))]
 
 
 def orderedDelivered(action: QAction, checked: bool = False) -> None:
@@ -152,17 +151,6 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         for row in range(self.model.rowCount()):
             ordered = self.model.data(self.model.index(row, odv.ORDERED), Qt.ItemDataRole.EditRole)
             self.ui.tableView.setRowHidden(row, only_ordered and not ordered)
-            
-    def setAutomaticUpdate(self, state):
-        if state:
-            self.updateTimer.start()
-        else:
-            self.updateTimer.stop()
-
-    def updateUnload(self):
-        super().reload()
-        self.ui.dateTimeEdit.setDateTime(QDateTime.currentDateTime())
-        self.updateTimer.start()
 
     def print(self):
         "Ordered delivered report"

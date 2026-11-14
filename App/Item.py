@@ -414,8 +414,11 @@ class ItemForm(FormIndexManager):
         super().new()
         if self.model.rowCount() == rows:   # no row added: no right to write or insert failed
             return
-        self.ui.comboBoxNormalTextColor.setCurrentColor(self.setting['normal_text_color'])
-        self.ui.comboBoxNormalBackgroundColor.setCurrentColor(self.setting['normal_background_color'])
+        # default colors in the model, not only in the combo boxes: the mapper fills the
+        # widgets again from the model and would show the first color of the list
+        row = self.mapper.currentIndex()
+        self.model.setData(self.model.index(row, itm.TXT_COLOR), self.setting['normal_text_color'])
+        self.model.setData(self.model.index(row, itm.BCK_COLOR), self.setting['normal_background_color'])
         self.ui.lineEditDescription.setFocus()
 
     @scriptMethod

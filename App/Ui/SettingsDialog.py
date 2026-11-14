@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboB
     QSpacerItem, QSpinBox, QTabWidget, QVBoxLayout,
     QWidget)
 
-from App.Widget.Control import (ButtonItemExample, ColorComboBox, RelationalComboBox)
+from App.Widget.Control import (ButtonItemExample, ColorComboBox)
 
 class Ui_SettingsDialog(object):
     def setupUi(self, SettingsDialog):
@@ -1037,118 +1037,6 @@ class Ui_SettingsDialog(object):
         self.verticalLayout_25.addItem(self.verticalSpacer_5)
 
         self.tabWidget.addTab(self.tab3, "")
-        self.tab5 = QWidget()
-        self.tab5.setObjectName(u"tab5")
-        self.verticalLayout_16 = QVBoxLayout(self.tab5)
-        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.groupBoxAutomaticUpdate = QGroupBox(self.tab5)
-        self.groupBoxAutomaticUpdate.setObjectName(u"groupBoxAutomaticUpdate")
-        self.groupBoxAutomaticUpdate.setCheckable(True)
-        self.groupBoxAutomaticUpdate.setChecked(False)
-        self.verticalLayout_15 = QVBoxLayout(self.groupBoxAutomaticUpdate)
-        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
-        self.verticalLayout_15.setContentsMargins(5, 5, 5, 5)
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.label_7 = QLabel(self.groupBoxAutomaticUpdate)
-        self.label_7.setObjectName(u"label_7")
-        sizePolicy1.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
-        self.label_7.setSizePolicy(sizePolicy1)
-
-        self.horizontalLayout_4.addWidget(self.label_7)
-
-        self.spinBoxAutomaticUpdateInterval = QSpinBox(self.groupBoxAutomaticUpdate)
-        self.spinBoxAutomaticUpdateInterval.setObjectName(u"spinBoxAutomaticUpdateInterval")
-
-        self.horizontalLayout_4.addWidget(self.spinBoxAutomaticUpdateInterval)
-
-        self.label_19 = QLabel(self.groupBoxAutomaticUpdate)
-        self.label_19.setObjectName(u"label_19")
-        sizePolicy1.setHeightForWidth(self.label_19.sizePolicy().hasHeightForWidth())
-        self.label_19.setSizePolicy(sizePolicy1)
-
-        self.horizontalLayout_4.addWidget(self.label_19)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
-
-
-        self.verticalLayout_15.addLayout(self.horizontalLayout_4)
-
-
-        self.verticalLayout_16.addWidget(self.groupBoxAutomaticUpdate)
-
-        self.groupBoxOrderedDeliveredReport = QGroupBox(self.tab5)
-        self.groupBoxOrderedDeliveredReport.setObjectName(u"groupBoxOrderedDeliveredReport")
-        sizePolicy1.setHeightForWidth(self.groupBoxOrderedDeliveredReport.sizePolicy().hasHeightForWidth())
-        self.groupBoxOrderedDeliveredReport.setSizePolicy(sizePolicy1)
-        self.groupBoxOrderedDeliveredReport.setCheckable(True)
-        self.groupBoxOrderedDeliveredReport.setChecked(False)
-        self.verticalLayout_14 = QVBoxLayout(self.groupBoxOrderedDeliveredReport)
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
-        self.verticalLayout_14.setContentsMargins(5, 5, 5, 5)
-        self.verticalLayout_12 = QVBoxLayout()
-        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
-        self.gridLayout_2 = QGridLayout()
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.label_10 = QLabel(self.groupBoxOrderedDeliveredReport)
-        self.label_10.setObjectName(u"label_10")
-        sizePolicy1.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
-        self.label_10.setSizePolicy(sizePolicy1)
-
-        self.gridLayout_2.addWidget(self.label_10, 0, 1, 1, 1)
-
-        self.labelCopy_5 = QLabel(self.groupBoxOrderedDeliveredReport)
-        self.labelCopy_5.setObjectName(u"labelCopy_5")
-        sizePolicy1.setHeightForWidth(self.labelCopy_5.sizePolicy().hasHeightForWidth())
-        self.labelCopy_5.setSizePolicy(sizePolicy1)
-
-        self.gridLayout_2.addWidget(self.labelCopy_5, 0, 0, 1, 1)
-
-        self.comboBoxOrderedDeliveredReport = RelationalComboBox(self.groupBoxOrderedDeliveredReport)
-        self.comboBoxOrderedDeliveredReport.setObjectName(u"comboBoxOrderedDeliveredReport")
-        sizePolicy1.setHeightForWidth(self.comboBoxOrderedDeliveredReport.sizePolicy().hasHeightForWidth())
-        self.comboBoxOrderedDeliveredReport.setSizePolicy(sizePolicy1)
-
-        self.gridLayout_2.addWidget(self.comboBoxOrderedDeliveredReport, 1, 1, 1, 1)
-
-        self.label_8 = QLabel(self.groupBoxOrderedDeliveredReport)
-        self.label_8.setObjectName(u"label_8")
-        sizePolicy1.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
-        self.label_8.setSizePolicy(sizePolicy1)
-
-        self.gridLayout_2.addWidget(self.label_8, 0, 2, 1, 1)
-
-        self.comboBoxOrderedDeliveredPrinterClass = RelationalComboBox(self.groupBoxOrderedDeliveredReport)
-        self.comboBoxOrderedDeliveredPrinterClass.setObjectName(u"comboBoxOrderedDeliveredPrinterClass")
-        sizePolicy1.setHeightForWidth(self.comboBoxOrderedDeliveredPrinterClass.sizePolicy().hasHeightForWidth())
-        self.comboBoxOrderedDeliveredPrinterClass.setSizePolicy(sizePolicy1)
-
-        self.gridLayout_2.addWidget(self.comboBoxOrderedDeliveredPrinterClass, 1, 2, 1, 1)
-
-        self.spinBoxOrderedDeliveredCopies = QSpinBox(self.groupBoxOrderedDeliveredReport)
-        self.spinBoxOrderedDeliveredCopies.setObjectName(u"spinBoxOrderedDeliveredCopies")
-        self.spinBoxOrderedDeliveredCopies.setMinimum(1)
-
-        self.gridLayout_2.addWidget(self.spinBoxOrderedDeliveredCopies, 1, 0, 1, 1)
-
-        self.gridLayout_2.setColumnStretch(1, 1)
-        self.gridLayout_2.setColumnStretch(2, 1)
-
-        self.verticalLayout_12.addLayout(self.gridLayout_2)
-
-
-        self.verticalLayout_14.addLayout(self.verticalLayout_12)
-
-
-        self.verticalLayout_16.addWidget(self.groupBoxOrderedDeliveredReport)
-
-        self.verticalSpacer_3 = QSpacerItem(20, 273, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_16.addItem(self.verticalSpacer_3)
-
-        self.tabWidget.addTab(self.tab5, "")
 
         self.horizontalLayout_2.addWidget(self.tabWidget)
 
@@ -1272,13 +1160,5 @@ class Ui_SettingsDialog(object):
         self.checkBoxInactivity.setText(QCoreApplication.translate("SettingsDialog", u"Check inactivity after", None))
         self.labelInactivity.setText(QCoreApplication.translate("SettingsDialog", u"Seconds", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), QCoreApplication.translate("SettingsDialog", u"Order entry control and print", None))
-        self.groupBoxAutomaticUpdate.setTitle(QCoreApplication.translate("SettingsDialog", u"Ordered delivered automatic update", None))
-        self.label_7.setText(QCoreApplication.translate("SettingsDialog", u"Update view after", None))
-        self.label_19.setText(QCoreApplication.translate("SettingsDialog", u"seconds", None))
-        self.groupBoxOrderedDeliveredReport.setTitle(QCoreApplication.translate("SettingsDialog", u"Print ordered delivered report", None))
-        self.label_10.setText(QCoreApplication.translate("SettingsDialog", u"Report", None))
-        self.labelCopy_5.setText(QCoreApplication.translate("SettingsDialog", u"# Copies", None))
-        self.label_8.setText(QCoreApplication.translate("SettingsDialog", u"Printer class", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab5), QCoreApplication.translate("SettingsDialog", u"Control report and view", None))
     # retranslateUi
 
