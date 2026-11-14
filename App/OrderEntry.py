@@ -46,7 +46,6 @@ from PySide6.QtCore import QSettings
 from PySide6.QtCore import Slot
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QAction 
-from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QInputDialog
@@ -58,7 +57,6 @@ from PySide6.QtWidgets import QTableWidgetItem
 from PySide6.QtWidgets import QSizePolicy
 
 # application modules
-from App import APPNAME
 from App import session
 from App import currentIcon
 from App.Common.ExceptionHandler import gui_exception_context
@@ -85,7 +83,7 @@ from App.Widget.Control import ButtonSeat
 from App.Widget.Control import ButtonItem
 from App.Ui.ChooseVariantsDialog import Ui_ChooseVariantsDialog
 from App.Report.Order import pc
-from App.System.Help import HelpDialog
+from App.System.Help import addHelpAction
 
 
 # logger
@@ -328,11 +326,7 @@ class BaseOrderDialog(QDialog):
         self.addAction(sfb)
 
         # help page of the dialog, with the standard help key (F1, Cmd+? on macOS)
-        self.helpLink = "help/order_entry.html"
-        hlp = QAction(_tr('OrderEntry', 'Help'), self)
-        hlp.setShortcut(QKeySequence.StandardKey.HelpContents)
-        hlp.triggered.connect(lambda: HelpDialog(APPNAME, self.helpLink, self).show())
-        self.addAction(hlp)
+        addHelpAction(self, "help/order_entry.html")
         
         # system status clock
         timer = QTimer(self)

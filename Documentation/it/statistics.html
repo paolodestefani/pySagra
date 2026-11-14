@@ -1,0 +1,24 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Statistiche</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Statistiche</h1>
+    <p>Due funzioni per analizzare gli ordini.</p>
+    <h2>Stampa statistiche</h2>
+    <p>Apre la finestra di stampa con i report statistici, per esempio vendite e consumi: si sceglie il report, si impostano
+    filtri e parametri e si stampa, vedi la pagina <a href="print.html">Stampa</a>.</p>
+    <h2>Esporta dati statistici</h2>
+    <p>Scrive gli ordini su due file CSV, da aprire con un foglio di calcolo:</p>
+    <p><img src="img/statistics_export.png" /></p>
+    <ul>
+      <li><i>Testata del file</i>: il file con una riga per ogni ordine (data, ora, turno, cassa, consegna, tavolo,
+      cliente, coperti, importi).</li>
+      <li><i>Dettaglio del file</i>: il file con una riga per ogni articolo ordinato (reparto, articolo, varianti,
+      quantit&agrave;, prezzo, importo).</li>
+      <li><i>Dall'evento</i> e <i>All'evento</i>: gli eventi da esportare, oppure <i>Includi TUTTI gli eventi</i>.</li>
+    </ul>
+    <p>I campi sono separati dal punto e virgola e i numeri usano il separatore decimale della lingua dell'utente.
+    Se qualcosa va storto, per esempio un file che non si pu&ograve; scrivere, la finestra resta aperta per correggere e riprovare.</p>
+  </body>
+</html>

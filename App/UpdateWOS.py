@@ -56,6 +56,7 @@ from App.Database.WebOrderServer import set_web_order_server_params
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
 from App.Ui.UpdateWebOrderServerDialog import Ui_UpdateWebOrderServerDialog
+from App.System.Help import addHelpAction
 
 
 # logger
@@ -88,6 +89,7 @@ class UpdateWebOrderServerDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_UpdateWebOrderServerDialog()
         self.ui.setupUi(self)
+        addHelpAction(self, "help/update_wos.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         self.ui.comboBoxEvent.setItemList(event_lookup())

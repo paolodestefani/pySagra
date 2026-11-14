@@ -1,0 +1,22 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Strumento basato sugli eventi</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Strumento basato sugli eventi</h1>
+    <p>Operazioni di manutenzione sui dati di un evento. Si sceglie l'<i>Evento</i> e l'operazione: il riquadro
+    <i>Avviso</i> spiega cosa fa, e prima di eseguirla il programma chiede conferma.</p>
+    <p><img src="img/event_tool.png" /></p>
+    <ul>
+      <li><i>Cancellazione ordini</i>: elimina tutti gli ordini dell'evento, con ordinato/consegnato e numerazione, e azzera
+      scarica e ordinato dell'inventario. Non si pu&ograve; annullare: serve per esempio a togliere gli ordini di prova
+      prima dell'apertura.</li>
+      <li><i>Ricostruzione dell'inventario</i>: ricalcola scarica e ordinato dell'inventario dagli ordini. Serve dopo aver
+      cambiato i controlli degli articoli o i componenti di un kit.</li>
+      <li><i>Ricostruzione dell'Ordinato Consegnato</i>: ricalcola l'ordinato e il consegnato dagli ordini.</li>
+      <li><i>Ricostruzione delle numerazioni</i>: ricalcola i progressivi degli ordini dagli ordini salvati.</li>
+      <li><i>Imposta gli ordini come evasi</i>: segna come evasi, alla data dell'ordine, tutti gli ordini non ancora evasi;
+      serve per esempio alla chiusura dell'evento, se l'avanzamento ordini non &egrave; stato usato.</li>
+    </ul>
+  </body>
+</html>

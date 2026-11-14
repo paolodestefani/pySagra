@@ -1,0 +1,16 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Delete tool</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Delete tool</h1>
+    <p>It deletes data of the current company in bulk, for example to start again from scratch or to remove the test data.
+    It can not be undone: the data can be recovered only from a backup of the database.</p>
+    <p><img src="img/delete_tool.png" /></p>
+    <p>In <i>What to delete</i> check the objects: <i>Orders</i>, <i>Inventory</i>, <i>Events</i>, <i>Price lists</i>,
+    <i>Items</i>, <i>Departments</i>, <i>Tables</i> and <i>Cash desks</i>. They are deleted in this order, and all together:
+    when one delete is not possible, nothing is deleted. For example the items used in orders can be deleted only by checking
+    the orders too.</p>
+    <p>Deleting the events deletes their orders and their inventory too.</p>
+  </body>
+</html>

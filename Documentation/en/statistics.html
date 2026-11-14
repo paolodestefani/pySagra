@@ -1,0 +1,23 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Statistics</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Statistics</h1>
+    <p>Two functions to analyze the orders.</p>
+    <h2>Print statistics</h2>
+    <p>It opens the print window with the statistic reports, for example sales and consumption: choose the report, set filters
+    and parameters and print, see the <a href="print.html">Print</a> page.</p>
+    <h2>Export statistic data</h2>
+    <p>It writes the orders to two CSV files, to open with a spreadsheet:</p>
+    <p><img src="img/statistics_export.png" /></p>
+    <ul>
+      <li><i>Headers file</i>: the file with one row for each order (date, time, day part, cash desk, delivery, table,
+      customer, covers, amounts).</li>
+      <li><i>Details file</i>: the file with one row for each ordered item (department, item, variants, quantity, price, amount).</li>
+      <li><i>From event</i> and <i>To event</i>: the events to export, or <i>Include ALL events</i>.</li>
+    </ul>
+    <p>Fields are separated by semicolons and numbers use the decimal separator of the user language. When something goes
+    wrong, for example a file that can not be written, the window stays open to correct and try again.</p>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Event based tool</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Event based tool</h1>
+    <p>Maintenance operations on the data of an event. Choose the <i>Event</i> and the operation: the <i>Warning</i> box
+    says what it does, and the program asks for a confirm before running it.</p>
+    <p><img src="img/event_tool.png" /></p>
+    <ul>
+      <li><i>Delete Orders</i>: deletes all the orders of the event, with ordered/delivered and numbering, and clears unload
+      and ordered of the inventory. It can not be undone: it is used for example to remove the test orders before opening.</li>
+      <li><i>Inventory rebuild</i>: computes unload and ordered of the inventory again from the orders. It is needed after
+      changing the controls of the items or the components of a kit.</li>
+      <li><i>Ordered delivered rebuild</i>: computes ordered and delivered again from the orders.</li>
+      <li><i>Numbering Rebuild</i>: computes the order counters again from the saved orders.</li>
+      <li><i>Mark Orders as Processed</i>: marks as processed, at the order date, all the orders not processed yet; it is
+      used for example at the end of the event, when the order progress was not used.</li>
+    </ul>
+  </body>
+</html>

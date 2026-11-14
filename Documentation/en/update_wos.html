@@ -1,0 +1,20 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Update Web Order Server</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Update Web Order Server</h1>
+    <p>It sends to the web order server the data of the event: dates, tables, departments, web available items with prices
+    and variants. The web site uses them to let the customer make the order, which is then shown at the cash desk with a QR code.</p>
+    <p><img src="img/update_wos.png" /></p>
+    <ul>
+      <li><i>Event</i>: the event to send; prices are the ones of its price list.</li>
+      <li><i>Server, port and encoding</i>: the address of the FTP server, the port (usually 21) and the encoding of the names (usually utf-8).</li>
+      <li><i>User</i> and <i>Password</i>: the FTP access.</li>
+      <li><i>File name</i>: the path and name of the file on the server, as the FTP user sees them, for example <i>event_data.xml</i>.</li>
+    </ul>
+    <p>The data are built and sent directly, with no file on the computer. When the server does not answer within 30 seconds
+    the sending stops with a message. The parameters are saved after a successful sending.</p>
+    <p>The items with <i>Web available</i> are sent, in the order of the <i>Web sorting</i>.</p>
+  </body>
+</html>

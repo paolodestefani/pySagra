@@ -112,7 +112,7 @@ class SalesSummaryForm(FormViewManager[Ui_SalesSummaryWidget]):
         model.setParameter('event_id', session['event_id'])
         self.setModel(cast(Any, model))
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/sales_summary.html"
         # overwrite standard sortfilterdialog with event filter dialog
         self.sortFilterDialog = EventFilterDialog(self, show_date = False, show_daypart = False)
         # available edit status

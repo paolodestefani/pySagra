@@ -120,6 +120,7 @@ from App.Widget.FilterGrid import FilterGrid
 from App.Widget.FilterGrid import RowComboBox
 
 from App.Ui.PlainTextPreviewDialog import Ui_PlainTextPreviewDialog
+from App.System.Help import addHelpAction
 
 
 
@@ -640,6 +641,7 @@ class PrintDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_PrintDialog()
         self.ui.setupUi(self)
+        addHelpAction(self, "help/print.html")
         # can't be a class variable for translation requirements
         self.PDFVERSION = [(QPagedPaintDevice.PdfVersion.PdfVersion_1_4, _tr('Dialog', 'Pdf 1.4')),
                            (QPagedPaintDevice.PdfVersion.PdfVersion_A1b, _tr('Dialog', 'Pdf A-1b')),

@@ -68,6 +68,7 @@ from App.Widget.Dialog import PrintDialog
 from App.Database.Statistics import load_statistic_bi_data
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
+from App.System.Help import addHelpAction
 
 
 # logger
@@ -178,6 +179,7 @@ class StatisticsExportDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_StatisticsExportDialog()
         self.ui.setupUi(self)
+        addHelpAction(self, "help/statistics.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
