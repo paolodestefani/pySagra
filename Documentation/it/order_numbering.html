@@ -1,0 +1,25 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Progressivi ordini</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Progressivi ordini</h1>
+    <p>Mostra e permette di correggere l'ultimo numero d'ordine usato. Il programma tiene un progressivo per ogni evento,
+    giorno e parte del giorno (pranzo o cena), e lo aggiorna da solo a ogni ordine.</p>
+    <p><img src="img/order_numbering.png" /></p>
+    <ul>
+      <li><i>Evento</i>, <i>Data dell'evento</i> e <i>Parte del giorno</i>: a quale turno si riferisce il progressivo.
+      Per ogni turno c'&egrave; una sola riga.</li>
+      <li><i>Valore corrente</i>: l'ultimo numero usato; il prossimo ordine prende il successivo.</li>
+    </ul>
+    <p>L'opzione <i>Numero dell'ordine basato su</i> delle <i>Impostazioni</i> decide quando la numerazione ricomincia da 1:</p>
+    <ul>
+      <li><i>Evento</i>: i numeri proseguono per tutto l'evento.</li>
+      <li><i>Giorno</i>: ricominciano ogni giorno.</li>
+      <li><i>Parte del giorno</i>: ricominciano a ogni pranzo e a ogni cena.</li>
+    </ul>
+    <p>L'opzione si pu&ograve; cambiare anche durante un evento. Lo stesso numero pu&ograve; ripetersi in giorni o turni diversi,
+    ma non due volte nello stesso turno: se si abbassa il valore corrente sotto un numero gi&agrave; usato, il prossimo ordine
+    non si salva. Con il filtro si scelgono evento, data e parte del giorno da vedere.</p>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Order progress</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Order progress</h1>
+    <p>It follows the preparation of the orders, department by department. Every department copy has a barcode: when the
+    department delivers, the code is read and that part of the order becomes processed.</p>
+    <p><img src="img/order_progress.png" /></p>
+    <h2>Order status</h2>
+    <ul>
+      <li><i>Acquired</i>: no department has delivered yet.</li>
+      <li><i>In progress</i>: some departments have delivered.</li>
+      <li><i>Processed</i>: all the departments have delivered.</li>
+    </ul>
+    <p>The status is computed by itself from the barcode readings.</p>
+    <h2>Orders</h2>
+    <p>The list shows the orders of the running event with the status of each department. They are filtered by status,
+    with the <i>Acquired</i>, <i>In progress</i> and <i>Processed</i> checks, and by <i>Date</i> and <i>Lunch</i> or
+    <i>Dinner</i>, or over the <i>Whole event</i>. <i>Set whole order as Processed</i> and <i>Set whole order as Unprocessed</i>
+    change the status of all the departments of the chosen order.</p>
+    <h2>Barcode reading</h2>
+    <ul>
+      <li>With the cursor in <i>Barcode scan</i>, the reader reads the code of the department copy: that part of the order
+      becomes processed and appears in <i>Barcode scanned</i>. When it was already processed the program asks whether to
+      read it again.</li>
+      <li><i>Set as unprocessed</i> cancels the reading of the chosen row, for example one read by mistake.</li>
+    </ul>
+    <p>The reading moves the quantities from ordered to delivered: it updates the <i>Ordered delivered</i> form and the
+    unload of the <i>Inventory</i>.</p>
+  </body>
+</html>

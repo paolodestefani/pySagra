@@ -1,0 +1,24 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Order numbers</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Order numbers</h1>
+    <p>It shows, and lets correct, the last order number used. The program keeps a counter for each event, day and day part
+    (lunch or dinner), and updates it by itself with every order.</p>
+    <p><img src="img/order_numbering.png" /></p>
+    <ul>
+      <li><i>Event</i>, <i>Event date</i> and <i>Day part</i>: which turn the counter is for. There is one row for each turn.</li>
+      <li><i>Current value</i>: the last number used; the next order takes the following one.</li>
+    </ul>
+    <p>The <i>Order number based on</i> option of the <i>Settings</i> decides when the numbers start again from 1:</p>
+    <ul>
+      <li><i>Event</i>: the numbers go on for the whole event.</li>
+      <li><i>Day</i>: they start again every day.</li>
+      <li><i>Day part</i>: they start again at every lunch and every dinner.</li>
+    </ul>
+    <p>The option can be changed during an event too. The same number can come again in different days or turns, but not twice
+    in the same turn: lowering the current value below a number already used stops the next order from being saved. The filter
+    chooses event, date and day part to see.</p>
+  </body>
+</html>

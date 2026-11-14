@@ -1,0 +1,32 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Avanzamento ordini</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Avanzamento ordini</h1>
+    <p>Segue la preparazione degli ordini, reparto per reparto. Ogni copia reparto ha un codice a barre: quando il reparto
+    consegna, si legge il codice e quella parte dell'ordine diventa evasa.</p>
+    <p><img src="img/order_progress.png" /></p>
+    <h2>Stato degli ordini</h2>
+    <ul>
+      <li><i>Acquisito</i>: nessun reparto ha ancora consegnato.</li>
+      <li><i>In corso</i>: alcuni reparti hanno consegnato.</li>
+      <li><i>Evaso</i>: tutti i reparti hanno consegnato.</li>
+    </ul>
+    <p>Lo stato si calcola da solo dalle letture dei codici a barre.</p>
+    <h2>Ordini</h2>
+    <p>L'elenco mostra gli ordini dell'evento in corso con lo stato di ogni reparto. Si filtrano per stato, con le spunte
+    <i>Acquisito</i>, <i>In corso</i> ed <i>Evaso</i>, e per <i>Data</i> e <i>Pranzo</i> o <i>Cena</i>, oppure su tutto
+    l'<i>Evento intero</i>. <i>Imposta l'intero ordine come Evaso</i> e <i>Imposta l'intero ordine come Non evaso</i>
+    cambiano lo stato di tutti i reparti dell'ordine scelto.</p>
+    <h2>Lettura dei codici a barre</h2>
+    <ul>
+      <li>Con il cursore in <i>Scansiona codice a barre</i>, il lettore legge il codice della copia reparto: quella parte
+      dell'ordine diventa evasa e compare in <i>Codice a barre letto</i>. Se era gi&agrave; evasa il programma chiede se
+      leggerla di nuovo.</li>
+      <li><i>Imposta come non evaso</i> annulla la lettura della riga scelta, per esempio letta per sbaglio.</li>
+    </ul>
+    <p>La lettura sposta le quantit&agrave; da ordinato a consegnato: aggiorna la gestione <i>Ordinato consegnato</i> e la
+    scarica dell'<i>Inventario</i>.</p>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Inserimento ordini</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Inserimento ordini</h1>
+    <p>&Egrave; la finestra della cassa: qui si compone l'ordine del cliente, si incassa e, alla conferma,
+    l'ordine viene salvato e vengono stampate le sue copie. Si apre solo se c'&egrave; un evento in corso,
+    cio&egrave; un evento che comprende la data e l'ora di adesso.</p>
+    <p><img src="img/order_entry.png" /></p>
+    <h2>Consegna e cliente</h2>
+    <ul>
+      <li><i>Consegna</i>: <i>Tavolo</i> o <i>Asporto</i>; quella proposta si sceglie nelle <i>Impostazioni</i>.
+      Con l'asporto sono attive solo le schede dei reparti che preparano per l'asporto.</li>
+      <li><i>Numero del tavolo</i>: si scrive, oppure, se nelle <i>Impostazioni</i> &egrave; attiva <i>Utilizza la lista
+      dei tavoli</i>, si sceglie con un clic sulla mappa dei tavoli. Le <i>Impostazioni</i> possono renderlo obbligatorio;
+      un tavolo che non &egrave; nella mappa viene segnalato.</li>
+      <li><i>Coperti</i>: il numero di coperti; sopra il <i>Valore massimo di coperti</i> delle <i>Impostazioni</i>
+      compare un avviso. Per un ordine al tavolo senza coperti il programma chiede se correggere.</li>
+      <li><i>Nome cliente</i> e <i>Contatto</i>: per l'asporto il nome pu&ograve; essere obbligatorio, secondo le <i>Impostazioni</i>.</li>
+    </ul>
+    <h2>Articoli</h2>
+    <ul>
+      <li>Ogni reparto ha la sua scheda con i pulsanti degli articoli vendibili; un clic aggiunge l'articolo all'ordine.</li>
+      <li><i>Quantit&agrave;</i> 1, 5 o 10: quanti pezzi aggiunge il clic successivo; dopo il clic si torna a 1.</li>
+      <li>Un clic su una riga dell'ordine toglie la quantit&agrave; scelta, e la riga sparisce quando arriva a zero.</li>
+      <li><i>Seleziona varianti</i>: per gli articoli con varianti apre la scelta di varianti, quantit&agrave; e prezzo.
+      Se nelle <i>Impostazioni</i> &egrave; attiva <i>Mostra le varianti automaticamente</i>, la scelta si apre sempre da sola.</li>
+      <li><i>Mostra giacenza</i>: mostra sui pulsanti la quantit&agrave; disponibile degli articoli con controllo inventario.
+      I colori di avviso e critico segnalano che la scorta sta finendo; un articolo esaurito non si pu&ograve; aggiungere.
+      La disponibilit&agrave; tiene conto anche degli articoli gi&agrave; nell'ordine.</li>
+      <li><i>Note per reparto</i>: un messaggio per un reparto, stampato sulla sua copia.</li>
+    </ul>
+    <h2>Incasso</h2>
+    <ul>
+      <li><i>Importo</i>, <i>Sconto</i> e <i>Totale</i>: lo sconto non pu&ograve; superare l'importo.</li>
+      <li><i>Contanti</i> e <i>Resto</i>: scrivendo i contanti ricevuti il programma calcola il resto.</li>
+      <li><i>Pag.Elett.</i>: pagamento elettronico; contanti e resto vengono azzerati.</li>
+      <li><i>Conferma</i> salva l'ordine e stampa le copie; <i>Annulla</i> svuota l'ordine. Prima del salvataggio
+      il programma controlla le scorte e segnala gli articoli che non bastano, chiedendo se procedere.</li>
+    </ul>
+    <h2>Ordini dal web</h2>
+    <p><i>Inserimento Ordine Web</i> riceve il codice QR di un ordine fatto dal sito: con <i>Ctrl+F11</i> il cursore
+    va nel campo, e il lettore di codici a barre riempie l'ordine con consegna, tavolo, cliente e articoli. La spunta
+    <i>OW</i> indica che l'ordine viene dal web. Gli articoli non disponibili vengono segnalati e non inseriti.</p>
+    <h2>Altre funzioni</h2>
+    <ul>
+      <li><i>Ctrl+F12</i>: cambia la data e l'ora, per inserire ordini di un altro momento o di un altro evento;
+      prezzi e scorte vengono ricaricati per l'evento della data scelta.</li>
+      <li>Se nelle <i>Impostazioni</i> &egrave; attivo il controllo di inattivit&agrave;, dopo il tempo indicato senza
+      ordini il programma propone di aggiornare la finestra, per avere prezzi e scorte attuali.</li>
+      <li><i>Esc</i> chiude la finestra, dopo una conferma.</li>
+    </ul>
+    <p>L'ordine riceve un numero secondo l'opzione <i>Numero dell'ordine basato su</i> delle <i>Impostazioni</i>, e
+    appartiene al pranzo o alla cena secondo l'ora: il pranzo va dalle 8:00 all'inizio della cena, la cena fino alle
+    8:00 del giorno dopo.</p>
+  </body>
+</html>

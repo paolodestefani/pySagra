@@ -139,7 +139,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
     def __init__(self, parent: QWidget, title: str, auth: tuple) -> None:
         super().__init__(parent, auth)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/order_progress.html"
         self.reloadConfirmation = False
         self.setModel(OrderStatusModel(self))
         # available edit status

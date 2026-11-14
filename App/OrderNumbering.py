@@ -91,7 +91,7 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         model = OrderNumberingModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/order_numbering.html"
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

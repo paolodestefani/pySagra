@@ -1,0 +1,56 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Order entry</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Order entry</h1>
+    <p>This is the cash desk window: here the customer order is made, the payment is taken and, on confirm, the order
+    is saved and its copies are printed. It opens only when an event is running, that is an event that includes the
+    date and time of now.</p>
+    <p><img src="img/order_entry.png" /></p>
+    <h2>Delivery and customer</h2>
+    <ul>
+      <li><i>Deliver to</i>: <i>Table</i> or <i>Take-away</i>; the proposed one is set in the <i>Settings</i>.
+      For take-away only the tabs of the departments that prepare for takeaway are active.</li>
+      <li><i>Table number</i>: typed, or, when the <i>Use table list</i> option of the <i>Settings</i> is on, chosen with a
+      click on the seat map. The <i>Settings</i> can make it required; a table that is not in the map is reported.</li>
+      <li><i>Covers</i>: the number of covers; above the <i>Max covers value</i> of the <i>Settings</i> a warning appears.
+      For a table order with no covers the program asks whether to correct it.</li>
+      <li><i>Customer name</i> and <i>Customer contact</i>: for take-away the name can be required, as set in the <i>Settings</i>.</li>
+    </ul>
+    <h2>Items</h2>
+    <ul>
+      <li>Every department has its tab with the buttons of the salable items; a click adds the item to the order.</li>
+      <li><i>Quantity</i> 1, 5 or 10: how many pieces the next click adds; after the click it goes back to 1.</li>
+      <li>A click on an order line removes the chosen quantity, and the line disappears when it reaches zero.</li>
+      <li><i>Choose variants</i>: for items with variants it opens the choice of variants, quantity and price.
+      When the <i>Show variants automatically</i> option of the <i>Settings</i> is on, the choice always opens by itself.</li>
+      <li><i>Show stock</i>: shows on the buttons the available quantity of the items with inventory control.
+      The warning and critical colors say that the stock is running out; a sold out item can not be added.
+      The availability takes the items already in the order into account.</li>
+      <li><i>Department notes</i>: a message for a department, printed on its copy.</li>
+    </ul>
+    <h2>Payment</h2>
+    <ul>
+      <li><i>Amount</i>, <i>Discount</i> and <i>Total</i>: the discount can not be greater than the amount.</li>
+      <li><i>Cash</i> and <i>Change</i>: typing the cash received, the program computes the change.</li>
+      <li><i>Elect. Paym.</i>: electronic payment; cash and change are cleared.</li>
+      <li><i>Confirm</i> saves the order and prints the copies; <i>Cancel</i> empties the order. Before saving the program
+      checks the stock and reports the items that are not enough, asking whether to go on.</li>
+    </ul>
+    <h2>Web orders</h2>
+    <p><i>Web order input</i> takes the QR code of an order made on the web site: <i>Ctrl+F11</i> moves the cursor to the
+    field, and the barcode reader fills the order with delivery, table, customer and items. The <i>WO</i> check says the
+    order comes from the web. Items not available are reported and left out.</p>
+    <h2>Other functions</h2>
+    <ul>
+      <li><i>Ctrl+F12</i>: changes date and time, to enter orders of another moment or of another event; prices and stock
+      are loaded again for the event of the chosen date.</li>
+      <li>When the inactivity check of the <i>Settings</i> is on, after the set time with no orders the program proposes
+      to refresh the window, to have current prices and stock.</li>
+      <li><i>Esc</i> closes the window, after a confirm.</li>
+    </ul>
+    <p>The order gets a number as set by the <i>Order number based on</i> option of the <i>Settings</i>, and it belongs to
+    lunch or dinner by its time: lunch goes from 8:00 to the dinner start, dinner until 8:00 of the day after.</p>
+  </body>
+</html>

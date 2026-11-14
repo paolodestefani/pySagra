@@ -1,0 +1,21 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Ordered delivered</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Ordered delivered</h1>
+    <p>For every item with <i>Delivered control</i> it shows, day by day and for lunch and dinner, how much was ordered and
+    not delivered yet and how much was delivered. It helps for example the kitchen or the grill to know how many portions to
+    prepare.</p>
+    <p><img src="img/ordered_delivered.png" /></p>
+    <ul>
+      <li><i>Event</i>, <i>Event date</i> and <i>L/D</i> (lunch or dinner): the turn.</li>
+      <li><i>Item description</i>.</li>
+      <li><i>Ordered</i>: the quantity in the orders whose department has not delivered yet.</li>
+      <li><i>Delivered</i>: the quantity already delivered, that is read in <i>Order progress</i>.</li>
+    </ul>
+    <p><i>Only Ordered &gt; 0</i> hides the items with nothing ordered. The filter chooses event, date and day part; the print
+    uses the same filter.</p>
+    <p>A kit counts as a whole kit; a menu is counted in its items.</p>
+  </body>
+</html>

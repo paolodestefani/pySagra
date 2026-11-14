@@ -1,0 +1,29 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Inventario</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Inventario</h1>
+    <p>Le scorte degli articoli con <i>Controllo inventario</i>, evento per evento. All'apertura si lavora sull'evento in
+    corso; con il filtro se ne sceglie un altro.</p>
+    <p><img src="img/inventory.png" /></p>
+    <h2>Inventario degli articoli normali</h2>
+    <ul>
+      <li><i>Articolo</i>: si aggiungono le righe degli articoli da controllare; un articolo pu&ograve; comparire una volta
+      sola per evento.</li>
+      <li><i>Carica</i>: la quantit&agrave; caricata, per esempio i pezzi arrivati.</li>
+      <li><i>Scarica</i>: la quantit&agrave; consegnata, cio&egrave; letta in <i>Avanzamento ordini</i>.</li>
+      <li><i>Giacenza</i>: carica meno scarica, quello che c'&egrave; ancora.</li>
+      <li><i>Ordinato</i>: la quantit&agrave; negli ordini non ancora consegnati.</li>
+      <li><i>Disponibile</i>: giacenza meno ordinato, quello che si pu&ograve; ancora vendere. &Egrave; il valore mostrato sui
+      pulsanti della finestra degli ordini.</li>
+      <li><i>Nuova giacenza</i>: per un conteggio, si scrive la giacenza contata e il programma corregge la carica.</li>
+    </ul>
+    <p>Le colonne di giacenza e disponibile prendono i colori di avviso e critico secondo i livelli delle <i>Impostazioni</i>.
+    Al salvataggio l'inventario viene ricalcolato dagli ordini dell'evento, cos&igrave; un articolo aggiunto dopo che &egrave;
+    gi&agrave; stato venduto parte con i valori giusti.</p>
+    <h2>Disponibilit&agrave; dei kit e dei menu</h2>
+    <p>I kit e i menu non hanno scorte proprie: le tabelle <i>Disponibilit&agrave; dei kit</i> e <i>Disponibilit&agrave; dei menu</i> mostrano quanti se ne possono ancora vendere,
+    calcolati dai componenti con controllo inventario.</p>
+  </body>
+</html>

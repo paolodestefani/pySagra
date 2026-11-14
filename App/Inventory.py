@@ -103,7 +103,7 @@ class InventoryForm(FormViewManager[Ui_InventoryWidget]):
         model = InventoryModel(self)
         self.setModel(model)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/inventory.html"
         # available edit status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

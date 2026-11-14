@@ -1,0 +1,24 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Orders</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Orders</h1>
+    <p>The archive of the saved orders. It is mainly used to print again the copies of an order when a printer got
+    stuck or the network had problems.</p>
+    <p><img src="img/order_archive.png" /></p>
+    <ul>
+      <li>On opening, the filter chooses which orders to see; the list shows number, date, time, delivery, amounts,
+      status and the other data of the header.</li>
+      <li>The data of the header, as table, covers, customer and status, can be corrected and saved.</li>
+      <li><i>Order details</i> and <i>Departments details</i> show the lines of the order and how they were split among the
+      departments; they are read only, because a change would not update the department copies and the inventory.</li>
+      <li><i>Department notes and status</i>: the notes and the barcode of each department copy.</li>
+    </ul>
+    <h2>Reprint</h2>
+    <p>In <i>Current order reprint</i> check the copies to print again, <i>Customer</i>, <i>Cover</i> and the departments,
+    and press <i>Print</i>. The active copies depend on the <i>Settings</i>; an order with no covers has no cover copy.</p>
+    <p>New orders are created only in the <i>Order entry</i> window. Deleting an order deletes its lines too, and updates
+    inventory and delivered quantities.</p>
+  </body>
+</html>

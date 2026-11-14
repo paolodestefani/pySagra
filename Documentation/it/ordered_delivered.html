@@ -1,0 +1,21 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Ordinato consegnato</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Ordinato consegnato</h1>
+    <p>Per ogni articolo con <i>Controllo consegnato</i> mostra, giorno per giorno e per pranzo e cena, quanto &egrave;
+    stato ordinato e non ancora consegnato e quanto &egrave; stato consegnato. Serve per esempio alla cucina o alla griglia per
+    sapere quante porzioni preparare.</p>
+    <p><img src="img/ordered_delivered.png" /></p>
+    <ul>
+      <li><i>Evento</i>, <i>Data dell'evento</i> e <i>P/C</i> (pranzo o cena): il turno.</li>
+      <li><i>Descrizione articolo</i>.</li>
+      <li><i>Ordinato</i>: la quantit&agrave; negli ordini il cui reparto non ha ancora consegnato.</li>
+      <li><i>Consegnato</i>: la quantit&agrave; gi&agrave; consegnata, cio&egrave; letta in <i>Avanzamento ordini</i>.</li>
+    </ul>
+    <p><i>Solo Ordinato &gt; 0</i> nasconde gli articoli senza ordinato. Con il filtro si scelgono evento, data e parte del
+    giorno; la stampa usa lo stesso filtro.</p>
+    <p>Un kit conta come kit intero; un menu viene contato nei suoi articoli.</p>
+  </body>
+</html>

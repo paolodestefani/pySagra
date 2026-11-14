@@ -216,7 +216,7 @@ class OrderForm(FormIndexManager):
         self.addDetailRelation(modelDet, ordi.ID, ordd.ID_HEADER)
         self.addDetailRelation(modelTreeDep, ordi.ID, orddd.DEPARTMENT)
         self.tabName = title
-        self.helpLink = None
+        self.helpLink = "help/order_archive.html"
         # available status
         # NEW, SAVE, DELETE, RELOAD, FIRST, PREVIOUS, NEXT, LAST
         # FILTER, CHANGE, REPORT, EXPORT

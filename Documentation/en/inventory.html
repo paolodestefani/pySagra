@@ -1,0 +1,28 @@
+<html lang="en">
+  <head>
+    <title>pySagra - Inventory</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Inventory</h1>
+    <p>The stock of the items with <i>Inventory control</i>, event by event. On opening it works on the running event;
+    the filter chooses another one.</p>
+    <p><img src="img/inventory.png" /></p>
+    <h2>Normal items inventory</h2>
+    <ul>
+      <li><i>Item</i>: add the rows of the items to control; an item can appear only once for each event.</li>
+      <li><i>Load</i>: the loaded quantity, for example the pieces that arrived.</li>
+      <li><i>Unload</i>: the delivered quantity, that is read in <i>Order progress</i>.</li>
+      <li><i>Stock</i>: load minus unload, what is still there.</li>
+      <li><i>Ordered</i>: the quantity in the orders not delivered yet.</li>
+      <li><i>Available</i>: stock minus ordered, what can still be sold. It is the value shown on the buttons of the order
+      entry window.</li>
+      <li><i>New stock</i>: for a count, type the counted stock and the program corrects the load.</li>
+    </ul>
+    <p>The stock and available columns take the warning and critical colors by the levels of the <i>Settings</i>. On save the
+    inventory is computed again from the orders of the event, so an item added after it was already sold starts with the
+    right values.</p>
+    <h2>Kit and menu availability</h2>
+    <p>Kits and menus have no stock of their own: the <i>Kit availability</i> and <i>Menu availability</i> tables show how many of them can still be sold,
+    computed from the components with inventory control.</p>
+  </body>
+</html>
