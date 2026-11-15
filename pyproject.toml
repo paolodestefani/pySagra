@@ -22,3 +22,8 @@ dev = [
     "pyinstaller",
     "mypy",
 ]
+
+[[tool.mypy.overrides]]
+# libraries without type information
+module = ["escpos.*", "barcode.*", "qrcode.*"]
+ignore_missing_imports = true

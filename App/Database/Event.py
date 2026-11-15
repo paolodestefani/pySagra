@@ -83,7 +83,8 @@ SELECT EXISTS(
     # Unified context managers ensuring proper evaluation order
     with db_exception_context(logger), appconn.transaction(), appconn.cursor() as cur:
         cur.execute(script)
-        return cur.fetchone()[0]
+        result = cur.fetchone()
+        return result[0] if result else False
 
 
 def get_event_from_date(date: Any) -> tuple[int | None, str | None]:

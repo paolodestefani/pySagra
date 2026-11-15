@@ -1116,10 +1116,10 @@ class DayPartSlider(QWidget):
             x = self._x(self._dayStart + step)
             p.drawLine(int(x), int(bar.bottom()), int(x), int(bar.bottom() + (4 if step % 2 else 6)))
             if step % 2 == 0:
-                text = str((self._dayStart + step) % 24)
-                width = self.fontMetrics().horizontalAdvance(text)
+                hour = str((self._dayStart + step) % 24)
+                width = self.fontMetrics().horizontalAdvance(hour)
                 p.drawText(QRectF(x - width, label_top, 2 * width, self.fontMetrics().height()),
-                           Qt.AlignmentFlag.AlignCenter, text)
+                           Qt.AlignmentFlag.AlignCenter, hour)
         # handle on the split
         handle = QRectF(split - 5, bar.top() - 3, 10, bar.height() + 6)
         p.setBrush(self.palette().color(self.palette().ColorRole.Button))
@@ -1146,8 +1146,8 @@ class DayPartSlider(QWidget):
     def keyPressEvent(self, event: QKeyEvent) -> None:
         steps = {Qt.Key.Key_Left: -1, Qt.Key.Key_Down: -1, Qt.Key.Key_Right: 1, Qt.Key.Key_Up: 1,
                  Qt.Key.Key_PageDown: -3, Qt.Key.Key_PageUp: 3}
-        if event.key() in steps:
-            self.setValue(self._value + steps[event.key()])
+        if (key := Qt.Key(event.key())) in steps:
+            self.setValue(self._value + steps[key])
         elif event.key() == Qt.Key.Key_Home:
             self.setValue(self._minimum)
         elif event.key() == Qt.Key.Key_End:

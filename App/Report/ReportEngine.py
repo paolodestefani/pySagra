@@ -1339,7 +1339,7 @@ class Report():
                                                 0.0,
                                                 0.0),
                                       Unit[self.options["unit"]]) # type: ignore
-        self.pageLayout.setMode(PageLayoutMode[self.options['pageLayoutMode']]) # set full page mode to use the entire page for rendering, margins are handled by bands
+        self.pageLayout.setMode(PageLayoutMode[self.options['pageLayoutMode']]) # type: ignore # set full page mode to use the entire page for rendering, margins are handled by bands
 
     def setData(self, dataSet: list[Any]|tuple[Any]|None = None) -> None:
         self.data = dataSet

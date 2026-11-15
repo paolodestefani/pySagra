@@ -319,7 +319,9 @@ class ReceiptPreview:
 
     def _pages(self, max_h: float | None = None) -> list[list[Line]]:
         "One page per receipt (it separates at the perforation); it may also break if it is too tall"
-        pages, cur, h = [], [], 0.0
+        pages: list[list[Line]] = []
+        cur: list[Line] = []
+        h = 0.0
         for ln in self.lines:
             if max_h and cur and h + ln.h > max_h and not ln.is_cut:
                 pages.append(cur); cur, h = [], 0.0

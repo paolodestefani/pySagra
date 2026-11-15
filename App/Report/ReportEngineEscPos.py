@@ -148,8 +148,8 @@ else:
     session['event_image'] = QByteArray()
     session['company_description'] = "Local festivities committee"
     session['company_image'] = QByteArray()
-    from PrintScheduler import print_scheduler
-    from EscposPreview import ReceiptPreview   # absolute import
+    from PrintScheduler import print_scheduler   # type: ignore[import-not-found, no-redef]
+    from EscposPreview import ReceiptPreview   # type: ignore[import-not-found, no-redef]  # absolute import
     
     @contextmanager
     def wait_cursor_context():
@@ -245,7 +245,7 @@ class BaseInlineRenderer():
         self.amount_decimals = int(paramdict.get("amount_decimals", options['amount_decimals']))
         self.currency_symbol = paramdict.get("currency_symbol", options['currency_symbol'])
         self.field_format = paramdict.get("format", "")
-        self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|None = None  # current value
+        self.value: bool|int|float|decimal.Decimal|str|QDate|QDateTime|QTime|QImage|None = None  # current value
     
     def apply_style(self) -> None:
         "Set the text properties of this element on the print buffer"
@@ -553,13 +553,15 @@ class Image(BaseBlockRenderer):
             if not isinstance(field_data, QByteArray):
                 raise ReportPrintError("Field IS NOT an image")
             raw_bytes = field_data.data()
-            image = PIL.Image.open(BytesIO(raw_bytes))
+            image: PIL.Image.Image = PIL.Image.open(BytesIO(raw_bytes))
             image.load()
         elif self.type == 'file':
             image = PIL.Image.open(str(self.img_source))  # checked when the report is read
             image.load()
-        else:
+        elif self.image is not None:   # embedded and resource images, read with the report
             image = self.image
+        else:
+            return
         # remove transparency if any
         if image.mode in ('RGBA', 'LA') or (image.mode == 'P' and 'transparency' in image.info):
             image = image.convert('RGBA')
@@ -941,7 +943,7 @@ class DummyDevice(Dummy):
    
     def image(self, img_source, *args, **kwargs) -> None:
         "Record the image for the preview, then send it to the Dummy as usual"
-        pil = None
+        pil: PIL.Image.Image | None = None
         try:
             if isinstance(img_source, (str, os.PathLike)):
                 pil = PIL.Image.open(img_source)
@@ -1058,15 +1060,15 @@ class ReportEscpos():
             for blk in band:
                 # create a block object
                 if blk.tag == "row":
-                    bo = Row(self.options, blk.attrib)
+                    row = Row(self.options, blk.attrib)
                     # create an inline object
                     for inl in blk:
                         if inl.tag in inlineobj:
-                            ilo = inlineobj[inl.tag](self.options, inl.attrib, inl.text)
-                            bo.append(ilo)
-                    b.append(bo)
+                            ilo = inlineobj[inl.tag](self.options, inl.attrib, inl.text or '')
+                            row.append(ilo)
+                    b.append(row)
                 if blk.tag in blockobj:
-                    bo = blockobj[blk.tag](self.options, blk.attrib, blk.text)
+                    bo = blockobj[blk.tag](self.options, blk.attrib, blk.text or '')
                     b.append(bo)
                 if blk.tag == 'execute':
                     if blk.attrib.get('trigger') == 'before':
@@ -1431,9 +1433,9 @@ class ReportEscpos():
     def _print_graphic(self, device: QPaintDevice, paper_width_mm: float = 80.0) -> None:
         preview = ReceiptPreview(self.buffer, paper_width_mm)
         if isinstance(device, QPrinter):
-            device.setDocName(self.options.get('documentName', 'Receipt'))
+            device.setDocName(str(self.options.get('documentName', 'Receipt')))
         elif isinstance(device, QPdfWriter):
-            device.setTitle(self.options.get('documentName', 'Receipt'))
+            device.setTitle(str(self.options.get('documentName', 'Receipt')))
             device.setPageLayout(preview.page_layout())
         preview.paint(device)
         
