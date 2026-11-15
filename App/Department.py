@@ -104,7 +104,8 @@ class DepartmentForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.errorMessages = {
             'department_description_unique': _tr('Department', 'A department with this description already exists'),
             'item_department_fk': _tr('Department', 'The department has items, it can not be deleted'),
-            'order_header_department_department_fk': _tr('Department', 'The department is used in orders, it can not be deleted')}
+            'order_header_department_department_fk': _tr('Department', 'The department is used in orders, it can not be deleted'),
+            'department_menu_container_check': _tr('Department', 'The department has items: the Menu flag must match their type (menus only, or no menus)')}
         # scripting init
         self.script = scriptInit(self)
 

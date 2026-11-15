@@ -318,7 +318,8 @@ class ItemForm(FormIndexManager):
             'item_part_part_fk': _tr('Item', 'The item is a component of a kit or menu, it can not be deleted'),
             'item_description_unique': _tr('Item', 'An item with this description already exists'),
             'item_customer_description_unique': _tr('Item', 'An item with this customer description already exists'),
-            'item_grid_position': _tr('Item', 'Another salable item of the department is already in this row and column')
+            'item_grid_position': _tr('Item', 'Another salable item of the department is already in this row and column'),
+            'item_menu_department_check': _tr('Item', 'A menu must be in a menu department, and a menu department can hold only menus')
             }
         # scripting init
         self.script = scriptInit(self)

@@ -88,4 +88,32 @@ CREATE INDEX department_keys_idx ON department (company_id, department_id);
 CREATE TRIGGER t99_update_company_user_date 
     BEFORE INSERT OR UPDATE ON department 
     FOR EACH ROW EXECUTE PROCEDURE system.update_company_user_date();
+
+-- The other side of item_menu_department_check (Item.sql): a department with items
+-- can not change between holding menus and holding the other items
+CREATE FUNCTION department_menu_container_check() 
+    RETURNS trigger AS 
+$$
+BEGIN
+    IF EXISTS (
+        SELECT 1 
+        FROM company.item 
+        WHERE department_id = NEW.department_id
+            AND (item_type = 'M') IS DISTINCT FROM NEW.is_menu_container
+        ) THEN
+        RAISE EXCEPTION 'The department has items that do not match the menu flag'
+        USING ERRCODE = 'check_violation', CONSTRAINT = 'department_menu_container_check';
+    END IF;
+    RETURN NEW;
+END;
+$$ 
+LANGUAGE plpgsql;
+COMMENT ON FUNCTION department_menu_container_check() IS
+    'Check that the items of a department match its menu flag';
+ALTER FUNCTION department_menu_container_check() 
+    OWNER TO {pyAppPgOwnerRole};
+
+CREATE TRIGGER t10_department_menu_container_check 
+    BEFORE UPDATE OF is_menu_container ON department 
+    FOR EACH ROW EXECUTE PROCEDURE department_menu_container_check();
    

@@ -113,6 +113,33 @@ CREATE UNIQUE INDEX item_grid_position
 CREATE TRIGGER t99_update_company_user_date 
     BEFORE INSERT OR UPDATE ON item 
     FOR EACH ROW EXECUTE PROCEDURE system.update_company_user_date();
+
+-- Menus live in the departments that hold menus (is_menu_container), and only menus do:
+-- the order entry shows them in that tab, the statistics group them there
+CREATE FUNCTION item_menu_department_check() 
+    RETURNS trigger AS 
+$$
+BEGIN
+    IF (NEW.item_type = 'M') IS DISTINCT FROM (
+        SELECT is_menu_container 
+        FROM company.department 
+        WHERE department_id = NEW.department_id
+        ) THEN
+        RAISE EXCEPTION 'Menu items must be in a menu department and menu departments can hold only menu items'
+        USING ERRCODE = 'check_violation', CONSTRAINT = 'item_menu_department_check';
+    END IF;
+    RETURN NEW;
+END;
+$$ 
+LANGUAGE plpgsql;
+COMMENT ON FUNCTION item_menu_department_check() IS
+    'Check that menu items, and only them, are in a menu department';
+ALTER FUNCTION item_menu_department_check() 
+    OWNER TO {pyAppPgOwnerRole};
+
+CREATE TRIGGER t10_item_menu_department_check 
+    BEFORE INSERT OR UPDATE OF item_type, department_id ON item 
+    FOR EACH ROW EXECUTE PROCEDURE item_menu_department_check();
    
    
 -- item variations table
