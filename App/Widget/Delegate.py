@@ -49,6 +49,7 @@ from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QTime
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QSize
+from PySide6.QtCore import QMargins
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QPersistentModelIndex
 from PySide6.QtGui import QMouseEvent, QPen
@@ -359,11 +360,15 @@ class ImageDelegate(QStyledItemDelegate):
         if imageba:
             pix = QPixmap()
             pix.loadFromData(imageba)
-            # by passing the pixmap as an icon, Qt automatically scales and centers it in the cell
+            # by passing the pixmap as an icon, Qt scales it to the decoration size
             option.icon = QIcon(pix)
             option.features |= QStyleOptionViewItem.ViewItemFeature.HasDecoration
             option.text = "" # hides any text to show only the image
-            # remove the internal text margins that push the icon to the left
+            # on the left the decoration area is only as wide as the icon, so the alignment
+            # can not move it; on top the area takes the whole cell width and the icon is centered,
+            # and as tall as the cell (less a margin) the image fills the row keeping its proportions
+            option.decorationPosition = QStyleOptionViewItem.Position.Top
+            option.decorationSize = option.rect.size().shrunkBy(QMargins(2, 2, 2, 2))
             option.decorationAlignment = Qt.AlignmentFlag.AlignCenter
             option.displayAlignment = Qt.AlignmentFlag.AlignCenter
 
