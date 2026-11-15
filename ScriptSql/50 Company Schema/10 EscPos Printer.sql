@@ -63,16 +63,18 @@ CREATE TABLE escpos_printer (
     hostname                text NULL, -- Network printers are host name indipendent
     name                    text NOT NULL,
     type                    char(1) NOT NULL, -- U(sb) or N(etwork)
+    -- parameters of one type, NULL for the other type: no defaults here,
+    -- EscposPrinterModel sets the ones of the chosen type
     -- for network printer
     host                    varchar(25) NULL,
-    port                    int NULL DEFAULT 9100,
-    connection_timeout      int NULL DEFAULT 30, -- in seconds
+    port                    int NULL,
+    connection_timeout      int NULL, -- in seconds
     -- for USB printer
     id_vendor               int NULL,
     id_product              int NULL,
-    usb_timeout             int NULL DEFAULT 0,
-    in_endpoint             int NULL DEFAULT 130,
-    out_endpoint            int NULL DEFAULT 1,
+    usb_timeout             int NULL,
+    in_endpoint             int NULL,
+    out_endpoint            int NULL,
     --
     note                    text,
     external_code           integer,
