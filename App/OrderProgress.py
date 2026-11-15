@@ -53,6 +53,7 @@ from App.Database.Order import set_order_as_unprocessed
 from App.Database.Models import OrderStatusModel
 from App.Widget.Form import FormViewManager
 from App.Widget.Delegate import GenericDelegate
+from App.Widget.Delegate import RelationDelegate
 from App.Ui.OrderProgressWidget import Ui_OrderProgressWidget
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
@@ -68,32 +69,33 @@ class ords(IntEnum):
     EVENT_ID            = 2
     EVENT_DESC          = 3
     ORDER_HEADER_ID     = 4
-    ORDER_DATE          = 5
-    STAT_ORDER_DATE     = 6
-    STAT_ORDER_DAYPART  = 7
-    ORDER_TIME          = 8
-    ORDER_NUMBER        = 9
-    DELIVERY            = 10
-    TABLE_NUM           = 11
-    CUSTOMER_NAME       = 12
-    COVERS              = 13
-    STATUS              = 14
-    FULFILLMENT_DATE    = 15
-    CASH_DESK           = 16
-    USER_INS            = 17
-    FROM_WEB            = 18
-    DEPARTMENT1         = 19
-    FULFILLMENT1        = 20
-    DEPARTMENT2         = 21
-    FULFILLMENT2        = 22
-    DEPARTMENT3         = 23
-    FULFILLMENT3        = 24
-    DEPARTMENT4         = 25
-    FULFILLMENT4        = 26
-    DEPARTMENT5         = 27
-    FULFILLMENT5        = 28
-    DEPARTMENT6         = 29
-    FULFILLMENT6        = 30
+    ORDER_DATE_TIME     = 5
+    ORDER_DATE          = 6
+    ORDER_TIME          = 7
+    STAT_ORDER_DATE     = 8
+    STAT_ORDER_DAYPART  = 9
+    ORDER_NUMBER        = 10
+    DELIVERY            = 11
+    TABLE_NUM           = 12
+    CUSTOMER_NAME       = 13
+    COVERS              = 14
+    STATUS              = 15
+    FULFILLMENT_DATE    = 16
+    CASH_DESK           = 17
+    USER_INS            = 18
+    FROM_WEB            = 19
+    DEPARTMENT1         = 20
+    FULFILLMENT1        = 21
+    DEPARTMENT2         = 22
+    FULFILLMENT2        = 23
+    DEPARTMENT3         = 24
+    FULFILLMENT3        = 25
+    DEPARTMENT4         = 26
+    FULFILLMENT4        = 27
+    DEPARTMENT5         = 28
+    FULFILLMENT5        = 29
+    DEPARTMENT6         = 30
+    FULFILLMENT6        = 31
                         
 
 class ordp(IntEnum):
@@ -108,6 +110,19 @@ class ordp(IntEnum):
     DEPARTMENT  = 8
     FULFILLMENT = 9
 
+
+def deliveryType():
+    return [('T', _tr('OrderProgress', 'Table')),
+            ('A', _tr('OrderProgress', 'Take Away'))]
+    
+def dayPartMapping():
+    return [('L', _tr('OrderProgress', 'Lunch')),
+            ('D', _tr('OrderProgress', 'Dinner'))]
+
+def orderStatus():
+    return [('A', _tr('OrderProgress', 'Acquired')),
+            ('I', _tr('OrderProgress', 'In progress')),
+            ('P', _tr('OrderProgress', 'Processed'))]
 
 
 def orderProgress(action: QAction, checked: bool = False) -> None:
@@ -156,6 +171,9 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.setView(self.ui.tableViewOrder)  # required for formviewmanager
         self.ui.tableViewOrder.setLayoutName('OrderProgress')
         self.ui.tableViewOrder.setItemDelegate(GenericDelegate(self))
+        self.ui.tableViewOrder.setItemDelegateForColumn(ords.STAT_ORDER_DAYPART, RelationDelegate(self, dayPartMapping))
+        self.ui.tableViewOrder.setItemDelegateForColumn(ords.DELIVERY, RelationDelegate(self, deliveryType))
+        self.ui.tableViewOrder.setItemDelegateForColumn(ords.STATUS, RelationDelegate(self, orderStatus))
         # set default filter values
         self.ui.checkBoxAcquired.setChecked(True)
         self.ui.checkBoxInProgress.setChecked(True)
@@ -187,7 +205,17 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.tableWidgetScans.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.ui.tableWidgetScans.setAlternatingRowColors(True)
         self.ui.tableWidgetScans.setWordWrap(False)
-        # self.ui.tableWidgetScans.hideColumn(ID)
+        self.ui.tableWidgetScans.hideColumn(ordp.ID)  # hide id column
+        self.ui.tableWidgetScans.setItemDelegateForColumn(ordp.DELIVERY, RelationDelegate(self, deliveryType))
+        self.ui.tableWidgetScans.setColumnWidth(ordp.BARCODE, 150)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.NUMBER, 100)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.DATE, 120)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.TIME, 100)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.DELIVERY, 150)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.TABLE, 100)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.CUSTOMER, 150)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.DEPARTMENT, 150)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.FULFILLMENT, 120)
         # signal/slot connections
         self.ui.lineEditBarcode.editingFinished.connect(self.scan)
         self.ui.pushButtonSetUnprocessed.clicked.connect(self.setAsUnprocessed)
@@ -247,7 +275,7 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
             self.ui.lineEditBarcode.clear()
             self.ui.lineEditBarcode.setFocus()
             return
-
+        
         (ohdid, ohid, onum, odate, otime, odelivery, otable, ocustomer,
          odep, odepdesc, ofulfillmentdate) = result
 
@@ -281,10 +309,10 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         cell = QTableWidgetItem(str(onum))
         cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.NUMBER, cell)
-        cell = QTableWidgetItem(odate.toString())
+        cell = QTableWidgetItem(session['qlocale'].toString(odate, QLocale.FormatType.ShortFormat))
         cell.setFlags(Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.DATE, cell)
-        cell = QTableWidgetItem(otime.toString())
+        cell = QTableWidgetItem(session['qlocale'].toString(otime, QLocale.FormatType.ShortFormat))
         cell.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         self.ui.tableWidgetScans.setItem(row, ordp.TIME, cell)
         cell = QTableWidgetItem(odelivery)

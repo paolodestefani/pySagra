@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>755</width>
-    <height>522</height>
+    <width>785</width>
+    <height>606</height>
    </rect>
   </property>
   <property name="font">
@@ -479,11 +479,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
-          <widget class="QGroupBox" name="groupBox">
-           <property name="title">
-            <string/>
+          <widget class="QGroupBox" name="groupBoxPreview">
+           <property name="styleSheet">
+            <string notr="true"/>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_12">
+           <property name="title">
+            <string>View</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_15">
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -498,29 +501,16 @@
             </property>
             <item>
              <widget class="QPushButton" name="pushButtonPreview">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>120</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>120</width>
-                <height>16777215</height>
-               </size>
+              <property name="styleSheet">
+               <string notr="true">QPushButton#pushButtonPreview {
+	background: transparent;
+	border: 3px solid blue;
+	border-radius: 5px;
+	padding: 0 8px;
+}</string>
               </property>
               <property name="text">
                <string>Preview</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -568,8 +558,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>729</width>
-            <height>432</height>
+            <width>759</width>
+            <height>522</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -625,7 +615,7 @@
          <item>
           <widget class="QGroupBox" name="groupBoxEdit">
            <property name="title">
-            <string/>
+            <string>View</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <property name="leftMargin">
@@ -642,23 +632,13 @@
             </property>
             <item>
              <widget class="QPushButton" name="pushButtonEdit">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>120</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>120</width>
-                <height>16777215</height>
-               </size>
+              <property name="styleSheet">
+               <string notr="true">QPushButton#pushButtonEdit {
+	background: transparent;
+	border: 3px solid blue;
+	border-radius: 5px;
+	padding: 0 8px;
+}</string>
               </property>
               <property name="text">
                <string>Edit</string>
@@ -690,7 +670,13 @@
             <string>Base geometry</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
             <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
              <number>0</number>
             </property>
             <property name="bottomMargin">
@@ -751,7 +737,13 @@
             <string>Minimum size</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
             <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
              <number>0</number>
             </property>
             <property name="bottomMargin">
