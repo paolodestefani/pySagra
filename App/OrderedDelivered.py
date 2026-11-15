@@ -68,8 +68,8 @@ class odv(IntEnum):
 
 
 def dayPartMapping():
-    return [('L', _tr('OrderedDelivered', 'L')),
-            ('D', _tr('OrderedDelivered', 'D'))]
+    return [('L', _tr('OrderedDelivered', 'Lunch')),
+            ('D', _tr('OrderedDelivered', 'Dinner'))]
 
 
 def orderedDelivered(action: QAction, checked: bool = False) -> None:

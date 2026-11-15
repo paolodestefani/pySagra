@@ -267,11 +267,11 @@ FROM system.app_user;"""
         self.columns = (("user_code", _tr('Models', 'User'), False, 'str'),
                         ("description", _tr('Models', 'User description'), False, 'str'),
                         ("user_image", _tr('Models', 'Image'), False, None),
-                        ("is_system_object", _tr('Models', 'System user'), True, 'bool'),
+                        ("is_system_object", _tr('Models', 'System'), True, 'bool'),
                         ("is_admin", _tr('Models', 'Administrator'), False, 'bool'),
-                        ("can_edit_views", _tr('Models', 'Can edit views'), False, 'bool'),
-                        ("can_edit_sortfilters", _tr('Models', 'Can edit sortfilters'), False, 'bool'),
-                        ("can_edit_reports", _tr('Models', 'Can edit reports'), False, 'bool'),
+                        ("can_edit_views", _tr('Models', 'Edit views'), False, 'bool'),
+                        ("can_edit_sortfilters", _tr('Models', 'Edit sortfilters'), False, 'bool'),
+                        ("can_edit_reports", _tr('Models', 'Edit reports'), False, 'bool'),
                         ("l10n", _tr('Models', 'Language'), False, 'str'),
                         ("last_login", _tr('Models', 'Last login'), True, 'datetime'),
                         ("last_company_desc", _tr('Models', 'Last company'), True, 'str'),
@@ -298,11 +298,11 @@ class UserModel(TableModel):
                         ("user_password", _tr('Models', 'Password'), False, 'str'),
                         ("password_date", _tr('Models', 'Last change'), True, 'datetime'),
                         ("new_password_required", _tr('Models', 'Force password change'), False, 'bool'),
-                        ("is_system_object", _tr('Models', 'System user'), True, 'bool'),
+                        ("is_system_object", _tr('Models', 'System'), True, 'bool'),
                         ("is_admin", _tr('Models', 'Administrator'), False, 'bool'),
-                        ("can_edit_views", _tr('Models', 'Can edit views'), False, 'bool'),
-                        ("can_edit_sortfilters", _tr('Models', 'Can edit sortfilters'), False, 'bool'),
-                        ("can_edit_reports", _tr('Models', 'Can edit reports'), False, 'bool'),
+                        ("can_edit_views", _tr('Models', 'Edit views'), False, 'bool'),
+                        ("can_edit_sortfilters", _tr('Models', 'Edit sortfilters'), False, 'bool'),
+                        ("can_edit_reports", _tr('Models', 'Edit reports'), False, 'bool'),
                         ("l10n", _tr('Models', 'Language'), False, 'str'),
                         ("last_company_desc", _tr('Models', 'Last company'), True, 'str'),
                         ("last_login", _tr('Models', 'Last login'), True, 'datetime'),
@@ -590,7 +590,7 @@ FROM system.report;"""
         # available types: int, bool, decimal, str, date, datetime, None = no filter
         self.columns = (
             ("report_id", _tr('Models', 'ID'), True, 'int'),
-            ("print_method", _tr('Models', 'Print method'), False, 'str'),
+            ("print_method", _tr('Models', 'Method'), False, 'str'),
             ("report_code", _tr('Models', 'Report code'), False, 'str'),
             ("l10n", _tr('Models', 'Localization'), False, 'str'),
             ("report_class", _tr('Models', 'Report class'), False, 'str'),
@@ -757,11 +757,11 @@ class EscposPrinterModel(TableModel):
         self.columns = (("escpos_printer_id", _tr('Models', 'ID'), True, 'int'),
                         ("hostname", _tr('Models', 'Computer name'), False, 'str'),
                         ("name", _tr('Models', 'Printer name'), False, 'str'),
-                        ("type", _tr('Models', 'Printer type'), False, 'str'),
+                        ("type", _tr('Models', 'Type'), False, 'str'),
                         # network printer
                         ("host", _tr('Models', 'Host address'), False, 'str'),
                         ("port", _tr('Models', 'Port'), False, 'int'),
-                        ("connection_timeout", _tr('Models', 'Connection timeout'), False, 'int'),
+                        ("connection_timeout", _tr('Models', 'Timeout'), False, 'int'),
                         # usb printer
                         ("id_vendor", _tr('Models', 'Id Vendor'), False, 'int'),
                         ("id_product", _tr('Models', 'Id Product'), False, 'int'),
@@ -824,35 +824,35 @@ class DepartmentModel(TableModel):
         self.repr = 'Department table model'
         
 
-class OrderPrintSettingsIndexModel(QueryModel):
+# class OrderPrintSettingsIndexModel(QueryModel):
 
-    def __init__(self, parent: QObject | None = None) -> None:
-        super().__init__(parent)
-        self.selectQuery = """
-SELECT 
-    order_print_settings_id,
-    hostname,
-    print_customer_copy,
-	customer_print_method,
-    created_by,
-    created_at,
-    updated_by,
-    updated_at
-FROM order_print_settings;"""
-        # model columns: (field, description, readonly, type), tuple of tuples
-        self.columns = (("order_print_settings_id,", _tr('Models', 'ID'), True, 'int'),
-                        ("hostname", _tr('Models', 'Computer name'), False, 'str'),
-                        ("print_customer_copy", _tr('Models', 'Print customer copy'), False, 'bool'),
-                        ("customer_print_method", _tr('Models', 'Customer print method'), False, 'str'),
-                        ("created_by", _tr('Models', 'User Ins'), True, 'str'),
-                        ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
-                        ("updated_by", _tr('Models', 'User Update'), True, 'str'),
-                        ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
-        # True if is a company table
-        self.isCompanyTable = True
-        self.repr = 'Order print index query model'
-        # sql order by clause, plain sql string without ORDER BY
-        self.addOrderBy("order_print_settings_id")
+#     def __init__(self, parent: QObject | None = None) -> None:
+#         super().__init__(parent)
+#         self.selectQuery = """
+# SELECT 
+#     order_print_settings_id,
+#     hostname,
+#     print_customer_copy,
+# 	customer_print_method,
+#     created_by,
+#     created_at,
+#     updated_by,
+#     updated_at
+# FROM order_print_settings;"""
+#         # model columns: (field, description, readonly, type), tuple of tuples
+#         self.columns = (("order_print_settings_id,", _tr('Models', 'ID'), True, 'int'),
+#                         ("hostname", _tr('Models', 'Computer name'), False, 'str'),
+#                         ("print_customer_copy", _tr('Models', 'Print customer copy'), False, 'bool'),
+#                         ("customer_print_method", _tr('Models', 'Customer print method'), False, 'str'),
+#                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
+#                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
+#                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
+#                         ("updated_at", _tr('Models', 'Date Update'), True, 'date'))
+#         # True if is a company table
+#         self.isCompanyTable = True
+#         self.repr = 'Order print index query model'
+#         # sql order by clause, plain sql string without ORDER BY
+#         self.addOrderBy("order_print_settings_id")
         
 
 class OrderPrintSettingsModel(TableModel):
@@ -863,10 +863,10 @@ class OrderPrintSettingsModel(TableModel):
         # model columns: (field, description, readonly, type), tuple of tuples
         self.columns = (("order_print_settings_id", _tr('Models', 'ID'), True, 'int'),
                         ("hostname", _tr('Models', 'Computer name'), False, 'str'),
-                        ("print_type", _tr('Models', 'Print type'), False, 'str'),
+                        ("print_type", _tr('Models', 'Type'), False, 'str'),
                         ("department_id", _tr('Models', 'Department'), False, 'int'),
-                        ("print_copy", _tr('Models', 'Print copy'), False, 'bool'),
-                        ("print_method", _tr('Models', 'Print method'), False, 'str'),
+                        ("print_copy", _tr('Models', 'Print'), False, 'bool'),
+                        ("print_method", _tr('Models', 'Method'), False, 'str'),
                         ("number_of_copies", _tr('Models', 'Copies'), False, 'int'),
                         ("driver_report", _tr('Models', 'Driver report'), False, 'str'),
                         ("driver_printer", _tr('Models', 'Driver printer'), False, 'str'),
@@ -985,13 +985,13 @@ FROM company.item;"""
                         ("pos_column", _tr('Models', 'Column'), False, 'int'),
                         ("normal_text_color", _tr('Models', 'Text color'), False, 'str'),
                         ("normal_background_color", _tr('Models', 'Background color'), False, 'str'),
-                        ("has_inventory_control", _tr('Models', 'Inventory control'), False, 'bool'),
-                        ("has_delivered_control", _tr('Models', 'Delivered control'), False, 'bool'),
+                        ("has_inventory_control", _tr('Models', 'Inventory'), False, 'bool'),
+                        ("has_delivered_control", _tr('Models', 'Delivered'), False, 'bool'),
                         ("has_variants", _tr('Models', 'Variants'), False, 'bool'),
                         ("is_kit_part", _tr('Models', 'Kit part'), False, 'bool'),
                         ("is_menu_part", _tr('Models', 'Menu part'), False, 'bool'),
                         ("is_salable", _tr('Models', 'Salable'), False, 'bool'),
-                        ("is_web_available", _tr('Models', 'Web available'), False, 'bool'),
+                        ("is_web_available", _tr('Models', 'Web'), False, 'bool'),
                         ("web_sorting", _tr('Models', 'Web sorting'), False, 'int'),
                         ("is_obsolete", _tr('Models', 'Obsolete'), False, 'bool'),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
@@ -1254,7 +1254,7 @@ FROM company.event;"""
                         ("start_date", _tr('Models', 'Start date'), False, 'datetime'),
                         ("end_date", _tr('Models', 'End date'), False, 'datetime'),
                         ("price_list_id", _tr('Models', 'Price list'), False, 'int'),
-                        ("image", _tr('Models', 'Event image'), False, None),
+                        ("image", _tr('Models', 'Image'), False, None),
                         ("created_by", _tr('Models', 'User Ins'), True, 'str'),
                         ("created_at", _tr('Models', 'Date Ins'), True, 'date'),
                         ("updated_by", _tr('Models', 'User Update'), True, 'str'),
@@ -1681,11 +1681,11 @@ JOIN event e ON h.event_id = e.event_id;"""
                         ("h.event_id", _tr('Models', 'Event'), True, 'int'),
                         ("e.event_description", _tr('Models', 'Event description'), True, 'str'),
                         ("h.order_date_time", _tr('Models', 'Order date/time'), True, 'datetime'),
-                        ("h.order_number", _tr('Models', 'Order number'), True, 'int'),
+                        ("h.order_number", _tr('Models', 'Number'), True, 'int'),
                         ("h.order_date", _tr('Models', 'Order date'), True, 'date'),
                         ("h.order_time", _tr('Models', 'Order time'), True, 'time'),
-                        ("h.stat_order_date", _tr('Models', 'Stat order date'), True, 'date'),
-                        ("h.stat_order_day_part", _tr('Models', 'Stat order day part'), True, 'str'),
+                        ("h.stat_order_date", _tr('Models', 'Stat. date'), True, 'date'),
+                        ("h.stat_order_day_part", _tr('Models', 'Stat. L/D'), True, 'str'),
                         ("h.cash_desk", _tr('Models', 'Cash desk'), True, 'str'),
                         ("h.delivery", _tr('Models', 'Delivery'), True, 'str'),
                         ("h.is_electronic_payment", _tr('Models', 'EP'), True, 'bool'),

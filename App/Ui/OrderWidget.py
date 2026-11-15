@@ -18,11 +18,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QCheckBox, QDateEdit, QGroupBox,
     QHBoxLayout, QHeaderView, QLineEdit, QPushButton,
     QSizePolicy, QSpacerItem, QSpinBox, QStackedWidget,
-    QTabWidget, QTimeEdit, QTreeView, QVBoxLayout,
-    QWidget)
+    QTabWidget, QTimeEdit, QVBoxLayout, QWidget)
 
 from App.Widget.Control import (DateTimeEdit, RelationalComboBox, SpinBoxDecimal)
-from App.Widget.View import EnhancedTableView
+from App.Widget.View import (EnhancedTableView, EnhancedTreeView)
 
 class Ui_OrderWidget(object):
     def setupUi(self, OrderWidget):
@@ -311,7 +310,7 @@ class Ui_OrderWidget(object):
         self.verticalLayout_3.setSpacing(2)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(3, 3, 3, 3)
-        self.treeViewDepartmentDetails = QTreeView(self.tab_2)
+        self.treeViewDepartmentDetails = EnhancedTreeView(self.tab_2)
         self.treeViewDepartmentDetails.setObjectName(u"treeViewDepartmentDetails")
         self.treeViewDepartmentDetails.setDragEnabled(True)
         self.treeViewDepartmentDetails.setSortingEnabled(True)

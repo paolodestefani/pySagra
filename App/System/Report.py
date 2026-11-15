@@ -64,6 +64,7 @@ from App.Database.Models import ReportIndexModel
 from App.Report import REPORT_CLASSES
 from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import GenericDelegate
+from App.Widget.Delegate import RelationDelegate
 from App.Widget.Dialog import PrintDialog
 from App.Ui.ReportWidget import Ui_ReportWidget
 from App.Common.L10n import _tr
@@ -90,8 +91,8 @@ class rpt(IntEnum):
     DATE_UPD    = 11
     
 def printMethods() -> list:
-    return [('D', _tr('Printer', 'Driver')),
-            ('E', _tr('Printer', 'ESC/POS'))]
+    return [('D', _tr('Report', 'Driver')),
+            ('E', _tr('Report', 'ESC/POS'))]
 
 
 def report(action: QAction, checked: bool = False) -> None:
@@ -104,7 +105,7 @@ def report(action: QAction, checked: bool = False) -> None:
         QMessageBox.warning(
             mw,
             _tr('MessageDialog', "Warning"),
-            _tr('CashDesk', 'No access right to this archive')
+            _tr('Report', 'No access right to this archive')
         )
         return
     with wait_cursor_context():
@@ -134,6 +135,7 @@ class ReportForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('ReportIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(rpt.METHOD, RelationDelegate(self, printMethods))
         self.ui.comboBoxPrintMethod.setFunction(printMethods)
         self.mapper.addMapping(self.ui.comboBoxPrintMethod, rpt.METHOD)
         self.mapper.addMapping(self.ui.lineEditCode, rpt.CODE)

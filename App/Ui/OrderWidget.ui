@@ -398,7 +398,7 @@
             <number>3</number>
            </property>
            <item>
-            <widget class="QTreeView" name="treeViewDepartmentDetails">
+            <widget class="EnhancedTreeView" name="treeViewDepartmentDetails">
              <property name="dragEnabled">
               <bool>true</bool>
              </property>
@@ -511,6 +511,11 @@
   <customwidget>
    <class>EnhancedTableView</class>
    <extends>QTableView</extends>
+   <header>App.Widget.View</header>
+  </customwidget>
+  <customwidget>
+   <class>EnhancedTreeView</class>
+   <extends>QTreeView</extends>
    <header>App.Widget.View</header>
   </customwidget>
   <customwidget>

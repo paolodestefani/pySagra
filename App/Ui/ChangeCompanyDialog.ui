@@ -126,14 +126,17 @@
          </item>
          <item row="2" column="1">
           <widget class="RelationalComboBox" name="comboBoxCompanies">
+           <property name="focusPolicy">
+            <enum>Qt::FocusPolicy::StrongFocus</enum>
+           </property>
            <property name="whatsThis">
             <string>Select the new working company from this list</string>
            </property>
-           <property name="locale">
-            <locale language="English" country="UnitedStates"/>
-           </property>
            <property name="maxVisibleItems">
             <number>100</number>
+           </property>
+           <property name="maxCount">
+            <number>999</number>
            </property>
            <property name="iconSize">
             <size>
@@ -167,6 +170,9 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Help|QDialogButtonBox::StandardButton::Ok</set>
      </property>
@@ -185,6 +191,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>comboBoxCompanies</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>

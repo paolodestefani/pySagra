@@ -66,6 +66,10 @@ class ordn(IntEnum):
     USER_UPD = 7
     DATE_UPD = 8
 
+def dayPartMapping():
+    return [('L', _tr('OrderedDelivered', 'Lunch')),
+            ('D', _tr('OrderedDelivered', 'Dinner'))]
+    
 
 def orderNumbering(action: QAction, checked: bool = False) -> None:
     "Manage order number current values"
@@ -103,6 +107,7 @@ class OrderNumberingForm(FormViewManager[Ui_GenericFormViewWidget]):
         self.ui.tableView.setLayoutName('OrderNumbering')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ordn.EVENT, RelationDelegate(self, event_lookup))
+        self.ui.tableView.setItemDelegateForColumn(ordn.DAY_PART, RelationDelegate(self, dayPartMapping))
         # messages for the user on save errors, by constraint name
         self.errorMessages = {
             'numbering_unique': _tr('OrderNumbering', 'A numbering for this event, date and day part already exists')}

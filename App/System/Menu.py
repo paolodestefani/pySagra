@@ -47,13 +47,14 @@ from App.Common.ExceptionHandler import gui_exception_context
 from App.Database.Models import MenuIndexModel
 from App.Database.Models import MenuModel
 from App.Database.Models import MenuItemTreeModel
-from App.Widget.Delegate import BooleanDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager
 from App.Ui.MenuWidget import Ui_MenuWidget
 from App.Ui.DuplicateDialog import Ui_DuplicateDialog
 from App.Database.Menu import duplicate_menu
 from App.Database.Menu import system_codes
+from App.Widget.Delegate import RelationDelegate
+from App.Widget.Delegate import GenericDelegate
 
 
 # logger
@@ -72,6 +73,12 @@ class mt(IntEnum):
     SORTING         = 3
     NODETYPE        = 4
     ACTION          = 5
+
+# node types: A=action, S=Separator, M=menu
+def nodeType() -> list:
+    return [('M', _tr('Menu', 'Menu')),
+            ('A', _tr('Menu', 'Action')),
+            ('S', _tr('Menu', 'Separator'))]
 
 
 def menu(action: QAction, checked: bool = False) -> None:
@@ -145,9 +152,11 @@ class MenusForm(FormIndexManager):
         self.ui.pushButtonAddChild.setIcon(currentIcon['edit_add_child'])
         self.ui.pushButtonAdd.setIcon(currentIcon['edit_add'])
         self.ui.pushButtonRemove.setIcon(currentIcon['edit_remove'])
+        # index view
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('MenuIndex')
-        self.ui.tableView.setItemDelegateForColumn(mn.SYSTEM, BooleanDelegate(self))
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        # mappings
         self.mapper.addMapping(self.ui.lineEditCode, mn.CODE)
         self.mapper.addMapping(self.ui.lineEditDescription, mn.DESCRIPTION)
         self.mapper.addMapping(self.ui.checkBoxSystem, mn.SYSTEM)
@@ -157,6 +166,8 @@ class MenusForm(FormIndexManager):
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
         self.ui.treeViewMenuItems.setLayoutName('MenuItems')
+        self.ui.treeViewMenuItems.setItemDelegate(GenericDelegate(self))
+        self.ui.treeViewMenuItems.setItemDelegateForColumn(mt.NODETYPE, RelationDelegate(self, nodeType))
         self.ui.treeViewMenuItems.setItemDelegateForColumn(mt.ACTION, ActionDelegate(self))
         # signal and slot
         self.ui.pushButtonDuplicate.clicked.connect(self.duplicate)

@@ -265,7 +265,9 @@ class ChangeCompanyDialog(QDialog):
         self.ui.comboBoxCompanies.setItemList(companies)
         # help request
         self.ui.buttonBox.helpRequested.connect(self.showHelp)
-        
+        # default button
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+
     def showHelp(self) -> None:
         "Open help dialog for contextual help"
         dialog = HelpDialog(APPNAME, "help/change_company.html" , self)

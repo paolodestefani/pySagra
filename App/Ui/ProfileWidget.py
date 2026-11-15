@@ -35,10 +35,10 @@ class Ui_ProfileWidget(object):
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.page1 = QWidget()
         self.page1.setObjectName(u"page1")
-        self.verticalLayout_11 = QVBoxLayout(self.page1)
-        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.verticalLayout_10 = QVBoxLayout(self.page1)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.verticalLayout_6 = QVBoxLayout()
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.groupBox_3 = QGroupBox(self.page1)
@@ -61,43 +61,10 @@ class Ui_ProfileWidget(object):
 
         self.verticalLayout_6.addWidget(self.checkBoxSystem)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout_6.addItem(self.verticalSpacer)
+        self.verticalLayout_6.addItem(self.verticalSpacer_2)
 
-        self.groupBox_6 = QGroupBox(self.page1)
-        self.groupBox_6.setObjectName(u"groupBox_6")
-        self.verticalLayout_5 = QVBoxLayout(self.groupBox_6)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.pushButtonDuplicate = QPushButton(self.groupBox_6)
-        self.pushButtonDuplicate.setObjectName(u"pushButtonDuplicate")
-
-        self.verticalLayout_5.addWidget(self.pushButtonDuplicate)
-
-
-        self.verticalLayout_6.addWidget(self.groupBox_6)
-
-
-        self.horizontalLayout_5.addLayout(self.verticalLayout_6)
-
-        self.verticalLayout_10 = QVBoxLayout()
-        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
-        self.groupBox_4 = QGroupBox(self.page1)
-        self.groupBox_4.setObjectName(u"groupBox_4")
-        self.horizontalLayout_3 = QHBoxLayout(self.groupBox_4)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.lineEditDescription = QLineEdit(self.groupBox_4)
-        self.lineEditDescription.setObjectName(u"lineEditDescription")
-
-        self.horizontalLayout_3.addWidget(self.lineEditDescription)
-
-
-        self.verticalLayout_10.addWidget(self.groupBox_4)
-
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.groupBox_2 = QGroupBox(self.page1)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.horizontalLayout = QHBoxLayout(self.groupBox_2)
@@ -108,11 +75,7 @@ class Ui_ProfileWidget(object):
         self.horizontalLayout.addWidget(self.pushButtonFillActions)
 
 
-        self.verticalLayout_3.addWidget(self.groupBox_2)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_3.addItem(self.verticalSpacer_2)
+        self.verticalLayout_6.addWidget(self.groupBox_2)
 
         self.groupBox = QGroupBox(self.page1)
         self.groupBox.setObjectName(u"groupBox")
@@ -139,10 +102,40 @@ class Ui_ProfileWidget(object):
         self.verticalLayout_2.addLayout(self.verticalLayout)
 
 
-        self.verticalLayout_3.addWidget(self.groupBox)
+        self.verticalLayout_6.addWidget(self.groupBox)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_6.addItem(self.verticalSpacer)
+
+        self.groupBox_6 = QGroupBox(self.page1)
+        self.groupBox_6.setObjectName(u"groupBox_6")
+        self.verticalLayout_5 = QVBoxLayout(self.groupBox_6)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.pushButtonDuplicate = QPushButton(self.groupBox_6)
+        self.pushButtonDuplicate.setObjectName(u"pushButtonDuplicate")
+
+        self.verticalLayout_5.addWidget(self.pushButtonDuplicate)
 
 
-        self.horizontalLayout_4.addLayout(self.verticalLayout_3)
+        self.verticalLayout_6.addWidget(self.groupBox_6)
+
+
+        self.horizontalLayout_4.addLayout(self.verticalLayout_6)
+
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.groupBox_4 = QGroupBox(self.page1)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        self.horizontalLayout_3 = QHBoxLayout(self.groupBox_4)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.lineEditDescription = QLineEdit(self.groupBox_4)
+        self.lineEditDescription.setObjectName(u"lineEditDescription")
+
+        self.horizontalLayout_3.addWidget(self.lineEditDescription)
+
+
+        self.verticalLayout_3.addWidget(self.groupBox_4)
 
         self.verticalLayout_9 = QVBoxLayout()
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
@@ -171,18 +164,14 @@ class Ui_ProfileWidget(object):
         self.verticalLayout_9.addLayout(self.horizontalLayout_6)
 
 
-        self.horizontalLayout_4.addLayout(self.verticalLayout_9)
+        self.verticalLayout_3.addLayout(self.verticalLayout_9)
+
+
+        self.horizontalLayout_4.addLayout(self.verticalLayout_3)
 
         self.horizontalLayout_4.setStretch(1, 1)
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_4)
-
-
-        self.horizontalLayout_5.addLayout(self.verticalLayout_10)
-
-        self.horizontalLayout_5.setStretch(1, 1)
-
-        self.verticalLayout_11.addLayout(self.horizontalLayout_5)
 
         self.stackedWidget.addWidget(self.page1)
         self.page2 = QWidget()
@@ -223,15 +212,15 @@ class Ui_ProfileWidget(object):
         ProfileWidget.setWindowTitle(QCoreApplication.translate("ProfileWidget", u"Profile", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("ProfileWidget", u"Code", None))
         self.checkBoxSystem.setText(QCoreApplication.translate("ProfileWidget", u"System profile", None))
-        self.groupBox_6.setTitle(QCoreApplication.translate("ProfileWidget", u"Profile management", None))
-        self.pushButtonDuplicate.setText(QCoreApplication.translate("ProfileWidget", u"Duplicate", None))
-        self.groupBox_4.setTitle(QCoreApplication.translate("ProfileWidget", u"Description", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ProfileWidget", u"Actions", None))
         self.pushButtonFillActions.setText(QCoreApplication.translate("ProfileWidget", u"Fill actions", None))
         self.groupBox.setTitle(QCoreApplication.translate("ProfileWidget", u"Set all actions to", None))
         self.pushButtonRead.setText(QCoreApplication.translate("ProfileWidget", u"Read", None))
         self.pushButtonWrite.setText(QCoreApplication.translate("ProfileWidget", u"Write", None))
         self.pushButtonExecute.setText(QCoreApplication.translate("ProfileWidget", u"Execute", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("ProfileWidget", u"Profile management", None))
+        self.pushButtonDuplicate.setText(QCoreApplication.translate("ProfileWidget", u"Duplicate", None))
+        self.groupBox_4.setTitle(QCoreApplication.translate("ProfileWidget", u"Description", None))
         self.pushButtonAdd.setText("")
         self.pushButtonRemove.setText("")
     # retranslateUi

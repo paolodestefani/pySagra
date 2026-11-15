@@ -99,8 +99,9 @@ class Ui_ChangeCompanyDialog(object):
 
         self.comboBoxCompanies = RelationalComboBox(ChangeCompanyDialog)
         self.comboBoxCompanies.setObjectName(u"comboBoxCompanies")
-        self.comboBoxCompanies.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
+        self.comboBoxCompanies.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.comboBoxCompanies.setMaxVisibleItems(100)
+        self.comboBoxCompanies.setMaxCount(999)
         self.comboBoxCompanies.setIconSize(QSize(0, 0))
         self.comboBoxCompanies.setModelColumn(0)
 
@@ -121,11 +122,13 @@ class Ui_ChangeCompanyDialog(object):
 
         self.buttonBox = QDialogButtonBox(ChangeCompanyDialog)
         self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_4.addWidget(self.buttonBox)
 
+        QWidget.setTabOrder(self.comboBoxCompanies, self.buttonBox)
 
         self.retranslateUi(ChangeCompanyDialog)
         self.buttonBox.accepted.connect(ChangeCompanyDialog.accept)

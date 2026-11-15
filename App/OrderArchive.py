@@ -170,7 +170,10 @@ class pc(StrEnum):
 def deliveryType():
     return [('T', _tr('OrderArchive', 'Table')),
             ('A', _tr('OrderArchive', 'Take Away'))]
-
+    
+def dayPartMapping():
+    return [('L', _tr('OrderArchive', 'Lunch')),
+            ('D', _tr('OrderArchive', 'Dinner'))]
 
 def orderStatus():
     return [('A', _tr('OrderArchive', 'Acquired')),
@@ -226,13 +229,10 @@ class OrderForm(FormIndexManager):
         self.ui = Ui_OrderWidget()
         self.ui.setupUi(self)
         self.setIndexView(self.ui.tableView)
-        self.ui.tableView.setLayoutName('OrderArchiveIndex') 
+        self.ui.tableView.setLayoutName('OrderArchiveIndex')
+        self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(ordi.STAT_DAYPART, RelationDelegate(self, dayPartMapping))
         self.ui.tableView.setItemDelegateForColumn(ordi.DELIVERY, RelationDelegate(self, deliveryType))
-        self.ui.tableView.setItemDelegateForColumn(ordi.TIME, TimeDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ordi.AMOUNT, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ordi.DISCOUNT, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ordi.CASH, AmountDelegate(self))
-        self.ui.tableView.setItemDelegateForColumn(ordi.CHANGE, AmountDelegate(self))
         self.ui.tableView.setItemDelegateForColumn(ordi.STATUS, RelationDelegate(self, orderStatus))
         # mapper mappings
         self.mapper.addMapping(self.ui.lineEditCashDesk, ordh.CASH_DESK)
@@ -242,18 +242,18 @@ class OrderForm(FormIndexManager):
         self.ui.comboBoxDelivery.setItemList(deliveryType())
         self.mapper.addMapping(self.ui.checkBoxElectronicPayment, ordh.EP)
         self.mapper.addMapping(self.ui.checkBoxWebOrder, ordh.WO)
-        self.mapper.addMapping(self.ui.comboBoxDelivery, ordh.DELIVERY, b"modelDataStr")
+        self.mapper.addMapping(self.ui.comboBoxDelivery, ordh.DELIVERY)
         self.mapper.addMapping(self.ui.lineEditTableNumber, ordh.TABLE)
         self.mapper.addMapping(self.ui.spinBoxCovers, ordh.COVERS)
-        self.mapper.addMapping(self.ui.doubleSpinBoxTotalAmount, ordh.AMOUNT, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.doubleSpinBoxDiscount, ordh.DISCOUNT, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.doubleSpinBoxCash, ordh.CASH, b"modelDataDecimal")
-        self.mapper.addMapping(self.ui.doubleSpinBoxChange, ordh.CHANGE, b"modelDataDecimal")
+        self.mapper.addMapping(self.ui.doubleSpinBoxTotalAmount, ordh.AMOUNT)
+        self.mapper.addMapping(self.ui.doubleSpinBoxDiscount, ordh.DISCOUNT)
+        self.mapper.addMapping(self.ui.doubleSpinBoxCash, ordh.CASH)
+        self.mapper.addMapping(self.ui.doubleSpinBoxChange, ordh.CHANGE)
         self.mapper.addMapping(self.ui.lineEditCustomerName, ordh.CUSTOMER)
         self.mapper.addMapping(self.ui.lineEditCustomerContact, ordh.CONTACT)
         self.ui.comboBoxStatus.setItemList(orderStatus())
-        self.mapper.addMapping(self.ui.comboBoxStatus, ordh.STATUS, b"modelDataStr")
-        self.mapper.addMapping(self.ui.dateTimeEditFullfillment, ordh.FULFILLMENT, b"modelDataDateTime")
+        self.mapper.addMapping(self.ui.comboBoxStatus, ordh.STATUS)
+        self.mapper.addMapping(self.ui.dateTimeEditFullfillment, ordh.FULFILLMENT)
         # details tableView
         self.ui.tableViewDetails.setModel(modelDet)
         self.ui.tableViewDetails.setLayoutName('OrderArchiveDetail')
@@ -261,15 +261,11 @@ class OrderForm(FormIndexManager):
         self.ui.tableViewDetails.setItemDelegateForColumn(ordd.QUANTITY, QuantityDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(ordd.PRICE, PriceDelegate(self))
         self.ui.tableViewDetails.setItemDelegateForColumn(ordd.AMOUNT, AmountDelegate(self))
-        # details department treeView
+        # department details treeView
         self.ui.treeViewDepartmentDetails.setModel(modelTreeDep)
+        self.ui.treeViewDepartmentDetails.setLayoutName('OrderArchiveDepartmentDetails')
         self.ui.treeViewDepartmentDetails.setItemDelegate(GenericDelegate(self))
-        self.ui.treeViewDepartmentDetails.header().resizeSection(orddd.DEPARTMENT, 250) # department
-        self.ui.treeViewDepartmentDetails.header().resizeSection(orddd.ITEM, 300) # item
-        self.ui.treeViewDepartmentDetails.header().resizeSection(orddd.VARIANTS, 300) # variants
         self.ui.treeViewDepartmentDetails.setItemDelegateForColumn(orddd.QUANTITY, QuantityDelegate(self))
-        self.ui.treeViewDepartmentDetails.hideColumn(orddd.PARENT)
-        self.ui.treeViewDepartmentDetails.hideColumn(orddd.CHILD)
         # header department tableView
         self.ui.tableViewDepartmentHeader.setModel(modelHeaDep)
         self.ui.tableViewDepartmentHeader.setLayoutName('OrderArchiveDepartment')

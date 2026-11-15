@@ -49,6 +49,7 @@ from App.Database.Models import ToolbarModel
 from App.Database.Models import ToolbarItemTreeModel
 from App.Database.Menu import system_codes
 from App.Widget.Delegate import GenericDelegate
+from App.Widget.Delegate import RelationDelegate
 from App.Widget.Delegate import ActionDelegate
 from App.Widget.Form import FormIndexManager
 from App.Ui.ToolbarWidget import Ui_ToolbarWidget
@@ -70,6 +71,12 @@ class tbt(IntEnum):
     NODETYPE        = 4
     ACTION          = 5
 
+# node types: A=action, S=Separator, M=menu
+def nodeType() -> list:
+    return [('T', _tr('Toolbar', 'Toolbar')),
+            ('A', _tr('Toolbar', 'Action')),
+            ('S', _tr('Toolbar', 'Separator'))]
+    
 
 def toolbar(action: QAction, checked: bool = False) -> None:
     "Show/Edit toolbars"
@@ -127,6 +134,8 @@ class ToolbarForm(FormIndexManager):
         # menu item treeview
         self.ui.treeViewMenuItems.setModel(treeModel)
         self.ui.treeViewMenuItems.setLayoutName('ToolbarItems')
+        self.ui.treeViewMenuItems.setItemDelegate(GenericDelegate(self))
+        self.ui.treeViewMenuItems.setItemDelegateForColumn(tbt.NODETYPE, RelationDelegate(self, nodeType))
         self.ui.treeViewMenuItems.setItemDelegateForColumn(tbt.ACTION, ActionDelegate(self))
         # signal/slot
         self.ui.pushButtonAddChild.clicked.connect(self.addChild)

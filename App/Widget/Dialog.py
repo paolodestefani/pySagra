@@ -87,14 +87,6 @@ from App.Database.Report import get_report_list
 from App.Database.Report import report_xml
 from App.Database.Report import get_report_from_adapt
 from App.Database.Report import report_query
-from App.Database.Adaptation import set_adapt_setting
-from App.Database.Adaptation import get_adapt_setting
-from App.Database.Adaptation import delete_adaptation
-from App.Database.Adaptation import create_adaptation
-from App.Database.Adaptation import update_adaptation
-from App.Database.Adaptation import get_adapt_sorting
-from App.Database.Adaptation import set_adapt_sorting
-from App.Database.Adaptation import is_system_object
 from App.Database.Lookup import event_lookup
 from App.Database.Lookup import item_lookup
 from App.Database.Lookup import department_lookup
@@ -111,6 +103,8 @@ from App.Database.Adaptation import set_adapt_sorting
 from App.Database.Adaptation import get_adapt_default
 from App.Database.Adaptation import set_adapt_class_default
 from App.Database.Adaptation import set_adapt_user_default
+from App.Database.Adaptation import update_adaptation
+from App.Database.Adaptation import is_system_object
 from App.Database.Event import get_event_data
 from App.Report.ReportEngine import Report
 from App.Report.ReportEngineEscPos import ReportEscpos
