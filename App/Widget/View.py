@@ -33,6 +33,7 @@ import os
 import csv
 from decimal import Decimal
 from typing import Any
+from typing import TYPE_CHECKING
 
 # PySide6
 from PySide6.QtCore import Qt
@@ -184,10 +185,31 @@ class ViewSettingsDialog(QDialog):
         super().accept()
 
 
-class LayoutViewMixin:
+# for the type checker the mixin is a view; at run time it is a plain class
+# placed before QTableView or QTreeView in the view classes
+if TYPE_CHECKING:
+    _ViewBase = QAbstractItemView
+else:
+    _ViewBase = object
+
+
+class LayoutViewMixin(_ViewBase):
     """Column layouts of a view stored in the database: visibility, width and position
     of every column, set from the context menu. Shared by the enhanced table and tree
     views, it works on the header of the view returned by header()"""
+
+    if TYPE_CHECKING:
+        # methods that QTableView and QTreeView have in common, not in QAbstractItemView
+        def header(self, /) -> QHeaderView: ...
+        def setColumnHidden(self, column: int, hide: bool, /) -> None: ...
+        def isColumnHidden(self, column: int, /) -> bool: ...
+        def columnWidth(self, column: int, /) -> int: ...
+        def setColumnWidth(self, column: int, width: int, /) -> None: ...
+        def hideColumn(self, column: int, /) -> None: ...
+        def showColumn(self, column: int, /) -> None: ...
+        def setSortingEnabled(self, enable: bool, /) -> None: ...
+        def isSortingEnabled(self, /) -> bool: ...
+        def resizeColumnToContents(self, column: int, /) -> None: ...
 
     def _initLayout(self, view_actions: list, resize_actions: list, output_actions: list) -> None:
         "Set up the layout state and the context menu, called by the view constructor"
@@ -211,8 +233,10 @@ class LayoutViewMixin:
         # content resize triggers
         self.cm_resize_cols = QAction(_tr("View", "Resize columns to contents"), self)
         # resizeColumnToContents exists in tables and trees, resizeColumnsToContents in tables only
-        self.cm_resize_cols.triggered.connect(
-            lambda: [self.resizeColumnToContents(c) for c in range(self.header().count())])
+        def resize_columns() -> None:
+            for c in range(self.header().count()):
+                self.resizeColumnToContents(c)
+        self.cm_resize_cols.triggered.connect(resize_columns)
         # layout management containers
         self.cm_user_default = QAction(_tr("View", "Set current layout as user default"), self)
         self.cm_user_default.triggered.connect(self.setUserDefaultLayout)
