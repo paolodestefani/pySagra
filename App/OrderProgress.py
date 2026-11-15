@@ -208,12 +208,12 @@ class OrderProgressForm(FormViewManager[Ui_OrderProgressWidget]):
         self.ui.tableWidgetScans.hideColumn(ordp.ID)  # hide id column
         self.ui.tableWidgetScans.setItemDelegateForColumn(ordp.DELIVERY, RelationDelegate(self, deliveryType))
         self.ui.tableWidgetScans.setColumnWidth(ordp.BARCODE, 150)
-        self.ui.tableWidgetScans.setColumnWidth(ordp.NUMBER, 100)
-        self.ui.tableWidgetScans.setColumnWidth(ordp.DATE, 120)
-        self.ui.tableWidgetScans.setColumnWidth(ordp.TIME, 100)
-        self.ui.tableWidgetScans.setColumnWidth(ordp.DELIVERY, 150)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.NUMBER, 80)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.DATE, 80)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.TIME, 80)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.DELIVERY, 120)
         self.ui.tableWidgetScans.setColumnWidth(ordp.TABLE, 100)
-        self.ui.tableWidgetScans.setColumnWidth(ordp.CUSTOMER, 150)
+        self.ui.tableWidgetScans.setColumnWidth(ordp.CUSTOMER, 160)
         self.ui.tableWidgetScans.setColumnWidth(ordp.DEPARTMENT, 150)
         self.ui.tableWidgetScans.setColumnWidth(ordp.FULFILLMENT, 120)
         # signal/slot connections

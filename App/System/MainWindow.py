@@ -514,7 +514,7 @@ class MainWindow(QMainWindow):
                     QMessageBox.StandardButton.No
                     ) == QMessageBox.StandardButton.No:
                     return
-                w.reload()
+            w.reload()
 
     def toFirst(self, *args, **kwargs) -> None: # avoid signature change for action slot
         "Go to first record"
