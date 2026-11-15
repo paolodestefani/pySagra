@@ -2906,7 +2906,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderEntry.py" line="1248"/>
         <location filename="../../App/OrderEntry.py" line="1256"/>
         <location filename="../../App/OrderEntry.py" line="1322"/>
-        <location filename="../../App/OrderNumbering.py" line="78"/>
+        <location filename="../../App/OrderNumbering.py" line="82"/>
         <location filename="../../App/OrderPrintSettings.py" line="106"/>
         <location filename="../../App/OrderPrintSettings.py" line="166"/>
         <location filename="../../App/OrderProgress.py" line="121"/>
@@ -5416,12 +5416,12 @@ Devo procedere comunque?</translation>
 <context>
     <name>OrderNumbering</name>
     <message>
-        <location filename="../../App/OrderNumbering.py" line="79"/>
+        <location filename="../../App/OrderNumbering.py" line="83"/>
         <source>No access right to this archive</source>
         <translation>Nessun diritto di accesso a questo archivio</translation>
     </message>
     <message>
-        <location filename="../../App/OrderNumbering.py" line="108"/>
+        <location filename="../../App/OrderNumbering.py" line="113"/>
         <source>A numbering for this event, date and day part already exists</source>
         <translation>Un numero per questo evento, data e parte del giorno esiste già</translation>
     </message>
@@ -5876,6 +5876,19 @@ Devo procedere comunque?</translation>
         <location filename="../../App/Ui/OrderedDeliveredWidget.ui" line="27"/>
         <source>Only Ordered &gt; 0</source>
         <translation>Solo Ordinato &gt; 0</translation>
+    </message>
+</context>
+<context>
+    <name>OrderedNumbering</name>
+    <message>
+        <location filename="../../App/OrderNumbering.py" line="70"/>
+        <source>Lunch</source>
+        <translation>Pranzo</translation>
+    </message>
+    <message>
+        <location filename="../../App/OrderNumbering.py" line="71"/>
+        <source>Dinner</source>
+        <translation>Cena</translation>
     </message>
 </context>
 <context>

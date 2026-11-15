@@ -67,8 +67,8 @@ class ordn(IntEnum):
     DATE_UPD = 8
 
 def dayPartMapping():
-    return [('L', _tr('OrderedDelivered', 'Lunch')),
-            ('D', _tr('OrderedDelivered', 'Dinner'))]
+    return [('L', _tr('OrderedNumbering', 'Lunch')),
+            ('D', _tr('OrderedNumbering', 'Dinner'))]
     
 
 def orderNumbering(action: QAction, checked: bool = False) -> None:

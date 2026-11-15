@@ -215,6 +215,7 @@ class EventToolDialog(QDialog):
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Utility', 'Operation completed successfully'))
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
 
 
 class DeleteToolDialog(QDialog):
@@ -268,6 +269,7 @@ class DeleteToolDialog(QDialog):
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Tool', 'Operation completed successfully'))
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
 
 
 class CopyToolDialog(QDialog):
@@ -322,3 +324,4 @@ class CopyToolDialog(QDialog):
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Tool', 'Operation completed successfully'))
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
