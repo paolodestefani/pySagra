@@ -262,17 +262,13 @@ class PythonHighlighter(QSyntaxHighlighter):
             while start_index < len(text):
                 match_double = self.trippleDoubleExpression.search(text, start_index)
                 match_single = self.trippleSingleExpression.search(text, start_index)
-                
-                pos_double = match_double.start() if match_double else -1
-                pos_single = match_single.start() if match_single else -1
-                
-                if pos_double == -1 and pos_single == -1:
-                    break
-                    
-                if pos_single == -1 or (pos_double != -1 and pos_double < pos_single):
+                # the triple quotes that open first
+                if match_double and (not match_single or match_double.start() < match_single.start()):
                     start_index = self._process_multiline_start(text, match_double, self.trippleDoubleExpression, 1)
-                else:
+                elif match_single:
                     start_index = self._process_multiline_start(text, match_single, self.trippleSingleExpression, 2)
+                else:
+                    break
                     
                 if self.currentBlockState() != 0:
                     break

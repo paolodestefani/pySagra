@@ -41,7 +41,7 @@ from App.Database.Connect import appconn
 logger = logging.getLogger(__name__)
 
 
-def get_escpos_printer_params(printer_id: int) -> tuple[Any] | None:
+def get_escpos_printer_params(printer_id: int) -> tuple[Any, ...] | None:
     "Returns all the parameters for printer_id"
     script = t"""
 SELECT

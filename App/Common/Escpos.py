@@ -46,7 +46,7 @@ from App.Database.Escpos import get_escpos_printer_params
 # create an esc/pos printer from parameters stored in database
 def escpos_printer(printer_id: int)-> Usb | Network:
     "Create an ESC/POS printer"
-    pars: tuple[Any] | None
+    pars: tuple[Any, ...] | None
     if  (pars := get_escpos_printer_params(printer_id)): 
         (hostname, name, type, 
          host, port, connection_timeout,
