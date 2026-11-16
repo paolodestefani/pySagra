@@ -24,7 +24,7 @@ class Ui_DeleteToolDialog(object):
     def setupUi(self, DeleteToolDialog):
         if not DeleteToolDialog.objectName():
             DeleteToolDialog.setObjectName(u"DeleteToolDialog")
-        DeleteToolDialog.resize(431, 327)
+        DeleteToolDialog.resize(512, 348)
         self.verticalLayout_5 = QVBoxLayout(DeleteToolDialog)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout = QHBoxLayout()
@@ -130,11 +130,18 @@ class Ui_DeleteToolDialog(object):
         self.buttonBox = QDialogButtonBox(DeleteToolDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Close|QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_5.addWidget(self.buttonBox)
 
+        QWidget.setTabOrder(self.checkBoxOrder, self.checkBoxInventory)
+        QWidget.setTabOrder(self.checkBoxInventory, self.checkBoxPriceList)
+        QWidget.setTabOrder(self.checkBoxPriceList, self.checkBoxEvent)
+        QWidget.setTabOrder(self.checkBoxEvent, self.checkBoxItem)
+        QWidget.setTabOrder(self.checkBoxItem, self.checkBoxDepartment)
+        QWidget.setTabOrder(self.checkBoxDepartment, self.checkBoxTable)
+        QWidget.setTabOrder(self.checkBoxTable, self.checkBoxCashDesk)
 
         self.retranslateUi(DeleteToolDialog)
         self.buttonBox.accepted.connect(DeleteToolDialog.accept)

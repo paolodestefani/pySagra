@@ -24,7 +24,7 @@ class Ui_CopyToolDialog(object):
     def setupUi(self, CopyToolDialog):
         if not CopyToolDialog.objectName():
             CopyToolDialog.setObjectName(u"CopyToolDialog")
-        CopyToolDialog.resize(486, 373)
+        CopyToolDialog.resize(512, 360)
         self.verticalLayout_6 = QVBoxLayout(CopyToolDialog)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.horizontalLayout = QHBoxLayout()
@@ -51,6 +51,7 @@ class Ui_CopyToolDialog(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.comboBoxCompany = QComboBox(self.groupBoxUtility)
         self.comboBoxCompany.setObjectName(u"comboBoxCompany")
+        self.comboBoxCompany.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         self.verticalLayout_3.addWidget(self.comboBoxCompany)
 
@@ -137,11 +138,18 @@ class Ui_CopyToolDialog(object):
         self.buttonBox = QDialogButtonBox(CopyToolDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Close|QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_6.addWidget(self.buttonBox)
 
+        QWidget.setTabOrder(self.comboBoxCompany, self.checkBoxCashDesk)
+        QWidget.setTabOrder(self.checkBoxCashDesk, self.checkBoxTable)
+        QWidget.setTabOrder(self.checkBoxTable, self.checkBoxSettings)
+        QWidget.setTabOrder(self.checkBoxSettings, self.checkBoxDepartment)
+        QWidget.setTabOrder(self.checkBoxDepartment, self.checkBoxItem)
+        QWidget.setTabOrder(self.checkBoxItem, self.checkBoxInventory)
+        QWidget.setTabOrder(self.checkBoxInventory, self.checkBoxPriceList)
 
         self.retranslateUi(CopyToolDialog)
         self.buttonBox.accepted.connect(CopyToolDialog.accept)

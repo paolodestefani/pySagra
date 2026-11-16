@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>486</width>
-    <height>373</height>
+    <width>512</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,7 +49,11 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QComboBox" name="comboBoxCompany"/>
+           <widget class="QComboBox" name="comboBoxCompany">
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::StrongFocus</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -168,7 +172,7 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Close|QDialogButtonBox::StandardButton::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Help|QDialogButtonBox::StandardButton::Ok</set>
      </property>
      <property name="centerButtons">
       <bool>true</bool>
@@ -177,6 +181,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBoxCompany</tabstop>
+  <tabstop>checkBoxCashDesk</tabstop>
+  <tabstop>checkBoxTable</tabstop>
+  <tabstop>checkBoxSettings</tabstop>
+  <tabstop>checkBoxDepartment</tabstop>
+  <tabstop>checkBoxItem</tabstop>
+  <tabstop>checkBoxInventory</tabstop>
+  <tabstop>checkBoxPriceList</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

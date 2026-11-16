@@ -23,7 +23,7 @@ class Ui_EventToolDialog(object):
     def setupUi(self, EventToolDialog):
         if not EventToolDialog.objectName():
             EventToolDialog.setObjectName(u"EventToolDialog")
-        EventToolDialog.resize(512, 342)
+        EventToolDialog.resize(512, 348)
         self.verticalLayout_6 = QVBoxLayout(EventToolDialog)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.horizontalLayout = QHBoxLayout()
@@ -50,6 +50,7 @@ class Ui_EventToolDialog(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.comboBoxUtility = QComboBox(self.groupBoxUtility)
         self.comboBoxUtility.setObjectName(u"comboBoxUtility")
+        self.comboBoxUtility.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         self.verticalLayout_2.addWidget(self.comboBoxUtility)
 
@@ -101,7 +102,7 @@ class Ui_EventToolDialog(object):
         self.buttonBox = QDialogButtonBox(EventToolDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Close|QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_6.addWidget(self.buttonBox)

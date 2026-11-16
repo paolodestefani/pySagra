@@ -1497,52 +1497,52 @@ Proseguire ugualmente ?</translation>
         <translation>Copia dall&apos;azienda</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="65"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="69"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="76"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="80"/>
         <source>Copy text</source>
         <translation>Copia testo</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="89"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="93"/>
         <source>What to copy</source>
         <translation>Cosa copiare</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="97"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="101"/>
         <source>Items</source>
         <translation>Articoli</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="104"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="108"/>
         <source>Inventory</source>
         <translation>Inventario</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="111"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="115"/>
         <source>Price lists</source>
         <translation>Listini</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="118"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="122"/>
         <source>Departments</source>
         <translation>Reparti</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="125"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="129"/>
         <source>Cash desks</source>
         <translation>Casse</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="132"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="136"/>
         <source>Tables</source>
         <translation>Tavoli</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/CopyToolDialog.ui" line="139"/>
+        <location filename="../../App/Ui/CopyToolDialog.ui" line="143"/>
         <source>Settings</source>
         <translation>Impostazioni</translation>
     </message>
@@ -2005,17 +2005,17 @@ Proseguire ugualmente ?</translation>
         <translation>Utility</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/EventToolDialog.ui" line="65"/>
+        <location filename="../../App/Ui/EventToolDialog.ui" line="69"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/EventToolDialog.ui" line="76"/>
+        <location filename="../../App/Ui/EventToolDialog.ui" line="80"/>
         <source>Utility text</source>
         <translation>Testo dell&apos;utility</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/EventToolDialog.ui" line="89"/>
+        <location filename="../../App/Ui/EventToolDialog.ui" line="93"/>
         <source>Event</source>
         <translation>Evento</translation>
     </message>

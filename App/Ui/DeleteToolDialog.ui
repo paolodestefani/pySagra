@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>431</width>
-    <height>327</height>
+    <width>512</width>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -163,7 +163,7 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Close|QDialogButtonBox::StandardButton::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Help|QDialogButtonBox::StandardButton::Ok</set>
      </property>
      <property name="centerButtons">
       <bool>true</bool>
@@ -172,6 +172,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>checkBoxOrder</tabstop>
+  <tabstop>checkBoxInventory</tabstop>
+  <tabstop>checkBoxPriceList</tabstop>
+  <tabstop>checkBoxEvent</tabstop>
+  <tabstop>checkBoxItem</tabstop>
+  <tabstop>checkBoxDepartment</tabstop>
+  <tabstop>checkBoxTable</tabstop>
+  <tabstop>checkBoxCashDesk</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

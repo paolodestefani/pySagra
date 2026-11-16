@@ -154,7 +154,7 @@ class EventToolDialog(QDialog):
         self.ui.comboBoxEvent.setCurrentText(session['event_description'])
         self.ui.comboBoxUtility.currentIndexChanged.connect(self.updateWarning)
         self.updateWarning(0)
-        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
        
     def updateWarning(self, index):
         "Update warning text according to selected utility"
@@ -215,7 +215,10 @@ class EventToolDialog(QDialog):
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Utility', 'Operation completed successfully'))
-        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
+        # back to Cancel: the closed message box gives the focus back to Ok, and Enter
+        # on a focused button presses it, so it would run the operation again
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setFocus()
 
 
 class DeleteToolDialog(QDialog):
@@ -233,7 +236,7 @@ class DeleteToolDialog(QDialog):
                                          "selected objects of the current company. It's not possible "
                                          "to undo this operation. Use with caution!\n"
                                          "You can recover data only from a backup copy of the database."))
-        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
        
     def accept(self):
         "Proceed with the selected utility"
@@ -269,7 +272,10 @@ class DeleteToolDialog(QDialog):
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Tool', 'Operation completed successfully'))
-        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
+        # back to Cancel: the closed message box gives the focus back to Ok, and Enter
+        # on a focused button presses it, so it would run the operation again
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setFocus()
 
 
 class CopyToolDialog(QDialog):
@@ -290,7 +296,7 @@ class CopyToolDialog(QDialog):
                                          "selected objects of the selected company to the current company. "
                                          "It's not possible to undo this operation. Use with caution!\n"
                                          "You can recover data only from a backup copy of the database."))
-        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
     
     def accept(self):
         "Proceed with the selected utility"
@@ -324,4 +330,7 @@ class CopyToolDialog(QDialog):
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Tool', 'Operation completed successfully'))
-        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
+        # back to Cancel: the closed message box gives the focus back to Ok, and Enter
+        # on a focused button presses it, so it would run the operation again
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setFocus()
