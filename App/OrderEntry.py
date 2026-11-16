@@ -46,6 +46,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtCore import Slot
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QAction 
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QInputDialog
@@ -362,11 +363,15 @@ class BaseOrderDialog(QDialog):
         if not cd:
             cd = _tr('OrderEntry', 'cash desk name to set')
         self.ui.labelCashDeskDescription.setText(cd)
-        txt = _tr('OrderEntry', "Company: {} User: {} Event: {} Cash Desk: {}  [Press ESC to quit]").format(
+        # the help key of the platform: F1, Cmd+? on macOS
+        help_key = QKeySequence.keyBindings(QKeySequence.StandardKey.HelpContents)[0].toString(
+            QKeySequence.SequenceFormat.NativeText)
+        txt = _tr('OrderEntry', "Company: {} User: {} Event: {} Cash Desk: {}  [Press ESC to quit, {} for help]").format(
             str(session.get('company_description') or ''),
             str(session.get('app_user_code') or ''),
             str(session.get('event_description') or ''),
-            str(cd)
+            str(cd),
+            help_key
         )
         self.setWindowTitle(txt)
         
