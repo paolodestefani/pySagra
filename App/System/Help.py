@@ -42,6 +42,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtPrintSupport import QPrintPreviewDialog
 
@@ -73,12 +74,14 @@ def help(action: QAction, checked: bool = False) -> None:
 def addHelpAction(widget: QWidget, link: str) -> None:
     """Give a dialog its help page, as helpLink does for the forms: the help action of the
     main window can't reach a dialog, an action on the standard help key (F1, Cmd+? on
-    macOS) opens the page"""
+    macOS) opens the page, and so does the Help button of its button box if it has one"""
     widget.helpLink = link   # type: ignore[attr-defined]
     action = QAction(_tr('Help', 'Help'), widget)
     action.setShortcut(QKeySequence.StandardKey.HelpContents)
     action.triggered.connect(lambda: HelpDialog(APPNAME, widget.helpLink, widget).show())   # type: ignore[attr-defined]
     widget.addAction(action)
+    for box in widget.findChildren(QDialogButtonBox):
+        box.helpRequested.connect(action.trigger)
 
 
 def faq(action: QAction, checked: bool = False) -> None:

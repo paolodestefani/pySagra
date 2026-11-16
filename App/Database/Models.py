@@ -789,7 +789,6 @@ class EscposPrinterModel(TableModel):
         self.typeFields = {'N': {'host': None, 'port': 9100, 'connection_timeout': 30},
                            'U': {'id_vendor': None, 'id_product': None, 'usb_timeout': 10,
                                  'in_endpoint': 130, 'out_endpoint': 1}}
-        self.fieldColumn = {col[0]: n for n, col in enumerate(self.columns)}
         self.repr = 'Esc/pos printers table model'
 
     def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
@@ -797,7 +796,7 @@ class EscposPrinterModel(TableModel):
         f = super().flags(index)
         if not index.isValid():
             return f
-        printer_type = self.index(index.row(), self.fieldColumn['type']).data(Qt.ItemDataRole.EditRole)
+        printer_type = self.index(index.row(), self.fieldColumn('type')).data(Qt.ItemDataRole.EditRole)
         field = self.columns[index.column()][0]
         for t, fields in self.typeFields.items():
             if field in fields and t != printer_type:
@@ -808,10 +807,10 @@ class EscposPrinterModel(TableModel):
                 value: Any = None, role: int = Qt.ItemDataRole.EditRole) -> bool:
         "On a type change clear the parameters of the other type and fill the empty ones of the new type"
         ok = super().setData(index, value, role)
-        if ok and role == Qt.ItemDataRole.EditRole and index.column() == self.fieldColumn['type']:
+        if ok and role == Qt.ItemDataRole.EditRole and index.column() == self.fieldColumn('type'):
             for t, fields in self.typeFields.items():
                 for field, default in fields.items():
-                    cell = self.index(index.row(), self.fieldColumn[field])
+                    cell = self.index(index.row(), self.fieldColumn(field))
                     if t != value:
                         super().setData(cell, None, role)
                     elif default is not None and cell.data(Qt.ItemDataRole.EditRole) is None:

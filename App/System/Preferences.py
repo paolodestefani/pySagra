@@ -45,7 +45,6 @@ from PySide6.QtWidgets import QStyleFactory
 from PySide6.QtWidgets import QPushButton
 
 # application modules
-from App import APPNAME
 from App import session
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
@@ -58,7 +57,7 @@ from App.Common.Gui import setColorScheme
 from App.Common.Gui import setIcon
 from App.Database.Preferences import load_preferences
 from App.Database.Preferences import save_preferences
-from App.System.Help import HelpDialog
+from App.System.Help import addHelpAction
 from App.Ui.PreferencesDialog import Ui_PreferencesDialog
 
 
@@ -126,13 +125,8 @@ class PreferencesDialog(QDialog):
         self.ui.comboBoxTabPosition.modelDataStr = tabposition or 'N'
         # signal/slot
         self.ui.buttonBox.clicked.connect(self.clicked)
-        # help request
-        self.ui.buttonBox.helpRequested.connect(self.showHelp)
-        
-    def showHelp(self) -> None:
-        "Open help dialog for contextual help"
-        dialog = HelpDialog(APPNAME, "help/preferences.html" , self)
-        dialog.show()
+        # help button and help key
+        addHelpAction(self, "help/preferences.html")
 
     def clicked(self, button: QPushButton) -> None:
         "Call Apply on clicked"

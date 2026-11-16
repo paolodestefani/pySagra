@@ -70,7 +70,7 @@ from App.Database.Connect import get_company_desc
 from App.Database.Connect import get_current_event
 from App.Database.Connect import can_use_company
 from App.System.User import ChangePasswordDialog
-from App.System.Help import HelpDialog
+from App.System.Help import addHelpAction
 from App.Ui.LoginDialog import Ui_LoginDialog
 from App.Ui.ChangeCompanyDialog import Ui_ChangeCompanyDialog
 
@@ -115,8 +115,8 @@ class LoginDialog(QDialog):
         self.ui.checkBoxMore.clicked.connect(self.expand) # error if i set this in QtDesigner
         txt = _tr('Login', "Application Version:")
         self.ui.labelVersion.setText(f"{txt} {APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}")
-        # help
-        self.ui.buttonBox.helpRequested.connect(self.showHelp)
+        # help button and help key
+        addHelpAction(self, "help/login.html")
         # clean settings
         self.ui.pushButtonClearSettings.clicked.connect(self.clearLocalSettings)
         
@@ -132,11 +132,6 @@ class LoginDialog(QDialog):
         st = QSettings()
         st.clear()
         
-    def showHelp(self) -> None:
-        "Open help dialog for contextual help"
-        dialog = HelpDialog(APPNAME, "help/login.html" , self)
-        dialog.show()
-            
     def expand(self, state: bool) -> None:
         self.ui.frameMore.setVisible(state)
 
@@ -263,15 +258,10 @@ class ChangeCompanyDialog(QDialog):
         self.ui.lineEditUser.setText(session['user'])
         self.ui.lineEditCompany.setText(session.get('company_description') or '')
         self.ui.comboBoxCompanies.setItemList(companies)
-        # help request
-        self.ui.buttonBox.helpRequested.connect(self.showHelp)
+        # help button and help key
+        addHelpAction(self, "help/change_company.html")
         # default button
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
-
-    def showHelp(self) -> None:
-        "Open help dialog for contextual help"
-        dialog = HelpDialog(APPNAME, "help/change_company.html" , self)
-        dialog.show()
 
     def accept(self) -> None:
         "Change company"
