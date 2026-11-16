@@ -145,7 +145,7 @@ class Ui_UpdateWebOrderServerDialog(object):
         self.buttonBox = QDialogButtonBox(UpdateWebOrderServerDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Apply|QDialogButtonBox.StandardButton.Close)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Apply|QDialogButtonBox.StandardButton.Close|QDialogButtonBox.StandardButton.Help)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_8.addWidget(self.buttonBox)

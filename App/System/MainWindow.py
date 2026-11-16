@@ -634,6 +634,11 @@ class MainWindow(QMainWindow):
 
     def helpLink(self) -> str:
         "Return context help link if available"
+        # a non modal dialog with its own page (addHelpAction): on macOS the menu bar of
+        # the main window stays active over it and its help key comes here
+        w = QApplication.activeWindow()
+        if w is not self and w and getattr(w, 'helpLink', None):
+            return w.helpLink   # type: ignore[attr-defined]
         w = self.tabWidget.currentWidget()
         if w and hasattr(w, 'helpLink') and w.helpLink:
             return w.helpLink
