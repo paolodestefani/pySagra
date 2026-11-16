@@ -2921,7 +2921,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderPrintSettings.py" line="166"/>
         <location filename="../../App/OrderProgress.py" line="136"/>
         <location filename="../../App/OrderProgress.py" line="142"/>
-        <location filename="../../App/OrderProgress.py" line="263"/>
+        <location filename="../../App/OrderProgress.py" line="273"/>
         <location filename="../../App/PriceList.py" line="99"/>
         <location filename="../../App/PriceList.py" line="164"/>
         <location filename="../../App/SalesSummary.py" line="99"/>
@@ -3051,10 +3051,10 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/OrderEntry.py" line="1376"/>
         <location filename="../../App/OrderEntry.py" line="1421"/>
         <location filename="../../App/OrderPrintSettings.py" line="171"/>
-        <location filename="../../App/OrderProgress.py" line="274"/>
-        <location filename="../../App/OrderProgress.py" line="338"/>
-        <location filename="../../App/OrderProgress.py" line="362"/>
-        <location filename="../../App/OrderProgress.py" line="380"/>
+        <location filename="../../App/OrderProgress.py" line="284"/>
+        <location filename="../../App/OrderProgress.py" line="348"/>
+        <location filename="../../App/OrderProgress.py" line="372"/>
+        <location filename="../../App/OrderProgress.py" line="390"/>
         <location filename="../../App/PriceList.py" line="183"/>
         <location filename="../../App/SeatMap.py" line="183"/>
         <location filename="../../App/SeatMap.py" line="197"/>
@@ -5612,48 +5612,48 @@ Devo procedere comunque?</translation>
         <translation>Data evasione</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="255"/>
+        <location filename="../../App/OrderProgress.py" line="265"/>
         <source>Error on getting order details</source>
         <translation>Errore nel recuperare i dettagli dell&apos;ordine</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="264"/>
+        <location filename="../../App/OrderProgress.py" line="274"/>
         <source>Order not found</source>
         <translation>Ordine non trovato</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="275"/>
+        <location filename="../../App/OrderProgress.py" line="285"/>
         <source>Order already processed, process again ?</source>
         <translation>Ordine già elaborato, lo elaboro ancora ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="286"/>
-        <location filename="../../App/OrderProgress.py" line="346"/>
+        <location filename="../../App/OrderProgress.py" line="296"/>
+        <location filename="../../App/OrderProgress.py" line="356"/>
         <source>Update order status</source>
         <translation>Aggiorna lo stato dell&apos;ordine</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="339"/>
+        <location filename="../../App/OrderProgress.py" line="349"/>
         <source>Set current selected order as unprocessed ?</source>
         <translation>Imposto l&apos;ordine selezionato come non elaborato ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="363"/>
+        <location filename="../../App/OrderProgress.py" line="373"/>
         <source>Mark the selected order as Processed ?</source>
         <translation>Imposto l&apos;ordine selezionato come Evaso ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="370"/>
+        <location filename="../../App/OrderProgress.py" line="380"/>
         <source>Mark order as processed</source>
         <translation>Imposta l&apos;ordine selezionato come Evaso</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="381"/>
+        <location filename="../../App/OrderProgress.py" line="391"/>
         <source>Mark the selected order as Unprocessed ?</source>
         <translation>Imposto l&apos;ordine selezionato come Non evaso ?</translation>
     </message>
     <message>
-        <location filename="../../App/OrderProgress.py" line="388"/>
+        <location filename="../../App/OrderProgress.py" line="398"/>
         <source>Mark order as unprocessed</source>
         <translation>Imposto l&apos;ordine selezionato come Non evaso</translation>
     </message>
@@ -8721,7 +8721,7 @@ You can recover data only from a backup copy of the database.</source>
     <message>
         <location filename="../../App/Widget/View.py" line="217"/>
         <source>Set current layout as user default</source>
-        <translation>Imposta il layout corrente come predefinito per l&apos;utente</translation>
+        <translation>Imposta come predefinito per l&apos;utente</translation>
     </message>
     <message>
         <location filename="../../App/Widget/View.py" line="219"/>
@@ -8741,7 +8741,7 @@ You can recover data only from a backup copy of the database.</source>
     <message>
         <location filename="../../App/Widget/View.py" line="228"/>
         <source>Set current layout as class default</source>
-        <translation>Imposta il layout corrente come predefinito per la classe</translation>
+        <translation>Imposta come predefinito per la classe</translation>
     </message>
     <message>
         <location filename="../../App/Widget/View.py" line="230"/>
