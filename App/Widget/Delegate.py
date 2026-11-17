@@ -36,6 +36,7 @@ from typing import Callable
 
 # PySide6
 from PySide6.QtCore import Qt
+from PySide6.QtCore import QTimer
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import QByteArray
 from PySide6.QtCore import QBuffer
@@ -634,6 +635,13 @@ class RelationDelegate(ChangeOnlyDelegate):
         cb = QComboBox(parent)
         for k, v in self.data.items():
             cb.addItem(str(v), k) # v is the description, k is the ID/key saved as userData
+        # the list opens with the editor and a choice is written at once: without these
+        # the list needs one more click and the choice waits for the focus to leave the cell
+        def choose() -> None:
+            self.commitData.emit(cb)
+            self.closeEditor.emit(cb)
+        cb.activated.connect(choose)
+        QTimer.singleShot(0, cb, cb.showPopup)   # cb as context: no call if the editor is gone first
         return cb
 
     def loadEditor(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
