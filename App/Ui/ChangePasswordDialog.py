@@ -27,7 +27,7 @@ class Ui_ChangePasswordDialog(object):
         if not ChangePasswordDialog.objectName():
             ChangePasswordDialog.setObjectName(u"ChangePasswordDialog")
         ChangePasswordDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        ChangePasswordDialog.resize(500, 161)
+        ChangePasswordDialog.resize(480, 176)
         ChangePasswordDialog.setLocale(QLocale(QLocale.C, QLocale.AnyTerritory))
         ChangePasswordDialog.setSizeGripEnabled(True)
         self.verticalLayout = QVBoxLayout(ChangePasswordDialog)

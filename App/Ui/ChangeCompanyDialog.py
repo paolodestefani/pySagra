@@ -28,7 +28,7 @@ class Ui_ChangeCompanyDialog(object):
         if not ChangeCompanyDialog.objectName():
             ChangeCompanyDialog.setObjectName(u"ChangeCompanyDialog")
         ChangeCompanyDialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        ChangeCompanyDialog.resize(512, 256)
+        ChangeCompanyDialog.resize(576, 256)
         ChangeCompanyDialog.setLocale(QLocale(QLocale.C, QLocale.AnyTerritory))
         ChangeCompanyDialog.setSizeGripEnabled(True)
         self.verticalLayout_4 = QVBoxLayout(ChangeCompanyDialog)
