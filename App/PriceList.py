@@ -227,8 +227,9 @@ class PriceListForm(FormIndexManager):
         currentPriceList = self.model.index(self.mapper.currentIndex(), pls.ID).data()
         if not currentPriceList:   # no saved price list to copy
             return
-        with gui_exception_context(self, _tr("PriceList", "Duplicate price list")):
+        with gui_exception_context(self, _tr("PriceList", "Duplicate price list")) as outcome:
             duplicate_price_list(currentPriceList, text)
+        if outcome.ok:
             QMessageBox.information(self,
                                     _tr('PriceList', 'Price list duplicated'),
                                     _tr('PriceList', 'The price list has been duplicated successfully'))

@@ -64,7 +64,8 @@ from App.Common.L10n import _tr
 def get_colors()-> list[tuple]:
     """Returns the list of colors for combo boxes, translated at runtime"""
     return [
-        (QColorConstants.Svg.darkred,  _tr('Color', 'Dark red')),
+        (QColorConstants.Svg.brown, _tr('Color', 'Brown')),
+        (QColorConstants.Svg.darkred, _tr('Color', 'Dark red')),
         (QColorConstants.Svg.red, _tr('Color', 'Red')),
         (QColorConstants.Svg.coral, _tr('Color', 'Coral')),
         (QColorConstants.Svg.orange, _tr('Color', 'Orange')),

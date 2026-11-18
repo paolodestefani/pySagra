@@ -37,6 +37,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Gui import no_wait_cursor_context
 from App.Database.Scripting import get_script
 
 
@@ -51,9 +52,10 @@ def scriptInit(instanceReference: object) -> dict:
         try:
             exec(script.get(('__init__', 'A'), ''), globalsParameters)
         except Exception as er:
-            QMessageBox.critical(None,
-                                'Script engine',
-                                f'Error executing __init__ script: \n{er}')
+            with no_wait_cursor_context():   # inside the loading context
+                QMessageBox.critical(None,
+                                    'Script engine',
+                                    f'Error executing __init__ script: \n{er}')
         return script
 
 

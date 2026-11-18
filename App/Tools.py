@@ -210,8 +210,9 @@ class EventToolDialog(QDialog):
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
-        with gui_exception_context(self, _tr('Tools', 'Execute event tool')):
+        with gui_exception_context(self, _tr('Tools', 'Execute event tool')) as outcome:
             utilities[utility_id][FUNC](event_id)
+        if outcome.ok:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
                                     _tr('Tools', 'Operation completed successfully'))

@@ -102,7 +102,7 @@ class UpdateWebOrderServerDialog(QDialog):
         self.ui.lineEditPassword.setText(password)
         self.ui.lineEditFileName.setText(filename)
         # connect signals
-        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Close).setDefault(True)
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Apply).clicked.connect(self.updateWebOrderServer)
         
     def updateWebOrderServer(self):

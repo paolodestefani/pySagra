@@ -46,6 +46,7 @@ from PySide6.QtWidgets import QMessageBox
 from App import session
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Gui import no_wait_cursor_context
 from App.Database.Connect import appconn
 from App.Database.Adaptation import export_adaptation
 from App.Database.Adaptation import export_adaptation_setting
@@ -138,17 +139,19 @@ class AdaptationsDialog(QDialog):
             self.activateWindow()
             return
         completed = False
-        with gui_exception_context(self, _tr('Adaptations', 'Export adaptations')):
+        with gui_exception_context(self, _tr('Adaptations', 'Export adaptations')) as outcome:
             for adapt_type, adapt_name in types:
                 fileName = f"{directory}/{adapt_name}.psa" # pySagra Adaptation
                 if QFile.exists(fileName):
-                    if QMessageBox.question(
-                        self,
-                        _tr('MessageDialog', 'Question'),
-                        _tr('Adaptations', 'File {0} already exists, overwrite ?').format(fileName),
-                        QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
-                        QMessageBox.StandardButton.No  # default botton
-                        ) == QMessageBox.StandardButton.No:
+                    with no_wait_cursor_context():   # a question in the middle of the export
+                        overwrite = QMessageBox.question(
+                            self,
+                            _tr('MessageDialog', 'Question'),
+                            _tr('Adaptations', 'File {0} already exists, overwrite ?').format(fileName),
+                            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+                            QMessageBox.StandardButton.No  # default botton
+                            ) == QMessageBox.StandardButton.Yes
+                    if not overwrite:
                         continue
                 export_data = []
                 for adapt in export_adaptation(adapt_type):
@@ -162,15 +165,15 @@ class AdaptationsDialog(QDialog):
                 completed = True
 
             st.setValue("Adaptations/PathExportAdaptations", directory)
-            if completed:
-                # ---  WORKAROUND FOR MACOS ---
-                self.raise_() 
-                self.activateWindow() 
-                QMessageBox.information(
-                    self,
-                    _tr('MessageDialog', 'Information'),
-                    _tr('Adaptations', 'Export completed successfully')
-                )
+        if outcome.ok and completed:
+            # ---  WORKAROUND FOR MACOS ---
+            self.raise_() 
+            self.activateWindow() 
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', 'Information'),
+                _tr('Adaptations', 'Export completed successfully')
+            )
 
     def importAdaptations(self) -> None:
         "Import adaptations from psa files"
@@ -184,7 +187,7 @@ class AdaptationsDialog(QDialog):
         )
         if fileName == "":
             return
-        with gui_exception_context(self, _tr('Adaptations', 'Import adaptations')):
+        with gui_exception_context(self, _tr('Adaptations', 'Import adaptations')) as outcome:
             with open(fileName, 'r', encoding='utf-8') as f:
                 import_data = json.load(f)
             # one transaction: a file is imported entirely or not at all
@@ -195,6 +198,7 @@ class AdaptationsDialog(QDialog):
                         setting['adaptation_id'] = adp_id
                         import_adaptation_settings(setting)
             st.setValue("Adaptations/PathExportAdaptations", QFileInfo(fileName).path())
+        if outcome.ok:
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),
@@ -226,10 +230,10 @@ class AdaptationsDialog(QDialog):
             ) == QMessageBox.StandardButton.No:
             return
         
-        with gui_exception_context(self, _tr('Adaptations', "Clear adaptations")):
+        with gui_exception_context(self, _tr('Adaptations', "Clear adaptations")) as outcome:
             for adapt_type in types:
                 clear_adaptation(adapt_type)
-        
+        if outcome.ok:
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),

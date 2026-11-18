@@ -210,9 +210,10 @@ class ConnectionHistoryForm(FormViewManager):
             )
         if not ok:
             return
-        with gui_exception_context(self, _tr('Connection', 'Delete older records')):
+        with gui_exception_context(self, _tr('Connection', 'Delete older records')) as outcome:
             delete_connection_history(days)
             self.reload()
+        if outcome.ok:
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'information'),
@@ -229,9 +230,10 @@ class ConnectionHistoryForm(FormViewManager):
             QMessageBox.StandardButton.No  # default botton
             ) == QMessageBox.StandardButton.No:
             return
-        with gui_exception_context(self, _tr('Connection', 'Delete all records')):
+        with gui_exception_context(self, _tr('Connection', 'Delete all records')) as outcome:
             delete_connection_history(0)
             self.reload()
+        if outcome.ok:
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'information'),
@@ -243,9 +245,10 @@ class ConnectionHistoryForm(FormViewManager):
         days = self.ui.spinBoxDays.value()
         if not self.ui.checkBoxAutomaticDeletion.isChecked():
             days = None
-        with gui_exception_context(self, _tr('Connection', 'Set automatic deletion settings')):
+        with gui_exception_context(self, _tr('Connection', 'Set automatic deletion settings')) as outcome:
             pa_setting_set('clear_connection_history', days)
             self.reload()
+        if outcome.ok:
             QMessageBox.information(
                 self,
                 _tr('MessageDialog', 'Information'),

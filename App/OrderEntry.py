@@ -61,6 +61,7 @@ from PySide6.QtWidgets import QSizePolicy
 from App import session
 from App import currentIcon
 from App.Common.ExceptionHandler import gui_exception_context
+from App.Common.Gui import no_wait_cursor_context
 from App.Common.ExceptionHandler import report_exception_context
 from App.Common.Gui import get_tab_positions
 from App.Database.Settings import Settings
@@ -665,7 +666,8 @@ class BaseOrderDialog(QDialog):
                     if is_salable:
                         if not row_pos or not col_pos:
                             message = _tr('OrderEntry', "Item '{}' lacks layout position settings, will not be created.").format(item_desc)
-                            QMessageBox.information(self, _tr('OrderEntry', "Warning"), message)
+                            with no_wait_cursor_context():   # in the middle of the loading
+                                QMessageBox.information(self, _tr('OrderEntry', "Warning"), message)
                             continue
                         
                         btn_item = ButtonItem(self, item_desc, txt_color, bg_color, self.setting)

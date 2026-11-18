@@ -114,17 +114,18 @@ class DuplicateMenuDialog(QDialog):
 
     def accept(self) -> None:
         "Duplicate menu"
-        with gui_exception_context(self, _tr('Menu', 'Duplicate menu')):
+        with gui_exception_context(self, _tr('Menu', 'Duplicate menu')) as outcome:
             duplicate_menu(self._fromMenu,
                            self.ui.lineEditCode.text(),
                            self.ui.lineEditDescription.text())
-        
-            logger.info("On duplicate profile: operation completed successfully")
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "Information"),
-                _tr('Profile', "Profile duplicated")
-            )
+        if not outcome.ok:   # stay open: the code can be corrected
+            return
+        logger.info("On duplicate menu: operation completed successfully")
+        QMessageBox.information(
+            self,
+            _tr('MessageDialog', "Information"),
+            _tr('Menu', "Menu duplicated")
+        )
         super().accept()
 
 

@@ -837,7 +837,7 @@ insieme a questo programma. In caso contrario, consulta
         <location filename="../../App/System/Connection.py" line="89"/>
         <location filename="../../App/System/Menu.py" line="95"/>
         <location filename="../../App/System/Profile.py" line="93"/>
-        <location filename="../../App/System/Scripting.py" line="176"/>
+        <location filename="../../App/System/Scripting.py" line="177"/>
         <location filename="../../App/System/Toolbar.py" line="91"/>
         <location filename="../../App/System/User.py" line="143"/>
         <source>No access right to this archive</source>
@@ -906,18 +906,18 @@ insieme a questo programma. In caso contrario, consulta
     </message>
     <message>
         <location filename="../../App/Ui/ChangeCompanyDialog.ui" line="75"/>
-        <source>Select company</source>
-        <translation>Selezionare l&apos;azienda</translation>
+        <source>Move to:</source>
+        <translation>Passa a:</translation>
+    </message>
+    <message>
+        <location filename="../../App/Ui/ChangeCompanyDialog.ui" line="89"/>
+        <source>Current company</source>
+        <translation>Azienda corrente</translation>
     </message>
     <message>
         <location filename="../../App/Ui/ChangeCompanyDialog.ui" line="82"/>
         <source>User</source>
         <translation>Utente</translation>
-    </message>
-    <message>
-        <location filename="../../App/Ui/ChangeCompanyDialog.ui" line="89"/>
-        <source>Company</source>
-        <translation>Azienda</translation>
     </message>
     <message>
         <location filename="../../App/Ui/ChangeCompanyDialog.ui" line="104"/>
@@ -1051,106 +1051,111 @@ insieme a questo programma. In caso contrario, consulta
     <name>Color</name>
     <message>
         <location filename="../../App/Common/Gui.py" line="67"/>
+        <source>Brown</source>
+        <translation>Marrone</translation>
+    </message>
+    <message>
+        <location filename="../../App/Common/Gui.py" line="68"/>
         <source>Dark red</source>
         <translation>Rosso scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="68"/>
+        <location filename="../../App/Common/Gui.py" line="69"/>
         <source>Red</source>
         <translation>Rosso</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="69"/>
+        <location filename="../../App/Common/Gui.py" line="70"/>
         <source>Coral</source>
         <translation>Corallo</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="70"/>
+        <location filename="../../App/Common/Gui.py" line="71"/>
         <source>Orange</source>
         <translation>Arancione</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="71"/>
+        <location filename="../../App/Common/Gui.py" line="72"/>
         <source>Gold</source>
         <translation>Oro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="72"/>
+        <location filename="../../App/Common/Gui.py" line="73"/>
         <source>Yellow</source>
         <translation>Giallo</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="73"/>
+        <location filename="../../App/Common/Gui.py" line="74"/>
         <source>Dark green</source>
         <translation>Verde scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="74"/>
+        <location filename="../../App/Common/Gui.py" line="75"/>
         <source>Green</source>
         <translation>Verde</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="75"/>
+        <location filename="../../App/Common/Gui.py" line="76"/>
         <source>Green yellow</source>
         <translation>Giallo verde</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="76"/>
+        <location filename="../../App/Common/Gui.py" line="77"/>
         <source>Light green</source>
         <translation>Verde chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="77"/>
+        <location filename="../../App/Common/Gui.py" line="78"/>
         <source>Dark blue</source>
         <translation>Blu scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="78"/>
+        <location filename="../../App/Common/Gui.py" line="79"/>
         <source>Blue</source>
         <translation>Blu</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="79"/>
+        <location filename="../../App/Common/Gui.py" line="80"/>
         <source>Royal blue</source>
         <translation>Blu reale</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="80"/>
+        <location filename="../../App/Common/Gui.py" line="81"/>
         <source>Sky blue</source>
         <translation>Azzurro cielo</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="81"/>
+        <location filename="../../App/Common/Gui.py" line="82"/>
         <source>Cyan / Aqua</source>
         <translation>Ciano / Acquamarina</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="82"/>
+        <location filename="../../App/Common/Gui.py" line="83"/>
         <source>Magenta / Fuchsia</source>
         <translation>Magenta / Fucsia</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="83"/>
+        <location filename="../../App/Common/Gui.py" line="84"/>
         <source>Purple</source>
         <translation>Viola</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="84"/>
+        <location filename="../../App/Common/Gui.py" line="85"/>
         <source>Black</source>
         <translation>Nero</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="85"/>
+        <location filename="../../App/Common/Gui.py" line="86"/>
         <source>Gray</source>
         <translation>Grigio</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="86"/>
+        <location filename="../../App/Common/Gui.py" line="87"/>
         <source>Light gray</source>
         <translation>Grigio chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="87"/>
+        <location filename="../../App/Common/Gui.py" line="88"/>
         <source>White</source>
         <translation>Bianco</translation>
     </message>
@@ -1158,17 +1163,17 @@ insieme a questo programma. In caso contrario, consulta
 <context>
     <name>ColorScheme</name>
     <message>
-        <location filename="../../App/Common/Gui.py" line="94"/>
+        <location filename="../../App/Common/Gui.py" line="95"/>
         <source>Light</source>
         <translation>Chiaro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="95"/>
+        <location filename="../../App/Common/Gui.py" line="96"/>
         <source>Dark</source>
         <translation>Scuro</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="96"/>
+        <location filename="../../App/Common/Gui.py" line="97"/>
         <source>System default</source>
         <translation>Predefinito di sistema</translation>
     </message>
@@ -2250,22 +2255,22 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>IconSet</name>
     <message>
-        <location filename="../../App/Common/Gui.py" line="103"/>
+        <location filename="../../App/Common/Gui.py" line="104"/>
         <source>Oxygen</source>
         <translation>Oxygen</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="104"/>
+        <location filename="../../App/Common/Gui.py" line="105"/>
         <source>Crystal Clear</source>
         <translation>Crystal Clear</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="105"/>
+        <location filename="../../App/Common/Gui.py" line="106"/>
         <source>Fluent UI</source>
         <translation>Fluent UI</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="106"/>
+        <location filename="../../App/Common/Gui.py" line="107"/>
         <source>Flatwoken</source>
         <translation>Flatwoken</translation>
     </message>
@@ -2950,7 +2955,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Preferences.py" line="78"/>
         <location filename="../../App/System/Profile.py" line="92"/>
         <location filename="../../App/System/Report.py" line="107"/>
-        <location filename="../../App/System/Scripting.py" line="175"/>
+        <location filename="../../App/System/Scripting.py" line="176"/>
         <location filename="../../App/System/Toolbar.py" line="90"/>
         <location filename="../../App/System/User.py" line="142"/>
         <location filename="../../App/System/User.py" line="250"/>
@@ -3073,8 +3078,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Profile.py" line="221"/>
         <location filename="../../App/System/Report.py" line="233"/>
         <location filename="../../App/System/Report.py" line="285"/>
-        <location filename="../../App/System/Scripting.py" line="258"/>
-        <location filename="../../App/System/Scripting.py" line="304"/>
+        <location filename="../../App/System/Scripting.py" line="260"/>
+        <location filename="../../App/System/Scripting.py" line="306"/>
         <location filename="../../App/System/Toolbar.py" line="222"/>
         <location filename="../../App/System/User.py" line="289"/>
         <location filename="../../App/Tools.py" line="258"/>
@@ -3094,16 +3099,16 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Connection.py" line="237"/>
         <location filename="../../App/System/Report.py" line="395"/>
         <location filename="../../App/System/Report.py" line="448"/>
-        <location filename="../../App/System/Scripting.py" line="295"/>
-        <location filename="../../App/System/Scripting.py" line="451"/>
-        <location filename="../../App/System/Scripting.py" line="513"/>
+        <location filename="../../App/System/Scripting.py" line="297"/>
+        <location filename="../../App/System/Scripting.py" line="453"/>
+        <location filename="../../App/System/Scripting.py" line="515"/>
         <source>information</source>
         <translation>Informazione</translation>
     </message>
     <message>
         <location filename="../../App/System/Report.py" line="442"/>
-        <location filename="../../App/System/Scripting.py" line="507"/>
-        <location filename="../../App/System/Scripting.py" line="519"/>
+        <location filename="../../App/System/Scripting.py" line="509"/>
+        <location filename="../../App/System/Scripting.py" line="521"/>
         <source>warning</source>
         <translation>avviso</translation>
     </message>
@@ -4008,7 +4013,6 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1508"/>
-        <location filename="../../App/Database/Models.py" line="1711"/>
         <location filename="../../App/Database/Models.py" line="1756"/>
         <source>Order date</source>
         <translation>Data ordine</translation>
@@ -4025,7 +4029,6 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1509"/>
-        <location filename="../../App/Database/Models.py" line="1712"/>
         <location filename="../../App/Database/Models.py" line="1757"/>
         <source>Order time</source>
         <translation>Ora ordine</translation>
@@ -4278,6 +4281,7 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1617"/>
+        <location filename="../../App/Database/Models.py" line="1711"/>
         <source>Date</source>
         <translation>Data</translation>
     </message>
@@ -4412,6 +4416,15 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1709"/>
+        <source>Date/time</source>
+        <translation>Data/ora</translation>
+    </message>
+    <message>
+        <location filename="../../App/Database/Models.py" line="1712"/>
+        <source>Time</source>
+        <translation>Ora</translation>
+    </message>
+    <message>
         <location filename="../../App/Database/Models.py" line="1754"/>
         <source>Order date/time</source>
         <translation>Data/ora ordine</translation>
@@ -6830,96 +6843,96 @@ Devo procedere comunque?</translation>
 <context>
     <name>Scripting</name>
     <message>
-        <location filename="../../App/System/Scripting.py" line="301"/>
+        <location filename="../../App/System/Scripting.py" line="303"/>
         <source>Delete current script ?</source>
         <translation>Cancello lo script corrente ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="338"/>
-        <location filename="../../App/System/Scripting.py" line="380"/>
-        <location filename="../../App/System/Scripting.py" line="461"/>
+        <location filename="../../App/System/Scripting.py" line="340"/>
+        <location filename="../../App/System/Scripting.py" line="382"/>
+        <location filename="../../App/System/Scripting.py" line="463"/>
         <source>Select the directory</source>
         <translation>Selezionare la directory</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="291"/>
+        <location filename="../../App/System/Scripting.py" line="293"/>
         <source>Warning: script linked to an __init__ method will be executed only if trigger is set to &apos;after&apos;</source>
         <translation>Attenzione: lo script collegato al metodo __init__ verrà eseguito solo se trigger è impostato su &apos;after&apos;</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="253"/>
+        <location filename="../../App/System/Scripting.py" line="255"/>
         <source>Activate current script ?</source>
         <translation>Attivo lo script corrente ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="255"/>
+        <location filename="../../App/System/Scripting.py" line="257"/>
         <source>Deactivate current script ?</source>
         <translation>Disattivo lo script corrente ?</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="265"/>
+        <location filename="../../App/System/Scripting.py" line="267"/>
         <source>Activate script</source>
         <translation>Attiva lo script</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="353"/>
+        <location filename="../../App/System/Scripting.py" line="355"/>
         <source>Saving current script to file</source>
         <translation>Memorizzo lo script corento sul file</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="365"/>
+        <location filename="../../App/System/Scripting.py" line="367"/>
         <source>Current script saved to file:</source>
         <translation>Lo script corrente salvato sul file:</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="385"/>
+        <location filename="../../App/System/Scripting.py" line="387"/>
         <source>Saving all scripts to files</source>
         <translation>Salva tutti gli script su file</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="427"/>
-        <location filename="../../App/System/Scripting.py" line="476"/>
+        <location filename="../../App/System/Scripting.py" line="429"/>
+        <location filename="../../App/System/Scripting.py" line="478"/>
         <source>Uploading script file</source>
         <translation>Carica script da file</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="438"/>
-        <location filename="../../App/System/Scripting.py" line="487"/>
+        <location filename="../../App/System/Scripting.py" line="440"/>
+        <location filename="../../App/System/Scripting.py" line="489"/>
         <source>Saving script file to database</source>
         <translation>Salva il file scritp sul database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="452"/>
+        <location filename="../../App/System/Scripting.py" line="454"/>
         <source>Script file imported to database</source>
         <translation>File dello script importato nel database</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="520"/>
+        <location filename="../../App/System/Scripting.py" line="522"/>
         <source>No valid .scp.zip files found</source>
         <translation>Nessun file .scp.zip valido trovato</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="368"/>
+        <location filename="../../App/System/Scripting.py" line="370"/>
         <source>Download current script</source>
         <translation>Scarica lo script corrente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="408"/>
+        <location filename="../../App/System/Scripting.py" line="410"/>
         <source>Download all script</source>
         <translation>Scarica tutti gli script</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="405"/>
+        <location filename="../../App/System/Scripting.py" line="407"/>
         <source>All scripts saved to directory:</source>
         <translation>Tutti gli script sono stati salvato nella directory:</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="508"/>
+        <location filename="../../App/System/Scripting.py" line="510"/>
         <source>{0} files imported, {1} not imported</source>
         <translation>{0} file importati, {1} non importati</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="514"/>
+        <location filename="../../App/System/Scripting.py" line="516"/>
         <source>All files imported successfully</source>
         <translation>Tutti i file importati correttamente</translation>
     </message>
@@ -7010,7 +7023,7 @@ Devo procedere comunque?</translation>
 <context>
     <name>Scripts</name>
     <message>
-        <location filename="../../App/System/Scripting.py" line="420"/>
+        <location filename="../../App/System/Scripting.py" line="422"/>
         <source>Select the file to import</source>
         <translation>Selezionare il file da importare</translation>
     </message>
@@ -8109,22 +8122,22 @@ Devo procedere comunque?</translation>
 <context>
     <name>TabPosition</name>
     <message>
-        <location filename="../../App/Common/Gui.py" line="124"/>
+        <location filename="../../App/Common/Gui.py" line="125"/>
         <source>Tabs above the pages</source>
         <translation>Schede sopra le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="125"/>
+        <location filename="../../App/Common/Gui.py" line="126"/>
         <source>Tabs below the pages</source>
         <translation>Schede sotto le pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="126"/>
+        <location filename="../../App/Common/Gui.py" line="127"/>
         <source>Tabs to the left of the pages</source>
         <translation>Schede a sinistra delle pagine</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="127"/>
+        <location filename="../../App/Common/Gui.py" line="128"/>
         <source>Tabs to the right of the pages</source>
         <translation>Schede a destra delle pagine</translation>
     </message>
@@ -8132,27 +8145,27 @@ Devo procedere comunque?</translation>
 <context>
     <name>ToolButtonStyle</name>
     <message>
-        <location filename="../../App/Common/Gui.py" line="113"/>
+        <location filename="../../App/Common/Gui.py" line="114"/>
         <source>Icon only</source>
         <translation>Solo icone</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="114"/>
+        <location filename="../../App/Common/Gui.py" line="115"/>
         <source>Text only</source>
         <translation>Solo testo</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="115"/>
+        <location filename="../../App/Common/Gui.py" line="116"/>
         <source>Text beside icon</source>
         <translation>Testo accanto all&apos;icona</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="116"/>
+        <location filename="../../App/Common/Gui.py" line="117"/>
         <source>Text under icon</source>
         <translation>Testo sotto l&apos;icona</translation>
     </message>
     <message>
-        <location filename="../../App/Common/Gui.py" line="117"/>
+        <location filename="../../App/Common/Gui.py" line="118"/>
         <source>Follow style</source>
         <translation>Segue lo stile</translation>
     </message>
@@ -8905,17 +8918,17 @@ Apro il file generato ?</translation>
 <context>
     <name>script</name>
     <message>
-        <location filename="../../App/System/Scripting.py" line="161"/>
+        <location filename="../../App/System/Scripting.py" line="162"/>
         <source>Before</source>
         <translation>Prima</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="163"/>
+        <location filename="../../App/System/Scripting.py" line="164"/>
         <source>After</source>
         <translation>Dopo</translation>
     </message>
     <message>
-        <location filename="../../App/System/Scripting.py" line="162"/>
+        <location filename="../../App/System/Scripting.py" line="163"/>
         <source>Instead</source>
         <translation>Al posto di</translation>
     </message>

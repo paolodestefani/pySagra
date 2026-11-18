@@ -111,16 +111,18 @@ class DuplicateProfileDialog(QDialog):
 
     def accept(self) -> None:
         "Duplicate profile"
-        with gui_exception_context(self, _tr('Profile', 'Duplicate profile')):
+        with gui_exception_context(self, _tr('Profile', 'Duplicate profile')) as outcome:
             duplicate_profile(self._fromProfile,
                               self.ui.lineEditCode.text(),
                               self.ui.lineEditDescription.text())
-            logger.info("On duplicate profile: operation completed successfully")
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "Information"),
-                _tr('Profile', "Profile duplicated")
-            )
+        if not outcome.ok:   # stay open: the code can be corrected
+            return
+        logger.info("On duplicate profile: operation completed successfully")
+        QMessageBox.information(
+            self,
+            _tr('MessageDialog', "Information"),
+            _tr('Profile', "Profile duplicated")
+        )
         super().accept()
 
 

@@ -56,6 +56,7 @@ from App.Database.Models import ScriptingIndexModel
 from App.Database.Models import ScriptingModel
 from App.Widget.Form import FormIndexManager
 from App.Widget.Delegate import GenericDelegate
+from App.Widget.Delegate import RelationDelegate
 from App.Ui.ScriptingWidget import Ui_ScriptingWidget
 from App.Common.L10n import _tr
 from App.Common.ExceptionHandler import gui_exception_context
@@ -202,6 +203,7 @@ class ScriptingForm(FormIndexManager):
         self.setIndexView(self.ui.tableView)
         self.ui.tableView.setLayoutName('ScriptingIndex')
         self.ui.tableView.setItemDelegate(GenericDelegate(self))
+        self.ui.tableView.setItemDelegateForColumn(scr.TRIGGER, RelationDelegate(self, runOptions))
         # fill classcombobox, methodcombobox and companycombobox
         self.ui.comboBoxClass.currentIndexChanged.connect(self.fillMethods)
         self.ui.comboBoxClass.addItems(list(SCRIPTABLE.keys()))
@@ -215,7 +217,7 @@ class ScriptingForm(FormIndexManager):
         self.mapper.addMapping(self.ui.plainTextEditNote, scr.NOTE)
         self.mapper.addMapping(self.ui.comboBoxCompany, scr.COMPANY, b"modelDataInt")#, b"modelDataStr")
         self.mapper.addMapping(self.ui.checkBoxActive, scr.ACTIVE)
-        self.mapper.addMapping(self.ui.textEditScript, scr.SCRIPT)#, b"plainText")
+        self.mapper.addMapping(self.ui.textEditScript, scr.SCRIPT)
         self.mapper.addMapping(self.ui.checkBoxSystem, scr.SYSTEM)
         # make system checkbox not user editable
         self.ui.checkBoxSystem.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -350,7 +352,7 @@ class ScriptingForm(FormIndexManager):
                     f"_{self.model.index(row, scr.TRIGGER).data()}"
                     f".scp.zip")
         with gui_exception_context(self,
-                                   _tr('Scripting', "Saving current script to file")):
+                                   _tr('Scripting', "Saving current script to file")) as outcome:
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                 zf.writestr('class', self.model.index(row, scr.CLASS).data())
                 zf.writestr('method', self.model.index(row, scr.METHOD).data())
@@ -361,7 +363,7 @@ class ScriptingForm(FormIndexManager):
                 zf.writestr('pyscript', self.model.index(row, scr.SCRIPT).data())
                 zf.writestr('note', self.model.index(row, scr.NOTE).data() or '')
                 zf.writestr('system', str(self.model.index(row, scr.SYSTEM).data()))
-        
+        if outcome.ok:
             msg = _tr('Scripting', "Current script saved to file:")
             QMessageBox.information(
                 self,
@@ -382,7 +384,7 @@ class ScriptingForm(FormIndexManager):
             )
         if directory == "":
             return
-        with gui_exception_context(self, _tr('Scripting', "Saving all scripts to files")):
+        with gui_exception_context(self, _tr('Scripting', "Saving all scripts to files")) as outcome:
             for cls, mth, trg, cmp, act, des, pys, nte, system in get_all_scripts():
                 # looks like zipfile accept qt file path with / so no need to use os.path.join
                 fileName = (f"{directory}/"
@@ -401,7 +403,7 @@ class ScriptingForm(FormIndexManager):
                     zf.writestr('pyscript', pys)
                     zf.writestr('note', nte or '')
                     zf.writestr('system', str(system))
-                    
+        if outcome.ok:
             msg = _tr('Scripting', "All scripts saved to directory:")
             QMessageBox.information(
                 self,
@@ -424,7 +426,7 @@ class ScriptingForm(FormIndexManager):
         if fileName == "":
             return
         
-        with gui_exception_context(self, _tr('Scripting', "Uploading script file")):
+        with gui_exception_context(self, _tr('Scripting', "Uploading script file")) as outcome:
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                 cls = zf.read('class').decode('utf-8')
                 mth = zf.read('method').decode('utf-8')
@@ -435,22 +437,25 @@ class ScriptingForm(FormIndexManager):
                 pys = zf.read('pyscript').decode('utf-8')
                 nte = zf.read('note').decode('utf-8')
                 system = zf.read('system').decode('utf-8')
-            with gui_exception_context(self, _tr('Scripting', "Saving script file to database")):
-                load_script(cls, 
-                            mth,
-                            trg,
-                            int(cmp),
-                            act == 'True',
-                            des,
-                            pys,
-                            nte or None,
-                            system == 'True')
-                self.reload()
-                QMessageBox.information(
-                    self,
-                    _tr('MessageDialog', "information"),
-                    _tr('Scripting', "Script file imported to database")
-                )
+        if not outcome.ok:
+            return
+        with gui_exception_context(self, _tr('Scripting', "Saving script file to database")) as outcome:
+            load_script(cls, 
+                        mth,
+                        trg,
+                        int(cmp),
+                        act == 'True',
+                        des,
+                        pys,
+                        nte or None,
+                        system == 'True')
+            self.reload()
+        if outcome.ok:
+            QMessageBox.information(
+                self,
+                _tr('MessageDialog', "information"),
+                _tr('Scripting', "Script file imported to database")
+            )
 
     def uploadAll(self) -> None:
         "Upload all scripts from directory"

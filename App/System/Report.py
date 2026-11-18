@@ -43,7 +43,6 @@ from PySide6.QtCore import QIODevice
 from PySide6.QtCore import QBuffer
 from PySide6.QtCore import QByteArray
 from PySide6.QtGui import QAction
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QFontMetrics
 from PySide6.QtGui import QPixmap
@@ -309,7 +308,7 @@ class ReportForm(FormIndexManager):
                     f"/{self.model.index(row, rpt.CODE).data()}"
                     f"_{self.model.index(row, rpt.L10N).data()}"
                     f".rpt.zip")
-        with gui_exception_context(self, _tr('Report', "Download current report")):
+        with gui_exception_context(self, _tr('Report', "Download current report")) as outcome:
             with zipfile.ZipFile(fileName, 'w', zipfile.ZIP_DEFLATED) as zf:
                 zf.writestr('method', self.model.data(self.model.index(row, rpt.METHOD)))
                 zf.writestr('code', self.model.data(self.model.index(row, rpt.CODE)))
@@ -318,7 +317,7 @@ class ReportForm(FormIndexManager):
                 zf.writestr('system', str(self.model.data(self.model.index(row, rpt.SYSTEM))))
                 zf.writestr('description', self.model.data(self.model.index(row, rpt.DESCRIPTION)))
                 zf.writestr('xml', self.model.data(self.model.index(row, rpt.XML)))
-        
+        if outcome.ok:
             msg = _tr('Report', "Current report saved to file:")
             QMessageBox.information(
                 self,
@@ -339,7 +338,7 @@ class ReportForm(FormIndexManager):
             )
         if directory == "":
             return
-        with gui_exception_context(self, _tr('Report', "Download all reports")):
+        with gui_exception_context(self, _tr('Report', "Download all reports")) as outcome:
             for i, (met, cod, lcn, cls, sys, dsc, xml) in enumerate(list_all_reports(), 1):
                 fileName = (f"{directory}"
                             f"/{i:02d}"
@@ -354,7 +353,7 @@ class ReportForm(FormIndexManager):
                     zf.writestr('system', str(sys))
                     zf.writestr('description', dsc)
                     zf.writestr('xml', xml)
-            QGuiApplication.restoreOverrideCursor()
+        if outcome.ok:
             msg = _tr('Report', "All reports saved to directory")
             QMessageBox.information(
                 self,
@@ -376,7 +375,7 @@ class ReportForm(FormIndexManager):
             )
         if fileName == "":
             return
-        with gui_exception_context(self, _tr('Report', "Upload current report")):
+        with gui_exception_context(self, _tr('Report', "Upload current report")) as outcome:
             with zipfile.ZipFile(fileName, 'r', zipfile.ZIP_DEFLATED) as zf:
                 met = zf.read('method').decode('utf-8')
                 cod = zf.read('code').decode('utf-8')
@@ -385,16 +384,18 @@ class ReportForm(FormIndexManager):
                 system = zf.read('system').decode('utf-8')
                 dsc = zf.read('description').decode('utf-8')
                 xml = zf.read('xml').decode('utf-8')
-            with gui_exception_context(self, _tr('Report', "Upload current report")) as outcome:
-                load_report(met, cod, lcn, cls, system == 'True', dsc, xml)
-            if not outcome.ok:
-                return
-            self.reload()
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "information"),
-                _tr('Report', "Report file imported to database")
-            )
+        if not outcome.ok:
+            return
+        with gui_exception_context(self, _tr('Report', "Upload current report")) as outcome:
+            load_report(met, cod, lcn, cls, system == 'True', dsc, xml)
+        if not outcome.ok:
+            return
+        self.reload()
+        QMessageBox.information(
+            self,
+            _tr('MessageDialog', "information"),
+            _tr('Report', "Report file imported to database")
+        )
 
     def uploadAll(self) -> None:
         "Upload all reports from directory"

@@ -289,18 +289,18 @@ class CompanyForm(FormIndexManager):
             QMessageBox.StandardButton.No  # default botton
             ) == QMessageBox.StandardButton.No:
             return
-        with gui_exception_context(self, _tr('Company', "Deleting company")):
+        with gui_exception_context(self, _tr('Company', "Deleting company")) as outcome:
             drop_company(companyId)
-            
-            logger.info('Company %s/%s deleted', companyId, companyDescription)
-            
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "Information"),
-                _tr('Company', "Company deleted")
-            )
-            self.reload()
-            self.toFirst()
+        if not outcome.ok:
+            return
+        logger.info('Company %s/%s deleted', companyId, companyDescription)
+        QMessageBox.information(
+            self,
+            _tr('MessageDialog', "Information"),
+            _tr('Company', "Company deleted")
+        )
+        self.reload()
+        self.toFirst()
 
     def print(self) -> None:
         "Print company list"
@@ -389,7 +389,7 @@ class NewCompanyDialog(QDialog):
         userMenu = self.ui.comboBoxMenu.currentData()
         userToolbar = self.ui.comboBoxToolbar.currentData()
         # create a new company
-        with gui_exception_context(self, _tr('Company', "Creating new company")):
+        with gui_exception_context(self, _tr('Company', "Creating new company")) as outcome:
             # one transaction: a company the user can not access is never left behind
             with appconn.transaction():
                 create_company(companyCode,
@@ -400,11 +400,12 @@ class NewCompanyDialog(QDialog):
                                    userProfile,
                                    userMenu,
                                    userToolbar)
-        
-            QMessageBox.information(
-                self,
-                _tr('MessageDialog', "Information"),
-                _tr('Company', "Company created succesfully")
-            )
-            logger.info('New company %s/%s created', companyCode, companyDescription)
-            super().accept()
+        if not outcome.ok:
+            return
+        QMessageBox.information(
+            self,
+            _tr('MessageDialog', "Information"),
+            _tr('Company', "Company created succesfully")
+        )
+        logger.info('New company %s/%s created', companyCode, companyDescription)
+        super().accept()
