@@ -81,9 +81,9 @@ from App.Statistics import statisticsPrint
 from App.Statistics import statisticsExport
 from App.OrderedDelivered import orderedDelivered
 from App.SalesSummary import salesSummary
-from App.Tool import eventBasedTool
-from App.Tool import deleteTool
-from App.Tool import copyTool
+from App.Tools import eventBasedTool
+from App.Tools import deleteTool
+from App.Tools import copyTool
 
 
 # 0 description
@@ -157,7 +157,7 @@ def createActionDictionary(mw) -> None:
         QAction.MenuRole.NoRole)
     
     actionDefinition['sys_company'] = (
-        _tr("Action", 'Manage companies'),
+        _tr("Action", 'Companies'),
         company,
         False,
         'system_company',
@@ -687,18 +687,18 @@ def createActionDictionary(mw) -> None:
         QAction.MenuRole.NoRole)
 
     # tools actions
-    actionDefinition['app_tool_event_based'] = (
+    actionDefinition['app_tools_event_based'] = (
         _tr("Action", 'Event based tool'),
         eventBasedTool,
         False,
         'tools_tool',
         None,
-        _tr("Action", 'Event based utilities'),
-        _tr("Action", 'Event based utilities'),
-        _tr("Action", 'Event based utilities'),
+        _tr("Action", 'Event based tool'),
+        _tr("Action", 'Event based tool'),
+        _tr("Action", 'Event based tool'),
         QAction.MenuRole.NoRole)
 
-    actionDefinition['app_tool_delete'] = (
+    actionDefinition['app_tools_delete'] = (
         _tr("Action", 'Delete tool'),
         deleteTool,
         False,
@@ -709,7 +709,7 @@ def createActionDictionary(mw) -> None:
         _tr("Action", 'Delete company data'),
         QAction.MenuRole.NoRole)
 
-    actionDefinition['app_tool_copy'] = (
+    actionDefinition['app_tools_copy'] = (
         _tr("Action", 'Copy tool'),
         copyTool,
         False,

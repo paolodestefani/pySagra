@@ -26,6 +26,18 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="title">
+              <string>Department</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <item>
+               <widget class="RelationalComboBox" name="comboBoxDepartment"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <widget class="QGroupBox" name="groupBox">
              <property name="title">
               <string>Item type</string>
@@ -48,18 +60,6 @@
               </item>
               <item>
                <widget class="QLineEdit" name="lineEditCustomerDescription"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_3">
-             <property name="title">
-              <string>Department</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_8">
-              <item>
-               <widget class="RelationalComboBox" name="comboBoxDepartment"/>
               </item>
              </layout>
             </widget>
@@ -521,11 +521,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>EnhancedTableView</class>
-   <extends>QTableView</extends>
-   <header>App.Widget.View</header>
-  </customwidget>
-  <customwidget>
    <class>RelationalComboBox</class>
    <extends>QComboBox</extends>
    <header>App.Widget.Control</header>
@@ -534,6 +529,11 @@
    <class>ColorComboBox</class>
    <extends>QComboBox</extends>
    <header>App.Widget.Control</header>
+  </customwidget>
+  <customwidget>
+   <class>EnhancedTableView</class>
+   <extends>QTableView</extends>
+   <header>App.Widget.View</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -162,6 +162,10 @@ insieme a questo programma. In caso contrario, consulta
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="160"/>
+        <source>Companies</source>
+        <translation>Aziende</translation>
+    </message>
+    <message>
         <location filename="../../App/System/Action.py" line="165"/>
         <location filename="../../App/System/Action.py" line="167"/>
         <source>Manage companies</source>
@@ -680,15 +684,11 @@ insieme a questo programma. In caso contrario, consulta
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="691"/>
-        <source>Event based tool</source>
-        <translation>Strumento basato sugli eventi</translation>
-    </message>
-    <message>
         <location filename="../../App/System/Action.py" line="696"/>
         <location filename="../../App/System/Action.py" line="697"/>
         <location filename="../../App/System/Action.py" line="698"/>
-        <source>Event based utilities</source>
-        <translation>Utility basate su eventi</translation>
+        <source>Event based tool</source>
+        <translation>Strumento basato sugli eventi</translation>
     </message>
     <message>
         <location filename="../../App/System/Action.py" line="702"/>
@@ -1563,7 +1563,7 @@ Proseguire ugualmente ?</translation>
 <context>
     <name>Delegate</name>
     <message>
-        <location filename="../../App/Widget/Delegate.py" line="268"/>
+        <location filename="../../App/Widget/Delegate.py" line="269"/>
         <source>Select Color</source>
         <translation>Selezionare il colore</translation>
     </message>
@@ -1583,7 +1583,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Ui/DeleteToolDialog.ui" line="53"/>
         <source>Warning</source>
-        <translation>Avviso</translation>
+        <translation>Avvertenza</translation>
     </message>
     <message>
         <location filename="../../App/Ui/DeleteToolDialog.ui" line="64"/>
@@ -2405,17 +2405,17 @@ Proseguire ugualmente ?</translation>
         <translation>Articolo</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ItemWidget.ui" line="31"/>
+        <location filename="../../App/Ui/ItemWidget.ui" line="43"/>
         <source>Item type</source>
         <translation>Tipo articolo</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ItemWidget.ui" line="43"/>
+        <location filename="../../App/Ui/ItemWidget.ui" line="55"/>
         <source>Item description / customer description</source>
         <translation>Descrizione articolo / descrizione per il cliente</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ItemWidget.ui" line="58"/>
+        <location filename="../../App/Ui/ItemWidget.ui" line="31"/>
         <source>Department</source>
         <translation>Reparto</translation>
     </message>
@@ -2956,9 +2956,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/User.py" line="250"/>
         <location filename="../../App/System/User.py" line="257"/>
         <location filename="../../App/System/User.py" line="343"/>
-        <location filename="../../App/Tool.py" line="85"/>
-        <location filename="../../App/Tool.py" line="108"/>
-        <location filename="../../App/Tool.py" line="126"/>
+        <location filename="../../App/Tools.py" line="85"/>
+        <location filename="../../App/Tools.py" line="108"/>
+        <location filename="../../App/Tools.py" line="126"/>
         <location filename="../../App/UpdateWOS.py" line="77"/>
         <location filename="../../App/UpdateWOS.py" line="114"/>
         <location filename="../../App/UpdateWOS.py" line="123"/>
@@ -3009,12 +3009,12 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/User.py" line="282"/>
         <location filename="../../App/System/User.py" line="370"/>
         <location filename="../../App/System/User.py" line="445"/>
-        <location filename="../../App/Tool.py" line="90"/>
-        <location filename="../../App/Tool.py" line="216"/>
-        <location filename="../../App/Tool.py" line="251"/>
-        <location filename="../../App/Tool.py" line="270"/>
-        <location filename="../../App/Tool.py" line="307"/>
-        <location filename="../../App/Tool.py" line="325"/>
+        <location filename="../../App/Tools.py" line="90"/>
+        <location filename="../../App/Tools.py" line="216"/>
+        <location filename="../../App/Tools.py" line="254"/>
+        <location filename="../../App/Tools.py" line="273"/>
+        <location filename="../../App/Tools.py" line="313"/>
+        <location filename="../../App/Tools.py" line="331"/>
         <location filename="../../App/UpdateWOS.py" line="163"/>
         <location filename="../../App/Widget/Dialog.py" line="406"/>
         <location filename="../../App/Widget/Dialog.py" line="441"/>
@@ -3077,8 +3077,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/Scripting.py" line="304"/>
         <location filename="../../App/System/Toolbar.py" line="222"/>
         <location filename="../../App/System/User.py" line="289"/>
-        <location filename="../../App/Tool.py" line="255"/>
-        <location filename="../../App/Tool.py" line="311"/>
+        <location filename="../../App/Tools.py" line="258"/>
+        <location filename="../../App/Tools.py" line="317"/>
         <location filename="../../App/Widget/Dialog.py" line="462"/>
         <location filename="../../App/Widget/Dialog.py" line="856"/>
         <location filename="../../App/Widget/Dialog.py" line="1138"/>
@@ -5696,12 +5696,12 @@ Devo procedere comunque?</translation>
         <translation>Records:</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="149"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="186"/>
         <source>Set whole order as Processed</source>
         <translation>Imposta l&apos;intero ordine come Evaso</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="156"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="179"/>
         <source>Set whole order as Unprocessed</source>
         <translation>Imposta l&apos;intero ordine come Non evaso</translation>
     </message>
@@ -5726,22 +5726,22 @@ Devo procedere comunque?</translation>
         <translation>Cena</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="176"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="162"/>
         <source>Barcode scanned</source>
         <translation>Codice a barre letto</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="193"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="222"/>
         <source>Barcode scan</source>
         <translation>Scansiona codice a barre</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="237"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="206"/>
         <source>Edit scan</source>
         <translation>Modifica scansione</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderProgressWidget.ui" line="243"/>
+        <location filename="../../App/Ui/OrderProgressWidget.ui" line="212"/>
         <source>Set as unprocessed</source>
         <translation>Imposta come non evaso</translation>
     </message>
@@ -8130,69 +8130,6 @@ Devo procedere comunque?</translation>
     </message>
 </context>
 <context>
-    <name>Tool</name>
-    <message>
-        <location filename="../../App/Tool.py" line="86"/>
-        <location filename="../../App/Tool.py" line="109"/>
-        <location filename="../../App/Tool.py" line="127"/>
-        <source>No access right to this function</source>
-        <translation>Nessun diritto di accesso a questa funzione</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="91"/>
-        <source>No event available</source>
-        <translation>Nessun evento disponibile</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="230"/>
-        <source>warning</source>
-        <translation>avviso</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="252"/>
-        <source>Select the objects to delete</source>
-        <translation>Selezionare l&apos;oggetto da eliminare</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="256"/>
-        <source>Are you sure you want to delete all the records of the selected objects from the current company ?</source>
-        <translation>Sei sicuro di voler eliminare tutti i record degli oggetti selezionati dall&apos;azienda corrente?</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="264"/>
-        <source>Delete tool</source>
-        <translation>Strumento di cancellazione</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="271"/>
-        <location filename="../../App/Tool.py" line="326"/>
-        <source>Operation completed successfully</source>
-        <translation>Operazione completata correttamente</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="288"/>
-        <source>This utility append ALL the records from the selected objects of the selected company to the current company. It&apos;s not possible to undo this operation. Use with caution!
-You can recover data only from a backup copy of the database.</source>
-        <translation>Questa utility aggiunge TUTTI i record degli oggetti selezionati dell&apos;azienda selezionata all&apos;azienda corrente. Non è possibile annullare questa operazione. Usare con cautela!
-È possibile recuperare i dati solo da una copia di backup del database.</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="308"/>
-        <source>Select the company and the objects to copy</source>
-        <translation>Selezionare l&apos;azienda e gli oggetti da copiare</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="312"/>
-        <source>Are you sure you want to copy all the records of the selected objects of the selected company to the current company ?</source>
-        <translation>Sei sicuro di voler copiare tutti i record degli oggetti selezionati dell&apos;azienda selezionata nell&apos;azienda corrente?</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="319"/>
-        <source>Copy tool</source>
-        <translation>Strumento di copia</translation>
-    </message>
-</context>
-<context>
     <name>ToolButtonStyle</name>
     <message>
         <location filename="../../App/Common/Gui.py" line="113"/>
@@ -8274,6 +8211,176 @@ You can recover data only from a backup copy of the database.</source>
         <location filename="../../App/Ui/ToolbarWidget.ui" line="98"/>
         <source>Description</source>
         <translation>Descrizione</translation>
+    </message>
+</context>
+<context>
+    <name>Tools</name>
+    <message>
+        <location filename="../../App/Tools.py" line="86"/>
+        <location filename="../../App/Tools.py" line="109"/>
+        <location filename="../../App/Tools.py" line="127"/>
+        <source>No access right to this function</source>
+        <translation>Nessun diritto di accesso a questa funzione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="91"/>
+        <source>No event available</source>
+        <translation>Nessun evento disponibile</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="146"/>
+        <source>Delete Orders</source>
+        <translation>Cancellazione ordini</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="147"/>
+        <source>Inventory rebuild</source>
+        <translation>Ricostruzione dell&apos;inventario</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="148"/>
+        <source>Ordered delivered rebuild</source>
+        <translation>Ricostruzione dell&apos;Ordinato Consegnato</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="149"/>
+        <source>Numbering Rebuild</source>
+        <translation>Ricostruzione delle numerazioni</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="150"/>
+        <source>Mark Orders as Processed</source>
+        <translation>Imposta gli ordini come evasi</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="162"/>
+        <location filename="../../App/Tools.py" line="233"/>
+        <source>Warning</source>
+        <translation>Avvertenza</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="163"/>
+        <source>This tool function delete ALL orders of the selected event. It&apos;s not possible to undo this operation.</source>
+        <translation>Questa utility cancella TUTTI gli ordini dell&apos;evento selezionato. Non è possibile ripristinare questa operazione.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="166"/>
+        <location filename="../../App/Tools.py" line="171"/>
+        <location filename="../../App/Tools.py" line="174"/>
+        <location filename="../../App/Tools.py" line="177"/>
+        <source>Information</source>
+        <translation>Informazione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="167"/>
+        <source>This tool function rebuild stock unload from orders of the selected event. Use this when changed item state/flags or when manually altered orders.</source>
+        <translation>Questa funzione ricalcola lo scarico di magazzino a partire dagli ordini dell&apos;evento selezionato. Da utilizzare in caso di modifica dello stato o dei flag di un articolo, oppure in seguito a una modifica manuale degli ordini.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="172"/>
+        <source>This tool function rebuild the ordered and delivered quantities from orders of the selected event.</source>
+        <translation>Questa strumento ricostruisce le quantità ordinate e consegnate a partire dagli ordini dell&apos;evento selezionato.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="175"/>
+        <source>This utility function rebuild numbering from orders of the selected event.</source>
+        <translation>Questa funzione di utilità ricostruisce la numerazione a partire dagli ordini dell&apos;evento selezionato.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="178"/>
+        <source>This utility function mark all orders as processed at the order date</source>
+        <translation>Questa funzione di utilità contrassegna tutti gli ordini come evasi alla data dell&apos;ordine</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="192"/>
+        <source>Are you sure you want to delete all orders of event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler cancellare tutti gli ordini dell&apos;evento
+&apos;{}&apos; ?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="195"/>
+        <source>Are you sure you want to procede with inventory rebuild for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler procedere con la ricostruzione dell&apos;inventario per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="198"/>
+        <source>Are you sure you want to procede with ordered delivered rebuild for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler procedere con la ricostruzione dell&apos;ordinato consegnato per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="201"/>
+        <source>Are you sure you want to procede with rebuild number sequence for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler procedere con la ricostruzione della sequenza numerica per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="204"/>
+        <source>Are you sure you want to mark all orders as processed for event
+&apos;{}&apos; ?</source>
+        <translation>Sei sicuro di voler contrassegnare tutti gli ordini come evasi per l&apos;evento
+&apos;{}&apos;?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="213"/>
+        <source>Execute event tool</source>
+        <translation>Esecuzione dello strumento</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="217"/>
+        <location filename="../../App/Tools.py" line="274"/>
+        <location filename="../../App/Tools.py" line="332"/>
+        <source>Operation completed successfully</source>
+        <translation>Operazione completata correttamente</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="234"/>
+        <source>This utility deletes ALL the data from the selected objects of the current company. It&apos;s not possible to undo this operation. Use with caution!
+You can recover data only from a backup copy of the database.</source>
+        <translation>Questa utility elimina TUTTI i dati dagli oggetti selezionati dell&apos;azienda corrente. Non è possibile annullare questa operazione. Usare con cautela!
+È possibile recuperare i dati solo da una copia di backup del database.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="255"/>
+        <source>Select the objects to delete</source>
+        <translation>Selezionare gli elementi da eliminare</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="259"/>
+        <source>Are you sure you want to delete all the records of the selected objects from the current company ?</source>
+        <translation>Sei sicuro di voler eliminare tutti i record degli oggetti selezionati dall&apos;azienda corrente?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="267"/>
+        <source>Delete tool</source>
+        <translation>Strumento di cancellazione</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="294"/>
+        <source>This utility append ALL the records from the selected objects of the selected company to the current company. It&apos;s not possible to undo this operation. Use with caution!
+You can recover data only from a backup copy of the database.</source>
+        <translation>Questa utility aggiunge TUTTI i record degli oggetti selezionati dell&apos;azienda selezionata all&apos;azienda corrente. Non è possibile annullare questa operazione. Usare con cautela!
+È possibile recuperare i dati solo da una copia di backup del database.</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="314"/>
+        <source>Select the company and the objects to copy</source>
+        <translation>Selezionare l&apos;azienda e gli oggetti da copiare</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="318"/>
+        <source>Are you sure you want to copy all the records of the selected objects of the selected company to the current company ?</source>
+        <translation>Sei sicuro di voler copiare tutti i record degli oggetti selezionati dell&apos;azienda selezionata nell&apos;azienda corrente?</translation>
+    </message>
+    <message>
+        <location filename="../../App/Tools.py" line="325"/>
+        <source>Copy tool</source>
+        <translation>Strumento di copia</translation>
     </message>
 </context>
 <context>
@@ -8537,128 +8644,29 @@ You can recover data only from a backup copy of the database.</source>
 <context>
     <name>Utility</name>
     <message>
-        <location filename="../../App/Tool.py" line="146"/>
-        <location filename="../../App/Tool.py" line="191"/>
+        <location filename="../../App/Tools.py" line="191"/>
         <source>Delete Orders</source>
         <translation>Cancellazione ordini</translation>
     </message>
     <message>
-        <location filename="../../App/Tool.py" line="147"/>
-        <source>Inventory rebuild</source>
-        <translation>Ricostruzione dell&apos;inventario</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="148"/>
-        <location filename="../../App/Tool.py" line="197"/>
+        <location filename="../../App/Tools.py" line="197"/>
         <source>Ordered delivered rebuild</source>
         <translation>Ricostruzione dell&apos;Ordinato Consegnato</translation>
     </message>
     <message>
-        <location filename="../../App/Tool.py" line="149"/>
-        <location filename="../../App/Tool.py" line="200"/>
+        <location filename="../../App/Tools.py" line="200"/>
         <source>Numbering Rebuild</source>
         <translation>Ricostruzione delle numerazioni</translation>
     </message>
     <message>
-        <location filename="../../App/Tool.py" line="150"/>
-        <location filename="../../App/Tool.py" line="203"/>
+        <location filename="../../App/Tools.py" line="203"/>
         <source>Mark Orders as Processed</source>
         <translation>Imposta gli ordini come evasi</translation>
     </message>
     <message>
-        <location filename="../../App/Tool.py" line="162"/>
-        <source>Warning</source>
-        <translation>Avviso</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="163"/>
-        <source>This utility function delete ALL orders of the selected event. It&apos;s not possible to undo this operation.</source>
-        <translation>Questa funzione elimina TUTTI gli ordini dell&apos;evento selezionato. Non è possibile annullare questa operazione.</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="166"/>
-        <location filename="../../App/Tool.py" line="171"/>
-        <location filename="../../App/Tool.py" line="174"/>
-        <location filename="../../App/Tool.py" line="177"/>
-        <source>Information</source>
-        <translation>Informazione</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="167"/>
-        <source>This utility function rebuild stock unload from orders of the selected event. Use this when changed item state/flags or when manually altered orders.</source>
-        <translation>Questa funzione di utilità ricostruisce lo scarico delle scorte dagli ordini dell&apos;evento selezionato. Utilizzala quando vengono modificati lo stato/i flag dell&apos;articolo o quando gli ordini vengono modificati manualmente.</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="172"/>
-        <source>This utility function rebuild the ordered and delivered quantities from orders of the selected event.</source>
-        <translation>Questa utility ricostruisce le quantità ordinate e consegnate dagli ordini presenti per l&apos;evento selezionato.</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="175"/>
-        <source>This utility function rebuild numbering from orders of the selected event.</source>
-        <translation>Questa funzione di utilità ricostruisce la numerazione a partire dagli ordini dell&apos;evento selezionato.</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="178"/>
-        <source>This utility function mark all orders as processed at the order date</source>
-        <translation>Questa funzione di utilità contrassegna tutti gli ordini come evasi alla data dell&apos;ordine</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="192"/>
-        <source>Are you sure you want to delete all orders of event
-&apos;{}&apos; ?</source>
-        <translation>Sei sicuro di voler cancellare tutti gli ordini dell&apos;evento
-&apos;{}&apos; ?</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="194"/>
+        <location filename="../../App/Tools.py" line="194"/>
         <source>Inventory Rebuild</source>
         <translation>Ricostruzione inventario</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="195"/>
-        <source>Are you sure you want to procede with inventory rebuild for event
-&apos;{}&apos; ?</source>
-        <translation>Sei sicuro di voler procedere con la ricostruzione dell&apos;inventario per l&apos;evento
-&apos;{}&apos;?</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="198"/>
-        <source>Are you sure you want to procede with ordered delivered rebuild for event
-&apos;{}&apos; ?</source>
-        <translation>Sei sicuro di voler procedere con la ricostruzione dell&apos;ordinato consegnato per l&apos;evento
-&apos;{}&apos;?</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="201"/>
-        <source>Are you sure you want to procede with rebuild number sequence for event
-&apos;{}&apos; ?</source>
-        <translation>Sei sicuro di voler procedere con la ricostruzione della sequenza numerica per l&apos;evento
-&apos;{}&apos;?</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="204"/>
-        <source>Are you sure you want to mark all orders as processed for event
-&apos;{}&apos; ?</source>
-        <translation>Sei sicuro di voler contrassegnare tutti gli ordini come evasi per l&apos;evento
-&apos;{}&apos;?</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="213"/>
-        <source>Execute event tool</source>
-        <translation>Esecuzione dello strumento</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="217"/>
-        <source>Operation completed successfully</source>
-        <translation>Operazione completata correttamente</translation>
-    </message>
-    <message>
-        <location filename="../../App/Tool.py" line="231"/>
-        <source>This utility deletes ALL the data from the selected objects of the current company. It&apos;s not possible to undo this operation. Use with caution!
-You can recover data only from a backup copy of the database.</source>
-        <translation>Questa utility elimina TUTTI i dati dagli oggetti selezionati dell&apos;azienda corrente. Non è possibile annullare questa operazione. Usare con cautela!
-È possibile recuperare i dati solo da una copia di backup del database.</translation>
     </message>
 </context>
 <context>

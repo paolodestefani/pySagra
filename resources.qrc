@@ -277,7 +277,7 @@
     <file alias="order_cancel">Icon/flatwoken/Dialog-Close.png</file>
     <file alias="order_note">Icon/flatwoken/Note-Taking-App.png</file>
     <file alias="order_flag">Icon/flatwoken/Easytag.png</file>
-    <file alias="activities_order">Icon/flatwoken/Gedit-B.png</file>
+    <file alias="activities_order">Icon/flatwoken/Rednotebook.png</file>
     <file alias="activities_inventory">Icon/flatwoken/Dropbox-B.png</file>
 	<file alias="activities_order_progress">Icon/flatwoken/Stopwatch.png</file>
     <file alias="activities_ordered_delivered">Icon/flatwoken/Search-Log.png</file>

@@ -40,6 +40,18 @@ class Ui_ItemWidget(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.groupBox_3 = QGroupBox(self.page)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.verticalLayout_8 = QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.comboBoxDepartment = RelationalComboBox(self.groupBox_3)
+        self.comboBoxDepartment.setObjectName(u"comboBoxDepartment")
+
+        self.verticalLayout_8.addWidget(self.comboBoxDepartment)
+
+
+        self.horizontalLayout.addWidget(self.groupBox_3)
+
         self.groupBox = QGroupBox(self.page)
         self.groupBox.setObjectName(u"groupBox")
         self.verticalLayout = QVBoxLayout(self.groupBox)
@@ -68,18 +80,6 @@ class Ui_ItemWidget(object):
 
 
         self.horizontalLayout.addWidget(self.groupBox_2)
-
-        self.groupBox_3 = QGroupBox(self.page)
-        self.groupBox_3.setObjectName(u"groupBox_3")
-        self.verticalLayout_8 = QVBoxLayout(self.groupBox_3)
-        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.comboBoxDepartment = RelationalComboBox(self.groupBox_3)
-        self.comboBoxDepartment.setObjectName(u"comboBoxDepartment")
-
-        self.verticalLayout_8.addWidget(self.comboBoxDepartment)
-
-
-        self.horizontalLayout.addWidget(self.groupBox_3)
 
 
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
@@ -428,9 +428,9 @@ class Ui_ItemWidget(object):
 
     def retranslateUi(self, ItemWidget):
         ItemWidget.setWindowTitle(QCoreApplication.translate("ItemWidget", u"Item", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("ItemWidget", u"Department", None))
         self.groupBox.setTitle(QCoreApplication.translate("ItemWidget", u"Item type", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ItemWidget", u"Item description / customer description", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("ItemWidget", u"Department", None))
         self.checkBoxKitPart.setText(QCoreApplication.translate("ItemWidget", u"Kit part", None))
         self.checkBoxInventoryControl.setText(QCoreApplication.translate("ItemWidget", u"Inventory control", None))
         self.checkBoxMenuPart.setText(QCoreApplication.translate("ItemWidget", u"Menu part", None))

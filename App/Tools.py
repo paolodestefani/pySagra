@@ -83,12 +83,12 @@ def eventBasedTool(action: QAction, checked: bool = False) -> None:
     if not auth[2]: # no execute permission
         QMessageBox.warning(mw,
                             _tr('MessageDialog', "Warning"),
-                            _tr('Tool', 'No access right to this function'))
+                            _tr('Tools', 'No access right to this function'))
         return
     if not event_lookup():
         QMessageBox.information(mw,
                                 _tr('MessageDialog', 'Information'),
-                                _tr('Tool', 'No event available'))
+                                _tr('Tools', 'No event available'))
         return
     dlg = EventToolDialog(mw, title, icon)
     if dlg.exec() == QDialog.DialogCode.Rejected:
@@ -106,7 +106,7 @@ def deleteTool(action: QAction, checked: bool = False) -> None:
     if not auth[2]: # no execute permission
         QMessageBox.warning(mw,
                             _tr('MessageDialog', "Warning"),
-                            _tr('Tool', 'No access right to this function'))
+                            _tr('Tools', 'No access right to this function'))
         return
     dlg = DeleteToolDialog(mw, title, icon)
     if dlg.exec() == QDialog.DialogCode.Rejected:
@@ -124,7 +124,7 @@ def copyTool(action: QAction, checked: bool = False) -> None:
     if not auth[2]: # no execute permission
         QMessageBox.warning(mw,
                             _tr('MessageDialog', "Warning"),
-                            _tr('Tool', 'No access right to this function'))
+                            _tr('Tools', 'No access right to this function'))
         return
     dlg = CopyToolDialog(mw, title, icon)
     if dlg.exec() == QDialog.DialogCode.Rejected:
@@ -143,11 +143,11 @@ class EventToolDialog(QDialog):
         addHelpAction(self, "help/event_tool.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
-        for i, u in ((0, _tr('Utility', 'Delete Orders')),
-                     (1, _tr('Utility', 'Inventory rebuild')),
-                     (2, _tr('Utility', 'Ordered delivered rebuild')),
-                     (3, _tr('Utility', 'Numbering Rebuild')),
-                     (4, _tr('Utility', 'Mark Orders as Processed'))):
+        for i, u in ((0, _tr('Tools', 'Delete Orders')),
+                     (1, _tr('Tools', 'Inventory rebuild')),
+                     (2, _tr('Tools', 'Ordered delivered rebuild')),
+                     (3, _tr('Tools', 'Numbering Rebuild')),
+                     (4, _tr('Tools', 'Mark Orders as Processed'))):
             self.ui.comboBoxUtility.addItem(u, i)
         for i, d in event_lookup():
             self.ui.comboBoxEvent.addItem(d, i)
@@ -159,23 +159,23 @@ class EventToolDialog(QDialog):
     def updateWarning(self, index):
         "Update warning text according to selected utility"
         texts = {
-            0: (_tr('Utility', 'Warning'),
-                _tr('Utility', "This utility function delete ALL "
+            0: (_tr('Tools', 'Warning'),
+                _tr('Tools', "This tool function delete ALL "
                                "orders of the selected event. It's not possible "
                                "to undo this operation.")),
-            1: (_tr('Utility', 'Information'),
-                _tr('Utility', "This utility function rebuild stock "
+            1: (_tr('Tools', 'Information'),
+                _tr('Tools', "This tool function rebuild stock "
                                "unload from orders of the selected event. Use "
                                "this when changed item state/flags "
                                "or when manually altered orders.")),
-            2: (_tr('Utility', 'Information'),
-                _tr('Utility', "This utility function rebuild the ordered and "
+            2: (_tr('Tools', 'Information'),
+                _tr('Tools', "This tool function rebuild the ordered and "
                                "delivered quantities from orders of the selected event.")),
-            3: (_tr('Utility', 'Information'),
-                _tr('Utility', "This utility function rebuild "
+            3: (_tr('Tools', 'Information'),
+                _tr('Tools', "This utility function rebuild "
                                "numbering from orders of the selected event.")),
-            4: (_tr('Utility', 'Information'),
-                _tr('Utility', "This utility function mark all "
+            4: (_tr('Tools', 'Information'),
+                _tr('Tools', "This utility function mark all "
                                "orders as processed at the order date"))}
         title, text = texts.get(self.ui.comboBoxUtility.currentData(), ('', ''))
         self.ui.groupBoxWarning.setTitle(title)
@@ -189,19 +189,19 @@ class EventToolDialog(QDialog):
         utility_id = self.ui.comboBoxUtility.currentData()
         utilities = {
             0: [delete_event_order, _tr('Utility', 'Delete Orders'), 
-                _tr("Utility", "Are you sure you want to delete all orders of event\n"
+                _tr("Tools", "Are you sure you want to delete all orders of event\n"
                                "'{}' ?").format(eventDescription)],
             1: [inventory_rebuild, _tr('Utility', 'Inventory Rebuild'), 
-                _tr("Utility", "Are you sure you want to procede with inventory rebuild for event\n"
+                _tr("Tools", "Are you sure you want to procede with inventory rebuild for event\n"
                                "'{}' ?").format(eventDescription)],
             2: [ordered_delivered_rebuild, _tr('Utility', 'Ordered delivered rebuild'), 
-                _tr("Utility", "Are you sure you want to procede with ordered delivered rebuild for event\n"
+                _tr("Tools", "Are you sure you want to procede with ordered delivered rebuild for event\n"
                                "'{}' ?").format(eventDescription)],
             3: [numbering_rebuild, _tr('Utility', 'Numbering Rebuild'), 
-                _tr("Utility", "Are you sure you want to procede with rebuild number sequence for event\n"
+                _tr("Tools", "Are you sure you want to procede with rebuild number sequence for event\n"
                                "'{}' ?").format(eventDescription)],
             4: [set_order_as_processed, _tr('Utility', 'Mark Orders as Processed'), 
-                _tr("Utility", "Are you sure you want to mark all orders as processed for event\n"
+                _tr("Tools", "Are you sure you want to mark all orders as processed for event\n"
                                "'{}' ?").format(eventDescription)]}
         if QMessageBox.question(self,
                                 utilities[utility_id][DESC],
@@ -210,11 +210,11 @@ class EventToolDialog(QDialog):
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
-        with gui_exception_context(self, _tr('Utility', 'Execute event tool')):
+        with gui_exception_context(self, _tr('Tools', 'Execute event tool')):
             utilities[utility_id][FUNC](event_id)
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Utility', 'Operation completed successfully'))
+                                    _tr('Tools', 'Operation completed successfully'))
         # back to Cancel: the closed message box gives the focus back to Ok, and Enter
         # on a focused button presses it, so it would run the operation again
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
@@ -230,8 +230,8 @@ class DeleteToolDialog(QDialog):
         addHelpAction(self, "help/delete_tool.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
-        self.ui.groupBoxWarning.setTitle(_tr('Tool', 'warning'))
-        self.ui.labelWarning.setText(_tr('Utility', 
+        self.ui.groupBoxWarning.setTitle(_tr('Tools', 'Warning'))
+        self.ui.labelWarning.setText(_tr('Tools', 
                                          "This utility deletes ALL the data from the "
                                          "selected objects of the current company. It's not possible "
                                          "to undo this operation. Use with caution!\n"
@@ -252,11 +252,11 @@ class DeleteToolDialog(QDialog):
         if not selected:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Tool', 'Select the objects to delete'))
+                                    _tr('Tools', 'Select the objects to delete'))
             return
         if QMessageBox.question(self,
                                 _tr("MessageDialog","Question"),
-                                _tr("Tool", "Are you sure you want to delete all the records "
+                                _tr("Tools", "Are you sure you want to delete all the records "
                                     "of the selected objects from the current company ?"),
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
                                 QMessageBox.StandardButton.No  # default botton
@@ -264,14 +264,14 @@ class DeleteToolDialog(QDialog):
             return
         # one transaction: a delete that fails, as items still used by another
         # object, leaves everything as it was
-        with gui_exception_context(self, _tr('Tool', 'Delete tool')) as outcome:
+        with gui_exception_context(self, _tr('Tools', 'Delete tool')) as outcome:
             with appconn.transaction():
                 for func in selected:
                     func()
         if outcome.ok:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Tool', 'Operation completed successfully'))
+                                    _tr('Tools', 'Operation completed successfully'))
         # back to Cancel: the closed message box gives the focus back to Ok, and Enter
         # on a focused button presses it, so it would run the operation again
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
@@ -291,7 +291,7 @@ class CopyToolDialog(QDialog):
         for i, d in company_list():
             if i != session['current_company']:
                 self.ui.comboBoxCompany.addItem(d, i)
-        self.ui.labelWarning.setText(_tr('Tool', 
+        self.ui.labelWarning.setText(_tr('Tools', 
                                          "This utility append ALL the records from the "
                                          "selected objects of the selected company to the current company. "
                                          "It's not possible to undo this operation. Use with caution!\n"
@@ -311,25 +311,25 @@ class CopyToolDialog(QDialog):
         if company_id is None or not selected:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Tool', 'Select the company and the objects to copy'))
+                                    _tr('Tools', 'Select the company and the objects to copy'))
             return
         if QMessageBox.question(self,
                                 _tr("MessageDialog","Question"),
-                                _tr("Tool", "Are you sure you want to copy all the records "
+                                _tr("Tools", "Are you sure you want to copy all the records "
                                     "of the selected objects of the selected company to the current company ?"),
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  # butons
                                 QMessageBox.StandardButton.No  # default botton
                                 ) == QMessageBox.StandardButton.No:
             return
         # one transaction: a copy that fails, as a code already present, copies nothing
-        with gui_exception_context(self, _tr('Tool', 'Copy tool')) as outcome:
+        with gui_exception_context(self, _tr('Tools', 'Copy tool')) as outcome:
             with appconn.transaction():
                 for func in selected:
                     func(company_id)
         if outcome.ok:
             QMessageBox.information(self,
                                     _tr('MessageDialog', 'Information'),
-                                    _tr('Tool', 'Operation completed successfully'))
+                                    _tr('Tools', 'Operation completed successfully'))
         # back to Cancel: the closed message box gives the focus back to Ok, and Enter
         # on a focused button presses it, so it would run the operation again
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)

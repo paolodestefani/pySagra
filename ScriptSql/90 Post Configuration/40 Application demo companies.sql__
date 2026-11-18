@@ -48,7 +48,6 @@
 
 SET search_path = system;
 
-/*
 
 -- *** PROFILE/MENU/TOOLBAR FOR CASHIER ONLY *** --
 
@@ -229,8 +228,8 @@ VALUES
 -- DEMO COMPANY
 -- create demo company
 SELECT
-system.pa_company_create(10, 'Demo 1', true, Null),
-system.pa_company_create(20, 'Demo 2', true, Null);
+system.pa_company_create(10, 'Comitato Festeggiamenti', false, Null),
+system.pa_company_create(20, 'Associazione Sagra', false, Null);
 
 -- user company settings
 INSERT INTO app_user_company (app_user_code, company_id, profile_code, menu_code, toolbar_code) 
@@ -246,7 +245,6 @@ VALUES
 -- create application users
 INSERT INTO app_user (user_code, description, user_password, is_admin, is_system_object, can_edit_views, can_edit_sortfilters, can_edit_reports, l10n) 
 VALUES
-('utente', 'Utente applicativo di {pyAppName}', system.crypt('utente', system.gen_salt('bf')), False, False, False, False, False, 'it_IT'),
 ('cassa', 'Operatore cassa', system.crypt('cassa', system.gen_salt('bf')), False, False, False, False, False, 'it_IT'),
 ('avanza', 'Avanzamento ordini', system.crypt('avanza', system.gen_salt('bf')), False, False, False, False, False, 'it_IT');
 
@@ -259,7 +257,4 @@ VALUES
 ('cassa', 20, 'cashier', 'm_cashier_it', 't_cashier_it'),
 ('avanza', 10, 'progress', 'm_progress_it', 't_progress_it'),
 ('avanza', 20, 'progress', 'm_progress_it', 't_progress_it');
-
-*/
-
 

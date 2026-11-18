@@ -72,9 +72,9 @@ VALUES
 ('full', 'app_statistics_analysis', true, true, true),
 ('full', 'app_statistics_print', true, true, true),
 ('full', 'app_statistics_export', true, true, true),
-('full', 'app_tool_event_based', true, true, true),
-('full', 'app_tool_delete', true, true, true),
-('full', 'app_tool_copy', true, true, true),
+('full', 'app_tools_event_based', true, true, true),
+('full', 'app_tools_delete', true, true, true),
+('full', 'app_tools_copy', true, true, true),
 -- default
 ('default', 'app_file_cash_desk', true, false, false),
 ('default', 'app_file_escpos_printer', true, false, false),
@@ -96,9 +96,9 @@ VALUES
 ('default', 'app_statistics_analysis', true, false, false),
 ('default', 'app_statistics_print', false, false, true),
 ('default', 'app_statistics_export', false, false, true),
-('default', 'app_tool_event_based', false, false, true),
-('default', 'app_tool_delete', false, false, true),
-('default', 'app_tool_copy', false, false, true);
+('default', 'app_tools_event_based', false, false, true),
+('default', 'app_tools_delete', false, false, true),
+('default', 'app_tools_copy', false, false, true);
 
 
 -- APPLICATION MENU
@@ -145,9 +145,9 @@ VALUES
 ('fst', 'fstsp1', Null, 3, 'S', Null),
 ('fst', 'fstexp', Null, 4, 'A', 'app_statistics_export'),
 -- tools menu
-('ftl', 'ftlebt', Null, 1, 'A', 'app_tool_event_based'),
-('ftl', 'ftldel', Null, 2, 'A', 'app_tool_delete'),
-('ftl', 'ftlcpy', Null, 3, 'A', 'app_tool_copy'),
+('ftl', 'ftlebt', Null, 1, 'A', 'app_tools_event_based'),
+('ftl', 'ftldel', Null, 2, 'A', 'app_tools_delete'),
+('ftl', 'ftlcpy', Null, 3, 'A', 'app_tools_copy'),
 
 -- DEFAULT MENU
 ('m_default_en', 'dfi', 'File', 10, 'M', Null), -- System is 1, Edit is 15, Help is 99
@@ -189,9 +189,9 @@ VALUES
 ('dst', 'dstsp1', Null, 3, 'S', Null),
 ('dst', 'dstexp', Null, 4, 'A', 'app_statistics_export'),
 -- utilities menu
-('dtl', 'dtlebt', Null, 1, 'A', 'app_tool_event_based'),
-('dtl', 'dtldel', Null, 2, 'A', 'app_tool_delete'),
-('dtl', 'dtlcpy', Null, 3, 'A', 'app_tool_copy');
+('dtl', 'dtlebt', Null, 1, 'A', 'app_tools_event_based'),
+('dtl', 'dtldel', Null, 2, 'A', 'app_tools_delete'),
+('dtl', 'dtlcpy', Null, 3, 'A', 'app_tools_copy');
 
 -- TOOLBAR ITEMS
 INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
