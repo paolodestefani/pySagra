@@ -341,16 +341,20 @@ class LayoutViewMixin(_ViewBase):
         header = self.header()
         # reset layout first (or store the initial state on the first run)
         if self.header_state:
+            # the saved state holds a sort indicator too: with the header signals on, the view
+            # would sort the rows by it and undo the order of the sort/filter query
+            header.blockSignals(True)
             header.restoreState(self.header_state)
+            header.blockSignals(False)
+            self.updateGeometries()
         else:
             self.header_state = header.saveState()
         title: str = _tr("Menu", "Error applying stored layout")
-        sorting = self.isSortingEnabled()
+        # sorting is left as it is: turning it back on sorts the rows by the header
+        # indicator at once, and would undo the order of the sort/filter query
         with gui_exception_context(self, title):
             # fetch columns implementation: column_number, sorting, is_visible, size
             result = get_view_columns(view_id)
-            # disable sorting temporarily to prevent heavy UI updates during layout shifts
-            self.setSortingEnabled(False)
             for col_num, sorting_idx, is_visible, size in result:
                 # boundary check: ensure the stored column index exists in the current view
                 if col_num >= header.count():
@@ -364,7 +368,6 @@ class LayoutViewMixin(_ViewBase):
                 visual_idx = header.visualIndex(col_num)
                 if visual_idx != sorting_idx:
                     header.moveSection(visual_idx, sorting_idx)
-        self.setSortingEnabled(sorting)
 
     def showContextMenu(self, pos: QPoint) -> None:
         """Executes the custom layout options context menu at the requested position."""
