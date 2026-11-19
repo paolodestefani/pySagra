@@ -91,7 +91,7 @@ def event(action: QAction, checked: bool = False) -> None:
                             _tr('Event', 'No access right to this archive'))
         return
     ew = EventForm(mw, title, auth)
-    ew.reload()
+    ew.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, ew)
     logger.info('Events Form added to main window')
 

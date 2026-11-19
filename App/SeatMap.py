@@ -94,7 +94,7 @@ def seatMap(action: QAction, checked: bool = False) -> None:
                             _tr('SeatMap', 'No access right to this archive'))
         return
     tw = SeatMapForm(mw, title, auth)
-    tw.reload()
+    tw.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, tw)
     logger.info('Tables Form added to main window')
 

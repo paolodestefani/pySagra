@@ -77,7 +77,7 @@ def department(action: QAction, checked: bool = False) -> None:
                             _tr('Department', 'No access right to this archive'))
         return
     dw = DepartmentForm(mw, title, auth)
-    dw.reload()
+    dw.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, dw)
     logger.info('Departments Form added to main window')
 

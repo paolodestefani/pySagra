@@ -100,7 +100,7 @@ def priceList(action: QAction, checked: bool = False) -> None:
                             _tr('PriceList', 'No access right to this archive'))
         return
     plw = PriceListForm(mw, title, auth)
-    plw.reload()
+    plw.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, plw)
     logger.info('Price list Form added to main window')
 

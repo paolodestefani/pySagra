@@ -107,7 +107,7 @@ def orderPrintSettings(action: QAction, checked: bool = False) -> None:
                             _tr('OrderPrintSettings', 'No access right to this archive'))
         return
     pf = OrderPrintSettingsForm(mw, title, auth)
-    pf.reload()
+    pf.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, pf)
     logger.info('Order print settings Form added to main window')
 

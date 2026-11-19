@@ -96,7 +96,7 @@ def escposPrinter(action: QAction, checked: bool = False) -> None:
         return
         
     dw = EscposPrinterForm(mw, title, auth)
-    dw.reload()
+    dw.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, dw)
     logger.info('Escpos printer form added to main window')
 

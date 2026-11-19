@@ -76,7 +76,7 @@ def cashDesk(action: QAction, checked: bool = False) -> None:
         return
         
     dw = CashDeskForm(mw, title, auth)
-    dw.reload()
+    dw.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, dw)
     logger.info('Cash Desk Form added to main window')
 

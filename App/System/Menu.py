@@ -96,7 +96,7 @@ def menu(action: QAction, checked: bool = False) -> None:
         )
         return
     mf = MenusForm(mw, title, auth)
-    mf.reload()
+    mf.applySortFilter()   # applies the default sort/filter, then reloads
     mw.addTab(title, mf)
     logger.info('Menus Form added to main window')
 
