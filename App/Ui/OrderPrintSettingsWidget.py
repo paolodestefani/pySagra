@@ -26,7 +26,7 @@ class Ui_OrderPrintSettingsWidget(object):
     def setupUi(self, OrderPrintSettingsWidget):
         if not OrderPrintSettingsWidget.objectName():
             OrderPrintSettingsWidget.setObjectName(u"OrderPrintSettingsWidget")
-        OrderPrintSettingsWidget.resize(640, 480)
+        OrderPrintSettingsWidget.resize(590, 512)
         self.verticalLayout = QVBoxLayout(OrderPrintSettingsWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.tableView = EnhancedTableView(OrderPrintSettingsWidget)
@@ -55,6 +55,7 @@ class Ui_OrderPrintSettingsWidget(object):
 
         self.lineEditNewHostName = HostNameLineEdit(OrderPrintSettingsWidget)
         self.lineEditNewHostName.setObjectName(u"lineEditNewHostName")
+        self.lineEditNewHostName.setMinimumSize(QSize(200, 0))
 
         self.horizontalLayout.addWidget(self.lineEditNewHostName)
 
@@ -66,10 +67,11 @@ class Ui_OrderPrintSettingsWidget(object):
 
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+        self.horizontalLayout_2.addItem(self.spacer)
 
+        self.horizontalLayout_2.setStretch(1, 1)
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 

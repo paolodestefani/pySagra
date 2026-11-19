@@ -5531,9 +5531,9 @@ Devo procedere comunque?</translation>
         <translation>a</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/OrderPrintSettingsWidget.ui" line="47"/>
+        <location filename="../../App/Ui/OrderPrintSettingsWidget.ui" line="54"/>
         <source>Copy settings</source>
-        <translation>Impostazioni copia</translation>
+        <translation>Copia impostazioni</translation>
     </message>
 </context>
 <context>
