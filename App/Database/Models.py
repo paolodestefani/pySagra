@@ -1440,7 +1440,8 @@ SELECT
     s.item_id,
     i.description,
     s.ordered,
-    s.delivered
+    s.delivered,
+    s.ordered + s.delivered AS total
 FROM ordered_delivered s
 JOIN item i ON s.item_id = i.item_id;"""
         # model columns: (field, description, readonly, type), tuple of tuples
@@ -1451,7 +1452,8 @@ JOIN item i ON s.item_id = i.item_id;"""
                         ("s.item_id", _tr('Models', 'Item'), False, 'int'),
                         ("i.description", _tr('Models', 'Item description'), True, 'str'),
                         ("s.ordered", _tr('Models', 'Ordered'), True, 'decimal'),
-                        ("s.delivered", _tr('Models', 'Delivered'), True, 'decimal'))
+                        ("s.delivered", _tr('Models', 'Delivered'), True, 'decimal'),
+                        ("total", _tr('Models', 'Total'), True, 'decimal'))
         self.isCompanyTable = True
         self.companyField = 's.company_id'
         # reference fields dictionary

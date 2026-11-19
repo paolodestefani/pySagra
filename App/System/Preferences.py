@@ -141,6 +141,17 @@ class PreferencesDialog(QDialog):
         app = QApplication.instance()
         if app is None or not isinstance(app, QApplication):
             return
+        # As is necessary to close tab it'is better to put a warning message to the user
+        if session['mainwin'].tabWidget.count() != 0:
+            if QMessageBox.question(
+                self,
+                _tr('MessageDialog', "Question"),
+                _tr('MainWindow', "Warning: open tabs will "
+                    "be closed, continue anyway ?"),
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,  # butons
+                QMessageBox.StandardButton.No  # default botton
+                ) == QMessageBox.StandardButton.No:
+                return
         # close all tabs
         session['mainwin'].closeAllTabs()
         # gui preferences

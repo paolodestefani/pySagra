@@ -65,6 +65,7 @@ class odv(IntEnum):
     ITEM_DESC   = 4
     ORDERED     = 5
     DELIVERED   = 6
+    TOTAL       = 7
 
 
 def dayPartMapping():
@@ -113,6 +114,7 @@ class OrderedDeliveredForm(FormViewManager[Ui_OrderedDeliveredWidget]):
         self.ui.tableView.setItemDelegateForColumn(odv.DAY_PART, RelationDelegate(self, dayPartMapping))
         self.ui.tableView.setItemDelegateForColumn(odv.ORDERED, QuantityDelegate(self, bold=True))
         self.ui.tableView.setItemDelegateForColumn(odv.DELIVERED, QuantityDelegate(self, bold=True))
+        self.ui.tableView.setItemDelegateForColumn(odv.TOTAL, QuantityDelegate(self, bold=True))
         # current filter, used on printing
         self.eventParams: tuple = (None, None, None)
         # initial filtering

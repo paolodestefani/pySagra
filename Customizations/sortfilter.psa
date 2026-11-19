@@ -1,10 +1,394 @@
 [
     {
         "type": "S",
-        "class": "ItemForm",
-        "description": "articoli 1",
+        "class": "ConnectionForm",
+        "description": "Default",
         "class_sorting": 0,
-        "is_default_for_class": false,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "a.access_date",
+                "negate_state": null,
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "ConnectionHistoryForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "login_datetime",
+                "negate_state": null,
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 1,
+                "field_name": "logout_datetime",
+                "negate_state": null,
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "CompanyForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "company_id",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "ProfileForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "is_system_object",
+                "negate_state": null,
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 1,
+                "field_name": "profile_code",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "UsersForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "is_system_object",
+                "negate_state": null,
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 1,
+                "field_name": "user_code",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "MenusForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "is_system_object",
+                "negate_state": null,
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 1,
+                "field_name": "code",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "ToolbarForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "is_system_object",
+                "negate_state": null,
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 1,
+                "field_name": "code",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "ReportForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 128,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "report_id",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "ScriptingForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "script_id",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "OrderPrintSettingsForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 100,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "hostname",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 1,
+                "field_name": "print_type",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 2,
+                "field_name": "department_id",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "SeatMapForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 1000,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "seat_map_id",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "ItemForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 1000,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "department_id",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            },
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 1,
+                "field_name": "description",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "PriceListForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
         "report_id": null,
         "row_count_limit": null,
         "is_system_object": false,
@@ -14,25 +398,25 @@
                 "sorting": null,
                 "is_visible": null,
                 "size": null,
-                "element_type": "F",
+                "element_type": "S",
                 "layout_row": 0,
-                "field_name": "item_type",
-                "negate_state": false,
-                "operator_sql": "=",
-                "widget_value": "I"
-            },
-            {
-                "column_number": null,
-                "sorting": null,
-                "is_visible": null,
-                "size": null,
-                "element_type": "F",
-                "layout_row": 1,
-                "field_name": "department_id",
-                "negate_state": false,
-                "operator_sql": "=",
-                "widget_value": "3"
-            },
+                "field_name": "price_list_id",
+                "negate_state": null,
+                "operator_sql": "ASC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "EventForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": null,
+        "is_system_object": false,
+        "settings": [
             {
                 "column_number": null,
                 "sorting": null,
@@ -40,9 +424,33 @@
                 "size": null,
                 "element_type": "S",
                 "layout_row": 0,
-                "field_name": "item_id",
+                "field_name": "start_date",
                 "negate_state": null,
-                "operator_sql": "ASC",
+                "operator_sql": "DESC",
+                "widget_value": "None"
+            }
+        ]
+    },
+    {
+        "type": "S",
+        "class": "OrderForm",
+        "description": "Default",
+        "class_sorting": 0,
+        "is_default_for_class": true,
+        "report_id": null,
+        "row_count_limit": 1000,
+        "is_system_object": false,
+        "settings": [
+            {
+                "column_number": null,
+                "sorting": null,
+                "is_visible": null,
+                "size": null,
+                "element_type": "S",
+                "layout_row": 0,
+                "field_name": "h.order_header_id",
+                "negate_state": null,
+                "operator_sql": "DESC",
                 "widget_value": "None"
             }
         ]

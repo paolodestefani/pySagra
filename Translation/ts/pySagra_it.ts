@@ -2719,6 +2719,7 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/System/MainWindow.py" line="587"/>
+        <location filename="../../App/System/Preferences.py" line="149"/>
         <source>Warning: open tabs will be closed, continue anyway ?</source>
         <translation>Avviso: le schede aperte verranno chiuse, procedo comunque ?</translation>
     </message>
@@ -2914,9 +2915,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Item.py" line="443"/>
         <location filename="../../App/Item.py" line="448"/>
         <location filename="../../App/OrderArchive.py" line="194"/>
-        <location filename="../../App/OrderedDelivered.py" line="83"/>
-        <location filename="../../App/OrderedDelivered.py" line="160"/>
-        <location filename="../../App/OrderedDelivered.py" line="166"/>
+        <location filename="../../App/OrderedDelivered.py" line="84"/>
+        <location filename="../../App/OrderedDelivered.py" line="162"/>
+        <location filename="../../App/OrderedDelivered.py" line="168"/>
         <location filename="../../App/OrderEntry.py" line="121"/>
         <location filename="../../App/OrderEntry.py" line="127"/>
         <location filename="../../App/OrderEntry.py" line="396"/>
@@ -3080,6 +3081,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/System/MainWindow.py" line="586"/>
         <location filename="../../App/System/MainWindow.py" line="610"/>
         <location filename="../../App/System/Menu.py" line="256"/>
+        <location filename="../../App/System/Preferences.py" line="148"/>
         <location filename="../../App/System/Profile.py" line="223"/>
         <location filename="../../App/System/Report.py" line="232"/>
         <location filename="../../App/System/Report.py" line="284"/>
@@ -3239,11 +3241,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="1308"/>
         <location filename="../../App/Database/Models.py" line="1334"/>
         <location filename="../../App/Database/Models.py" line="1369"/>
-        <location filename="../../App/Database/Models.py" line="1728"/>
-        <location filename="../../App/Database/Models.py" line="1774"/>
-        <location filename="../../App/Database/Models.py" line="1805"/>
-        <location filename="../../App/Database/Models.py" line="1836"/>
-        <location filename="../../App/Database/Models.py" line="1868"/>
+        <location filename="../../App/Database/Models.py" line="1730"/>
+        <location filename="../../App/Database/Models.py" line="1776"/>
+        <location filename="../../App/Database/Models.py" line="1807"/>
+        <location filename="../../App/Database/Models.py" line="1838"/>
+        <location filename="../../App/Database/Models.py" line="1870"/>
         <source>User Ins</source>
         <translation>Utente ins</translation>
     </message>
@@ -3283,11 +3285,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="1309"/>
         <location filename="../../App/Database/Models.py" line="1335"/>
         <location filename="../../App/Database/Models.py" line="1370"/>
-        <location filename="../../App/Database/Models.py" line="1729"/>
-        <location filename="../../App/Database/Models.py" line="1775"/>
-        <location filename="../../App/Database/Models.py" line="1806"/>
-        <location filename="../../App/Database/Models.py" line="1837"/>
-        <location filename="../../App/Database/Models.py" line="1869"/>
+        <location filename="../../App/Database/Models.py" line="1731"/>
+        <location filename="../../App/Database/Models.py" line="1777"/>
+        <location filename="../../App/Database/Models.py" line="1808"/>
+        <location filename="../../App/Database/Models.py" line="1839"/>
+        <location filename="../../App/Database/Models.py" line="1871"/>
         <source>Date Ins</source>
         <translation>Data ins</translation>
     </message>
@@ -3327,11 +3329,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="1310"/>
         <location filename="../../App/Database/Models.py" line="1336"/>
         <location filename="../../App/Database/Models.py" line="1371"/>
-        <location filename="../../App/Database/Models.py" line="1730"/>
-        <location filename="../../App/Database/Models.py" line="1776"/>
-        <location filename="../../App/Database/Models.py" line="1807"/>
-        <location filename="../../App/Database/Models.py" line="1838"/>
-        <location filename="../../App/Database/Models.py" line="1870"/>
+        <location filename="../../App/Database/Models.py" line="1732"/>
+        <location filename="../../App/Database/Models.py" line="1778"/>
+        <location filename="../../App/Database/Models.py" line="1809"/>
+        <location filename="../../App/Database/Models.py" line="1840"/>
+        <location filename="../../App/Database/Models.py" line="1872"/>
         <source>User Update</source>
         <translation>Utente modifica</translation>
     </message>
@@ -3371,11 +3373,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="1311"/>
         <location filename="../../App/Database/Models.py" line="1337"/>
         <location filename="../../App/Database/Models.py" line="1372"/>
-        <location filename="../../App/Database/Models.py" line="1731"/>
-        <location filename="../../App/Database/Models.py" line="1777"/>
-        <location filename="../../App/Database/Models.py" line="1808"/>
-        <location filename="../../App/Database/Models.py" line="1839"/>
-        <location filename="../../App/Database/Models.py" line="1871"/>
+        <location filename="../../App/Database/Models.py" line="1733"/>
+        <location filename="../../App/Database/Models.py" line="1779"/>
+        <location filename="../../App/Database/Models.py" line="1810"/>
+        <location filename="../../App/Database/Models.py" line="1841"/>
+        <location filename="../../App/Database/Models.py" line="1873"/>
         <source>Date Update</source>
         <translation>Data modifica</translation>
     </message>
@@ -3462,7 +3464,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="203"/>
         <location filename="../../App/Database/Models.py" line="224"/>
         <location filename="../../App/Database/Models.py" line="332"/>
-        <location filename="../../App/Database/Models.py" line="1502"/>
+        <location filename="../../App/Database/Models.py" line="1504"/>
         <source>Company ID</source>
         <translation>ID azienda</translation>
     </message>
@@ -3590,11 +3592,11 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="1302"/>
         <location filename="../../App/Database/Models.py" line="1329"/>
         <location filename="../../App/Database/Models.py" line="1360"/>
-        <location filename="../../App/Database/Models.py" line="1706"/>
-        <location filename="../../App/Database/Models.py" line="1752"/>
-        <location filename="../../App/Database/Models.py" line="1798"/>
-        <location filename="../../App/Database/Models.py" line="1829"/>
-        <location filename="../../App/Database/Models.py" line="1860"/>
+        <location filename="../../App/Database/Models.py" line="1708"/>
+        <location filename="../../App/Database/Models.py" line="1754"/>
+        <location filename="../../App/Database/Models.py" line="1800"/>
+        <location filename="../../App/Database/Models.py" line="1831"/>
+        <location filename="../../App/Database/Models.py" line="1862"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
@@ -3693,9 +3695,9 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Database/Models.py" line="1279"/>
         <location filename="../../App/Database/Models.py" line="1303"/>
-        <location filename="../../App/Database/Models.py" line="1505"/>
-        <location filename="../../App/Database/Models.py" line="1616"/>
-        <location filename="../../App/Database/Models.py" line="1708"/>
+        <location filename="../../App/Database/Models.py" line="1507"/>
+        <location filename="../../App/Database/Models.py" line="1618"/>
+        <location filename="../../App/Database/Models.py" line="1710"/>
         <source>Event description</source>
         <translation>Descrizione dell&apos;evento</translation>
     </message>
@@ -3789,7 +3791,7 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Database/Models.py" line="1007"/>
         <location filename="../../App/Database/Models.py" line="1045"/>
-        <location filename="../../App/Database/Models.py" line="1452"/>
+        <location filename="../../App/Database/Models.py" line="1453"/>
         <source>Item description</source>
         <translation>Descrizione articolo</translation>
     </message>
@@ -3797,8 +3799,8 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="893"/>
         <location filename="../../App/Database/Models.py" line="1008"/>
         <location filename="../../App/Database/Models.py" line="1047"/>
-        <location filename="../../App/Database/Models.py" line="1800"/>
-        <location filename="../../App/Database/Models.py" line="1916"/>
+        <location filename="../../App/Database/Models.py" line="1802"/>
+        <location filename="../../App/Database/Models.py" line="1918"/>
         <source>Department</source>
         <translation>Reparto</translation>
     </message>
@@ -3820,9 +3822,9 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Database/Models.py" line="1016"/>
         <location filename="../../App/Database/Models.py" line="1055"/>
-        <location filename="../../App/Database/Models.py" line="1832"/>
-        <location filename="../../App/Database/Models.py" line="1866"/>
-        <location filename="../../App/Database/Models.py" line="1918"/>
+        <location filename="../../App/Database/Models.py" line="1834"/>
+        <location filename="../../App/Database/Models.py" line="1868"/>
+        <location filename="../../App/Database/Models.py" line="1920"/>
         <source>Variants</source>
         <translation>Varianti</translation>
     </message>
@@ -3864,10 +3866,10 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Database/Models.py" line="1086"/>
         <location filename="../../App/Database/Models.py" line="1224"/>
         <location filename="../../App/Database/Models.py" line="1362"/>
-        <location filename="../../App/Database/Models.py" line="1451"/>
-        <location filename="../../App/Database/Models.py" line="1831"/>
-        <location filename="../../App/Database/Models.py" line="1865"/>
-        <location filename="../../App/Database/Models.py" line="1917"/>
+        <location filename="../../App/Database/Models.py" line="1452"/>
+        <location filename="../../App/Database/Models.py" line="1833"/>
+        <location filename="../../App/Database/Models.py" line="1867"/>
+        <location filename="../../App/Database/Models.py" line="1919"/>
         <source>Item</source>
         <translation>Articolo</translation>
     </message>
@@ -3895,9 +3897,9 @@ Proseguire ugualmente ?</translation>
     <message>
         <location filename="../../App/Database/Models.py" line="1118"/>
         <location filename="../../App/Database/Models.py" line="1147"/>
-        <location filename="../../App/Database/Models.py" line="1833"/>
-        <location filename="../../App/Database/Models.py" line="1867"/>
-        <location filename="../../App/Database/Models.py" line="1919"/>
+        <location filename="../../App/Database/Models.py" line="1835"/>
+        <location filename="../../App/Database/Models.py" line="1869"/>
+        <location filename="../../App/Database/Models.py" line="1921"/>
         <source>Quantity</source>
         <translation>Quantità</translation>
     </message>
@@ -3908,31 +3910,31 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1225"/>
-        <location filename="../../App/Database/Models.py" line="1834"/>
+        <location filename="../../App/Database/Models.py" line="1836"/>
         <source>Price</source>
         <translation>Prezzo</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1330"/>
         <location filename="../../App/Database/Models.py" line="1361"/>
-        <location filename="../../App/Database/Models.py" line="1448"/>
-        <location filename="../../App/Database/Models.py" line="1615"/>
-        <location filename="../../App/Database/Models.py" line="1707"/>
-        <location filename="../../App/Database/Models.py" line="1753"/>
-        <location filename="../../App/Database/Models.py" line="1862"/>
+        <location filename="../../App/Database/Models.py" line="1449"/>
+        <location filename="../../App/Database/Models.py" line="1617"/>
+        <location filename="../../App/Database/Models.py" line="1709"/>
+        <location filename="../../App/Database/Models.py" line="1755"/>
+        <location filename="../../App/Database/Models.py" line="1864"/>
         <source>Event</source>
         <translation>Evento</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1331"/>
-        <location filename="../../App/Database/Models.py" line="1449"/>
-        <location filename="../../App/Database/Models.py" line="1863"/>
+        <location filename="../../App/Database/Models.py" line="1450"/>
+        <location filename="../../App/Database/Models.py" line="1865"/>
         <source>Event date</source>
         <translation>Data dell&apos;evento</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1332"/>
-        <location filename="../../App/Database/Models.py" line="1864"/>
+        <location filename="../../App/Database/Models.py" line="1866"/>
         <source>Day part</source>
         <translation>Parte del giorno</translation>
     </message>
@@ -3958,7 +3960,7 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1366"/>
-        <location filename="../../App/Database/Models.py" line="1453"/>
+        <location filename="../../App/Database/Models.py" line="1454"/>
         <source>Ordered</source>
         <translation>Ordinato</translation>
     </message>
@@ -3996,45 +3998,45 @@ Proseguire ugualmente ?</translation>
     </message>
     <message>
         <location filename="../../App/Database/Models.py" line="1015"/>
-        <location filename="../../App/Database/Models.py" line="1454"/>
+        <location filename="../../App/Database/Models.py" line="1455"/>
         <source>Delivered</source>
         <translation>Consegnato</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1503"/>
+        <location filename="../../App/Database/Models.py" line="1505"/>
         <source>Company description</source>
         <translation>Descrizione azienda</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1504"/>
+        <location filename="../../App/Database/Models.py" line="1506"/>
         <source>Event ID</source>
         <translation>ID dell&apos;evento</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1506"/>
-        <location filename="../../App/Database/Models.py" line="1920"/>
+        <location filename="../../App/Database/Models.py" line="1508"/>
+        <location filename="../../App/Database/Models.py" line="1922"/>
         <source>Header ID</source>
         <translation>ID della testata</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1508"/>
-        <location filename="../../App/Database/Models.py" line="1756"/>
+        <location filename="../../App/Database/Models.py" line="1510"/>
+        <location filename="../../App/Database/Models.py" line="1758"/>
         <source>Order date</source>
         <translation>Data ordine</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1644"/>
+        <location filename="../../App/Database/Models.py" line="1646"/>
         <source>Total collected</source>
         <translation>Totale incasso</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1758"/>
+        <location filename="../../App/Database/Models.py" line="1760"/>
         <source>Stat order date</source>
         <translation>Data statistica dell&apos;ordine</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1509"/>
-        <location filename="../../App/Database/Models.py" line="1757"/>
+        <location filename="../../App/Database/Models.py" line="1511"/>
+        <location filename="../../App/Database/Models.py" line="1759"/>
         <source>Order time</source>
         <translation>Ora ordine</translation>
     </message>
@@ -4146,373 +4148,378 @@ Proseguire ugualmente ?</translation>
         <translation>Web</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1507"/>
+        <location filename="../../App/Database/Models.py" line="1456"/>
+        <source>Total</source>
+        <translation>Totale</translation>
+    </message>
+    <message>
+        <location filename="../../App/Database/Models.py" line="1509"/>
         <source>Order date time</source>
         <translation>Data e ora Ordine</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1510"/>
-        <location filename="../../App/Database/Models.py" line="1713"/>
+        <location filename="../../App/Database/Models.py" line="1512"/>
+        <location filename="../../App/Database/Models.py" line="1715"/>
         <source>Stat. date</source>
         <translation>Data Statistica</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1512"/>
-        <location filename="../../App/Database/Models.py" line="1755"/>
+        <location filename="../../App/Database/Models.py" line="1514"/>
+        <location filename="../../App/Database/Models.py" line="1757"/>
         <source>Order number</source>
         <translation>Numero ordine</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1513"/>
-        <location filename="../../App/Database/Models.py" line="1716"/>
-        <location filename="../../App/Database/Models.py" line="1761"/>
+        <location filename="../../App/Database/Models.py" line="1515"/>
+        <location filename="../../App/Database/Models.py" line="1718"/>
+        <location filename="../../App/Database/Models.py" line="1763"/>
         <source>Delivery</source>
         <translation>Consegna</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1514"/>
-        <location filename="../../App/Database/Models.py" line="1629"/>
-        <location filename="../../App/Database/Models.py" line="1719"/>
-        <location filename="../../App/Database/Models.py" line="1764"/>
+        <location filename="../../App/Database/Models.py" line="1516"/>
+        <location filename="../../App/Database/Models.py" line="1631"/>
+        <location filename="../../App/Database/Models.py" line="1721"/>
+        <location filename="../../App/Database/Models.py" line="1766"/>
         <source>Table</source>
         <translation>Tavolo</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1515"/>
-        <location filename="../../App/Database/Models.py" line="1720"/>
-        <location filename="../../App/Database/Models.py" line="1765"/>
+        <location filename="../../App/Database/Models.py" line="1517"/>
+        <location filename="../../App/Database/Models.py" line="1722"/>
+        <location filename="../../App/Database/Models.py" line="1767"/>
         <source>Customer name</source>
         <translation>Nome cliente</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1516"/>
-        <location filename="../../App/Database/Models.py" line="1623"/>
-        <location filename="../../App/Database/Models.py" line="1721"/>
-        <location filename="../../App/Database/Models.py" line="1767"/>
+        <location filename="../../App/Database/Models.py" line="1518"/>
+        <location filename="../../App/Database/Models.py" line="1625"/>
+        <location filename="../../App/Database/Models.py" line="1723"/>
+        <location filename="../../App/Database/Models.py" line="1769"/>
         <source>Covers</source>
         <translation>Coperti</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1517"/>
-        <location filename="../../App/Database/Models.py" line="1726"/>
-        <location filename="../../App/Database/Models.py" line="1772"/>
+        <location filename="../../App/Database/Models.py" line="1519"/>
+        <location filename="../../App/Database/Models.py" line="1728"/>
+        <location filename="../../App/Database/Models.py" line="1774"/>
         <source>Status</source>
         <translation>Stato</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1518"/>
-        <location filename="../../App/Database/Models.py" line="1727"/>
-        <location filename="../../App/Database/Models.py" line="1773"/>
-        <location filename="../../App/Database/Models.py" line="1804"/>
+        <location filename="../../App/Database/Models.py" line="1520"/>
+        <location filename="../../App/Database/Models.py" line="1729"/>
+        <location filename="../../App/Database/Models.py" line="1775"/>
+        <location filename="../../App/Database/Models.py" line="1806"/>
         <source>Fulfillment date</source>
         <translation>Data evasione</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1519"/>
-        <location filename="../../App/Database/Models.py" line="1715"/>
-        <location filename="../../App/Database/Models.py" line="1760"/>
+        <location filename="../../App/Database/Models.py" line="1521"/>
+        <location filename="../../App/Database/Models.py" line="1717"/>
+        <location filename="../../App/Database/Models.py" line="1762"/>
         <source>Cash desk</source>
         <translation>Cassa</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1520"/>
+        <location filename="../../App/Database/Models.py" line="1522"/>
         <source>User ins</source>
         <translation>Utente inserimento</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1521"/>
+        <location filename="../../App/Database/Models.py" line="1523"/>
         <source>From web</source>
         <translation>Dal web</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1522"/>
+        <location filename="../../App/Database/Models.py" line="1524"/>
         <source>Department 1</source>
         <translation>Reparto 1</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1523"/>
+        <location filename="../../App/Database/Models.py" line="1525"/>
         <source>Fulfillment 1</source>
         <translation>Evasione 1</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1524"/>
+        <location filename="../../App/Database/Models.py" line="1526"/>
         <source>Department 2</source>
         <translation>Reparto 2</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1525"/>
+        <location filename="../../App/Database/Models.py" line="1527"/>
         <source>Fulfillment 2</source>
         <translation>Evasione 2</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1526"/>
+        <location filename="../../App/Database/Models.py" line="1528"/>
         <source>Department 3</source>
         <translation>Reparto 3</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1527"/>
+        <location filename="../../App/Database/Models.py" line="1529"/>
         <source>Fulfillment 3</source>
         <translation>Evasione 3</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1528"/>
+        <location filename="../../App/Database/Models.py" line="1530"/>
         <source>Department 4</source>
         <translation>Reparto 4</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1529"/>
+        <location filename="../../App/Database/Models.py" line="1531"/>
         <source>Fulfillment 4</source>
         <translation>Evasione 4</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1530"/>
+        <location filename="../../App/Database/Models.py" line="1532"/>
         <source>Department 5</source>
         <translation>Reparto 5</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1531"/>
+        <location filename="../../App/Database/Models.py" line="1533"/>
         <source>Fulfillment 5</source>
         <translation>Evasione 5</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1532"/>
+        <location filename="../../App/Database/Models.py" line="1534"/>
         <source>Department 6</source>
         <translation>Reparto 6</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1533"/>
+        <location filename="../../App/Database/Models.py" line="1535"/>
         <source>Fulfillment 6</source>
         <translation>Evasione 6</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1617"/>
-        <location filename="../../App/Database/Models.py" line="1711"/>
+        <location filename="../../App/Database/Models.py" line="1619"/>
+        <location filename="../../App/Database/Models.py" line="1713"/>
         <source>Date</source>
         <translation>Data</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1618"/>
+        <location filename="../../App/Database/Models.py" line="1620"/>
         <source>Orders L</source>
         <translation>Ordini P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1619"/>
+        <location filename="../../App/Database/Models.py" line="1621"/>
         <source>Orders D</source>
         <translation>Ordini C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1620"/>
+        <location filename="../../App/Database/Models.py" line="1622"/>
         <source>Orders</source>
         <translation>Ordini</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1621"/>
+        <location filename="../../App/Database/Models.py" line="1623"/>
         <source>Covers L</source>
         <translation>Coperti P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1622"/>
+        <location filename="../../App/Database/Models.py" line="1624"/>
         <source>Covers D</source>
         <translation>Coperti C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1624"/>
+        <location filename="../../App/Database/Models.py" line="1626"/>
         <source>Take away L</source>
         <translation>Asporto P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1625"/>
+        <location filename="../../App/Database/Models.py" line="1627"/>
         <source>Take away D</source>
         <translation>Asporto C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1626"/>
+        <location filename="../../App/Database/Models.py" line="1628"/>
         <source>Take away</source>
         <translation>Asporto</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1627"/>
+        <location filename="../../App/Database/Models.py" line="1629"/>
         <source>Table L</source>
         <translation>Tavolo P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1628"/>
+        <location filename="../../App/Database/Models.py" line="1630"/>
         <source>Table D</source>
         <translation>Tavolo C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1630"/>
+        <location filename="../../App/Database/Models.py" line="1632"/>
         <source>Total amount L</source>
         <translation>Importo totale P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1631"/>
+        <location filename="../../App/Database/Models.py" line="1633"/>
         <source>Total amount D</source>
         <translation>Importo totale C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1632"/>
-        <location filename="../../App/Database/Models.py" line="1722"/>
-        <location filename="../../App/Database/Models.py" line="1768"/>
+        <location filename="../../App/Database/Models.py" line="1634"/>
+        <location filename="../../App/Database/Models.py" line="1724"/>
+        <location filename="../../App/Database/Models.py" line="1770"/>
         <source>Total amount</source>
         <translation>Importo totale</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1633"/>
+        <location filename="../../App/Database/Models.py" line="1635"/>
         <source>Discount L</source>
         <translation>Sconto P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1634"/>
+        <location filename="../../App/Database/Models.py" line="1636"/>
         <source>Discount D</source>
         <translation>Sconto C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1635"/>
-        <location filename="../../App/Database/Models.py" line="1723"/>
-        <location filename="../../App/Database/Models.py" line="1769"/>
+        <location filename="../../App/Database/Models.py" line="1637"/>
+        <location filename="../../App/Database/Models.py" line="1725"/>
+        <location filename="../../App/Database/Models.py" line="1771"/>
         <source>Discount</source>
         <translation>Sconto</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1636"/>
+        <location filename="../../App/Database/Models.py" line="1638"/>
         <source>Total electronic L</source>
         <translation>Totale elettronico P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1637"/>
+        <location filename="../../App/Database/Models.py" line="1639"/>
         <source>Total electronic D</source>
         <translation>Totale elettronico C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1638"/>
+        <location filename="../../App/Database/Models.py" line="1640"/>
         <source>Total electronic</source>
         <translation>Totale elettronico</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1639"/>
+        <location filename="../../App/Database/Models.py" line="1641"/>
         <source>Total cash L</source>
         <translation>Totale contante P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1640"/>
+        <location filename="../../App/Database/Models.py" line="1642"/>
         <source>Total cash D</source>
         <translation>Totale contante C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1641"/>
+        <location filename="../../App/Database/Models.py" line="1643"/>
         <source>Total cash</source>
         <translation>Totale contante</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1642"/>
+        <location filename="../../App/Database/Models.py" line="1644"/>
         <source>Total L</source>
         <translation>Totale P</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1643"/>
+        <location filename="../../App/Database/Models.py" line="1645"/>
         <source>Total D</source>
         <translation>Totale C</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1662"/>
+        <location filename="../../App/Database/Models.py" line="1664"/>
         <source>TOTAL</source>
         <translation>TOTALE</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1709"/>
+        <location filename="../../App/Database/Models.py" line="1711"/>
         <source>Date/time</source>
         <translation>Data/ora</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1712"/>
+        <location filename="../../App/Database/Models.py" line="1714"/>
         <source>Time</source>
         <translation>Ora</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1754"/>
+        <location filename="../../App/Database/Models.py" line="1756"/>
         <source>Order date/time</source>
         <translation>Data/ora ordine</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1710"/>
+        <location filename="../../App/Database/Models.py" line="1712"/>
         <source>Number</source>
         <translation>Numero</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1759"/>
+        <location filename="../../App/Database/Models.py" line="1761"/>
         <source>Stat order day part</source>
         <translation>Parte del giorno statistica</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1717"/>
-        <location filename="../../App/Database/Models.py" line="1762"/>
+        <location filename="../../App/Database/Models.py" line="1719"/>
+        <location filename="../../App/Database/Models.py" line="1764"/>
         <source>EP</source>
         <translation>PE</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1450"/>
-        <location filename="../../App/Database/Models.py" line="1511"/>
-        <location filename="../../App/Database/Models.py" line="1714"/>
+        <location filename="../../App/Database/Models.py" line="1451"/>
+        <location filename="../../App/Database/Models.py" line="1513"/>
+        <location filename="../../App/Database/Models.py" line="1716"/>
         <source>Lunch/Dinner</source>
         <translation>Pranzo/Cena</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1718"/>
+        <location filename="../../App/Database/Models.py" line="1720"/>
         <source>WO</source>
         <translation>OW</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1724"/>
-        <location filename="../../App/Database/Models.py" line="1770"/>
+        <location filename="../../App/Database/Models.py" line="1726"/>
+        <location filename="../../App/Database/Models.py" line="1772"/>
         <source>Cash</source>
         <translation>Contanti</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1725"/>
-        <location filename="../../App/Database/Models.py" line="1771"/>
+        <location filename="../../App/Database/Models.py" line="1727"/>
+        <location filename="../../App/Database/Models.py" line="1773"/>
         <source>Change</source>
         <translation>Resto</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1763"/>
+        <location filename="../../App/Database/Models.py" line="1765"/>
         <source>FW</source>
         <translation>DW</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1766"/>
+        <location filename="../../App/Database/Models.py" line="1768"/>
         <source>Customer contact</source>
         <translation>Contatto cliente</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1799"/>
-        <location filename="../../App/Database/Models.py" line="1830"/>
-        <location filename="../../App/Database/Models.py" line="1861"/>
+        <location filename="../../App/Database/Models.py" line="1801"/>
+        <location filename="../../App/Database/Models.py" line="1832"/>
+        <location filename="../../App/Database/Models.py" line="1863"/>
         <source>ID header</source>
         <translation>ID testata</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1801"/>
+        <location filename="../../App/Database/Models.py" line="1803"/>
         <source>Notes</source>
         <translation>Note</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1802"/>
+        <location filename="../../App/Database/Models.py" line="1804"/>
         <source>Other departments</source>
         <translation>Altri reparti</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1803"/>
+        <location filename="../../App/Database/Models.py" line="1805"/>
         <source>Barcode</source>
         <translation>Codice a barre</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1835"/>
+        <location filename="../../App/Database/Models.py" line="1837"/>
         <source>Amount</source>
         <translation>Importo</translation>
     </message>
     <message>
-        <location filename="../../App/Database/Models.py" line="1921"/>
+        <location filename="../../App/Database/Models.py" line="1923"/>
         <source>Header department ID</source>
         <translation>ID testata reparto</translation>
     </message>
@@ -5895,27 +5902,27 @@ Devo procedere comunque?</translation>
 <context>
     <name>OrderedDelivered</name>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="71"/>
+        <location filename="../../App/OrderedDelivered.py" line="72"/>
         <source>Lunch</source>
         <translation>Pranzo</translation>
     </message>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="72"/>
+        <location filename="../../App/OrderedDelivered.py" line="73"/>
         <source>Dinner</source>
         <translation>Cena</translation>
     </message>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="84"/>
+        <location filename="../../App/OrderedDelivered.py" line="85"/>
         <source>No access right to this archive</source>
         <translation>Nessun diritto di accesso a questo archivio</translation>
     </message>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="161"/>
+        <location filename="../../App/OrderedDelivered.py" line="163"/>
         <source>Select an event first</source>
         <translation>Selezionare prima un evento</translation>
     </message>
     <message>
-        <location filename="../../App/OrderedDelivered.py" line="167"/>
+        <location filename="../../App/OrderedDelivered.py" line="169"/>
         <source>A report customization for ordered delivered is required</source>
         <translation>Una personalizzazione del report per l&apos;ordinato consegnato è richiesta</translation>
     </message>
@@ -6128,7 +6135,7 @@ Devo procedere comunque?</translation>
         <translation>Carica le preferenze utente</translation>
     </message>
     <message>
-        <location filename="../../App/System/Preferences.py" line="169"/>
+        <location filename="../../App/System/Preferences.py" line="180"/>
         <source>Save user preferences</source>
         <translation>Salva le preferenze utente</translation>
     </message>
