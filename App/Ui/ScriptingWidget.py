@@ -125,8 +125,7 @@ class Ui_ScriptingWidget(object):
         self.textEditScript = QPlainTextEdit(self.groupBox_5)
         self.textEditScript.setObjectName(u"textEditScript")
         font = QFont()
-        font.setFamilies([u"Courier"])
-        font.setPointSize(10)
+        font.setFamilies([u"Courier New"])
         self.textEditScript.setFont(font)
 
         self.horizontalLayout_4.addWidget(self.textEditScript)

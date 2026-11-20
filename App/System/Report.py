@@ -150,7 +150,7 @@ class ReportForm(FormIndexManager):
         self.ui.checkBoxSystem.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         # set font
         st = QSettings()
-        self.editorFont: QFont = cast(QFont, st.value("Report/XMLEditorFont", QFont('Courier', 8), type=QFont))
+        self.editorFont: QFont = cast(QFont, st.value("Report/XMLEditorFont", QFont('Courier New', 8), type=QFont))
         self.ui.textEditXML.setFont(self.editorFont)
         self.ui.fontComboBox.setCurrentFont(self.editorFont)
         self.ui.spinBoxFontSize.setValue(self.editorFont.pointSize())

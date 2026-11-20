@@ -136,8 +136,7 @@
                  <widget class="QPlainTextEdit" name="textEditScript">
                   <property name="font">
                    <font>
-                    <family>Courier</family>
-                    <pointsize>10</pointsize>
+                    <family>Courier New</family>
                    </font>
                   </property>
                  </widget>

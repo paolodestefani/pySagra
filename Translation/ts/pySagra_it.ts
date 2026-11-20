@@ -7012,37 +7012,37 @@ Devo procedere comunque?</translation>
         <translation>Script python</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ScriptingWidget.ui" line="151"/>
+        <location filename="../../App/Ui/ScriptingWidget.ui" line="150"/>
         <source>Note</source>
         <translation>Nota</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ScriptingWidget.ui" line="160"/>
+        <location filename="../../App/Ui/ScriptingWidget.ui" line="159"/>
         <source>System</source>
         <translation>Sistema</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ScriptingWidget.ui" line="187"/>
+        <location filename="../../App/Ui/ScriptingWidget.ui" line="186"/>
         <source>Font</source>
         <translation>Font</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ScriptingWidget.ui" line="229"/>
+        <location filename="../../App/Ui/ScriptingWidget.ui" line="228"/>
         <source>Download ...</source>
         <translation>Scarica ...</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ScriptingWidget.ui" line="236"/>
+        <location filename="../../App/Ui/ScriptingWidget.ui" line="235"/>
         <source>Upload ...</source>
         <translation>Carica ...</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ScriptingWidget.ui" line="243"/>
+        <location filename="../../App/Ui/ScriptingWidget.ui" line="242"/>
         <source>Download all scripts...</source>
         <translation>Scarica tutti gli script...</translation>
     </message>
     <message>
-        <location filename="../../App/Ui/ScriptingWidget.ui" line="250"/>
+        <location filename="../../App/Ui/ScriptingWidget.ui" line="249"/>
         <source>Upload all scripts ...</source>
         <translation>Carica tutti gli script ...</translation>
     </message>
