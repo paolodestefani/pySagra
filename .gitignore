@@ -204,6 +204,7 @@ cython_debug/
 # others
 .vscode/
 .DS_Store
+.VSCodeCounter/
 
 
 # database dumps: real data stays out of the repository, only demo files are shared
