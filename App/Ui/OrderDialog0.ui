@@ -10,14 +10,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1133</width>
+    <width>1234</width>
     <height>496</height>
    </rect>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>10</pointsize>
-   </font>
   </property>
   <property name="windowTitle">
    <string>Order dialog</string>
@@ -337,12 +332,6 @@
                <height>0</height>
               </size>
              </property>
-             <property name="font">
-              <font>
-               <pointsize>14</pointsize>
-               <bold>true</bold>
-              </font>
-             </property>
              <property name="tabPosition">
               <enum>QTabWidget::TabPosition::North</enum>
              </property>
@@ -429,7 +418,6 @@
                  <widget class="QLabel" name="labelCashDeskDescription">
                   <property name="font">
                    <font>
-                    <pointsize>16</pointsize>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -528,11 +516,6 @@
                <width>478</width>
                <height>0</height>
               </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-              </font>
              </property>
              <property name="verticalScrollBarPolicy">
               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
@@ -792,12 +775,6 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>10</pointsize>
-                    <bold>false</bold>
-                   </font>
-                  </property>
                   <property name="text">
                    <string>Amount</string>
                   </property>
@@ -818,12 +795,6 @@
                 </item>
                 <item row="0" column="2">
                  <widget class="QLabel" name="label_7">
-                  <property name="font">
-                   <font>
-                    <pointsize>12</pointsize>
-                    <bold>true</bold>
-                   </font>
-                  </property>
                   <property name="text">
                    <string>Total</string>
                   </property>
@@ -834,12 +805,6 @@
                 </item>
                 <item row="0" column="3" alignment="Qt::AlignmentFlag::AlignHCenter">
                  <widget class="QLabel" name="label_5">
-                  <property name="font">
-                   <font>
-                    <pointsize>10</pointsize>
-                    <bold>false</bold>
-                   </font>
-                  </property>
                   <property name="text">
                    <string>Elect. Paym.</string>
                   </property>
@@ -893,7 +858,6 @@
                  <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
                   <property name="font">
                    <font>
-                    <pointsize>14</pointsize>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -938,7 +902,6 @@
                  <widget class="QPushButton" name="pushButtonConfirm">
                   <property name="font">
                    <font>
-                    <pointsize>12</pointsize>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -958,11 +921,6 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButtonCancel">
-                  <property name="font">
-                   <font>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
                   <property name="text">
                    <string>Cancel</string>
                   </property>
@@ -981,12 +939,6 @@
                  <layout class="QGridLayout" name="gridLayout_2">
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_9">
-                    <property name="font">
-                     <font>
-                      <pointsize>10</pointsize>
-                      <bold>false</bold>
-                     </font>
-                    </property>
                     <property name="text">
                      <string>Cash</string>
                     </property>
@@ -1013,12 +965,6 @@
                   </item>
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_10">
-                    <property name="font">
-                     <font>
-                      <pointsize>10</pointsize>
-                      <bold>false</bold>
-                     </font>
-                    </property>
                     <property name="text">
                      <string>Change</string>
                     </property>
@@ -1059,6 +1005,18 @@
        </widget>
        <widget class="QWidget" name="Tables">
         <layout class="QVBoxLayout" name="verticalLayout_7">
+         <property name="leftMargin">
+          <number>6</number>
+         </property>
+         <property name="topMargin">
+          <number>6</number>
+         </property>
+         <property name="rightMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
          <item>
           <widget class="QScrollArea" name="scrollArea">
            <property name="widgetResizable">
@@ -1069,8 +1027,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>98</width>
-              <height>28</height>
+              <width>1194</width>
+              <height>389</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_13">

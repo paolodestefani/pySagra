@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>480</height>
+    <height>384</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,16 +27,9 @@
     <number>6</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1">
      <item>
       <widget class="QComboBox" name="comboBoxSetting"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonUserDefault">
-       <property name="text">
-        <string>Set as user default</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
@@ -88,7 +81,7 @@
             <x>0</x>
             <y>0</y>
             <width>608</width>
-            <height>301</height>
+            <height>206</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -159,6 +152,20 @@
            </property>
           </spacer>
          </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Current customization</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonUserDefault">
+           <property name="text">
+            <string>Set as default</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
@@ -190,8 +197,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>608</width>
+            <height>249</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -263,7 +270,7 @@
             <x>0</x>
             <y>0</y>
             <width>608</width>
-            <height>339</height>
+            <height>249</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -326,37 +333,11 @@
                  </widget>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer_3">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
                  <widget class="QPushButton" name="pushButtonClassDefault">
                   <property name="text">
                    <string>Set as class default</string>
                   </property>
                  </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButtonSetSorting">
@@ -501,7 +482,6 @@
   <tabstop>scrollAreaFilters</tabstop>
   <tabstop>checkBoxMaxRows</tabstop>
   <tabstop>spinBoxMaxRows</tabstop>
-  <tabstop>pushButtonUserDefault</tabstop>
   <tabstop>scrollAreaSorting</tabstop>
   <tabstop>scrollAreaPrintOptions</tabstop>
   <tabstop>pushButtonUpdate</tabstop>

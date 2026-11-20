@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>480</height>
+    <height>512</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -108,16 +108,9 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1">
      <item>
       <widget class="QComboBox" name="comboBoxReportAdaptations"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonUserDefault">
-       <property name="text">
-        <string>Set as user default</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
@@ -172,7 +165,7 @@
             <x>0</x>
             <y>0</y>
             <width>608</width>
-            <height>305</height>
+            <height>343</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -247,7 +240,7 @@
             <x>0</x>
             <y>0</y>
             <width>608</width>
-            <height>305</height>
+            <height>343</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -319,7 +312,7 @@
             <x>0</x>
             <y>0</y>
             <width>608</width>
-            <height>305</height>
+            <height>343</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -328,7 +321,7 @@
              <item>
               <widget class="QGroupBox" name="groupBoxPrint">
                <property name="title">
-                <string>Print</string>
+                <string>Direct print to</string>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
                 <property name="leftMargin">
@@ -344,24 +337,41 @@
                  <number>6</number>
                 </property>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_4">
-                  <item>
-                   <widget class="QLabel" name="labelDirectPrint">
-                    <property name="text">
-                     <string>Direct print to</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="comboBoxPrinters"/>
-                  </item>
-                 </layout>
+                 <widget class="QComboBox" name="comboBoxPrinters"/>
                 </item>
                </layout>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_7">
+              <widget class="QGroupBox" name="groupBox_2">
+               <property name="title">
+                <string>Current customization</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <property name="leftMargin">
+                 <number>6</number>
+                </property>
+                <property name="topMargin">
+                 <number>6</number>
+                </property>
+                <property name="rightMargin">
+                 <number>6</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="pushButtonUserDefault">
+                  <property name="text">
+                   <string>Set as default</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -381,9 +391,6 @@
               <string>Export to PDF file</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_13">
-              <property name="spacing">
-               <number>0</number>
-              </property>
               <property name="leftMargin">
                <number>6</number>
               </property>
@@ -569,22 +576,10 @@
             <x>0</x>
             <y>0</y>
             <width>608</width>
-            <height>351</height>
+            <height>343</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_16">
-           <property name="leftMargin">
-            <number>6</number>
-           </property>
-           <property name="topMargin">
-            <number>6</number>
-           </property>
-           <property name="rightMargin">
-            <number>6</number>
-           </property>
-           <property name="bottomMargin">
-            <number>6</number>
-           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_14">
            <item>
             <widget class="QGroupBox" name="groupBoxCurrent">
              <property name="title">
@@ -632,37 +627,11 @@
                  </widget>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>32</width>
-                    <height>18</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
                  <widget class="QPushButton" name="pushButtonClassDefault">
                   <property name="text">
                    <string>Set as class default</string>
                   </property>
                  </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_6">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>32</width>
-                    <height>18</height>
-                   </size>
-                  </property>
-                 </spacer>
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButtonSetSorting">
@@ -674,19 +643,44 @@
                 <item>
                  <widget class="QSpinBox" name="spinBoxClassSorting"/>
                 </item>
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                </layout>
               </item>
              </layout>
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
-             <item>
-              <widget class="QGroupBox" name="groupBox">
-               <property name="title">
-                <string>Print method / Report class / Report</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout">
+            <widget class="QGroupBox" name="groupBoxNew">
+             <property name="title">
+              <string>New adaptation</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="topMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <property name="leftMargin">
                  <number>6</number>
                 </property>
@@ -700,57 +694,53 @@
                  <number>6</number>
                 </property>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_5">
-                  <property name="leftMargin">
-                   <number>6</number>
+                 <widget class="QLineEdit" name="lineEditNewName"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButtonNewCustomization">
+                  <property name="text">
+                   <string>Create</string>
                   </property>
-                  <property name="topMargin">
-                   <number>6</number>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
                   </property>
-                  <property name="rightMargin">
-                   <number>6</number>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
                   </property>
-                  <property name="bottomMargin">
-                   <number>6</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="labelPrintMethod">
-                    <property name="font">
-                     <font>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Method</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="labelReportClass">
-                    <property name="font">
-                     <font>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Class</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="comboBoxReportList"/>
-                  </item>
-                 </layout>
+                 </spacer>
                 </item>
                </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupBoxNew">
-               <property name="title">
-                <string>New adaptation</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_12">
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Print method / Report class / Report</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="topMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <property name="leftMargin">
                  <number>6</number>
                 </property>
@@ -764,35 +754,63 @@
                  <number>6</number>
                 </property>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_6">
-                  <property name="leftMargin">
-                   <number>6</number>
+                 <widget class="QLabel" name="labelPrintMethod">
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
                   </property>
-                  <property name="topMargin">
-                   <number>6</number>
+                  <property name="text">
+                   <string>Method</string>
                   </property>
-                  <property name="rightMargin">
-                   <number>6</number>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>/</string>
                   </property>
-                  <property name="bottomMargin">
-                   <number>6</number>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelReportClass">
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
                   </property>
-                  <item>
-                   <widget class="QLineEdit" name="lineEditNewName"/>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButtonNewCustomization">
-                    <property name="text">
-                     <string>Create</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                  <property name="text">
+                   <string>Class</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>/</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="comboBoxReportList"/>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_6">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
-              </widget>
-             </item>
-            </layout>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="labelWarningOnNew">
@@ -805,14 +823,14 @@
             </widget>
            </item>
            <item>
-            <spacer name="verticalSpacer_2">
+            <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>198</width>
-               <height>135</height>
+               <width>20</width>
+               <height>56</height>
               </size>
              </property>
             </spacer>
@@ -831,7 +849,7 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Close|QDialogButtonBox::StandardButton::Reset</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Reset</set>
      </property>
      <property name="centerButtons">
       <bool>true</bool>

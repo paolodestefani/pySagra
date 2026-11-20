@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
-    QLineEdit, QSizePolicy, QSlider, QSpacerItem,
-    QTextBrowser, QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
+    QHBoxLayout, QLabel, QLineEdit, QSizePolicy,
+    QSlider, QSpacerItem, QTextBrowser, QToolButton,
+    QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_HelpDialog(object):
@@ -25,10 +26,11 @@ class Ui_HelpDialog(object):
         if not HelpDialog.objectName():
             HelpDialog.setObjectName(u"HelpDialog")
         HelpDialog.setWindowModality(Qt.WindowModality.NonModal)
-        HelpDialog.resize(1042, 549)
+        HelpDialog.resize(640, 480)
         HelpDialog.setSizeGripEnabled(True)
         self.verticalLayout = QVBoxLayout(HelpDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(6, 6, 6, 6)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.toolButtonBack = QToolButton(HelpDialog)
@@ -109,6 +111,13 @@ class Ui_HelpDialog(object):
 
         self.verticalLayout.addWidget(self.textBrowserContent)
 
+        self.buttonBox = QDialogButtonBox(HelpDialog)
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel)
+        self.buttonBox.setCenterButtons(True)
+
+        self.verticalLayout.addWidget(self.buttonBox)
+
         QWidget.setTabOrder(self.toolButtonHome, self.toolButtonBack)
         QWidget.setTabOrder(self.toolButtonBack, self.toolButtonForward)
         QWidget.setTabOrder(self.toolButtonForward, self.horizontalSliderZoom)
@@ -117,6 +126,8 @@ class Ui_HelpDialog(object):
         QWidget.setTabOrder(self.toolButtonFind, self.textBrowserContent)
 
         self.retranslateUi(HelpDialog)
+        self.buttonBox.accepted.connect(HelpDialog.accept)
+        self.buttonBox.rejected.connect(HelpDialog.reject)
 
         QMetaObject.connectSlotsByName(HelpDialog)
     # setupUi

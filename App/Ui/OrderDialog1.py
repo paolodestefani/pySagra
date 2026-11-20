@@ -28,10 +28,7 @@ class Ui_OrderDialog1(object):
         if not OrderDialog1.objectName():
             OrderDialog1.setObjectName(u"OrderDialog1")
         OrderDialog1.setWindowModality(Qt.WindowModality.NonModal)
-        OrderDialog1.resize(1191, 485)
-        font = QFont()
-        font.setPointSize(10)
-        OrderDialog1.setFont(font)
+        OrderDialog1.resize(1292, 485)
         OrderDialog1.setSizeGripEnabled(True)
         self.verticalLayout_12 = QVBoxLayout(OrderDialog1)
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
@@ -181,10 +178,6 @@ class Ui_OrderDialog1(object):
         sizePolicy1.setHeightForWidth(self.tabWidgetList.sizePolicy().hasHeightForWidth())
         self.tabWidgetList.setSizePolicy(sizePolicy1)
         self.tabWidgetList.setMinimumSize(QSize(0, 0))
-        font1 = QFont()
-        font1.setPointSize(14)
-        font1.setBold(True)
-        self.tabWidgetList.setFont(font1)
         self.tabWidgetList.setTabPosition(QTabWidget.TabPosition.North)
         self.tabWidgetList.setElideMode(Qt.TextElideMode.ElideRight)
         self.tabWidgetList.setTabsClosable(False)
@@ -218,10 +211,9 @@ class Ui_OrderDialog1(object):
 
         self.labelCashDeskDescription = QLabel(self.groupBox_4)
         self.labelCashDeskDescription.setObjectName(u"labelCashDeskDescription")
-        font2 = QFont()
-        font2.setPointSize(16)
-        font2.setBold(True)
-        self.labelCashDeskDescription.setFont(font2)
+        font = QFont()
+        font.setBold(True)
+        self.labelCashDeskDescription.setFont(font)
         self.labelCashDeskDescription.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout_3.addWidget(self.labelCashDeskDescription)
@@ -277,9 +269,6 @@ class Ui_OrderDialog1(object):
         sizePolicy2.setHeightForWidth(self.tabWidgetOrder.sizePolicy().hasHeightForWidth())
         self.tabWidgetOrder.setSizePolicy(sizePolicy2)
         self.tabWidgetOrder.setMinimumSize(QSize(478, 0))
-        font3 = QFont()
-        font3.setPointSize(11)
-        self.tabWidgetOrder.setFont(font3)
         self.tabWidgetOrder.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.tabWidgetOrder.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.tabWidgetOrder.setAutoScroll(False)
@@ -375,16 +364,19 @@ class Ui_OrderDialog1(object):
         sizePolicy3.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy3)
         self.label_4.setMinimumSize(QSize(0, 0))
-        font4 = QFont()
-        font4.setPointSize(10)
-        font4.setBold(False)
-        self.label_4.setFont(font4)
+        font1 = QFont()
+        font1.setPointSize(13)
+        font1.setBold(False)
+        self.label_4.setFont(font1)
         self.label_4.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_4, 0, 0, 1, 1)
 
         self.doubleSpinBoxDiscount = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxDiscount.setObjectName(u"doubleSpinBoxDiscount")
+        font2 = QFont()
+        font2.setPointSize(13)
+        self.doubleSpinBoxDiscount.setFont(font2)
         self.doubleSpinBoxDiscount.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.doubleSpinBoxDiscount.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.doubleSpinBoxDiscount.setProperty(u"showGroupSeparator", True)
@@ -395,12 +387,14 @@ class Ui_OrderDialog1(object):
         self.label = QLabel(self.groupBox_3)
         self.label.setObjectName(u"label")
         self.label.setMinimumSize(QSize(0, 0))
+        self.label.setFont(font2)
         self.label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
 
         self.doubleSpinBoxCash = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxCash.setObjectName(u"doubleSpinBoxCash")
+        self.doubleSpinBoxCash.setFont(font2)
         self.doubleSpinBoxCash.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.doubleSpinBoxCash.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.doubleSpinBoxCash.setProperty(u"showGroupSeparator", True)
@@ -410,7 +404,10 @@ class Ui_OrderDialog1(object):
 
         self.doubleSpinBoxTotal = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxTotal.setObjectName(u"doubleSpinBoxTotal")
-        self.doubleSpinBoxTotal.setFont(font1)
+        font3 = QFont()
+        font3.setPointSize(14)
+        font3.setBold(True)
+        self.doubleSpinBoxTotal.setFont(font3)
         self.doubleSpinBoxTotal.setCursor(QCursor(Qt.CursorShape.ForbiddenCursor))
         self.doubleSpinBoxTotal.setFrame(True)
         self.doubleSpinBoxTotal.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
@@ -423,7 +420,7 @@ class Ui_OrderDialog1(object):
 
         self.label_7 = QLabel(self.groupBox_3)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setFont(font1)
+        self.label_7.setFont(font3)
         self.label_7.setFrameShape(QFrame.Shape.NoFrame)
         self.label_7.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -431,13 +428,14 @@ class Ui_OrderDialog1(object):
 
         self.label_10 = QLabel(self.groupBox_3)
         self.label_10.setObjectName(u"label_10")
-        self.label_10.setFont(font4)
+        self.label_10.setFont(font1)
         self.label_10.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_10, 5, 0, 1, 1)
 
         self.doubleSpinBoxChange = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxChange.setObjectName(u"doubleSpinBoxChange")
+        self.doubleSpinBoxChange.setFont(font2)
         self.doubleSpinBoxChange.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.doubleSpinBoxChange.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.doubleSpinBoxChange.setProperty(u"showGroupSeparator", True)
@@ -447,6 +445,7 @@ class Ui_OrderDialog1(object):
 
         self.doubleSpinBoxSubTotal = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxSubTotal.setObjectName(u"doubleSpinBoxSubTotal")
+        self.doubleSpinBoxSubTotal.setFont(font2)
         self.doubleSpinBoxSubTotal.setCursor(QCursor(Qt.CursorShape.ForbiddenCursor))
         self.doubleSpinBoxSubTotal.setFrame(True)
         self.doubleSpinBoxSubTotal.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
@@ -459,19 +458,21 @@ class Ui_OrderDialog1(object):
 
         self.label_9 = QLabel(self.groupBox_3)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setFont(font4)
+        self.label_9.setFont(font1)
         self.label_9.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_9, 4, 0, 1, 1)
 
         self.label_2 = QLabel(self.groupBox_3)
         self.label_2.setObjectName(u"label_2")
+        self.label_2.setFont(font2)
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_2, 3, 0, 1, 1)
 
         self.checkBoxElectronicPayment = QCheckBox(self.groupBox_3)
         self.checkBoxElectronicPayment.setObjectName(u"checkBoxElectronicPayment")
+        self.checkBoxElectronicPayment.setFont(font2)
         self.checkBoxElectronicPayment.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         self.gridLayout.addWidget(self.checkBoxElectronicPayment, 3, 1, 1, 1, Qt.AlignmentFlag.AlignHCenter)
@@ -492,10 +493,7 @@ class Ui_OrderDialog1(object):
         sizePolicy5.setHeightForWidth(self.pushButtonConfirm.sizePolicy().hasHeightForWidth())
         self.pushButtonConfirm.setSizePolicy(sizePolicy5)
         self.pushButtonConfirm.setMinimumSize(QSize(150, 0))
-        font5 = QFont()
-        font5.setPointSize(12)
-        font5.setBold(True)
-        self.pushButtonConfirm.setFont(font5)
+        self.pushButtonConfirm.setFont(font)
         self.pushButtonConfirm.setIconSize(QSize(32, 32))
 
         self.horizontalLayout_6.addWidget(self.pushButtonConfirm)
@@ -505,9 +503,6 @@ class Ui_OrderDialog1(object):
         sizePolicy5.setHeightForWidth(self.pushButtonCancel.sizePolicy().hasHeightForWidth())
         self.pushButtonCancel.setSizePolicy(sizePolicy5)
         self.pushButtonCancel.setMinimumSize(QSize(120, 0))
-        font6 = QFont()
-        font6.setPointSize(12)
-        self.pushButtonCancel.setFont(font6)
         self.pushButtonCancel.setIconSize(QSize(32, 32))
 
         self.horizontalLayout_6.addWidget(self.pushButtonCancel)
@@ -534,7 +529,7 @@ class Ui_OrderDialog1(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1242, 368))
         self.verticalLayout_16 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
         self.verticalLayout_16.setContentsMargins(0, 0, 0, 0)
@@ -587,7 +582,7 @@ class Ui_OrderDialog1(object):
 
         self.retranslateUi(OrderDialog1)
 
-        self.stackedWidgetTableOrder.setCurrentIndex(0)
+        self.stackedWidgetTableOrder.setCurrentIndex(1)
         self.tabWidgetList.setCurrentIndex(-1)
 
 

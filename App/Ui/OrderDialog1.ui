@@ -10,14 +10,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1191</width>
+    <width>1292</width>
     <height>485</height>
    </rect>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>10</pointsize>
-   </font>
   </property>
   <property name="windowTitle">
    <string>Order dialog</string>
@@ -288,7 +283,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidgetTableOrder">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="Order">
       <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -307,12 +302,6 @@
              <width>0</width>
              <height>0</height>
             </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>14</pointsize>
-             <bold>true</bold>
-            </font>
            </property>
            <property name="tabPosition">
             <enum>QTabWidget::TabPosition::North</enum>
@@ -397,7 +386,6 @@
                <widget class="QLabel" name="labelCashDeskDescription">
                 <property name="font">
                  <font>
-                  <pointsize>16</pointsize>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -481,11 +469,6 @@
              <width>478</width>
              <height>0</height>
             </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
            </property>
            <property name="verticalScrollBarPolicy">
             <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
@@ -714,7 +697,7 @@
                     </property>
                     <property name="font">
                      <font>
-                      <pointsize>10</pointsize>
+                      <pointsize>13</pointsize>
                       <bold>false</bold>
                      </font>
                     </property>
@@ -728,6 +711,11 @@
                   </item>
                   <item row="1" column="1">
                    <widget class="QDoubleSpinBox" name="doubleSpinBoxDiscount">
+                    <property name="font">
+                     <font>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
                     <property name="alignment">
                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                     </property>
@@ -750,6 +738,11 @@
                       <height>0</height>
                      </size>
                     </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
                     <property name="text">
                      <string>Discount</string>
                     </property>
@@ -760,6 +753,11 @@
                   </item>
                   <item row="4" column="1">
                    <widget class="QDoubleSpinBox" name="doubleSpinBoxCash">
+                    <property name="font">
+                     <font>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
                     <property name="alignment">
                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                     </property>
@@ -828,7 +826,7 @@
                    <widget class="QLabel" name="label_10">
                     <property name="font">
                      <font>
-                      <pointsize>10</pointsize>
+                      <pointsize>13</pointsize>
                       <bold>false</bold>
                      </font>
                     </property>
@@ -842,6 +840,11 @@
                   </item>
                   <item row="5" column="1">
                    <widget class="QDoubleSpinBox" name="doubleSpinBoxChange">
+                    <property name="font">
+                     <font>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
                     <property name="alignment">
                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                     </property>
@@ -858,6 +861,11 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QDoubleSpinBox" name="doubleSpinBoxSubTotal">
+                    <property name="font">
+                     <font>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
                     <property name="cursor">
                      <cursorShape>ForbiddenCursor</cursorShape>
                     </property>
@@ -885,7 +893,7 @@
                    <widget class="QLabel" name="label_9">
                     <property name="font">
                      <font>
-                      <pointsize>10</pointsize>
+                      <pointsize>13</pointsize>
                       <bold>false</bold>
                      </font>
                     </property>
@@ -899,6 +907,11 @@
                   </item>
                   <item row="3" column="0">
                    <widget class="QLabel" name="label_2">
+                    <property name="font">
+                     <font>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
                     <property name="text">
                      <string>Elect.Paym.</string>
                     </property>
@@ -909,6 +922,11 @@
                   </item>
                   <item row="3" column="1" alignment="Qt::AlignmentFlag::AlignHCenter">
                    <widget class="QCheckBox" name="checkBoxElectronicPayment">
+                    <property name="font">
+                     <font>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
                     <property name="focusPolicy">
                      <enum>Qt::FocusPolicy::StrongFocus</enum>
                     </property>
@@ -940,7 +958,6 @@
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -968,11 +985,6 @@
                    <width>120</width>
                    <height>0</height>
                   </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
                  </property>
                  <property name="text">
                   <string>Cancel</string>
@@ -1007,8 +1019,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>1242</width>
+            <height>368</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_16">

@@ -1,0 +1,136 @@
+<html lang="it">
+  <head>
+    <title>
+      pySagra - Interfaccia utente
+    </title>
+  </head>
+  <body>
+    <h1>
+       Interfaccia utente
+    </h1>
+<p>L'intefacia utente di <i>pySagra</i> &egrave; quella di una tipica applicazione desktop:</p>
+<ul>
+	<li>una barra dei menu</li>
+	<li>la barra del titolo</li>
+	<li>alcune toolbar specifiche</li>
+	<li>la barra di stato</li>
+</ul>
+<p align="left"><img src="img/main_window.png"/></p>
+<p>Il menu segue le specifiche richieste dalla piattaforma utilizzata. In MacOS la prima voce &egrave; 
+costituita dal nome dell'applicazione, seguono i menu specifici ed il sistema operativo comunque
+aggiunge voci in base a proprie regole</p>
+<p align="left"><img src="img/ui_menu.png"/></p>
+<p>La barra del titolo riporta la descrizione dell'applicazione e dell'azienda sulla quale si sta lavorando</p>
+<p align="left"><img src="img/ui_titlebar.png"/></p>
+<p>La barra di stato in basso a destra riporta il codice utente attualmente connesso e la descrizione 
+dell'azienda in uso</p>
+<p align="left"><img src="img/ui_statusbar.png"/></p>
+<p>La finestra principale &egrave; un contenitore di schede che viene popolato da azioni richiamate dai menu. 
+Le schede si possono spostare a destra o sinistra a proprio piacimento semplicemente trascinandole con il puntatore del mouse.
+Tramite menu &egrave; anche possibile richiamare delle finestre di dialogo.</p>
+<p align="left"><img src="img/ui_mainwindow.png"/></p>
+<p>Tramite menu contestuale &egrave; possibile nascondere la barra delle schede o chiuderle tutte in blocco</p>
+<p align="left"><img src="img/ui_tab_management.png"/></p>
+<P>Alcune schede prevedono due tipi di visualizzazione:</p>
+<ul>
+	<li>A modulo</li>
+	<li>A griglia</li>
+</ul>
+<p>Tramite un'azione specifica, disponibile in menu e toolbar, &egrave; possibile passare da una visualizzazione all'altra</p>
+<p>La toolbar richiama alcune voci di menu che consentono la navigazione dei dati oppure la loro stampa ed export.
+</p>
+<p align="left"><img src="img/ui_toolbar.png"/></p>
+<p><b>Tastiera su macOS</b>: per raggiungere con il tasto Tab anche i pulsanti, compresi quelli dei messaggi
+di conferma, va attivata la <i>Navigazione da tastiera</i> in <i>Impostazioni di Sistema &rarr; Tastiera</i>;
+altrimenti i pulsanti si possono usare solo con il mouse. Su Windows e Linux non serve.</p>
+<h3>Toolbar Modifica</h3>
+<table valign="middle">
+	<tr>
+    	<th>Pulsante</th>
+    	<th>Funzione</th>
+    	<th>Note</th>
+  	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_new.png"/></td>
+		<td><i>Inserire un nuovo record</i></td>
+		<td>Si disattiva quando ci sono modifiche in corso</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_save.png"/></td>
+		<td><i>Salvare le modifiche</i></td>
+		<td>Si attiva dopo un nuovo inserimento o modifica dei dati</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_delete.png"/></td>
+		<td><i>Cancella il record corrente</i></td>
+		<td>Si disattiva se c'&egrave; un nuovo inserimento o modifica non ancora salvati</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_reload.png"/></td>
+		<td><i>Annulla / ricarica</i></td>
+		<td>Sempre disponibile</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_tofirst.png"/></td>
+		<td><i>Primo record</i></td>
+		<td>Si disattiva quando c'&egrave; un solo record o siamo gi&agrave; al primo elemento</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_toprevious.png"/></td>
+		<td><i>Record precedente</i></td>
+		<td>Si disattiva quando c'&egrave; un solo record o siamo gi&agrave; al primo elemento</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_counter.png"/></td>
+		<td><i>Contatore</i></td>
+		<td>Visualizza il numero del record corrente ed il totale dei record. Assume un contorno rosso se non sono considerati tutti i record dell'archivio</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_tonext.png"/></td>
+		<td><i>Record successivo</i></td>
+		<td>Si disattiva quando c'&egrave; un solo record o siamo gi&agrave; sul ultimo elemento</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_tolast.png"/></td>
+		<td><i>Ultimo record</i></td>
+		<td>Si disattiva quando c'&egrave; un solo record o siamo gi&agrave; sul ultimo elemento</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_filter.png"/></td>
+		<td><i>Filtro e ordinamento</i></td>
+		<td>Consente di modificare le impostazioni di filtro e ordinamento correnti</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_view.png"/></td>
+		<td><i>Cambia vista</i></td>
+		<td>Consente di passare alla visualizzazione a modulo oppure a griglia</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_print.png"/></td>
+		<td><i>Stampa</i></td>
+		<td>Genera un anteprima/stampa/PDF in base ad un report</td>
+	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_export.png"/></td>
+		<td><i>Esporta</i></td>
+		<td>Viene generato un file in formato CSV dei dati dell'archivio</td>
+	</tr>
+</table>
+<h3>Toolbar Accesso rapido</h3>
+<table valign="middle">
+	<tr>
+    	<th>Pulsante</th>
+    	<th>Funzione</th>
+    	<th>Note</th>
+  	</tr>
+	<tr>
+		<td><img src="img/ui_toolbar_orderentry.png"/></td>
+		<td><i>Inserimento ordini</i></td>
+		<td>Apre la dialog di inserimento ordini</td>
+	</tr>
+</table>
+<p>Alla toolbar di Accesso rapido si possono aggiungere operazioni da <i>Sistema &rarr; Toolbar</i>
+<p><a class="top" href="#top" title="top">Inizio pagina</a></p>
+ </body>
+</html>
+

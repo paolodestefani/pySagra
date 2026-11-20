@@ -142,6 +142,10 @@ referenceList = {'eventList': event_lookup,
                  'itemList': item_lookup,
                  'departmentList':department_lookup}
 
+# print methods
+METHOD = {'D': _tr('PrintDialog', 'Driver'),
+          'E': _tr('PrintDialog', 'Esc/Pos')}
+
 
 class SelectImageDialog(QDialog):
     "Select Image Dialog"
@@ -216,7 +220,7 @@ class SelectImageDialog(QDialog):
 
 
 class SortFilterDialog(QDialog):
-    "Sort and filter Dialog for Forms (versione con correzioni minime)"
+    "Sort and filter Dialog for Forms"
 
     def __init__(self,
                  sortfilterClass: str,
@@ -278,7 +282,9 @@ class SortFilterDialog(QDialog):
         # get available customizations
         self.availableCustomizations()
         # set authorization
-        self.ui.tabWidget.widget(sti.CUSTOMIZE).setEnabled(session['can_edit_sortfilters'])
+        #self.ui.tabWidget.widget(sti.CUSTOMIZE).setVisible(session['can_edit_sortfilters'])
+        if not session['can_edit_sortfilters']:
+            self.ui.tabWidget.removeTab(sti.CUSTOMIZE)
 
     # ------------------------------------------------------------ helpers
 
@@ -313,7 +319,7 @@ class SortFilterDialog(QDialog):
         try:
             self.ui.comboBoxSetting.clear()
             # adaptation list
-            with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation list')) as outcome:
+            with gui_exception_context(self, _tr('SortFilterDialog', 'Load adaptation list')) as outcome:
                 result = list_adaptation('S', self.sortfilterClass)
             if not outcome.ok:
                 return
@@ -350,13 +356,13 @@ class SortFilterDialog(QDialog):
             self.ui.layoutSorting.itemAtPosition(row, sf.SORTFIELD).widget().setCurrentIndex(0)
             self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().setCurrentIndex(-1)
         # get sort and filter params
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation settings')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Load adaptation settings')) as outcome:
             _, filters, sortings = get_adapt_setting(sortFilterId)
         if not outcome.ok:
             return
         self.filters.restore(filters)
         # limit
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Load adaptation limit')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Load adaptation limit')) as outcome:
             result = get_adapt_limit(sortFilterId)
         if not outcome.ok:
             return
@@ -392,12 +398,12 @@ class SortFilterDialog(QDialog):
                 so = self.ui.layoutSorting.itemAtPosition(row, sf.SORTORDER).widget().currentData()
                 columns.append((cid, None, None, None, None, 'S', row, fn, None, so, 'None'))
         # update sort filter
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Update adaptation settings')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Update adaptation settings')) as outcome:
             set_adapt_setting(cid, columns)
         if not outcome.ok:
             return
         # limit (None removes a previous limit; check that set_adapt_limit accepts None)
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation limit')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Set adaptation limit')) as outcome:
             set_adapt_limit(cid, self.ui.spinBoxMaxRows.value()
                             if self.ui.checkBoxMaxRows.isChecked() else None)
         if not outcome.ok:
@@ -433,7 +439,7 @@ class SortFilterDialog(QDialog):
     def newCustomization(self) -> None:
         "Create a new customization"
         name = self.ui.lineEditNewName.text()
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Create new adaptation')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Create new adaptation')) as outcome:
             adaptId = create_adaptation('S', self.sortfilterClass, name, None)
         if not outcome.ok:
             return
@@ -463,7 +469,7 @@ class SortFilterDialog(QDialog):
                                 _tr("View", "Are you sure to delete the current adaptation?"),
                                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
             return
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Delete current adaptation')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Delete current adaptation')) as outcome:
             delete_adaptation(cid)
         if not outcome.ok:
             return
@@ -477,7 +483,7 @@ class SortFilterDialog(QDialog):
         sortfilterId = self._current_adaptation_id()
         if sortfilterId is None:
             return
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation sorting')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Set adaptation sorting')) as outcome:
             set_adapt_sorting(sortfilterId, self.ui.spinBoxClassSorting.value())
         if not outcome.ok:
             return
@@ -490,7 +496,7 @@ class SortFilterDialog(QDialog):
         cid = self._current_adaptation_id()
         if cid is None:
             return
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation user default')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Set adaptation user default')) as outcome:
             set_adapt_user_default('S',
                                    self.sortfilterClass,
                                    session['user'],
@@ -506,7 +512,7 @@ class SortFilterDialog(QDialog):
         cid = self._current_adaptation_id()
         if cid is None:
             return
-        with gui_exception_context(self, _tr('SoftFilterDialog', 'Set adaptation class default')) as outcome:
+        with gui_exception_context(self, _tr('SortFilterDialog', 'Set adaptation class default')) as outcome:
             set_adapt_class_default(cid)
         if not outcome.ok:
             return
@@ -687,8 +693,10 @@ class PrintDialog(QDialog):
         self.ui.pushButtonUserDefault.clicked.connect(self.setUserDefault)
         self.ui.pushButtonClassDefault.clicked.connect(self.setClassDefault)
         # check authorization
-        self.ui.tabWidget.widget(pti.CUSTOMIZE).setEnabled(session['can_edit_reports'] or
-                                                           session['is_admin'])
+        #self.ui.tabWidget.widget(pti.CUSTOMIZE).setEnabled(session['can_edit_reports'] or
+        #                                                   session['is_admin'])
+        if not session['can_edit_reports']:
+            self.ui.tabWidget.removeTab(pti.CUSTOMIZE)
         # filter rows
         self.filters = FilterGrid(self.ui.layoutFilters, self)
         # disable parameters tab
@@ -719,7 +727,7 @@ class PrintDialog(QDialog):
         if self.ui.comboBoxReportList.count() == 0:
             return
         self.current_print_method, report_id = self.ui.comboBoxReportList.currentData()
-        self.ui.labelPrintMethod.setText(self.current_print_method)
+        self.ui.labelPrintMethod.setText(METHOD.get(self.current_print_method, self.current_print_method))
         if self.current_print_method == 'D':
             self.report = Report(report_xml(report_id))
         else:

@@ -28,10 +28,7 @@ class Ui_OrderDialog2(object):
         if not OrderDialog2.objectName():
             OrderDialog2.setObjectName(u"OrderDialog2")
         OrderDialog2.setWindowModality(Qt.WindowModality.NonModal)
-        OrderDialog2.resize(1194, 465)
-        font = QFont()
-        font.setPointSize(10)
-        OrderDialog2.setFont(font)
+        OrderDialog2.resize(1292, 466)
         OrderDialog2.setSizeGripEnabled(True)
         self.verticalLayout_14 = QVBoxLayout(OrderDialog2)
         self.verticalLayout_14.setObjectName(u"verticalLayout_14")
@@ -186,10 +183,6 @@ class Ui_OrderDialog2(object):
         sizePolicy2.setHeightForWidth(self.tabWidgetList.sizePolicy().hasHeightForWidth())
         self.tabWidgetList.setSizePolicy(sizePolicy2)
         self.tabWidgetList.setMinimumSize(QSize(0, 0))
-        font1 = QFont()
-        font1.setPointSize(14)
-        font1.setBold(True)
-        self.tabWidgetList.setFont(font1)
         self.tabWidgetList.setTabPosition(QTabWidget.TabPosition.North)
         self.tabWidgetList.setElideMode(Qt.TextElideMode.ElideRight)
         self.tabWidgetList.setTabsClosable(False)
@@ -292,10 +285,9 @@ class Ui_OrderDialog2(object):
 
         self.labelCashDeskDescription = QLabel(self.groupBox_5)
         self.labelCashDeskDescription.setObjectName(u"labelCashDeskDescription")
-        font2 = QFont()
-        font2.setPointSize(16)
-        font2.setBold(True)
-        self.labelCashDeskDescription.setFont(font2)
+        font = QFont()
+        font.setBold(True)
+        self.labelCashDeskDescription.setFont(font)
         self.labelCashDeskDescription.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout_3.addWidget(self.labelCashDeskDescription)
@@ -354,9 +346,6 @@ class Ui_OrderDialog2(object):
         sizePolicy5.setHeightForWidth(self.tabWidgetOrder.sizePolicy().hasHeightForWidth())
         self.tabWidgetOrder.setSizePolicy(sizePolicy5)
         self.tabWidgetOrder.setMinimumSize(QSize(512, 0))
-        font3 = QFont()
-        font3.setPointSize(11)
-        self.tabWidgetOrder.setFont(font3)
         self.tabWidgetOrder.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.tabWidgetOrder.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.tabWidgetOrder.setAutoScroll(False)
@@ -385,24 +374,19 @@ class Ui_OrderDialog2(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.label_10 = QLabel(self.groupBox_3)
         self.label_10.setObjectName(u"label_10")
-        font4 = QFont()
-        font4.setPointSize(10)
-        font4.setBold(False)
-        self.label_10.setFont(font4)
         self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.label_10, 0, 5, 1, 1)
 
         self.label_9 = QLabel(self.groupBox_3)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setFont(font4)
         self.label_9.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.label_9, 0, 4, 1, 1)
 
         self.doubleSpinBoxTotal = QDoubleSpinBox(self.groupBox_3)
         self.doubleSpinBoxTotal.setObjectName(u"doubleSpinBoxTotal")
-        self.doubleSpinBoxTotal.setFont(font1)
+        self.doubleSpinBoxTotal.setFont(font)
         self.doubleSpinBoxTotal.setCursor(QCursor(Qt.CursorShape.ForbiddenCursor))
         self.doubleSpinBoxTotal.setFrame(True)
         self.doubleSpinBoxTotal.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -424,7 +408,7 @@ class Ui_OrderDialog2(object):
 
         self.label_7 = QLabel(self.groupBox_3)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setFont(font1)
+        self.label_7.setFont(font)
         self.label_7.setFrameShape(QFrame.Shape.NoFrame)
         self.label_7.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -439,7 +423,6 @@ class Ui_OrderDialog2(object):
 
         self.label_11 = QLabel(self.groupBox_3)
         self.label_11.setObjectName(u"label_11")
-        self.label_11.setFont(font4)
         self.label_11.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.label_11, 0, 3, 1, 1)
@@ -467,7 +450,6 @@ class Ui_OrderDialog2(object):
         sizePolicy3.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy3)
         self.label_4.setMinimumSize(QSize(0, 0))
-        self.label_4.setFont(font4)
         self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.label_4, 0, 0, 1, 1)
@@ -506,10 +488,7 @@ class Ui_OrderDialog2(object):
         sizePolicy6.setHeightForWidth(self.pushButtonConfirm.sizePolicy().hasHeightForWidth())
         self.pushButtonConfirm.setSizePolicy(sizePolicy6)
         self.pushButtonConfirm.setMinimumSize(QSize(150, 0))
-        font5 = QFont()
-        font5.setPointSize(12)
-        font5.setBold(True)
-        self.pushButtonConfirm.setFont(font5)
+        self.pushButtonConfirm.setFont(font)
         self.pushButtonConfirm.setIconSize(QSize(32, 32))
 
         self.horizontalLayout_6.addWidget(self.pushButtonConfirm)
@@ -519,9 +498,6 @@ class Ui_OrderDialog2(object):
         sizePolicy6.setHeightForWidth(self.pushButtonCancel.sizePolicy().hasHeightForWidth())
         self.pushButtonCancel.setSizePolicy(sizePolicy6)
         self.pushButtonCancel.setMinimumSize(QSize(120, 0))
-        font6 = QFont()
-        font6.setPointSize(12)
-        self.pushButtonCancel.setFont(font6)
         self.pushButtonCancel.setIconSize(QSize(32, 32))
 
         self.horizontalLayout_6.addWidget(self.pushButtonCancel)
@@ -545,7 +521,7 @@ class Ui_OrderDialog2(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1242, 348))
         self.verticalLayout_19 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
         self.verticalLayout_19.setContentsMargins(0, 0, 0, 0)

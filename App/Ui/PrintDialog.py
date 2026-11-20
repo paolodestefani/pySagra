@@ -28,7 +28,7 @@ class Ui_PrintDialog(object):
     def setupUi(self, PrintDialog):
         if not PrintDialog.objectName():
             PrintDialog.setObjectName(u"PrintDialog")
-        PrintDialog.resize(640, 480)
+        PrintDialog.resize(640, 512)
         self.verticalLayout_8 = QVBoxLayout(PrintDialog)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.verticalLayout_8.setContentsMargins(6, 6, 6, 6)
@@ -72,11 +72,6 @@ class Ui_PrintDialog(object):
 
         self.horizontalLayout_3.addWidget(self.comboBoxReportAdaptations)
 
-        self.pushButtonUserDefault = QPushButton(PrintDialog)
-        self.pushButtonUserDefault.setObjectName(u"pushButtonUserDefault")
-
-        self.horizontalLayout_3.addWidget(self.pushButtonUserDefault)
-
         self.horizontalLayout_3.setStretch(0, 1)
 
         self.verticalLayout_8.addLayout(self.horizontalLayout_3)
@@ -99,7 +94,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaParameters.setWidgetResizable(True)
         self.scrollAreaWidgetContentsParameters = QWidget()
         self.scrollAreaWidgetContentsParameters.setObjectName(u"scrollAreaWidgetContentsParameters")
-        self.scrollAreaWidgetContentsParameters.setGeometry(QRect(0, 0, 608, 305))
+        self.scrollAreaWidgetContentsParameters.setGeometry(QRect(0, 0, 608, 343))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContentsParameters)
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -127,7 +122,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaFilters.setWidgetResizable(True)
         self.scrollAreaWidgetContentsFilters = QWidget()
         self.scrollAreaWidgetContentsFilters.setObjectName(u"scrollAreaWidgetContentsFilters")
-        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 608, 305))
+        self.scrollAreaWidgetContentsFilters.setGeometry(QRect(0, 0, 608, 343))
         self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContentsFilters)
         self.verticalLayout_5.setSpacing(0)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
@@ -154,7 +149,7 @@ class Ui_PrintDialog(object):
         self.scrollAreaPrintOptions.setWidgetResizable(True)
         self.scrollAreaWidgetContentsOptions = QWidget()
         self.scrollAreaWidgetContentsOptions.setObjectName(u"scrollAreaWidgetContentsOptions")
-        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 608, 305))
+        self.scrollAreaWidgetContentsOptions.setGeometry(QRect(0, 0, 608, 343))
         self.verticalLayout_10 = QVBoxLayout(self.scrollAreaWidgetContentsOptions)
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.horizontalLayout_8 = QHBoxLayout()
@@ -164,27 +159,30 @@ class Ui_PrintDialog(object):
         self.verticalLayout_2 = QVBoxLayout(self.groupBoxPrint)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(6, 6, 6, 6)
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.labelDirectPrint = QLabel(self.groupBoxPrint)
-        self.labelDirectPrint.setObjectName(u"labelDirectPrint")
-
-        self.horizontalLayout_4.addWidget(self.labelDirectPrint)
-
         self.comboBoxPrinters = QComboBox(self.groupBoxPrint)
         self.comboBoxPrinters.setObjectName(u"comboBoxPrinters")
 
-        self.horizontalLayout_4.addWidget(self.comboBoxPrinters)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_2.addWidget(self.comboBoxPrinters)
 
 
         self.horizontalLayout_8.addWidget(self.groupBoxPrint)
 
-        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.groupBox_2 = QGroupBox(self.scrollAreaWidgetContentsOptions)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        self.verticalLayout_11 = QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.verticalLayout_11.setContentsMargins(6, 6, 6, 6)
+        self.pushButtonUserDefault = QPushButton(self.groupBox_2)
+        self.pushButtonUserDefault.setObjectName(u"pushButtonUserDefault")
 
-        self.horizontalLayout_8.addItem(self.horizontalSpacer_7)
+        self.verticalLayout_11.addWidget(self.pushButtonUserDefault)
+
+
+        self.horizontalLayout_8.addWidget(self.groupBox_2)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
 
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_8)
@@ -192,7 +190,6 @@ class Ui_PrintDialog(object):
         self.groupBoxPDFExport = QGroupBox(self.scrollAreaWidgetContentsOptions)
         self.groupBoxPDFExport.setObjectName(u"groupBoxPDFExport")
         self.verticalLayout_13 = QVBoxLayout(self.groupBoxPDFExport)
-        self.verticalLayout_13.setSpacing(0)
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.verticalLayout_13.setContentsMargins(6, 6, 6, 6)
         self.gridLayout = QGridLayout()
@@ -296,10 +293,9 @@ class Ui_PrintDialog(object):
         self.scrollAreaCustomize.setWidgetResizable(True)
         self.scrollAreaWidgetContentsCustomize = QWidget()
         self.scrollAreaWidgetContentsCustomize.setObjectName(u"scrollAreaWidgetContentsCustomize")
-        self.scrollAreaWidgetContentsCustomize.setGeometry(QRect(0, 0, 608, 351))
-        self.verticalLayout_16 = QVBoxLayout(self.scrollAreaWidgetContentsCustomize)
-        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.verticalLayout_16.setContentsMargins(6, 6, 6, 6)
+        self.scrollAreaWidgetContentsCustomize.setGeometry(QRect(0, 0, 608, 343))
+        self.verticalLayout_14 = QVBoxLayout(self.scrollAreaWidgetContentsCustomize)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
         self.groupBoxCurrent = QGroupBox(self.scrollAreaWidgetContentsCustomize)
         self.groupBoxCurrent.setObjectName(u"groupBoxCurrent")
         self.verticalLayout_4 = QVBoxLayout(self.groupBoxCurrent)
@@ -324,18 +320,10 @@ class Ui_PrintDialog(object):
 
         self.horizontalLayout_10.addWidget(self.pushButtonDelete)
 
-        self.horizontalSpacer_5 = QSpacerItem(32, 18, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_10.addItem(self.horizontalSpacer_5)
-
         self.pushButtonClassDefault = QPushButton(self.groupBoxCurrent)
         self.pushButtonClassDefault.setObjectName(u"pushButtonClassDefault")
 
         self.horizontalLayout_10.addWidget(self.pushButtonClassDefault)
-
-        self.horizontalSpacer_6 = QSpacerItem(32, 18, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_10.addItem(self.horizontalSpacer_6)
 
         self.pushButtonSetSorting = QPushButton(self.groupBoxCurrent)
         self.pushButtonSetSorting.setObjectName(u"pushButtonSetSorting")
@@ -347,46 +335,15 @@ class Ui_PrintDialog(object):
 
         self.horizontalLayout_10.addWidget(self.spinBoxClassSorting)
 
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_3)
+
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_10)
 
 
-        self.verticalLayout_16.addWidget(self.groupBoxCurrent)
-
-        self.horizontalLayout_9 = QHBoxLayout()
-        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.groupBox = QGroupBox(self.scrollAreaWidgetContentsCustomize)
-        self.groupBox.setObjectName(u"groupBox")
-        self.verticalLayout = QVBoxLayout(self.groupBox)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(6, 6, 6, 6)
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.horizontalLayout_5.setContentsMargins(6, 6, 6, 6)
-        self.labelPrintMethod = QLabel(self.groupBox)
-        self.labelPrintMethod.setObjectName(u"labelPrintMethod")
-        font = QFont()
-        font.setBold(True)
-        self.labelPrintMethod.setFont(font)
-
-        self.horizontalLayout_5.addWidget(self.labelPrintMethod)
-
-        self.labelReportClass = QLabel(self.groupBox)
-        self.labelReportClass.setObjectName(u"labelReportClass")
-        self.labelReportClass.setFont(font)
-
-        self.horizontalLayout_5.addWidget(self.labelReportClass)
-
-        self.comboBoxReportList = QComboBox(self.groupBox)
-        self.comboBoxReportList.setObjectName(u"comboBoxReportList")
-
-        self.horizontalLayout_5.addWidget(self.comboBoxReportList)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_5)
-
-
-        self.horizontalLayout_9.addWidget(self.groupBox)
+        self.verticalLayout_14.addWidget(self.groupBoxCurrent)
 
         self.groupBoxNew = QGroupBox(self.scrollAreaWidgetContentsCustomize)
         self.groupBoxNew.setObjectName(u"groupBoxNew")
@@ -406,24 +363,72 @@ class Ui_PrintDialog(object):
 
         self.horizontalLayout_6.addWidget(self.pushButtonNewCustomization)
 
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer_5)
+
 
         self.verticalLayout_12.addLayout(self.horizontalLayout_6)
 
 
-        self.horizontalLayout_9.addWidget(self.groupBoxNew)
+        self.verticalLayout_14.addWidget(self.groupBoxNew)
+
+        self.groupBox = QGroupBox(self.scrollAreaWidgetContentsCustomize)
+        self.groupBox.setObjectName(u"groupBox")
+        self.verticalLayout = QVBoxLayout(self.groupBox)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(6, 6, 6, 6)
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(6, 6, 6, 6)
+        self.labelPrintMethod = QLabel(self.groupBox)
+        self.labelPrintMethod.setObjectName(u"labelPrintMethod")
+        font = QFont()
+        font.setBold(True)
+        self.labelPrintMethod.setFont(font)
+
+        self.horizontalLayout_5.addWidget(self.labelPrintMethod)
+
+        self.label = QLabel(self.groupBox)
+        self.label.setObjectName(u"label")
+
+        self.horizontalLayout_5.addWidget(self.label)
+
+        self.labelReportClass = QLabel(self.groupBox)
+        self.labelReportClass.setObjectName(u"labelReportClass")
+        self.labelReportClass.setFont(font)
+
+        self.horizontalLayout_5.addWidget(self.labelReportClass)
+
+        self.label_2 = QLabel(self.groupBox)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout_5.addWidget(self.label_2)
+
+        self.comboBoxReportList = QComboBox(self.groupBox)
+        self.comboBoxReportList.setObjectName(u"comboBoxReportList")
+
+        self.horizontalLayout_5.addWidget(self.comboBoxReportList)
+
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_6)
 
 
-        self.verticalLayout_16.addLayout(self.horizontalLayout_9)
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
+
+
+        self.verticalLayout_14.addWidget(self.groupBox)
 
         self.labelWarningOnNew = QLabel(self.scrollAreaWidgetContentsCustomize)
         self.labelWarningOnNew.setObjectName(u"labelWarningOnNew")
         self.labelWarningOnNew.setWordWrap(True)
 
-        self.verticalLayout_16.addWidget(self.labelWarningOnNew)
+        self.verticalLayout_14.addWidget(self.labelWarningOnNew)
 
-        self.verticalSpacer_2 = QSpacerItem(198, 135, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 56, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout_16.addItem(self.verticalSpacer_2)
+        self.verticalLayout_14.addItem(self.verticalSpacer)
 
         self.scrollAreaCustomize.setWidget(self.scrollAreaWidgetContentsCustomize)
 
@@ -436,7 +441,7 @@ class Ui_PrintDialog(object):
         self.buttonBox = QDialogButtonBox(PrintDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Close|QDialogButtonBox.StandardButton.Reset)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Reset)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_8.addWidget(self.buttonBox)
@@ -494,11 +499,11 @@ class Ui_PrintDialog(object):
         self.toolButtonPrintPDF.setToolTip(QCoreApplication.translate("PrintDialog", u"Export to a PDF file", None))
 #endif // QT_CONFIG(tooltip)
         self.toolButtonPrintPDF.setText(QCoreApplication.translate("PrintDialog", u"Export PDF", None))
-        self.pushButtonUserDefault.setText(QCoreApplication.translate("PrintDialog", u"Set as user default", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabParameters), QCoreApplication.translate("PrintDialog", u"Parameters", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabFilters), QCoreApplication.translate("PrintDialog", u"Filters", None))
-        self.groupBoxPrint.setTitle(QCoreApplication.translate("PrintDialog", u"Print", None))
-        self.labelDirectPrint.setText(QCoreApplication.translate("PrintDialog", u"Direct print to", None))
+        self.groupBoxPrint.setTitle(QCoreApplication.translate("PrintDialog", u"Direct print to", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("PrintDialog", u"Current customization", None))
+        self.pushButtonUserDefault.setText(QCoreApplication.translate("PrintDialog", u"Set as default", None))
         self.groupBoxPDFExport.setTitle(QCoreApplication.translate("PrintDialog", u"Export to PDF file", None))
         self.label_6.setText(QCoreApplication.translate("PrintDialog", u"Directory", None))
         self.pushButtonSelectDirectory.setText(QCoreApplication.translate("PrintDialog", u"Select ...", None))
@@ -514,11 +519,13 @@ class Ui_PrintDialog(object):
         self.pushButtonDelete.setText(QCoreApplication.translate("PrintDialog", u"Delete", None))
         self.pushButtonClassDefault.setText(QCoreApplication.translate("PrintDialog", u"Set as class default", None))
         self.pushButtonSetSorting.setText(QCoreApplication.translate("PrintDialog", u"Set sorting to", None))
-        self.groupBox.setTitle(QCoreApplication.translate("PrintDialog", u"Print method / Report class / Report", None))
-        self.labelPrintMethod.setText(QCoreApplication.translate("PrintDialog", u"Method", None))
-        self.labelReportClass.setText(QCoreApplication.translate("PrintDialog", u"Class", None))
         self.groupBoxNew.setTitle(QCoreApplication.translate("PrintDialog", u"New adaptation", None))
         self.pushButtonNewCustomization.setText(QCoreApplication.translate("PrintDialog", u"Create", None))
+        self.groupBox.setTitle(QCoreApplication.translate("PrintDialog", u"Print method / Report class / Report", None))
+        self.labelPrintMethod.setText(QCoreApplication.translate("PrintDialog", u"Method", None))
+        self.label.setText(QCoreApplication.translate("PrintDialog", u"/", None))
+        self.labelReportClass.setText(QCoreApplication.translate("PrintDialog", u"Class", None))
+        self.label_2.setText(QCoreApplication.translate("PrintDialog", u"/", None))
         self.labelWarningOnNew.setText(QCoreApplication.translate("PrintDialog", u"Creating a new adaptation does not save its parameters, you need to select the new adaptation, set the parameters/filters/sorting and update it", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCustomize), QCoreApplication.translate("PrintDialog", u"Customize", None))
     # retranslateUi

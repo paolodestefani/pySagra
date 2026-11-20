@@ -25,7 +25,7 @@ class Ui_SystemInfoDialog(object):
     def setupUi(self, SystemInfoDialog):
         if not SystemInfoDialog.objectName():
             SystemInfoDialog.setObjectName(u"SystemInfoDialog")
-        SystemInfoDialog.resize(640, 512)
+        SystemInfoDialog.resize(672, 512)
         self.verticalLayout_3 = QVBoxLayout(SystemInfoDialog)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout = QHBoxLayout()
@@ -159,7 +159,7 @@ class Ui_SystemInfoDialog(object):
         self.buttonBox = QDialogButtonBox(SystemInfoDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_3.addWidget(self.buttonBox)

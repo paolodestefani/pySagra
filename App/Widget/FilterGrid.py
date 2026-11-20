@@ -404,7 +404,7 @@ class FilterGrid(QObject):
         negate = RowCheckBox(self.owner)
         negate.setDisabled(True)
         negate.row = row
-        negate.setToolTip(_tr('SoftFilterDialog', 'Not'))
+        negate.setToolTip(_tr('SortFilterDialog', 'Not'))
         operator = RowComboBox(self.owner)
         operator.setDisabled(True)
         operator.row = row
