@@ -33,7 +33,7 @@
     <p>I database elencati sono in formato <i>backup</i> utilizzabile per il ripristino tramite pg_restore ed in formato sql utilizzabile per il ripristino tramite psql. Quest'ultimo dovrebbe permettere l'installazione anche in versioni precedenti alla 18.x di PostgreSQL. Questi database presuppongono che esistano gi&agrave; due ruoli specifici:</p>
     <ul>
     	<li><i>pa_owner_role</i> &egrave; il ruolo che viene utilizzato come proprietario di tutti gli oggetti del database</li>
-    	<li><i>pa_login_role</i> &egrave; il ruolo che viene utilizzato per l'accesso al database, eredita le propriet&agrave; di <i>pa_owner_role</i></li>
+    	<li><i>pa_login_role</i> &egrave; il ruolo che viene utilizzato per l'accesso al database, eredita i permessi di <i>pa_owner_role</i></li>
     </ul>
     <p>All'interno della cartella degli script sql sono disponibili gli script da utilizzare per creare questi ruoli.</p>
     <p>E' possibile crearsi un database applicativo da zero utilizzando gli script sql forniti e sostituendo ai parametri seguenti una valore corretto:</p>

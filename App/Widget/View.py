@@ -148,14 +148,14 @@ class ViewSettingsDialog(QDialog):
 
     def accept(self) -> None:
         """Applies user layout parameters downstream to the parent table view grid canvas."""
-        # cache primary initial clean interface layout geometry mapping
-        if self._parent.header_state:
-            self._parent.header().restoreState(self._parent.header_state)
-        else:
-            self._parent.header_state = self._parent.header().saveState()
         header = self._parent.header()
-        # deactivate signal pipelines temporarily to block visual layout stuttering
+        # cache primary initial clean interface layout geometry mapping
+        if self._parent.header_state is None:
+            self._parent.header_state = header.saveState()
+        # deactivate signal pipelines temporarily to block visual layout stuttering;
+        # restored with the signals off: its sort indicator would sort the rows again
         header.blockSignals(True)
+        header.restoreState(self._parent.header_state)
         def get_val(row_idx: int, col_idx: int) -> Any:
             item = self.ui.tableWidget.item(row_idx, col_idx)
             if item is None:
@@ -180,6 +180,7 @@ class ViewSettingsDialog(QDialog):
         finally:
             # safely release blocking flags and trigger a master canvas reprint
             header.blockSignals(False)
+            self._parent.updateGeometries()
             header.viewport().update()
             self._parent.update()
         super().accept()
@@ -335,20 +336,21 @@ class LayoutViewMixin(_ViewBase):
 
     def setStoredLayout(self, action: QAction | None) -> None:
         """Apply a layout definition stored in the database to the table view."""
-        if action is None:  # safe boundary protection against PySide6 checkedAction() race-conditions
+        header = self.header()
+        # the first call comes from setLayoutName when the form has set up the view: its state
+        # is the view as the program defines it, the base of every layout and of the reset
+        if self.header_state is None:
+            self.header_state = header.saveState()
+        if action is None:  # no layout, or PySide6 checkedAction() race-conditions
             return
         view_id = int(action.data())
-        header = self.header()
-        # reset layout first (or store the initial state on the first run)
-        if self.header_state:
-            # the saved state holds a sort indicator too: with the header signals on, the view
-            # would sort the rows by it and undo the order of the sort/filter query
-            header.blockSignals(True)
-            header.restoreState(self.header_state)
-            header.blockSignals(False)
-            self.updateGeometries()
-        else:
-            self.header_state = header.saveState()
+        # reset layout first
+        # the saved state holds a sort indicator too: with the header signals on, the view
+        # would sort the rows by it and undo the order of the sort/filter query
+        header.blockSignals(True)
+        header.restoreState(self.header_state)
+        header.blockSignals(False)
+        self.updateGeometries()
         title: str = _tr("Menu", "Error applying stored layout")
         # sorting is left as it is: turning it back on sorts the rows by the header
         # indicator at once, and would undo the order of the sort/filter query
@@ -403,7 +405,11 @@ class LayoutViewMixin(_ViewBase):
     def resetViewState(self) -> None:
         """Reset the horizontal header orientation to its initial cached layout state."""
         if self.header_state:
+            # signals blocked: the restored sort indicator would sort the rows again
+            self.header().blockSignals(True)
             self.header().restoreState(self.header_state)
+            self.header().blockSignals(False)
+            self.updateGeometries()
             # uncheck any active layout configuration in the menu group context
             active_action = self.action_group.checkedAction()
             if active_action:

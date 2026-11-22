@@ -174,7 +174,9 @@ class PrintDialogTest(DialogTestCase):
     def test_operators_customize_nothing_but_choose_the_printer(self) -> None:
         dialog = self.dialog()
         self.assertTrue(dialog.ui.tabWidget.widget(Dialog.pti.OPTION).isEnabled())
-        self.assertFalse(dialog.ui.tabWidget.widget(Dialog.pti.CUSTOMIZE).isEnabled())
+        # without the right to edit reports the customize tab is removed
+        self.assertEqual(dialog.ui.tabWidget.count(), Dialog.pti.CUSTOMIZE)
+        self.assertEqual(dialog.ui.tabWidget.indexOf(dialog.ui.tabCustomize), -1)
         self.assertTrue(dialog.ui.comboBoxReportAdaptations.isEnabled())
 
     def test_authorized_users_can_customize(self) -> None:
