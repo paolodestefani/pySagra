@@ -693,14 +693,14 @@ class PrintDialog(QDialog):
         self.ui.pushButtonUserDefault.clicked.connect(self.setUserDefault)
         self.ui.pushButtonClassDefault.clicked.connect(self.setClassDefault)
         # check authorization
-        #self.ui.tabWidget.widget(pti.CUSTOMIZE).setEnabled(session['can_edit_reports'] or
-        #                                                   session['is_admin'])
         if not session['can_edit_reports']:
             self.ui.tabWidget.removeTab(pti.CUSTOMIZE)
         # filter rows
         self.filters = FilterGrid(self.ui.layoutFilters, self)
         # disable parameters tab
         self.ui.tabWidget.setTabEnabled(pti.PARAMS, False)
+        # default button
+        self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         ## initial settings ##
         self.setReport(0)
         self.reportAdaptationList()

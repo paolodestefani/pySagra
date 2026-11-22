@@ -239,8 +239,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>608</width>
-            <height>343</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -311,8 +311,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>608</width>
-            <height>343</height>
+            <width>585</width>
+            <height>256</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -575,8 +575,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>608</width>
-            <height>343</height>
+            <width>543</width>
+            <height>340</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -849,7 +849,7 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Reset</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Help|QDialogButtonBox::StandardButton::Reset</set>
      </property>
      <property name="centerButtons">
       <bool>true</bool>

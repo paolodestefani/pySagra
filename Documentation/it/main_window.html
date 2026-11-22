@@ -1,14 +1,14 @@
 <html lang="it">
   <head>
     <title>
-      pySagra - Interfaccia utente
+      pySagra - Finestra principale
     </title>
   </head>
   <body>
     <h1>
-       Interfaccia utente
+       Finestra principale
     </h1>
-<p>L'intefacia utente di <i>pySagra</i> &egrave; quella di una tipica applicazione desktop:</p>
+<p>L'intefacia utente di <i>pySagra</i> &egrave; quella di una tipica applicazione desktop La finestra principale de programma &egrave; composta da:</p>
 <ul>
 	<li>una barra dei menu</li>
 	<li>la barra del titolo</li>
@@ -18,26 +18,31 @@
 <p align="left"><img src="img/main_window.png"/></p>
 <p>Il menu segue le specifiche richieste dalla piattaforma utilizzata. In MacOS la prima voce &egrave; 
 costituita dal nome dell'applicazione, seguono i menu specifici ed il sistema operativo comunque
-aggiunge voci in base a proprie regole</p>
+aggiunge voci in base a proprie regole. In Windows il menu &egrave; quello previsto dall'applicazione, si parte da <i>Sistema</i>. I menu richiamano <i>azioni</i> che consentono ad esempio di aggiungere schede o aprire altre finestre.</p>
 <p align="left"><img src="img/ui_menu.png"/></p>
 <p>La barra del titolo riporta la descrizione dell'applicazione e dell'azienda sulla quale si sta lavorando</p>
 <p align="left"><img src="img/ui_titlebar.png"/></p>
 <p>La barra di stato in basso a destra riporta il codice utente attualmente connesso e la descrizione 
 dell'azienda in uso</p>
 <p align="left"><img src="img/ui_statusbar.png"/></p>
-<p>La finestra principale &egrave; un contenitore di schede che viene popolato da azioni richiamate dai menu. 
+<p>La finestra principale &egrave; un contenitore di schede che viene popolato da <i>azioni</i> richiamate dai menu. 
 Le schede si possono spostare a destra o sinistra a proprio piacimento semplicemente trascinandole con il puntatore del mouse.
 Tramite menu &egrave; anche possibile richiamare delle finestre di dialogo.</p>
 <p align="left"><img src="img/ui_mainwindow.png"/></p>
 <p>Tramite menu contestuale &egrave; possibile nascondere la barra delle schede o chiuderle tutte in blocco</p>
 <p align="left"><img src="img/ui_tab_management.png"/></p>
-<P>Alcune schede prevedono due tipi di visualizzazione:</p>
+<h2>Vista a modulo o griglia</h2>
+<p>Alcune schede prevedono due tipi di visualizzazione:</p>
 <ul>
-	<li>A modulo</li>
-	<li>A griglia</li>
+	<li>A modulo (form)</li>
+	<li>A griglia (grid)</li>
 </ul>
-<p>Tramite un'azione specifica, disponibile in menu e toolbar, &egrave; possibile passare da una visualizzazione all'altra</p>
-<p>La toolbar richiama alcune voci di menu che consentono la navigazione dei dati oppure la loro stampa ed export.
+<p>Tramite un'azione specifica, disponibile in menu e toolbar, &egrave; possibile passare da una visualizzazione all'altra.</p>
+<p>Ad esempio per l'anagrafica articoli è disponibile la vista a modulo:</p>
+<p align="left"><img src="img/ui_form_view.png"/></p>
+<p>Stesse informazioni ma con vista a griglia:</p>
+<p align="left"><img src="img/ui_grid_view.png"/></p>
+<p>Le toolbar richiamano le stesse <i>azioni</i> del menu <i>Modifica</i> o di altri menu e consentono la navigazione dei dati oppure la loro stampa ed export.
 </p>
 <p align="left"><img src="img/ui_toolbar.png"/></p>
 <p><b>Tastiera su macOS</b>: per raggiungere con il tasto Tab anche i pulsanti, compresi quelli dei messaggi

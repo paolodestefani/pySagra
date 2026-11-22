@@ -1,0 +1,122 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Installazione</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Installazione del programma</h1>
+    <p>Il programma viene fornito con pacchetti di installazione generati di PyInstaller in 2 versioni:</p>
+    <ul>
+    	<li>Per architettura x86-64 per sistema operativo <i>Windows</i>, compatibile con Windows 10 e versioni successive</li>
+    	<li>Per architettura arm-64 per sistema operativo <i>MacOS</i>, compatibile con MacOS 26 Tahoe e versioni successive</li>
+    </ul>
+    <p>E' fornito il programma sorgente quindi &egrave; possibile far funzionare <i>pySagra</i> anche su versioni diverse sia del sistema operativo sia dei componenti software rispetto a quanto indicato sopra. Il database server utilizzato &egrave; PostgreSQL 18 ma probabilmente il programma funziona anche con versioni precedenti, comunque non testate.</p>
+    <p>In ogni caso il programma è testato solo con questi componenti e sistemi operativi:</p>
+    <ul>
+    	<li><i>PostgreSQL</i> in versione 18.x</li>
+    	<li><i>PySide6</i> in versione 6.12.x</li>
+    	<li><i>Psycopg</i> in versione 3.3.x</li> 
+    	<li><i>python-escpos</i> in versione 3.1</li>
+    	<li><i>Windows</i> in versione 11 pro</li>
+    	<li><i>MacOS</i> in versione 26.x e 27.x</li>
+    </ul>
+    <p>Si si utilizzano i pacchetti generati da PyInstaller per installare il programma &egrave; sufficiente copiare la cartella in una qualunque posizione del file systema della macchina da utilizzare. Non servono setup, basta lanciare l'applicativo con le modalità richieste dal sistema operativo:</p>
+    <ul>
+    	<li>Doppio click sul file pySagra.exe in ambiente Windows</li>
+    	<li>Doppio click sulla cartella pySagra.app in ambiente MacOS</li>
+    </ul>
+    <p>Per funzionare l'applicazione ha bisogno di accedere ad un database server PostgreSQL e ad un database applicativo di pySagra. Per l'installazione di PostgreSQL far riferimento ai pachetti di instllazione e alle istruzioni disponibili in <a href="https://www.postgresql.org/">www.postgresql.org</a>, il programma pu&ograve; funzionare in ambienti misti con server di database in linux, client in windows o mac o combinazioni di questi ambienti.</p>
+    <p>Vengono forniti due database applicativi del programma:</p>
+    <ul>
+    	<li><i>pyagra</i> &egrave; un database praticamente vuoto, contiene solo la struttura del database, gli utenti di base, un'azienda per accedere, report ed altre personalizzazioni</li>
+    	<li><i>pysagra_demo</i> invece contiene oltre a quanto già presente nel db di base precedente due aziende con esempio di configurazioni, anagrafiche articoli, ordini inseriti, ecc.</li>
+    </ul>
+    <p>I database elencati sono in formato <i>backup</i> utilizzabile per il ripristino tramite pg_restore ed in formato sql utilizzabile per il ripristino tramite psql. Quest'ultimo dovrebbe permettere l'installazione anche in versioni precedenti alla 18.x di PostgreSQL. Questi database presuppongono che esistano gi&agrave; due ruoli specifici:</p>
+    <ul>
+    	<li><i>pa_owner_role</i> &egrave; il ruolo che viene utilizzato come proprietario di tutti gli oggetti del database</li>
+    	<li><i>pa_login_role</i> &egrave; il ruolo che viene utilizzato per l'accesso al database, eredita le propriet&agrave; di <i>pa_owner_role</i></li>
+    </ul>
+    <p>All'interno della cartella degli script sql sono disponibili gli script da utilizzare per creare questi ruoli.</p>
+    <p>E' possibile crearsi un database applicativo da zero utilizzando gli script sql forniti e sostituendo ai parametri seguenti una valore corretto:</p>
+    <table valign="middle">
+		<tr>
+    		<th align="left">Parametro</th>
+    		<th align="left">Descrizione</th>
+    		<th align="left">Valore</th>
+  		</tr>
+    	<tr>
+    		<td>{pyAppPgOwnerRole}</td>
+    		<td>PostgresSQL Role that own all db objects without login privilege</td>
+    		<td>pa_owner_role</td>
+    	</tr>
+    	<tr>
+			<td>{pyAppPgDataBase}</td>
+			<td>Postgres database name</td>
+			<td>pysagra</td>
+		</tr>
+		<tr>
+			<td>{pyAppPgLoginRole}</td>
+			<td>PostgresSQL Role used for standard login users</td>
+			<td>pa_login_role</td>
+		</tr>
+		<tr>
+			<td>{pyAppPgLoginPassword}</td>
+			<td>Password for pyAppPgLoginRole</td>
+			<td>*********</td>
+		</tr>
+		<tr>
+			<td>{pyAppName}</td>
+			<td>Python application name</td>
+			<td>pySagra</td>
+		</tr>
+		<tr>
+			<td>{pyAppDescription}</td>
+			<td>Python application description</td>
+			<td>Food stand management software</td>
+		</tr>
+		<tr>
+			<td>{pyAppVersionMajor}</td>
+			<td>Application version major number</td>
+			<td>1</td>
+		</tr>
+		<tr>
+			<td>{pyAppVersionMinor}</td>
+			<td>Application version minor number</td>
+			<td>0</td>
+		</tr>
+		<tr>
+			<td>{pyAppVersionPatch}</td>
+			<td>Application version patch number</td>
+			<td>0</td>
+		</tr>
+		<tr>
+			<td>{pyAppVersionTag}</td>
+			<td>Application version tag</td>
+			<td>A new world</td>
+		</tr>
+		<tr>
+			<td>{pyAppVersionDescription}</td>
+			<td>Application version description</td>
+			<td></td>
+		</tr>
+			<td>{pyAppPgDataBaseTS}</td>
+			<td>Database table space (MUST be created before script execution)</td>
+			<td>pg_default</td>
+		</tr>
+		<tr>
+			<td>{pyAppPgTablesTS}</td>
+			<td>Tables table space (MUST be created before script execution)</td>
+			<td>pg_default</td>
+		</tr>
+		<tr>
+			<td>{pyAppPgIndexesTS}</td>
+			<td>Indexes table space (MUST be created before script execution)</td>
+			<td>pg_default</td>
+		</tr>
+	</table>
+	<p>Nella colonna <i>Valore</i> sono riportati i valori per la versione di pySagra 1.0.0. Non tutti i parametri vengono utilizzati su tutti gli script.</p>
+	<p>La versione del programma e del database devono coincidere nei rispettivi numeri major e minor.
+	Ad esempio se il programma è in versione 1.0.23 funzioner&agrave; con database in versione 1.0.x 
+	dove x pu&ograve; assumere qualunque valore.</p>
+    <p><a class="top" href="#top" title="top">Inizio pagina</a></p>
+  </body>
+</html>
