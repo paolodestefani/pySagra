@@ -152,6 +152,7 @@ def statisticsPrint(action: QAction, checked: bool = False) -> None:
                             _tr('Statistics', 'No access right to this function'))
         return
     dialog = PrintDialog(mw, 'STATISTICS')
+    dialog.helpLink = "help/statistics_print_dialog.html" # type: ignore[attr-defined]
     dialog.show()
     logger.info('Statistics consumption dialog shown')
 
@@ -179,7 +180,7 @@ class StatisticsExportDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_StatisticsExportDialog()
         self.ui.setupUi(self)
-        addHelpAction(self, "help/statistics.html")
+        addHelpAction(self, "help/statistics_export_dialog.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)

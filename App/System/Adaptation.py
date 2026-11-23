@@ -104,7 +104,7 @@ class AdaptationsDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_AdaptationsDialog()
         self.ui.setupUi(self)
-        addHelpAction(self, "help/adaptation.html")
+        addHelpAction(self, "help/adaptation_dialog.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         # signal/slot

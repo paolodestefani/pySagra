@@ -126,7 +126,7 @@ class PreferencesDialog(QDialog):
         # signal/slot
         self.ui.buttonBox.clicked.connect(self.clicked)
         # help button and help key
-        addHelpAction(self, "help/preferences.html")
+        addHelpAction(self, "help/preferences_dialog.html")
 
     def clicked(self, button: QPushButton) -> None:
         "Call Apply on clicked"

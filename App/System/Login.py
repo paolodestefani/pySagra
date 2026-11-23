@@ -116,7 +116,7 @@ class LoginDialog(QDialog):
         txt = _tr('Login', "Application Version:")
         self.ui.labelVersion.setText(f"{txt} {APPVERSIONMAJOR}.{APPVERSIONMINOR}.{APPVERSIONPATCH} {APPVERSIONTAG}")
         # help button and help key
-        addHelpAction(self, "help/login.html")
+        addHelpAction(self, "help/login_dialog.html")
         # clean settings
         self.ui.pushButtonClearSettings.clicked.connect(self.clearLocalSettings)
         
@@ -259,7 +259,7 @@ class ChangeCompanyDialog(QDialog):
         self.ui.lineEditCompany.setText(session.get('company_description') or '')
         self.ui.comboBoxCompanies.setItemList(companies)
         # help button and help key
-        addHelpAction(self, "help/change_company.html")
+        addHelpAction(self, "help/change_company_dialog.html")
         # default button
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
 

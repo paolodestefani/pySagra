@@ -99,7 +99,7 @@ class Ui_AdaptationsDialog(object):
         self.buttonBox = QDialogButtonBox(AdaptationsDialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Help)
         self.buttonBox.setCenterButtons(True)
 
         self.verticalLayout_4.addWidget(self.buttonBox)

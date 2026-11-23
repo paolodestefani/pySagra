@@ -89,7 +89,7 @@ class UpdateWebOrderServerDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_UpdateWebOrderServerDialog()
         self.ui.setupUi(self)
-        addHelpAction(self, "help/update_wos.html")
+        addHelpAction(self, "help/update_wos_dialog.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))
         self.ui.comboBoxEvent.setItemList(event_lookup())

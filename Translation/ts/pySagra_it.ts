@@ -2798,37 +2798,37 @@ Proseguire ugualmente ?</translation>
         <translation>Sei sicuro di voler cancellare questo menu ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="301"/>
+        <location filename="../../App/Widget/View.py" line="302"/>
         <source>Error loading menu customizations</source>
         <translation>Errore nel caricamento delle personalizzazioni del menu</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="352"/>
+        <location filename="../../App/Widget/View.py" line="354"/>
         <source>Error applying stored layout</source>
         <translation>Errore applicando il layout memorizzato</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="443"/>
+        <location filename="../../App/Widget/View.py" line="449"/>
         <source>Error saving view layout</source>
         <translation>Errore nel salvataggio del layout</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="465"/>
+        <location filename="../../App/Widget/View.py" line="471"/>
         <source>Error creating new layout</source>
         <translation>Errore nella creazione del nuovo layout</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="487"/>
+        <location filename="../../App/Widget/View.py" line="493"/>
         <source>Error deleting layout</source>
         <translation>Errore nella cancellazione del layout</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="534"/>
+        <location filename="../../App/Widget/View.py" line="540"/>
         <source>Error setting user default layout</source>
         <translation>Errore nell&apos;impostare il layout predefinito per utente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="560"/>
+        <location filename="../../App/Widget/View.py" line="566"/>
         <source>Error setting class default layout</source>
         <translation>Errore nell&apos;impostare il layout predefinito per la classe</translation>
     </message>
@@ -2888,9 +2888,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Form.py" line="400"/>
         <location filename="../../App/Widget/Form.py" line="692"/>
         <location filename="../../App/Widget/Form.py" line="714"/>
-        <location filename="../../App/Widget/View.py" line="636"/>
-        <location filename="../../App/Widget/View.py" line="664"/>
-        <location filename="../../App/Widget/View.py" line="721"/>
+        <location filename="../../App/Widget/View.py" line="642"/>
+        <location filename="../../App/Widget/View.py" line="670"/>
+        <location filename="../../App/Widget/View.py" line="727"/>
         <source>Critical</source>
         <translation>Errore critico</translation>
     </message>
@@ -2941,9 +2941,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/SeatMap.py" line="93"/>
         <location filename="../../App/Settings.py" line="70"/>
         <location filename="../../App/Statistics.py" line="151"/>
-        <location filename="../../App/Statistics.py" line="168"/>
-        <location filename="../../App/Statistics.py" line="254"/>
-        <location filename="../../App/Statistics.py" line="263"/>
+        <location filename="../../App/Statistics.py" line="169"/>
+        <location filename="../../App/Statistics.py" line="255"/>
+        <location filename="../../App/Statistics.py" line="264"/>
         <location filename="../../App/System/About.py" line="90"/>
         <location filename="../../App/System/Adaptation.py" line="90"/>
         <location filename="../../App/System/Adaptation.py" line="127"/>
@@ -2981,9 +2981,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1125"/>
         <location filename="../../App/Widget/Dialog.py" line="1131"/>
         <location filename="../../App/Widget/Dialog.py" line="1177"/>
-        <location filename="../../App/Widget/View.py" line="497"/>
-        <location filename="../../App/Widget/View.py" line="529"/>
-        <location filename="../../App/Widget/View.py" line="555"/>
+        <location filename="../../App/Widget/View.py" line="503"/>
+        <location filename="../../App/Widget/View.py" line="535"/>
+        <location filename="../../App/Widget/View.py" line="561"/>
         <source>Warning</source>
         <translation>Avviso</translation>
     </message>
@@ -2998,7 +2998,7 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Event.py" line="202"/>
         <location filename="../../App/OrderArchive.py" line="365"/>
         <location filename="../../App/OrderArchive.py" line="383"/>
-        <location filename="../../App/Statistics.py" line="296"/>
+        <location filename="../../App/Statistics.py" line="297"/>
         <location filename="../../App/System/Adaptation.py" line="174"/>
         <location filename="../../App/System/Adaptation.py" line="204"/>
         <location filename="../../App/System/Adaptation.py" line="239"/>
@@ -3042,10 +3042,10 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="1006"/>
         <location filename="../../App/Widget/Dialog.py" line="1047"/>
         <location filename="../../App/Widget/Dialog.py" line="1183"/>
-        <location filename="../../App/Widget/View.py" line="449"/>
-        <location filename="../../App/Widget/View.py" line="517"/>
-        <location filename="../../App/Widget/View.py" line="543"/>
-        <location filename="../../App/Widget/View.py" line="568"/>
+        <location filename="../../App/Widget/View.py" line="455"/>
+        <location filename="../../App/Widget/View.py" line="523"/>
+        <location filename="../../App/Widget/View.py" line="549"/>
+        <location filename="../../App/Widget/View.py" line="574"/>
         <source>Information</source>
         <translation>Informazione</translation>
     </message>
@@ -3095,9 +3095,9 @@ Proseguire ugualmente ?</translation>
         <location filename="../../App/Widget/Dialog.py" line="864"/>
         <location filename="../../App/Widget/Dialog.py" line="1146"/>
         <location filename="../../App/Widget/Form.py" line="307"/>
-        <location filename="../../App/Widget/View.py" line="503"/>
-        <location filename="../../App/Widget/View.py" line="655"/>
-        <location filename="../../App/Widget/View.py" line="730"/>
+        <location filename="../../App/Widget/View.py" line="509"/>
+        <location filename="../../App/Widget/View.py" line="661"/>
+        <location filename="../../App/Widget/View.py" line="736"/>
         <source>Question</source>
         <translation>Richiesta</translation>
     </message>
@@ -7859,37 +7859,37 @@ Devo procedere comunque?</translation>
     <name>Statistics</name>
     <message>
         <location filename="../../App/Statistics.py" line="152"/>
-        <location filename="../../App/Statistics.py" line="169"/>
+        <location filename="../../App/Statistics.py" line="170"/>
         <source>No access right to this function</source>
         <translation>Nessun diritto di accesso a questa funzione</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="236"/>
+        <location filename="../../App/Statistics.py" line="237"/>
         <source>Select file name and path</source>
         <translation>Selezionare il nome del file ed il percorso</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="238"/>
+        <location filename="../../App/Statistics.py" line="239"/>
         <source>Comma separated values (*.csv);;All files (*.*)</source>
         <translation>Valori separati da virgola (*.csv);;Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="255"/>
+        <location filename="../../App/Statistics.py" line="256"/>
         <source>Select the events to export</source>
         <translation>Selezionare l&apos;evento da esportare</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="264"/>
+        <location filename="../../App/Statistics.py" line="265"/>
         <source>Select the headers and the details file names</source>
         <translation>Selezionare il nome file per le testate e le righe</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="269"/>
+        <location filename="../../App/Statistics.py" line="270"/>
         <source>Statistics export</source>
         <translation>Esporta dati statistici</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="297"/>
+        <location filename="../../App/Statistics.py" line="298"/>
         <source>Operation completed successfully</source>
         <translation>Operazione completata correttamente</translation>
     </message>
@@ -8735,178 +8735,178 @@ You can recover data only from a backup copy of the database.</source>
         <translation>Larghezza</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="226"/>
+        <location filename="../../App/Widget/View.py" line="227"/>
         <source>Column sorting</source>
         <translation>Colonna ordinabile</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="230"/>
+        <location filename="../../App/Widget/View.py" line="231"/>
         <source>Column movable</source>
         <translation>Colonna spostabile</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="597"/>
+        <location filename="../../App/Widget/View.py" line="603"/>
         <source>Show vertical header</source>
         <translation>Mostra l&apos;intestazione verticale</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="234"/>
+        <location filename="../../App/Widget/View.py" line="235"/>
         <source>Resize columns to contents</source>
         <translation>Adatta la colonna al contenuto</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="601"/>
+        <location filename="../../App/Widget/View.py" line="607"/>
         <source>Resize rows to contents</source>
         <translation>Adatta la riga al contenuto</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="603"/>
+        <location filename="../../App/Widget/View.py" line="609"/>
         <source>Export to CSV file</source>
         <translation>Esporta su un file CSV</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="241"/>
+        <location filename="../../App/Widget/View.py" line="242"/>
         <source>Set current layout as user default</source>
         <translation>Imposta come predefinito per l&apos;utente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="243"/>
+        <location filename="../../App/Widget/View.py" line="244"/>
         <source>Set layout</source>
         <translation>Imposta il layout</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="248"/>
+        <location filename="../../App/Widget/View.py" line="249"/>
         <source>Update current layout</source>
         <translation>Aggiorna il layout corrente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="250"/>
+        <location filename="../../App/Widget/View.py" line="251"/>
         <source>Delete current layout</source>
         <translation>Elimina il layout corrente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="252"/>
+        <location filename="../../App/Widget/View.py" line="253"/>
         <source>Set current layout as class default</source>
         <translation>Imposta come predefinito per la classe</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="254"/>
+        <location filename="../../App/Widget/View.py" line="255"/>
         <source>Save current layout as ...</source>
         <translation>Salva il payout come ...</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="256"/>
+        <location filename="../../App/Widget/View.py" line="257"/>
         <source>Hide current column</source>
         <translation>Nascondi la colonna corrente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="258"/>
+        <location filename="../../App/Widget/View.py" line="259"/>
         <source>Show all columns</source>
         <translation>Mostra tutte le colonne</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="260"/>
+        <location filename="../../App/Widget/View.py" line="261"/>
         <source>Reset view state</source>
         <translation>Reimposta lo stato della vista</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="262"/>
+        <location filename="../../App/Widget/View.py" line="263"/>
         <source>Manage settings</source>
         <translation>Gstione delle impostazioni</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="637"/>
+        <location filename="../../App/Widget/View.py" line="643"/>
         <source>Error inserting row</source>
         <translation>Errore nell&apos;inserimento della riga</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="656"/>
+        <location filename="../../App/Widget/View.py" line="662"/>
         <source>delete the selected row?</source>
         <translation>Cancello la riga selezionata ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="665"/>
+        <location filename="../../App/Widget/View.py" line="671"/>
         <source>Error deleting row</source>
         <translation>Errore nel cancellare la riga</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="220"/>
-        <location filename="../../App/Widget/View.py" line="680"/>
+        <location filename="../../App/Statistics.py" line="221"/>
+        <location filename="../../App/Widget/View.py" line="686"/>
         <source>Select file name and path</source>
         <translation>Seleziona il nome del file ed il percorso</translation>
     </message>
     <message>
-        <location filename="../../App/Statistics.py" line="222"/>
-        <location filename="../../App/Widget/View.py" line="682"/>
+        <location filename="../../App/Statistics.py" line="223"/>
+        <location filename="../../App/Widget/View.py" line="688"/>
         <source>Comma separated values (*.csv);;All files (*.*)</source>
         <translation>Valori separati da virgole (*.csv);; Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="709"/>
+        <location filename="../../App/Widget/View.py" line="715"/>
         <source>HIDDEN TEXT</source>
         <translation>TESTO NASCOSTO</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="722"/>
+        <location filename="../../App/Widget/View.py" line="728"/>
         <source>Unable to write to filename: {}
 Error: {}</source>
         <translation>Non è possibile scrivere sul file: {} Errore: {}</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="743"/>
+        <location filename="../../App/Widget/View.py" line="749"/>
         <source>BINARY DATA</source>
         <translation>DATI BINARY</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="731"/>
+        <location filename="../../App/Widget/View.py" line="737"/>
         <source>Export data completed.
 Open the generated file?</source>
         <translation>Esportazione dei dati completata.
 Apro il file generato ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="450"/>
+        <location filename="../../App/Widget/View.py" line="456"/>
         <source>Layout customization saved</source>
         <translation>Personalizzazione del layout salvata</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="459"/>
+        <location filename="../../App/Widget/View.py" line="465"/>
         <source>New layout customization</source>
         <translation>Nuova personalizzazione del layout</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="460"/>
+        <location filename="../../App/Widget/View.py" line="466"/>
         <source>Insert new customization description</source>
         <translation>Inserire la descrizione della nuova personalizzazione</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="498"/>
+        <location filename="../../App/Widget/View.py" line="504"/>
         <source>System layout cannot be deleted</source>
         <translation>Il layout di sistema non può essere cancellato</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="504"/>
+        <location filename="../../App/Widget/View.py" line="510"/>
         <source>Are you sure you want to delete the current layout?</source>
         <translation>Sei sicuro di voler camcellare il layout corrente ?</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="518"/>
+        <location filename="../../App/Widget/View.py" line="524"/>
         <source>Current layout deleted</source>
         <translation>Layout corrente cancellato</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="530"/>
-        <location filename="../../App/Widget/View.py" line="556"/>
+        <location filename="../../App/Widget/View.py" line="536"/>
+        <location filename="../../App/Widget/View.py" line="562"/>
         <source>No configuration has been set</source>
         <translation>Non è stata impostata nessuna configurazione</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="544"/>
+        <location filename="../../App/Widget/View.py" line="550"/>
         <source>Current layout set as user default</source>
         <translation>Il layout corrente è stato impostato come predefinito per l&apos;utente</translation>
     </message>
     <message>
-        <location filename="../../App/Widget/View.py" line="569"/>
+        <location filename="../../App/Widget/View.py" line="575"/>
         <source>Current layout set as class default</source>
         <translation>Il layout corrente è stato impostato come predefinito per la classe</translation>
     </message>
@@ -8961,7 +8961,7 @@ Apro il file generato ?</translation>
 <context>
     <name>view</name>
     <message>
-        <location filename="../../App/Widget/View.py" line="415"/>
+        <location filename="../../App/Widget/View.py" line="421"/>
         <source>View settings</source>
         <translation>Impostazioni della vista</translation>
     </message>

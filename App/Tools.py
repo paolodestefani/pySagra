@@ -140,7 +140,7 @@ class EventToolDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_EventToolDialog()
         self.ui.setupUi(self)
-        addHelpAction(self, "help/event_tool.html")
+        addHelpAction(self, "help/event_tool_dialog.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
         for i, u in ((0, _tr('Tools', 'Delete Orders')),
@@ -228,7 +228,7 @@ class DeleteToolDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_DeleteToolDialog()
         self.ui.setupUi(self)
-        addHelpAction(self, "help/delete_tool.html")
+        addHelpAction(self, "help/delete_tool_dialog.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
         self.ui.groupBoxWarning.setTitle(_tr('Tools', 'Warning'))
@@ -286,7 +286,7 @@ class CopyToolDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_CopyToolDialog()
         self.ui.setupUi(self)
-        addHelpAction(self, "help/copy_tool.html")
+        addHelpAction(self, "help/copy_tool_dialog.html")
         self.setWindowTitle(title)
         self.ui.labelIcon.setPixmap(icon.pixmap(128))
         for i, d in company_list():

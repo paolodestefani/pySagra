@@ -412,7 +412,7 @@ class ChangePasswordDialog(QDialog):
         self.ui.lineEditUser.setText(user)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         # help button and help key
-        addHelpAction(self, "help/change_password.html")
+        addHelpAction(self, "help/change_password_dialog.html")
 
     def accept(self) -> None:
         "Save new password"

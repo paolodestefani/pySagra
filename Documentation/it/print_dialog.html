@@ -1,0 +1,78 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Stampa</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h1>Stampa</h1>
+    <p>La finestra di stampa &egrave; la stessa per tutti i report: archivi, ordini, statistiche.</p>
+     <p>Le impostazioni di stampa da utilizzare vengono selezionate nella casella presente sotto i pusanti. 
+     Nell'esempio <i>Dettaglio</i> &egrave; la configurazione di stampa attiva.</p>
+    <p><img src="img/print.png" /></p>
+    <p>Sono presenti quattro pulsanti per lanciare la stampa sui diversi dispositivi.</p>
+<table valign="middle">
+	<tr>
+    	<th align="left">Pulsante</th>
+    	<th align="left">Funzione</th>
+    	<th align="left">Note</th>
+  	</tr>
+	<tr>
+		<td><img src="img/print_preview.png"/></td>
+		<td><i>Anteprima di stampa</i></td>
+		<td>Visualizza l'anteprima a video della stampa richiesta</td>
+	</tr>
+	<tr>
+		<td><img src="img/print_print.png"/></td>
+		<td><i>Stampa con richiesta stampante</i></td>
+		<td>Stampa il report direttamente su stampante richiedendo il dispositivo da utilizzare</td>
+	</tr>
+	<tr>
+		<td><img src="img/print_direct.png"/></td>
+		<td><i>Stampa immediata</i></td>
+		<td>Lancia la stampa direttamente sul dispositivo indicato in <i>Opzioni</i> &rarr; <i>Stampa immediata su</i></td>
+	</tr>
+	<tr>
+		<td><img src="img/print_pdf.png"/></td>
+		<td><i>Esporta su PDF</i></td>
+		<td>Crea un file PDF per il report selezionato in base ai parametri presenti in <i>Opzioni</i> &rarr; <i>Esporta su file PDF</i></td>
+	</tr>
+</table>
+    <p>La finestra presenta sempre quattro schede:</p>
+    <ul>
+    	<li><i>Parametri</i>: Vengono presentati specifici parametri richiesti dal report selezionato</li>
+    	<li><i>Filtri</i>: Permette di filtrare i dati da considerare nella stampa</li>
+    	<li><i>Opzioni</i>: Permette di impostare alcune opzioni sulla scelta stampante, export PDF, configurazione predefinita</li>
+    	<li><i>Personalizza</i>: Permette di creare e modificare le configurazioni delle stampe</li>
+    </ul>
+    <p>La scheda <i>Parametri</i> viene disabilitata se il report selezionato non richiede parametri.</p>
+    <p>La scheda <i>Personalizza</i> &egrave; visibile e disponibile solo per gli utenti che possono modificare report.</p>
+    <h2>Opzioni</h2>
+    <p><img src="img/print_options.png"/></p>
+    <p>La scheda consente di impostare i seguenti parametri:</p>
+    <ul>
+    	<li>stampante per la stampa immediata, indicata in <i>Stampa immediata su</i></li>
+    	<li>impostare la configurazione corrente come predefinita per l'utente cliccando su <i>Imposta come predefinita</i>. La configurazione predefinita viene proposta automaticamente all'apertura della finestra di stampa</li>
+    	<li>impostare i parametri per la generazione del file PDF: directory, nome file, versione del formato PDF, risoluzione, apertura dopo creazione. La risoluzione predefinita di 100 dpi dovrebbe essere corretta in tutte le situazioni e sistemi operativi. Se si verifica che la pagina &egrave; troppo piccola o troppo grande rispetto al contenuto &egrave; possibile modificare questo parametro. Normalmente in Windows la risoluzione da utilizzare &egrave; 96 dpi mentre in MacOS &egrave; 72 dpi</li>
+    </ul>
+    <h2>Personalizza</h2>
+    <p><img src="img/print_customize.png"/></p>
+    <p>La scheda consente di creare, modificare e cancellare configurazioni di stampa usate di frequente.</p>
+    <p>Nel riquadro <i>Personalizzazione corrente</i> sono disponibili le seguenti azioni:</p>
+    <ul>
+    	<li><i>Aggiorna</i>: memorizza le impostazioni presenti in <i>Parametri</i> e <i>Filtri</i> sulla configurazione corrente</li>
+    	<li><i>Cancella</i>: elimina la configurazione corrente</li>
+    	<li><i>Imposta come predefinita per la classe</i>: la configurazione predefinita per la classe viene proposta automaticamente all'apertura della finestra se non esiste una configurazione predefinita per utente</li>
+    	<li><i>Imposta ordinamento a</i>: determina l'ordine delle configurazioni presenti nella casella di selezione in base all'indice indicato</li>
+    </ul>
+    <p>Per creare una nuova configurazione di stampa &egrave; necessario:</p>
+    <ul>
+    	<li>Selezionare il report da utilizzare in <i>Metodo di stampa / Classe del report / Report</i></li>
+    	<li>Indicare il nome in <i>Nuova personalizzazione</i></li>
+    	<li>Cliccare su <i>Crea</i>, la nuova personalizzazione viene selezionata ed attivata automaticamente</li>
+    	<li>impostare i <i>Parametri</i> e <i>Filtri</i> necessari</li>
+    	<li>clliccare su <i>Personalizzazione corrente</i> &rarr; <i>Aggiorna</i></li>
+    </ul>
+    <p>La finestra funziona allo stesso modo sia per report <i>Driver</i> che per report <i>Esc/Pos</i>.</p>
+     <br>
+    <p><a class="top" href="#top" title="top">Inizio pagina</a></p>
+  </body>
+</html>

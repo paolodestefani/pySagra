@@ -84,7 +84,7 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)        
-        addHelpAction(self, "help/settings.html")
+        addHelpAction(self, "help/settings_dialog.html")
         self.setWindowTitle(title)
         self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Cancel).setDefault(True)
         self.ui.labelIcon.setPixmap(icon.pixmap(100))

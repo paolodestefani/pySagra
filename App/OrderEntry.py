@@ -328,7 +328,7 @@ class BaseOrderDialog(QDialog):
         self.addAction(sfb)
 
         # help page of the dialog, with the standard help key (F1, Cmd+? on macOS)
-        addHelpAction(self, "help/order_entry.html")
+        addHelpAction(self, "help/order_entry_dialog.html")
         
         # system status clock
         timer = QTimer(self)
