@@ -329,7 +329,7 @@ class UserCompanyModel(TableModel):
         self.table = "system.app_user_company"
         # model columns: (field, description, readonly, type), tuple of tuples
         # available types: int, bool, decimal, str, date, datetime, None = no filter
-        self.columns = (("company_id", _tr('Models', 'Company ID'), False, 'int'),
+        self.columns = (("company_id", _tr('Models', 'Company'), False, 'int'),
                         ("app_user_code", _tr('Models', 'User'), False, 'str'),
                         ("profile_code", _tr('Models', 'Profile'), False, 'str'),
                         ("menu_code", _tr('Models', 'Menu'), False, 'str'),

@@ -1,0 +1,50 @@
+<html lang="it">
+  <head>
+    <title>pySagra - Architettura</title>
+  </head>
+  <body style="font-family: Arial, Sans-Serif;">
+    <h2 id="framework">Architettura dell'applicazione</h2>
+<p>Questo programma &egrave; stato sviluppato avendo in mente
+alcuni specifici obiettivi:</p>
+<ul>
+    <li>Realizzare un applicazione con interfaccia grafica e basata su
+ un database server SQL</li>
+ <li>Realizzare un applicazione multiutente con architettura
+client/server</li>
+<li>L'applicazione deve essere multipiattaforma e disponibile
+a basso/nessun costo a chiunque la richieda</li>
+</ul>
+<p>Per la realizzazione di questo applicativo in base alle premesse
+precedenti sono stati scelti questi strumenti:</p>
+<ul>
+    <li>il linguaggio di programmazione <a href="https://www.python.org/">Python</a>
+nella versione 3.14</li>
+<li>le librerie <a href="https://www.qt.io/">Qt</a> in versione 6.x</li>
+<li>il binding alle librerie Qt <a href="https://doc.qt.io/qtforpython-6/">Qt for Python</a> in versione 6.x</li>
+<li>Il server di database <a href="https://www.postgresql.org">PostgreSQL</a> nella versione
+ 18.x o successiva</li>
+<li>Il connettore a PostgreSQL per Python <a href="https://www.psycopg.org/">Psycopg</a> nella versione
+3.3.x o successiva</li>
+<li>il set di icone predefinito &egrave; <a href="https://github.com/KDE/oxygen-icons">oxygen</a> 
+    ma sono disponibili anche altri iconpaks scaricati da 
+    <a href="https://www.iconarchive.com">Iconarchive</a></li>
+<li>l'icona di pySagra fa parte del DelliOS System Icons set
+di <a href="https://dellustrations.com">dellustrations.com</a></li>
+</ul>
+<p>Tutti gli strumenti elencati sono multipiattaforma e
+disponibili gratuitamente</p>
+<p>Il programma &egrave; un'<b>applicazione desktop</b> scritta in python conPySide6 per gestire l'interfaccia grafica e le stampe e utilizza la libreria psycopg per accedere al database PostgreSQL
+Il <b>server di database</b> deve essere installato precedentemente ed avere un database applicativo di 
+<i>pySagra</i> gi&agrave; installato.</p>
+<p>Ogni client accede al <b>database</b> creando un'unica connessione che rimane attiva fino alla chiusura del programma. 
+Ogni client dialoga direttamente con il database, non ci sono livelli software intermedi. Come conseguenza il controllo di concorrenza
+viene gestito direttamente dal server PostgreSQL.</p> 
+<p>Per le <b>stampe</b> &egrave; stato realizzato un motore di reportistica basato sulle librerie grafiche Qt che utilizza 
+la gestione delle stampanti del sistema operativo, i driver delle stampanti. A questo &egrave; stato affiancato
+in un secondo momento un motore di reportistica per stampare direttamente su dispositivi Esc/Pos che sono le 
+stampanti termiche pi&ugrave; comuni per realizzare scontrini ed etichette. Entrambi i metodi di stampa permettono 
+di generare anche anteprime a video ed export in formato PDF.</p>
+<p>E' gestito un elenco degli <b>utenti</b> applicativi e relative password per l'accesso alla procedura. Gli utenti possono avere accesso solo a specifiche aziende e per ogni azienda pu&ograve; essere associato un profilo diverso. Tramite i <b>profili</b> si definiscono i permessi di accesso alle singole funzioni del programma.</p>
+<p><a class="top" href="#top" title="top">Inizio pagina</a></p>
+  </body>
+</html>

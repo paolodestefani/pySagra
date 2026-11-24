@@ -30,13 +30,14 @@
     	<li><i>pyagra</i> &egrave; un database praticamente vuoto, contiene solo la struttura del database, gli utenti di base, un'azienda per accedere, report ed altre personalizzazioni</li>
     	<li><i>pysagra_demo</i> invece contiene oltre a quanto già presente nel db di base precedente due aziende con esempio di configurazioni, anagrafiche articoli, ordini inseriti, ecc.</li>
     </ul>
-    <p>I database elencati sono in formato <i>backup</i> utilizzabile per il ripristino tramite pg_restore ed in formato sql utilizzabile per il ripristino tramite psql. Quest'ultimo dovrebbe permettere l'installazione anche in versioni precedenti alla 18.x di PostgreSQL. Questi database presuppongono che esistano gi&agrave; due ruoli specifici:</p>
+    <p>I database elencati sono in formato <i>backup</i> (versione 18.7 di PostgreSQL) utilizzabile per il ripristino tramite pg_restore o <a href="https://www.pgadmin.org/">pgadmin4</a> ed in formato sql utilizzabile per il ripristino tramite psql. Quest'ultimo dovrebbe permettere l'installazione anche in versioni precedenti alla 18.x di PostgreSQL. Questi database presuppongono che esistano gi&agrave; due ruoli specifici:</p>
     <ul>
     	<li><i>pa_owner_role</i> &egrave; il ruolo che viene utilizzato come proprietario di tutti gli oggetti del database</li>
     	<li><i>pa_login_role</i> &egrave; il ruolo che viene utilizzato per l'accesso al database, eredita i permessi di <i>pa_owner_role</i></li>
     </ul>
-    <p>All'interno della cartella degli script sql sono disponibili gli script da utilizzare per creare questi ruoli.</p>
-    <p>E' possibile crearsi un database applicativo da zero utilizzando gli script sql forniti e sostituendo ai parametri seguenti una valore corretto:</p>
+    <p>All'interno della cartella degli script sql &egrave; disponibile lo script da utilizzare per creare questi ruoli:</p>
+    <pre>ScriptSql/10 Create Database/10 Database Roles.sql</pre>
+    <p>Per utilizzare gli script forniti &egrave; necessario sostituire i parametri seguenti con una valore corretto:</p>
     <table valign="middle">
 		<tr>
     		<th align="left">Parametro</th>
@@ -113,7 +114,8 @@
 			<td>pg_default</td>
 		</tr>
 	</table>
-	<p>Nella colonna <i>Valore</i> sono riportati i valori per la versione di pySagra 1.0.0. Non tutti i parametri vengono utilizzati su tutti gli script.</p>
+	<p>Nella colonna <i>Valore</i> sono riportati i valori per la versione 1.0.0 di pySagra. Non tutti i parametri vengono utilizzati su tutti gli script.</p>
+	<p>Gli script completi si possono utilizzare per creare un nuovo database vuoto di <i>pySagra</i>.</p>
 	<p>La versione del programma e del database devono coincidere nei rispettivi numeri major e minor.
 	Ad esempio se il programma è in versione 1.0.23 funzioner&agrave; con database in versione 1.0.x 
 	dove x pu&ograve; assumere qualunque valore.</p>

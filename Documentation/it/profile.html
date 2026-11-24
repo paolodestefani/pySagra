@@ -4,17 +4,27 @@
   </head>
   <body style="font-family: Arial, Sans-Serif;">
     <h1>Profili utente</h1>
-    <p>Un profilo &egrave; un insieme di diritti sulle funzioni del programma; a ogni utente, per ogni azienda, si assegna un profilo.</p>
+    <p>Un profilo &egrave; un insieme di diritti sulle funzioni del programma; a ogni utente e per ogni azienda, si assegna un profilo specifico.</p>
     <p><img src="img/profile.png" /></p>
+    <p>Significato dei campi:</p>
     <ul>
-      <li><i>Codice</i> e <i>Descrizione</i>.</li>
-      <li><i>Profilo di sistema</i>: un profilo del programma, che non si pu&ograve; modificare n&eacute; cancellare.
-      Per cambiarlo se ne fa una copia con <i>Duplica</i>.</li>
-      <li><i>Azioni</i>: per ogni funzione del programma, i diritti di <i>Lettura</i>, <i>Scrittura</i> ed <i>Esecuzione</i>.
-      Lettura apre gli archivi, scrittura permette di modificarli, esecuzione serve per le funzioni come l'inserimento ordini
-      o gli strumenti.</li>
-      <li><i>Compila azioni</i>: aggiunge le funzioni che mancano nel profilo, con tutti i diritti; <i>Imposta tutte le azioni a</i> d&agrave; a tutte
-      gli stessi diritti, da correggere poi una per una.</li>
+      <li><i>Codice</i>: codice alfanumerico del profilo, si assegna alla creazione e non pu&ograve; essere modificato.</li>
+      <li><i>Descrizione</i>: descrizione del profilo, sempre modificabile.</li>
+      <li><i>Profilo di sistema</i>: se spuntata il profilo non si pu&ograve; modificare n&eacute; cancellare.</li>
+      <li><i>Azione</i>: identifica una funzione del programma alla quale assegnare dei diritti.</li>
+      <li><i>Lettura</i>: consente di visualizzare un archivio con accesso in sola lettura.</li>
+      <li><i>Scrittura</i>: consente di modificare un archivio con accesso in lettura e scrittura.</li>
+      <li><i>Esecuzione</i>: consente di eseguire operazioni es. inserire ordini, modificare parametri, eseguire gli strumenti, non riguarda gli archivi ma le operazioni che si possono svolgere all'interno del programma.</li>
     </ul>
+    <p>I tasti a sinistra:</p>
+    <ul>  
+      <li><i>Compila azioni</i>: aggiunge le azioni che mancano nel profilo.</li>
+      <li><i>Imposta tutte le azioni a</i>: assegna a tutte le azioni gli stessi diritti di lettura o scrittura o esecuzione.</li>
+      <li><i>Duplica</i>: consente di creare un nuovo profilo duplicandone uno esistente.</li>
+    </ul>
+  <p>Per creare un nuovo profilo conviene compilare tutte le azioni, impostarle ad un valore predefinito di lettura e quindi modificare quelle che richiedono un permesso diverso. Se un'azione non &egrave; valorizzata non ha nessun diritto, &grave; equivalente a non spuntare tutti e tre i permessi di lettura/scrittura/esecuzione.</p>
+  <p>Se serve modificare un profilo di sistema &egrave; necessario farne una copia con il <i>Duplica</i> e poi modificarlo.</p>
+  <br>
+	<p><a class="top" href="#top" title="top">Inizio pagina</a></p>
   </body>
 </html>

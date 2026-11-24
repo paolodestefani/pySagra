@@ -5,14 +5,14 @@
   <body style="font-family: Arial, Sans-Serif;">
     <h1>Connessioni</h1>
     <h2 id="connection">Connessioni attive</h2>
-    <p>Visualizza gli utenti collegati in questo momento: chi, da quale computer, da quando, in quale azienda e con quale profilo.</p>
+    <p>In questa scheda vengono visualizzati gli utenti attualmente collegati: chi, da quale computer, da quando, in quale azienda e con quale profilo.</p>
     <p><img src="img/connection.png" /></p>
-    <p>Il tasto <i>Termina il client</i> chiude, dopo conferma, la connessione scelta, per esempio di un programma rimasto aperto su un computer spento; la propria
-    connessione non si pu&ograve; chiudere.</p>
+    <p>Il tasto <i>Termina il client</i> chiude, dopo conferma, la connessione selezionata, per forzare l'uscita di un utente. La propria
+    connessione non si pu&ograve; chiudere. Le connessioni orfane ovvero record che non fanno riferimento a connessioni attive, ad esempio perch&egrave; un PC &egrave; stato spento senza uscire dall'applicazione, vengono pulite ad ogni accesso di un nuovo client automaticamente.</p>
     <h2 id="connection_history">Storico delle connessioni</h2>
-    <p>Visualizza l'elenco degli accessi passati conclusi, ovvero con data di accesso e uscita, con le stesse informazioni della lista precedente con in pi&ugrave; la data e ora di logout.</p>
+    <p>Visualizza l'elenco degli accessi passati conclusi, ovvero con data di accesso e uscita valorizzate, con le stesse informazioni della lista precedente con in pi&ugrave; la data e ora di uscita.</p>
     <p><img src="img/connection_history.png" /></p>
-    <p>Per non farlo crescere troppo sono previste queste funzioni:</p>
+    <p>Per non far crescere troppo il numero di record sono previste queste funzioni:</p>
     <ul>
       <li><i>Cancella record pi&ugrave; vecchi</i>: elimina gli accessi pi&ugrave; vecchi di un numero di giorni che viene richiesto successivamante.</li>
       <li><i>Cancella tutti i record</i>: svuota lo storico, viene chiesta la conferma prima di procedere.</li>
@@ -20,6 +20,8 @@
       <li><i>giorni</i>: imposta il numero di giorni, rispetto alla data di accesso, da utiizzare per determinare se i record sono da cancellare.</li>
       <li><i>Aggiorna impostazioni</i>: Aggiorna i parametri per la pulizia automatica.</li>
     </ul>
-    <p>Se viene attivata la cancellazione automatica l'operazione scatta ad ogni accesso di qualunque client e utente in base ai parametri indicati.</p>
+    <p>Se viene attivata la cancellazione automatica l'operazione scatta ad ogni accesso di qualunque client e cancella i record con un numero di giorni tra la data attuale e la data di uscita maggiore di quello indicato.</p>
+    <br>
+<p><a class="top" href="#top" title="top">Inizio pagina</a></p>
   </body>
 </html>

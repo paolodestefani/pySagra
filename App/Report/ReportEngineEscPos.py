@@ -898,7 +898,7 @@ def _default_style() -> dict:
 class DummyDevice(Dummy):
     "Dummy that records styled operations for a graphical/textual preview"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.width = self.profile.profile_data['fonts'].get('0')['columns']
         self.ops: list[tuple] = []
