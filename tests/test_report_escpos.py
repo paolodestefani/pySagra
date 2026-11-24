@@ -75,6 +75,77 @@ class DefinitionTest(EngineTestCase):
         self.assertIn('Cover', self.text(report))
 
 
+class TextStyleTest(EngineTestCase):
+    "Bytes sent to the printer, the preview does not show a missing reset"
+
+    def output(self, *labels: str) -> bytes:
+        rows = ''.join(f'<row>{label}</row>' for label in labels)
+        return self.run_report(xml(f'<details><band>{rows}</band></details>'), [('a', 1)]).buffer.output
+
+    def printer_state(self, output: bytes) -> dict:
+        "Style of the printer at the first character of each word, following the commands"
+        size = font = bold = underline = 0
+        states, i = {}, 0
+        while i < len(output):
+            match output[i:i + 2]:
+                case b'\x1b!':     # print mode: font, bold, size and underline together
+                    n = output[i + 2]
+                    font, bold, size, underline = n & 1, bool(n & 8), n & 0x30, bool(n & 0x80)
+                    i += 3
+                case b'\x1bE':
+                    bold = bool(output[i + 2]); i += 3
+                case b'\x1b-':
+                    underline = bool(output[i + 2]); i += 3
+                case b'\x1bM':
+                    font = output[i + 2]; i += 3
+                case c if c[:1] in (b'\x1b', b'\x1d'):
+                    i += 3
+                case _:
+                    if output[i:i + 1].isalpha() and not output[i - 1:i].isalpha():
+                        word = output[i:].split()[0].decode()
+                        states[word] = (size, font, bool(bold), bool(underline))
+                        i += len(word)
+                    else:
+                        i += 1
+        return states
+
+    def test_size_goes_back_to_normal(self) -> None:
+        for size, code in (('double_width', 0x20), ('double_height', 0x10)):
+            with self.subTest(size=size):
+                states = self.printer_state(self.output(f'<label width="10" {size}="true">BIG</label>',
+                                                        '<label width="10">small</label>'))
+                self.assertEqual(states, {'BIG': (code, 0, False, False), 'small': (0, 0, False, False)})
+
+    def test_both_sizes_together_and_one_after_the_other(self) -> None:
+        states = self.printer_state(self.output(
+            '<label width="10" double_width="true" double_height="true">BOTH</label>',
+            '<label width="10" double_height="true">HIGH</label>',
+            '<label width="10" double_width="true">WIDE</label>'))
+        self.assertEqual([s[0] for s in states.values()], [0x30, 0x10, 0x20])
+
+    def test_size_change_keeps_font_bold_and_underline(self) -> None:
+        style = 'width="10" font="b" bold="true" underline="1"'
+        states = self.printer_state(self.output(f'<label {style}>one</label>',
+                                                f'<label {style} double_height="true">two</label>',
+                                                f'<label {style}>three</label>'))
+        self.assertEqual(states, {'one': (0, 1, True, True), 'two': (0x10, 1, True, True),
+                                  'three': (0, 1, True, True)})
+
+
+class OmittedFieldTest(EngineTestCase):
+
+    def test_columns_stay_in_place(self) -> None:
+        "Empty, invisible and suppressed fields keep their width, on wrapped lines too"
+        for attribute, value in (('', None), (' is_visible="false"', 'x')):
+            with self.subTest(attribute=attribute):
+                report = self.run_report(xml('<details><band><row><field width="10">a</field>'
+                                             f'<field width="10"{attribute}>b</field>'
+                                             '<field width="10">c</field></row></band></details>', ('a', 'b', 'c')),
+                                         [('one two three', value, 'four five six')])
+                self.assertEqual(self.text(report).split('\n')[:2],
+                                 ['one two' + ' ' * 13 + 'four five ', 'three' + ' ' * 15 + 'six       '])
+
+
 class GenerationTest(EngineTestCase):
 
     def test_sort_reverse_false_is_ascending(self) -> None:

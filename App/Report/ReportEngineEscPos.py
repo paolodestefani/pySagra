@@ -764,7 +764,7 @@ class Row(list):
             if element.is_visible:         
                 lines = textwrap.wrap(element.render(), width=element.width)
             else:
-                lines = [""] #[' ' * element.width]
+                lines = [""]
             if not lines:
                 lines = [""]
             text_columns.append(lines)
@@ -1253,12 +1253,18 @@ class ReportEscpos():
         "Set text properties only if different from current value"
         if not self.buffer:
             return
+        # the size goes first, in one command that always starts from the normal size: the library
+        # sends nothing for double_height=False or double_width=False alone
+        current = self._current_text_property
+        if (current.get('double_height'), current.get('double_width')) != (double_height, double_width):
+            self.buffer.set(normal_textsize=True, double_height=double_height, double_width=double_width)
+            current.update(double_height=double_height, double_width=double_width)
+            # the command (ESC !) resets these too: forget them, so they are sent again
+            for p in ('font', 'bold', 'underline'):
+                current.pop(p, None)
         for p, v in (('font', font),
                      ('bold', bold),
                      ('underline', underline),
-                     ('normal_textsize', normal_textsize),
-                     ('double_height', double_height),
-                     ('double_width', double_width),
                      ('density', density),
                      ('invert', invert),
                      ('flip', flip),
@@ -1271,12 +1277,6 @@ class ReportEscpos():
                         self.buffer.set(bold=v)
                     case 'underline':
                         self.buffer.set(underline=v)
-                    case 'normal_textsize':
-                        self.buffer.set(normal_textsize=v)
-                    case 'double_height':
-                        self.buffer.set(double_height=v)
-                    case 'double_width':
-                        self.buffer.set(double_width=v)
                     case 'density':
                         self.buffer.set(density=v)
                     case 'invert':
