@@ -23,6 +23,7 @@ from App.Database.AbstractModels import TreeModel as T
 from App.Database.Exceptions import PyAppDBConcurrencyError
 from App.Database.Exceptions import PyAppDBError
 from App.Database.Models import MenuItemTreeModel
+from App.Database.Models import ToolbarItemTreeModel
 
 
 app = QApplication.instance() or QApplication([])
@@ -168,6 +169,46 @@ class TreeModelTest(unittest.TestCase):
         with self.assertRaises(PyAppDBError):
             self.submit(model, cursor)
         self.assertFalse([s for s, _ in cursor.statements if s.startswith('INSERT')])
+
+
+class ToolbarTreeModelTest(unittest.TestCase):
+
+    def test_two_levels_only(self) -> None:
+        model = ToolbarItemTreeModel()
+        model.rootItem = T.TreeItem({i: None for i in range(len(model.columns))})
+        self.assertTrue(model.insertRow(0))
+        toolbar = model.index(0, 0)
+        self.assertTrue(model.insertRow(0, toolbar))
+        item = model.index(0, 0, toolbar)
+        self.assertFalse(model.insertRow(0, item))
+        self.assertEqual(model.rowCount(item), 0)
+
+    def test_the_action_sets_the_type(self) -> None:
+        model = ToolbarItemTreeModel()
+        model.rootItem = T.TreeItem({i: None for i in range(len(model.columns))})
+        model.insertRow(0)
+        toolbar = model.index(0, 0)
+        model.insertRow(0, toolbar)
+        node_type, action = model.index(0, 4, toolbar), model.index(0, 5, toolbar)
+        model.setData(node_type, 'A')
+        model.setData(action, 'edit_counter')
+        self.assertEqual(node_type.data(), 'W')
+        self.assertFalse(model.flags(node_type) & Qt.ItemFlag.ItemIsEditable)
+        model.setData(action, 'edit_new')
+        self.assertEqual(node_type.data(), 'A')
+        self.assertTrue(model.flags(node_type) & Qt.ItemFlag.ItemIsEditable)
+        self.assertEqual(model.index(0, 4).data(), None)    # the toolbar is not touched
+
+    def test_only_the_items_have_an_action(self) -> None:
+        model = ToolbarItemTreeModel()
+        model.rootItem = T.TreeItem({i: None for i in range(len(model.columns))})
+        model.insertRow(0)
+        toolbar = model.index(0, 0)
+        model.insertRow(0, toolbar)
+        editable = lambda index: bool(model.flags(index) & Qt.ItemFlag.ItemIsEditable)
+        self.assertFalse(editable(model.index(0, 5)))
+        self.assertTrue(editable(model.index(0, 5, toolbar)))
+        self.assertTrue(editable(model.index(0, 2)))
 
 
 if __name__ == '__main__':

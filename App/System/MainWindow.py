@@ -65,6 +65,7 @@ from PySide6.QtWidgets import QTabWidget
 from App import session
 from App import actionDefinition
 from App import currentAction
+from App import WIDGET_ACTIONS
 from App import currentIcon
 from App import APPNAME
 from App.Common.L10n import _tr
@@ -111,10 +112,10 @@ def createActions(mainWindow: MainWindow) -> None:
         for act, read, write, execute in get_actions(): # base
             if act not in actionDefinition:
                 continue
-            if act == 'edit_counter':
-                # widgetAction for record counter current
+            if act in WIDGET_ACTIONS:
+                # widgetAction, as the record counter
                 action = QWidgetAction(mainWindow)
-                action.setDefaultWidget(mainWindow.counter)
+                action.setDefaultWidget(getattr(mainWindow, WIDGET_ACTIONS[act]))
             else:
                 # regular action for anything else
                 action = QAction(actionDefinition[act][adf.DESC], mainWindow)  # description

@@ -35,8 +35,11 @@ import logging
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QItemSelectionModel
 from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QPersistentModelIndex
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QComboBox
+from PySide6.QtWidgets import QStyleOptionViewItem
 from PySide6.QtWidgets import QMessageBox
 
 
@@ -71,12 +74,24 @@ class tbt(IntEnum):
     NODETYPE        = 4
     ACTION          = 5
 
-# node types: A=action, S=Separator, M=menu
+# node types: T=toolbar (first level), A=action, S=Separator and W=widget (second level)
 def nodeType() -> list:
     return [('T', _tr('Toolbar', 'Toolbar')),
             ('A', _tr('Toolbar', 'Action')),
-            ('S', _tr('Toolbar', 'Separator'))]
-    
+            ('S', _tr('Toolbar', 'Separator')),
+            ('W', _tr('Toolbar', 'Widget'))]
+
+
+class NodeTypeDelegate(RelationDelegate):
+    "Offers only the node types of the level of the item, a widget is set by its action"
+
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem,
+                     index: QModelIndex | QPersistentModelIndex) -> QComboBox:
+        cb = super().createEditor(parent, option, index)
+        for code in (('T', 'W') if index.parent().isValid() else ('A', 'S', 'W')):
+            cb.removeItem(cb.findData(code))
+        return cb
+
 
 def toolbar(action: QAction, checked: bool = False) -> None:
     "Show/Edit toolbars"
@@ -135,19 +150,28 @@ class ToolbarForm(FormIndexManager):
         self.ui.treeViewMenuItems.setModel(treeModel)
         self.ui.treeViewMenuItems.setLayoutName('ToolbarItems')
         self.ui.treeViewMenuItems.setItemDelegate(GenericDelegate(self))
-        self.ui.treeViewMenuItems.setItemDelegateForColumn(tbt.NODETYPE, RelationDelegate(self, nodeType))
+        self.ui.treeViewMenuItems.setItemDelegateForColumn(tbt.NODETYPE, NodeTypeDelegate(self, nodeType))
         self.ui.treeViewMenuItems.setItemDelegateForColumn(tbt.ACTION, ActionDelegate(self))
         # signal/slot
         self.ui.pushButtonAddChild.clicked.connect(self.addChild)
         self.ui.pushButtonAdd.clicked.connect(self.add)
         self.ui.pushButtonRemove.clicked.connect(self.remove)
+        self.ui.treeViewMenuItems.selectionModel().currentChanged.connect(self._updateAddChild)
+        treeModel.modelReset.connect(self._updateAddChild)
+
+    def _updateAddChild(self) -> None:
+        "Only a toolbar, at the first level, can have subitems"
+        index = self.ui.treeViewMenuItems.selectionModel().currentIndex()
+        self.ui.pushButtonAddChild.setEnabled(self.ui.treeViewMenuItems.model().isEditable
+                                              and index.isValid() and not index.parent().isValid())
 
     def addChild(self) -> None:
-        "Add an item under the current one, as its first child"
+        "Add an item to the current toolbar, as its first one"
         view = self.ui.treeViewMenuItems
         index = view.selectionModel().currentIndex()
-        if index.isValid():
-            index = index.sibling(index.row(), 0)
+        if not index.isValid() or index.parent().isValid():
+            return
+        index = index.sibling(index.row(), 0)
         self._insertItem(0, index)
         view.expand(index)
 
@@ -169,7 +193,7 @@ class ToolbarForm(FormIndexManager):
             return
         previous = model.index(row - 1, tbt.SORTING, parent).data() if row > 0 else 0
         model.setData(model.index(row, tbt.SORTING, parent), (previous or 0) + 1)
-        model.setData(model.index(row, tbt.NODETYPE, parent), 'T')
+        model.setData(model.index(row, tbt.NODETYPE, parent), 'A' if parent.isValid() else 'T')
         child = model.index(row, tbt.CHILD, parent)
         self.ui.treeViewMenuItems.selectionModel().setCurrentIndex(child, QItemSelectionModel.SelectionFlag.ClearAndSelect)
         self.ui.treeViewMenuItems.edit(child)
@@ -202,8 +226,9 @@ class ToolbarForm(FormIndexManager):
         self.ui.lineEditCode.setReadOnly(system)
         self.ui.lineEditDescription.setReadOnly(system)
         self.ui.treeViewMenuItems.model().isEditable = not system
-        for button in (self.ui.pushButtonAddChild, self.ui.pushButtonAdd, self.ui.pushButtonRemove):
+        for button in (self.ui.pushButtonAdd, self.ui.pushButtonRemove):
             button.setEnabled(not system)
+        self._updateAddChild()
 
     def delete(self) -> None:
         "Delete current toolbar"

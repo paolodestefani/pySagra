@@ -60,5 +60,7 @@ session: dict[str, Any] = dict()  # database and application user parameters
 # dictionary for definition, current in use actions and icons
 actionDefinition: dict[str, tuple] = dict()
 currentAction: dict[str, QAction] = dict()
+# actions that show a widget in the toolbar: action code and widget attribute of the main window
+WIDGET_ACTIONS: dict[str, str] = {'edit_counter': 'counter'}
 currentProfile: dict[str, str] = dict() # authorizations for current profile
 currentIcon: defaultdict = defaultdict(QIcon)  # provide an invalid QIcon when an icon is not available

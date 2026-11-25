@@ -197,6 +197,6 @@ VALUES
 INSERT INTO menu_toolbar_item (parent, child, description, sorting, node_type, action_code) 
 VALUES
 -- full toolbars
-('tfqa', 'tfqaord', Null, 1, 'T', 'app_activity_order_entry'),
+('tfqa', 'tfqaord', Null, 1, 'A', 'app_activity_order_entry'),
 -- default toolbars
-('tdqa', 'tdqaord', Null, 1, 'T', 'app_activity_order_entry');
+('tdqa', 'tdqaord', Null, 1, 'A', 'app_activity_order_entry');

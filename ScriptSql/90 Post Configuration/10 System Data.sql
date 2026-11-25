@@ -240,7 +240,7 @@ VALUES
 ('tae', 'taes1', Null, 5, 'S', Null),
 ('tae', 'taefr', Null, 6, 'A', 'edit_first'),
 ('tae', 'taepr', Null, 7, 'A', 'edit_previous'),
-('tae', 'taect', Null, 8, 'A', 'edit_counter'),
+('tae', 'taect', Null, 8, 'W', 'edit_counter'),
 ('tae', 'taenx', Null, 9, 'A', 'edit_next'),
 ('tae', 'taels', Null, 10, 'A', 'edit_last'),
 ('tae', 'taes2', Null, 11, 'S', Null),

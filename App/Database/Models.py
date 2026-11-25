@@ -48,6 +48,7 @@ from App.Database.Lookup import event_lookup
 from App.Database.Lookup import item_salable_lookup
 from App.Database.Lookup import item_all_lookup
 from App.Common.L10n import _tr
+from App import WIDGET_ACTIONS
 
 
 UPDATED, INSERTED, DELETED = range(3)
@@ -109,6 +110,31 @@ class ToolbarItemTreeModel(TreeModel):
         self.childFieldColumn = 1
         self.addOrderBy('sorting')
         self.repr = 'Toolbar item tree model'
+
+    def insertRows(self, position: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
+        "Two levels only, the toolbars and their items: nothing goes under an item"
+        if parent.isValid() and parent.parent().isValid():
+            return False
+        return super().insertRows(position, count, parent)
+
+    def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
+        "A toolbar (first level) has no action, the type of a widget follows its action"
+        f = super().flags(index)
+        if index.isValid():
+            field = self.columns[index.column()][0]
+            if ((field == 'action_code' and not index.parent().isValid())
+                    or (field == 'node_type' and index.data(Qt.ItemDataRole.EditRole) == 'W')):
+                f &= ~Qt.ItemFlag.ItemIsEditable
+        return f
+
+    def setData(self, index: QModelIndex | QPersistentModelIndex, value: Any,
+                role: int = Qt.ItemDataRole.EditRole) -> bool:
+        "The action chosen sets the type: widget or action"
+        ok = super().setData(index, value, role)
+        if ok and value and self.columns[index.column()][0] == 'action_code':
+            super().setData(self.index(index.row(), self._fieldColumn('node_type'), index.parent()),
+                            'W' if value in WIDGET_ACTIONS else 'A', role)
+        return ok
 
 
 class ConnectionModel(QueryModel):
