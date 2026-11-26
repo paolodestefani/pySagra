@@ -159,8 +159,7 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
         self.ui.pushButtonChooseText.clicked.connect(self.chooseText)
         self.ui.pushButtonGenerateTables.clicked.connect(self.generateTableNumbers)
         self.ui.pushButtonDeleteAll.clicked.connect(self.deleteAll)
-        self.ui.pushButtonPreview.clicked.connect(self.showPreview)
-        self.ui.pushButtonEdit.clicked.connect(self.showEdit)
+        self.ui.pushButtonEditPreview.clicked.connect(self.toggleEditPreview)
         # scripting init
         self.script = scriptInit(self)
         #self.updateExample()
@@ -208,10 +207,14 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
     def reload(self) -> None:
         super().reload()
     
-    def showPreview(self, clicked: bool) -> None:
-        "Show/Hide preview of the tables/Buttons available in the model"
-        # switch to preview
+    def toggleEditPreview(self, checked: bool = False) -> None:
+        "Switch between editing the tables and their preview"
+        if self.ui.stackedWidget.currentIndex() == vw.PREVIEW:
+            self.ui.stackedWidget.setCurrentIndex(vw.EDIT)
+            self.ui.pushButtonEditPreview.setText(_tr('SeatMap', 'Preview'))
+            return
         self.ui.stackedWidget.setCurrentIndex(vw.PREVIEW)
+        self.ui.pushButtonEditPreview.setText(_tr('SeatMap', 'Edit'))
         # save geometry: settings read again, they may have changed since the form opened
         if self.write_perm:
             with gui_exception_context(self, _tr("SeatMap", "Save settings")):
@@ -258,9 +261,6 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                     w.setMinimumHeight(self.ui.spinBoxMinHeight.value())
                     w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
                     self.ui.gridLayoutPreview.addWidget(w, r, c)
-                    
-    def showEdit(self, clicked: bool)-> None:
-        self.ui.stackedWidget.setCurrentIndex(vw.EDIT)
         
     @scriptMethod
     def print(self) -> None:

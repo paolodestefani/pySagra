@@ -4,23 +4,32 @@
   </head>
   <body style="font-family: Arial, Sans-Serif;">
     <h1>Scripting python</h1>
-    <p>Piccoli programmi in Python che cambiano il comportamento delle schede senza modificare il programma: per esempio
-    un controllo in pi&ugrave; al salvataggio di un articolo.</p>
+    <p>E' possibile memorizzare nel database alcuni script in python che vengono eseguiti allo scattare di alcune condizioni. In questo modo &egrave; possibile cambiare il comportamento delle schede e finestre senza modificare il codice sorgente del programma. Ad esempio si pu&ograve; attivare un controllo in pi&ugrave; al salvataggio di un articolo.</p>
     <p><img src="img/scripting.png" /></p>
+    <p>Nell'esempio in figura vengono stampati dei messaggi in console (se disponibile) e viene aperta una MessageBox di informazioni <b>dopo</b> l'apertura dell'anagrafica delle casse solo se si &egrave; sull'azienda <i>Pro loco</i></p>
+    <p>Impostazioni dell'anagrafica degli script:</p>
     <ul>
-      <li><i>Classe</i>: la scheda o la finestra a cui si applica lo script.</li>
-      <li><i>Metodo</i>: l'operazione della scheda, per esempio salvataggio, cancellazione o nuovo; <i>__init__</i> &egrave;
-      l'apertura della scheda.</li>
+      <li><i>Classe</i>: la scheda o la finestra a cui si applica lo script</li>
+      <li><i>Metodo</i>: l'operazione della scheda, per esempio salvataggio, cancellazione o nuovo; <i>__init__</i> &egrave; l'apertura della scheda</li>
       <li><i>Scatta</i>: <i>Prima</i>, <i>Dopo</i> o <i>Al posto di</i> quell'operazione. Gli script di apertura
-      (<i>__init__</i>) vengono eseguiti solo con <i>Dopo</i>.</li>
-      <li><i>Azienda</i>: l'azienda in cui vale lo script.</li>
-      <li><i>Attivo</i>: solo gli script attivi vengono eseguiti. Lo si pu&ograve; cambiare anche senza diritto di scrittura,
-      per spegnere uno script che d&agrave; problemi.</li>
-      <li><i>Sistema</i>: uno script del programma, che non si pu&ograve; modificare n&eacute; cancellare.</li>
-      <li><i>Script python</i> e <i>Nota</i>: il codice e una sua descrizione. Nel codice <i>self</i> &egrave; la scheda e
-      <i>session</i> i dati della sessione.</li>
+      (<i>__init__</i>) vengono eseguiti solo con <i>Dopo</i></li>
+      <li><i>Azienda</i>: l'azienda in cui vale lo script</li>
+      <li><i>Attivo</i>: solo gli script attivi vengono eseguiti. Questo flag &egrave; modificabile anche senza diritto di scrittura</li>
+      <li><i>Sistema</i>: uno script di sistema non si pu&ograve; modificare n&eacute; cancellare ma &egrave; permesso attivarlo o disattivarlo</li>
+      <li><i>Script python</i>: &egrave; il codice python dello script</li>
+      <li><i>Nota</i>: descrizione aggiuntiva, informativa, dello script</li>
     </ul>
-    <p>Gli script si salvano e caricano su file con <i>Scarica ...</i>, <i>Carica ...</i>, <i>Scarica tutti gli script...</i>
-    e <i>Carica tutti gli script ...</i>. Un errore in uno script viene mostrato con un messaggio, e l'operazione della scheda continua.</p>
+    <p>Gli script non hanno un codice, gli viene attribuito un ID automatico e sono identificati dalla combinazione di <i>Classe</i>, <i>Metodo</i>, <i>Scatta</i> e <i>Azienda</i>. Di conseguenza non possono essere inseriti 2 script per la stessa combinazione di parametri indicata.</p>
+    <p>E' possibile impostare il font e la dimensione del carattere da utilizzare nel riquadro <i>Script python</i></p>
+    <p>Gli script possono essere caricati da filesystema a database e scaricati da database a filesystem tramite i tasti:</p>
+    <ul>
+    	<li><i>Scarica ...</i>: memorizza su un file lo script corrente. Viene richiesta solo la posizione nel filesystem, il nome del file viene costruito come &lt;azienda&gt;_&lt;classe&gt;_&lt;metodo&gt;_&lt;scatta&gt;.scp.zip</li>
+    	<li><i>Carica ...</i>: importa da file in formato scp.zip uno script su database</li>
+    	<li><i>Scarica tutti gli script...</i>: memorizza tutti gli script su una cartella del filesystem, il nome segue le regole precedenti</li>
+    	<li><i>Carica tutti gli script ...</i>: importa tutti gli script presenti in una cartella in file scp.zip nel database</li>
+    </ul>
+    <p>Il formato scp.zip &egrave; un file di testo contenente tutte le impostazioni dell'anagrafica dello script e compresso in formato zip.</p>
+    <br>
+	<p><a class="top" href="#top" title="top">Inizio pagina</a></p>
   </body>
 </html>

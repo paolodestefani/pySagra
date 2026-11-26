@@ -4,17 +4,32 @@
   </head>
   <body style="font-family: Arial, Sans-Serif;">
     <h1>Report</h1>
-    <p>Le definizioni dei report usati dal programma, salvate nel database. Ogni report ha il suo metodo di stampa (driver per
-    le stampanti del sistema operativo, ESC/POS per le stampanti termiche), una classe che dice dove si usa e una lingua.</p>
+    <p>Le definizioni dei report usati dal programma vengono create e modificate in questa scheda e salvate nel database. Ogni report ha il suo metodo di stampa (driver per
+    le stampanti del sistema operativo, ESC/POS per le stampanti termiche), una classe che dice dove si usa e una lingua associata.</p>
     <p><img src="img/report.png" /></p>
+    <p>Impostazioni dell'anagrafica dei report:</p>
     <ul>
-      <li><i>Metodo di stampa</i>, <i>Codice</i>, <i>Lingua/Nazione</i>, <i>Classe</i> e <i>Descrizione</i>.</li>
-      <li><i>Report di sistema</i>: un report del programma, che non si pu&ograve; modificare n&eacute; cancellare.</li>
-      <li><i>Definizione XML del report</i>: il testo del report, con la ricerca (<i>Cerca testo</i>) e la scelta del font.</li>
-      <li><i>Scarica ...</i> e <i>Carica ...</i> salvano e caricano un report su un file; <i>Scarica tutto ...</i> e
-      <i>Carica tutto ...</i> fanno lo stesso con tutti i report di una cartella, per esempio dopo un aggiornamento.
-      Al termine il programma dice quanti report non &egrave; riuscito a trattare.</li>
+      <li><i>Metodo di stampa</i>: pu&ograve; assumere i valori "Driver" oppure "ESC/POS"</li>
+      <li><i>Codice</i>: stringa alfanumerica che identifica il report</li>
+      <li><i>Lingua/Nazione</i>: identifica la lingua per la quale &egrave; stato realizzato in report</li>
+      <li><i>Classe</i>: identifica un raggruppamento di report con finalit&agrave; specifica</li>
+      <li><i>Descrizione</i>: la descrizione del report, sempre modificabile</li>
+      <li><i>Report di sistema</i>: un report di sistema non si pu&ograve; modificare n&eacute; cancellare</li>
+      <li><i>Definizione XML del report</i>: contiene il testo XML della definizione del report; tag, struttura, elementi, ecc. sono diversi tra report "Driver" e report "ESC/POS"</li>
+      <li><i>Cerca testo</i>: permette la ricerca di stringhe di testo all'interno della definizione XML del report</li>
+      <li><i>Font</i>: permette la scelta del font da utilizzare nella visualizzazione della Definizione XML del report e la sua dimensione</li>
     </ul>
-    <p>La stampa di un report si prova con la finestra di <a href="print.html">Stampa</a>.</p>
+    <p>I tasti disponibili permettono di:</p>
+    <ul>
+      <li><i>Immagine negli appunti</i>: copia il contenuto di un'immagine (bmp, png, jpg) nella clipboard in formato base64 in modo da incollarla nella definizione del report come testo, utile per inglobare immagini nella definizione del report</li>
+      <li><i>Cancella tutto</i>: elimina, dopo conferma, TUTTI i report presenti nel database</li>
+      <li><i>Scarica ...</i>: memorizza su filesystem il report corrente, compresso in formato zip, chiedendo solo la posizione, il nome del file viene costruito come &lt;codice_report&gt;_&lt;localizzazione&gt;.rpt.zip</li>
+      <li><i>Carica ...</i>: carica un report da un file in formato .rpt.zip</li>
+      <li><i>Scarica tutto ...</i>: memorizza tutti i report su filesystem in formato rpt.zip chiedendo solo in quale cartella, il nome dei file viene costruito come in  precedenza ma con un numero progressivo a due caratteri come prefisso &lt;progressivo&gt;_&lt;codice_report&gt;_&lt;localizzazione&gt;.rpt.zip. La lista &egrave; ordinata quindi a meno che non si aggiungano altri report con codici nuovi il progressivo assegnato &egrave; sempre lo stesso e risulta utile esportare ogni volta la lista completa dei report piuttosto che solo quelli modificati</li>
+      <li><i>Carica tutto ...</i>: importa nel database tutti i report in formato rpt.zip presenti su una cartella del filesystem</li>
+    </ul>
+    <p>La stampa di un report &egrave; sempre associata alla finestra di <a href="print_dialog.html">Stampa</a> presente nel menu e toolbar <i>Modifica</i>.</p>
+    <br>
+	<p><a class="top" href="#top" title="top">Inizio pagina</a></p>
   </body>
 </html>
