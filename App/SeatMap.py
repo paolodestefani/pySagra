@@ -251,6 +251,10 @@ class SeatMapForm(FormManager[Ui_SeatMapWidget]):
                            tc, 
                            bc,
                            un)
+            # the minimum size is the one of every cell: a row or a column full of
+            # tables would otherwise keep the smaller size of the table buttons
+            b.setMinimumWidth(self.ui.spinBoxMinWidth.value())
+            b.setMinimumHeight(self.ui.spinBoxMinHeight.value())
             self.ui.gridLayoutPreview.addWidget(b, row, col)
         # fill the remaining cells of gl with an empty widget
         for r in range(1, int(self.setting['table_list_rows'] or 0) + 1):
