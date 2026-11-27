@@ -8,7 +8,9 @@ requires-python = ">=3.14"
 # keep minimum versions aligned with MIN_PYTHON in pySagra.py and the MRV_*
 # constants in App/__init__.py
 dependencies = [
-    "PySide6-Essentials>=6.11",
+    # Qt 6.12 is the last Qt that supports Windows 10 (1809 or later):
+    # move past it only when the cash desks no longer run Windows 10
+    "PySide6-Essentials>=6.12,<6.13",
     "psycopg[binary]>=3.3.6",
     "cryptography",
     "python-escpos[usb]>=3.1",

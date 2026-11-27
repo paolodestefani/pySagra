@@ -45,8 +45,8 @@ ORGANIZATION    = 'PDS Software'
 WEBSITE         = 'paolodestefani.it'
 
 # minumum required version
-MRV_PYSIDE  = 6, 11, 0
-MRV_QT      = 6, 11, 0
+MRV_PYSIDE  = 6, 12, 0
+MRV_QT      = 6, 12, 0
 MRV_PSYCOPG = 3, 3, 6
 
 # public key: it only obfuscates the web order server parameters stored in the
