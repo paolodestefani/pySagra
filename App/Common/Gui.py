@@ -139,6 +139,11 @@ class CenteredProxyStyle(QProxyStyle):
     def __init__(self, style: QStyle | None = None) -> None:
         super().__init__(style)
         self._checks: dict[tuple, QPixmap] = {}
+        # a check drawn while macOS switches between light and dark would stay wrong
+        QGuiApplication.styleHints().colorSchemeChanged.connect(self._clearChecks)
+
+    def _clearChecks(self) -> None:
+        self._checks.clear()
 
     def drawPrimitive(self, element, option, painter, widget=None):
         if element != QStyle.PrimitiveElement.PE_IndicatorItemViewItemCheck or option.rect.isEmpty():
