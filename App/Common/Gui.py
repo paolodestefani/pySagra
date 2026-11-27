@@ -36,16 +36,19 @@ from contextlib import contextmanager
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QDir
 from PySide6.QtCore import QDirIterator
+from PySide6.QtCore import QRect
 from PySide6.QtGui import QColorConstants
 from PySide6.QtGui import QCursor
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtGui import QIcon
+from PySide6.QtGui import QPainter
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QProxyStyle
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QStyleFactory
+from PySide6.QtWidgets import QStyleOptionViewItem
 from PySide6.QtWidgets import QTabWidget
 
 # application modules
@@ -130,7 +133,34 @@ def get_tab_positions() -> dict[str, tuple]:
 
 
 class CenteredProxyStyle(QProxyStyle):
-    "Proxy style to center checkboxes in item views"
+    """Proxy style to center checkboxes in item views, and to draw them from a cache:
+    the native macOS style takes about 1 ms for each one, a grid shows hundreds of them"""
+
+    def __init__(self, style: QStyle | None = None) -> None:
+        super().__init__(style)
+        self._checks: dict[tuple, QPixmap] = {}
+
+    def drawPrimitive(self, element, option, painter, widget=None):
+        if element != QStyle.PrimitiveElement.PE_IndicatorItemViewItemCheck or option.rect.isEmpty():
+            super().drawPrimitive(element, option, painter, widget)
+            return
+        # the look depends on the state (on, off, enabled, active window, ...), the size,
+        # the pixel ratio of the screen and the palette (light or dark)
+        dpr = painter.device().devicePixelRatio()
+        size = option.rect.size()
+        key = (int(option.state.value), size.width(), size.height(), dpr, option.palette.cacheKey())
+        pixmap = self._checks.get(key)
+        if pixmap is None:
+            pixmap = QPixmap(size * dpr)
+            pixmap.setDevicePixelRatio(dpr)
+            pixmap.fill(Qt.GlobalColor.transparent)
+            local = QStyleOptionViewItem(option)
+            local.rect = QRect(0, 0, size.width(), size.height())
+            pixmap_painter = QPainter(pixmap)
+            super().drawPrimitive(element, local, pixmap_painter, widget)
+            pixmap_painter.end()
+            self._checks[key] = pixmap
+        painter.drawPixmap(option.rect.topLeft(), pixmap)
 
     def subElementRect(self, element, option, widget=None):
         # get the standard rectangle from the underlying style engine
